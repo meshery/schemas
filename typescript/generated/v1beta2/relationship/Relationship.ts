@@ -311,12 +311,13 @@ export interface components {
                              *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                              *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                              *     remove: Removes a value.
+                             *     replace: Replaces the value at the target location.
                              *     copy: Copies a value from one location to another.
                              *     move: Moves a value from one location to another.
                              *     test: Tests that a value at the target location is equal to a specified value.
                              * @enum {string}
                              */
-                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                             /** @description JSON ref to value from where patch should be applied. */
                             mutatorRef?: string[][];
                             mutatedRef?: string[][];
@@ -402,12 +403,13 @@ export interface components {
                              *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                              *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                              *     remove: Removes a value.
+                             *     replace: Replaces the value at the target location.
                              *     copy: Copies a value from one location to another.
                              *     move: Moves a value from one location to another.
                              *     test: Tests that a value at the target location is equal to a specified value.
                              * @enum {string}
                              */
-                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                             /** @description JSON ref to value from where patch should be applied. */
                             mutatorRef?: string[][];
                             mutatedRef?: string[][];
@@ -496,12 +498,13 @@ export interface components {
                              *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                              *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                              *     remove: Removes a value.
+                             *     replace: Replaces the value at the target location.
                              *     copy: Copies a value from one location to another.
                              *     move: Moves a value from one location to another.
                              *     test: Tests that a value at the target location is equal to a specified value.
                              * @enum {string}
                              */
-                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                             /** @description JSON ref to value from where patch should be applied. */
                             mutatorRef?: string[][];
                             mutatedRef?: string[][];
@@ -587,12 +590,13 @@ export interface components {
                              *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                              *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                              *     remove: Removes a value.
+                             *     replace: Replaces the value at the target location.
                              *     copy: Copies a value from one location to another.
                              *     move: Moves a value from one location to another.
                              *     test: Tests that a value at the target location is equal to a specified value.
                              * @enum {string}
                              */
-                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                             /** @description JSON ref to value from where patch should be applied. */
                             mutatorRef?: string[][];
                             mutatedRef?: string[][];
@@ -611,12 +615,13 @@ export interface components {
          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
          *     remove: Removes a value.
+         *     replace: Replaces the value at the target location.
          *     copy: Copies a value from one location to another.
          *     move: Moves a value from one location to another.
          *     test: Tests that a value at the target location is equal to a specified value.
          * @enum {string}
          */
-        RelationshipDefinitionSelectorsPatchStrategy: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+        RelationshipDefinitionSelectorsPatchStrategy: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
         /** @description Patch configuration for the selector */
         RelationshipDefinitionSelectorsPatch: {
             /**
@@ -626,12 +631,13 @@ export interface components {
              *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
              *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
              *     remove: Removes a value.
+             *     replace: Replaces the value at the target location.
              *     copy: Copies a value from one location to another.
              *     move: Moves a value from one location to another.
              *     test: Tests that a value at the target location is equal to a specified value.
              * @enum {string}
              */
-            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
             /** @description JSON ref to value from where patch should be applied. */
             mutatorRef?: string[][];
             mutatedRef?: string[][];
@@ -760,12 +766,13 @@ export interface components {
                  *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                  *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                  *     remove: Removes a value.
+                 *     replace: Replaces the value at the target location.
                  *     copy: Copies a value from one location to another.
                  *     move: Moves a value from one location to another.
                  *     test: Tests that a value at the target location is equal to a specified value.
                  * @enum {string}
                  */
-                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                 /** @description JSON ref to value from where patch should be applied. */
                 mutatorRef?: string[][];
                 mutatedRef?: string[][];
@@ -853,12 +860,13 @@ export interface components {
                      *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                      *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                      *     remove: Removes a value.
+                     *     replace: Replaces the value at the target location.
                      *     copy: Copies a value from one location to another.
                      *     move: Moves a value from one location to another.
                      *     test: Tests that a value at the target location is equal to a specified value.
                      * @enum {string}
                      */
-                    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                     /** @description JSON ref to value from where patch should be applied. */
                     mutatorRef?: string[][];
                     mutatedRef?: string[][];
@@ -944,12 +952,13 @@ export interface components {
                      *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                      *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                      *     remove: Removes a value.
+                     *     replace: Replaces the value at the target location.
                      *     copy: Copies a value from one location to another.
                      *     move: Moves a value from one location to another.
                      *     test: Tests that a value at the target location is equal to a specified value.
                      * @enum {string}
                      */
-                    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                     /** @description JSON ref to value from where patch should be applied. */
                     mutatorRef?: string[][];
                     mutatedRef?: string[][];
@@ -1040,12 +1049,13 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                         /** @description JSON ref to value from where patch should be applied. */
                         mutatorRef?: string[][];
                         mutatedRef?: string[][];
@@ -1131,12 +1141,13 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                         /** @description JSON ref to value from where patch should be applied. */
                         mutatorRef?: string[][];
                         mutatedRef?: string[][];
@@ -1225,12 +1236,13 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                         /** @description JSON ref to value from where patch should be applied. */
                         mutatorRef?: string[][];
                         mutatedRef?: string[][];
@@ -1316,12 +1328,13 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                         /** @description JSON ref to value from where patch should be applied. */
                         mutatorRef?: string[][];
                         mutatedRef?: string[][];
@@ -1413,12 +1426,13 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                         /** @description JSON ref to value from where patch should be applied. */
                         mutatorRef?: string[][];
                         mutatedRef?: string[][];
@@ -1504,12 +1518,13 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                         /** @description JSON ref to value from where patch should be applied. */
                         mutatorRef?: string[][];
                         mutatedRef?: string[][];
@@ -1598,12 +1613,13 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                         /** @description JSON ref to value from where patch should be applied. */
                         mutatorRef?: string[][];
                         mutatedRef?: string[][];
@@ -1689,12 +1705,13 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                         /** @description JSON ref to value from where patch should be applied. */
                         mutatorRef?: string[][];
                         mutatedRef?: string[][];
