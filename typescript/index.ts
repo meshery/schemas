@@ -99,10 +99,15 @@ import type * as core from "./generated/v1alpha1/core/Core";
 //
 // Includes CoreConnectionKinds - note that a connection's `kind` stays an
 // open-ended string; that enum only names the kinds with bespoke handling.
-export * from "./constants";
+import {
+  CoreConnectionKinds,
+  type CoreConnectionKind,
+} from "./constants";
 
 // Export schemas
 export {
+  CoreConnectionKinds,
+  type CoreConnectionKind,
   core,
   // v1beta1
   EnvironmentDefinitionV1Beta1OpenApiSchema,
