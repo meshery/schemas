@@ -2060,14 +2060,147 @@ const InvitationSchema: Record<string, unknown> = {
                         "json": "totalCount"
                       }
                     },
-                    "data": {
+                    "signupData": {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "description": "A signup request submitted for organization access.",
-                        "additionalProperties": true
+                        "additionalProperties": false,
+                        "description": "A signup request record as persisted in the signup_data table. Captures the requester's identity, the product form the request originated from (for example playground, meshmap, docker-extension), the moderation status, and the tracking task created for the request. Also embedded in signup webhook and notification payloads, where only a subset of fields may be populated.",
+                        "properties": {
+                          "id": {
+                            "description": "Unique identifier of the signup request.",
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "firstName": {
+                            "type": "string",
+                            "maxLength": 200,
+                            "description": "First name of the requester.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "first_name",
+                              "json": "firstName,omitempty"
+                            }
+                          },
+                          "lastName": {
+                            "type": "string",
+                            "maxLength": 300,
+                            "description": "Last name of the requester.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "last_name",
+                              "json": "lastName,omitempty"
+                            }
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email",
+                            "maxLength": 300,
+                            "description": "Email address of the requester.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "email",
+                              "json": "email,omitempty"
+                            }
+                          },
+                          "occupation": {
+                            "type": "string",
+                            "maxLength": 300,
+                            "description": "Occupation stated by the requester.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "occupation",
+                              "json": "occupation,omitempty"
+                            }
+                          },
+                          "organization": {
+                            "type": "string",
+                            "maxLength": 300,
+                            "description": "Organization stated by the requester.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization",
+                              "json": "organization,omitempty"
+                            }
+                          },
+                          "role": {
+                            "type": "string",
+                            "maxLength": 300,
+                            "description": "Role stated by the requester within their organization.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "role",
+                              "json": "role,omitempty"
+                            }
+                          },
+                          "formType": {
+                            "type": "string",
+                            "maxLength": 300,
+                            "description": "Product form the signup request originated from. Known values include playground, meshmap, docker-extension, epsma-book, content, contact and event; the set is open-ended.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "form_type",
+                              "json": "formType,omitempty"
+                            }
+                          },
+                          "status": {
+                            "type": "string",
+                            "maxLength": 300,
+                            "description": "Moderation status of the signup request.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "status",
+                              "json": "status,omitempty"
+                            }
+                          },
+                          "taskId": {
+                            "type": "string",
+                            "maxLength": 300,
+                            "description": "Identifier of the tracking task created for this request in the external task system.",
+                            "x-id-format": "external",
+                            "x-go-name": "TaskID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "task_id",
+                              "json": "taskId,omitempty"
+                            }
+                          },
+                          "taskLink": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 300,
+                            "description": "Link to the tracking task created for this request.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "task_link",
+                              "json": "taskLink,omitempty"
+                            }
+                          },
+                          "createdAt": {
+                            "description": "Timestamp when the signup request was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "json": "createdAt,omitempty"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp when the signup request was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "json": "updatedAt,omitempty"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
                       },
-                      "description": "Signup requests returned on the current page."
+                      "description": "Signup requests returned on the current page.",
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "signupData"
+                      }
                     }
                   }
                 }
@@ -2448,12 +2581,9 @@ const InvitationSchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "signupData": {
-                      "description": "The signup request the notification refers to.",
-                      "x-oapi-codegen-extra-tags": {
-                        "json": "signupData"
-                      },
                       "type": "object",
                       "additionalProperties": false,
+                      "description": "A signup request record as persisted in the signup_data table. Captures the requester's identity, the product form the request originated from (for example playground, meshmap, docker-extension), the moderation status, and the tracking task created for the request. Also embedded in signup webhook and notification payloads, where only a subset of fields may be populated.",
                       "properties": {
                         "id": {
                           "description": "Unique identifier of the signup request.",
@@ -2583,6 +2713,9 @@ const InvitationSchema: Record<string, unknown> = {
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
                         }
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "signupData"
                       }
                     },
                     "preProcessed": {
@@ -3215,12 +3348,9 @@ const InvitationSchema: Record<string, unknown> = {
         ],
         "properties": {
           "signupData": {
-            "description": "The signup request the notification refers to.",
-            "x-oapi-codegen-extra-tags": {
-              "json": "signupData"
-            },
             "type": "object",
             "additionalProperties": false,
+            "description": "A signup request record as persisted in the signup_data table. Captures the requester's identity, the product form the request originated from (for example playground, meshmap, docker-extension), the moderation status, and the tracking task created for the request. Also embedded in signup webhook and notification payloads, where only a subset of fields may be populated.",
             "properties": {
               "id": {
                 "description": "Unique identifier of the signup request.",
@@ -3350,6 +3480,9 @@ const InvitationSchema: Record<string, unknown> = {
                 "format": "date-time",
                 "x-go-type-skip-optional-pointer": true
               }
+            },
+            "x-oapi-codegen-extra-tags": {
+              "json": "signupData"
             }
           },
           "preProcessed": {
@@ -3371,12 +3504,9 @@ const InvitationSchema: Record<string, unknown> = {
         ],
         "properties": {
           "signupData": {
-            "description": "The signup request that triggered the webhook.",
-            "x-oapi-codegen-extra-tags": {
-              "json": "signupData"
-            },
             "type": "object",
             "additionalProperties": false,
+            "description": "A signup request record as persisted in the signup_data table. Captures the requester's identity, the product form the request originated from (for example playground, meshmap, docker-extension), the moderation status, and the tracking task created for the request. Also embedded in signup webhook and notification payloads, where only a subset of fields may be populated.",
             "properties": {
               "id": {
                 "description": "Unique identifier of the signup request.",
@@ -3506,6 +3636,9 @@ const InvitationSchema: Record<string, unknown> = {
                 "format": "date-time",
                 "x-go-type-skip-optional-pointer": true
               }
+            },
+            "x-oapi-codegen-extra-tags": {
+              "json": "signupData"
             }
           },
           "newUser": {
@@ -3545,14 +3678,147 @@ const InvitationSchema: Record<string, unknown> = {
               "json": "totalCount"
             }
           },
-          "data": {
+          "signupData": {
             "type": "array",
             "items": {
               "type": "object",
-              "description": "A signup request submitted for organization access.",
-              "additionalProperties": true
+              "additionalProperties": false,
+              "description": "A signup request record as persisted in the signup_data table. Captures the requester's identity, the product form the request originated from (for example playground, meshmap, docker-extension), the moderation status, and the tracking task created for the request. Also embedded in signup webhook and notification payloads, where only a subset of fields may be populated.",
+              "properties": {
+                "id": {
+                  "description": "Unique identifier of the signup request.",
+                  "x-go-name": "ID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "id,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "firstName": {
+                  "type": "string",
+                  "maxLength": 200,
+                  "description": "First name of the requester.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "first_name",
+                    "json": "firstName,omitempty"
+                  }
+                },
+                "lastName": {
+                  "type": "string",
+                  "maxLength": 300,
+                  "description": "Last name of the requester.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "last_name",
+                    "json": "lastName,omitempty"
+                  }
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "maxLength": 300,
+                  "description": "Email address of the requester.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "email",
+                    "json": "email,omitempty"
+                  }
+                },
+                "occupation": {
+                  "type": "string",
+                  "maxLength": 300,
+                  "description": "Occupation stated by the requester.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "occupation",
+                    "json": "occupation,omitempty"
+                  }
+                },
+                "organization": {
+                  "type": "string",
+                  "maxLength": 300,
+                  "description": "Organization stated by the requester.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization",
+                    "json": "organization,omitempty"
+                  }
+                },
+                "role": {
+                  "type": "string",
+                  "maxLength": 300,
+                  "description": "Role stated by the requester within their organization.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "role",
+                    "json": "role,omitempty"
+                  }
+                },
+                "formType": {
+                  "type": "string",
+                  "maxLength": 300,
+                  "description": "Product form the signup request originated from. Known values include playground, meshmap, docker-extension, epsma-book, content, contact and event; the set is open-ended.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "form_type",
+                    "json": "formType,omitempty"
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "maxLength": 300,
+                  "description": "Moderation status of the signup request.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "status",
+                    "json": "status,omitempty"
+                  }
+                },
+                "taskId": {
+                  "type": "string",
+                  "maxLength": 300,
+                  "description": "Identifier of the tracking task created for this request in the external task system.",
+                  "x-id-format": "external",
+                  "x-go-name": "TaskID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "task_id",
+                    "json": "taskId,omitempty"
+                  }
+                },
+                "taskLink": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 300,
+                  "description": "Link to the tracking task created for this request.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "task_link",
+                    "json": "taskLink,omitempty"
+                  }
+                },
+                "createdAt": {
+                  "description": "Timestamp when the signup request was created.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "json": "createdAt,omitempty"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updatedAt": {
+                  "description": "Timestamp when the signup request was last updated.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "json": "updatedAt,omitempty"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
             },
-            "description": "Signup requests returned on the current page."
+            "description": "Signup requests returned on the current page.",
+            "x-oapi-codegen-extra-tags": {
+              "json": "signupData"
+            }
           }
         }
       },
