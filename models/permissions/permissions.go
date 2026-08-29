@@ -5,7 +5,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "d057e3586c1981a401736292e1807743181fcc3adbe54c8b696d9cc927838ec5"
+const IndexID = "cadac079689e3d775e5e7d32c7bebe307b526aa3491a40c2720c8811de2f6e25"
 
 
 // PermissionKey represents a permission key identifier.
@@ -200,9 +200,6 @@ var (
 
 	// ExtensibilitySwaggerIntegration - No description available
 	ExtensibilitySwaggerIntegration = PermissionKey(uuid.Must(uuid.FromString("045f4c47-95d7-4ee7-923e-b069faa75640")))
-
-	// ExtensibilityNamespacedCustomResolvers - No description available
-	ExtensibilityNamespacedCustomResolvers = PermissionKey(uuid.Must(uuid.FromString("192cd281-234a-4127-b8a8-3e6f10d9e730")))
 
 	// ExtensibilityAdapters - Extend Meshery's capabilities behind a gRPC interface for Model registration and operation invocation
 	ExtensibilityAdapters = PermissionKey(uuid.Must(uuid.FromString("65150884-c617-4aa4-bb0f-09dd0532bb83")))

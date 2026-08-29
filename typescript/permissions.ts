@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "d057e3586c1981a401736292e1807743181fcc3adbe54c8b696d9cc927838ec5" as const;
+export const PERMISSIONS_INDEX_ID = "cadac079689e3d775e5e7d32c7bebe307b526aa3491a40c2720c8811de2f6e25" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -674,17 +674,6 @@ export const Keys = {
     category: "Extensibility",
     subcategory: "ReST API",
     function: "Swagger integration",
-    description: ""
-  },
-
-  /**
-   * No description available
-   */
-  ExtensibilityNamespacedCustomResolvers: {
-    id: "192cd281-234a-4127-b8a8-3e6f10d9e730" as PermissionKey,
-    category: "Extensibility",
-    subcategory: "GraphQL API",
-    function: "Namespaced custom resolvers",
     description: ""
   },
 
@@ -5251,11 +5240,6 @@ export const PermissionKeys = {
    * No description available
    */
   ExtensibilitySwaggerIntegration: "045f4c47-95d7-4ee7-923e-b069faa75640" as PermissionKey,
-
-  /**
-   * No description available
-   */
-  ExtensibilityNamespacedCustomResolvers: "192cd281-234a-4127-b8a8-3e6f10d9e730" as PermissionKey,
 
   /**
    * Extend Meshery's capabilities behind a gRPC interface for Model registration and operation invocation
