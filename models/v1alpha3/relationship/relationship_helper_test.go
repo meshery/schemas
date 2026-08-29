@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
+	"gorm.io/gorm/clause"
 )
 
 func testDefinition(subType string) RelationshipDefinition {
@@ -134,6 +135,53 @@ func TestCreateIsIdempotentAcrossConnections(t *testing.T) {
 
 	var count int64
 	if err := second.Model(&RelationshipDefinition{}).Count(&count).Error; err != nil {
+		t.Fatalf("count relationships: %v", err)
+	}
+	if count != 1 {
+		t.Fatalf("expected exactly one persisted relationship, found %d", count)
+	}
+}
+
+// insertIgnoringConflict is the ON CONFLICT DO NOTHING seam Create relies on
+// when two processes both pass the exists check. Sequential Create calls never
+// reach it (the second call returns from the lookup), so drive it directly: a
+// second insert of an already-persisted ID must be a no-op, not a
+// duplicate-key error, and must leave exactly one row.
+func TestInsertIgnoringConflictIsNoOpOnDuplicate(t *testing.T) {
+	handler, err := database.New(database.Options{
+		Engine:   database.SQLITE,
+		Filename: ":memory:",
+	})
+	if err != nil {
+		t.Fatalf("open in-memory sqlite: %v", err)
+	}
+	if err := handler.AutoMigrate(&RelationshipDefinition{}); err != nil {
+		t.Fatalf("automigrate: %v", err)
+	}
+
+	def := testDefinition("reference")
+	id, err := def.GenerateID()
+	if err != nil {
+		t.Fatalf("GenerateID: %v", err)
+	}
+	def.ID = id
+
+	if err := def.insertIgnoringConflict(&handler); err != nil {
+		t.Fatalf("first insert: %v", err)
+	}
+	// Plain Create must collide, proving the primary key actually guards the row.
+	dup := def
+	if err := handler.Omit(clause.Associations).Create(&dup).Error; err == nil {
+		t.Fatal("plain insert of a duplicate ID unexpectedly succeeded")
+	}
+	// The conflict-tolerant insert must swallow that same collision.
+	loser := def
+	if err := loser.insertIgnoringConflict(&handler); err != nil {
+		t.Fatalf("conflicting insert returned an error instead of a no-op: %v", err)
+	}
+
+	var count int64
+	if err := handler.Model(&RelationshipDefinition{}).Count(&count).Error; err != nil {
 		t.Fatalf("count relationships: %v", err)
 	}
 	if count != 1 {

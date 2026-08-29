@@ -68,8 +68,18 @@ func TestCreateAssignsIDWhenModelAlreadyExists(t *testing.T) {
 	if second.CategoryId != first.CategoryId {
 		t.Fatalf("second create left the receiver CategoryId unadopted: got %s, want %s", second.CategoryId, first.CategoryId)
 	}
-	if second.RegistrantId != hostID {
-		t.Fatalf("second create left the receiver RegistrantId unadopted: got %s, want %s", second.RegistrantId, hostID)
+	// The lookup is scoped by connection_id = hostID, so the persisted
+	// registrant necessarily equals hostID; compare against the stored row
+	// rather than the argument so the assertion proves adoption, not echo.
+	var persisted ModelDefinition
+	if err := handler.First(&persisted, "id = ?", firstID).Error; err != nil {
+		t.Fatalf("load persisted model: %v", err)
+	}
+	if persisted.RegistrantId != hostID {
+		t.Fatalf("persisted RegistrantId mismatch: got %s, want %s", persisted.RegistrantId, hostID)
+	}
+	if second.RegistrantId != persisted.RegistrantId {
+		t.Fatalf("second create left the receiver RegistrantId unadopted: got %s, want %s", second.RegistrantId, persisted.RegistrantId)
 	}
 
 	var count int64

@@ -108,9 +108,13 @@ func (m *ModelDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.U
 	// ModelId onto every component and relationship in the package; leaving the
 	// receiver's ID untouched here made all of them register with the nil UUID,
 	// orphaning them from every model-scoped query.
+	// Every adopted field comes from the persisted row - including
+	// RegistrantId, which the lookup above already scoped to hostID - so the
+	// receiver mirrors what the database holds rather than what the caller
+	// passed.
 	m.ID = model.ID
 	m.CategoryId = model.CategoryId
-	m.RegistrantId = hostID
+	m.RegistrantId = model.RegistrantId
 	return model.ID, nil
 }
 

@@ -110,11 +110,18 @@ func (r *RelationshipDefinition) Create(db *database.Handler, hostID uuid.UUID) 
 	// ON CONFLICT DO NOTHING turns the loser's duplicate-key error into a
 	// no-op, and because the ID is content-addressed the existing row is the
 	// same definition, so returning the computed ID is correct either way.
-	err = db.Omit(clause.Associations).Clauses(clause.OnConflict{DoNothing: true}).Create(&r).Error
-	if err != nil {
+	if err := r.insertIgnoringConflict(db); err != nil {
 		return uuid.UUID{}, err
 	}
 	return id, nil
+}
+
+// insertIgnoringConflict persists the definition, treating a primary-key
+// collision as a successful no-op. It is the single seam Create relies on to
+// survive the cross-process race described above, and is unexported so tests
+// can drive the conflict path directly without racing two connections.
+func (r *RelationshipDefinition) insertIgnoringConflict(db *database.Handler) error {
+	return db.Omit(clause.Associations).Clauses(clause.OnConflict{DoNothing: true}).Create(r).Error
 }
 
 func (r *RelationshipDefinition) UpdateStatus(db *database.Handler, status entity.EntityStatus) error {
