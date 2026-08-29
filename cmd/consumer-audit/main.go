@@ -113,10 +113,10 @@ func newTable(out io.Writer, cols ...any) table.Table {
 	return t
 }
 
-// printAuditReport renders the top-level summary: one row per audit dimension.
-// The x-annotation breakdown shows how schema-defined endpoints are distributed
-// across consumers. Schema Completeness is schema-wide (same value for all
-// consumers of a given endpoint), so it appears in the Schema column only.
+// printAuditReport renders the top-level summary: one row per audit metric.
+// Columns are Schema (OpenAPI ops), Meshery (Gorilla routes), and Cloud
+// (Echo routes). Metric labels are fixed strings also parsed by
+// .github/workflows/schema-audit.yml when posting the PR comment.
 func printAuditReport(out io.Writer, result *validation.ConsumerAuditResult) {
 	s := result.Summary
 
@@ -128,23 +128,31 @@ func printAuditReport(out io.Writer, result *validation.ConsumerAuditResult) {
 	}
 
 	fmt.Fprintln(out)
-	fmt.Fprintln(out, "Audit Report")
+	fmt.Fprintln(out, "Consumer Audit Report")
 	fmt.Fprintln(out)
 
-	t := newTable(out, "Category", "Schema", "Meshery", "Cloud")
-	t.AddRow("Total Endpoints", s.SchemaEndpoints, s.MesheryEndpoints, s.CloudEndpoints)
-	t.AddRow("Schema Backed", "-", s.AnnotatedMeshery+s.AnnotatedBoth, s.AnnotatedCloud+s.AnnotatedBoth)
-	t.AddRow("x-Annotated (Meshery only)", s.AnnotatedMeshery, "-", "-")
-	t.AddRow("x-Annotated (Cloud only)", s.AnnotatedCloud, "-", "-")
-	t.AddRow("x-Annotated (Both)", s.AnnotatedBoth, "-", "-")
-	t.AddRow("Schema Completeness (TRUE)", s.SchemaCompletenessTrue, "-", "-")
-	t.AddRow("Schema Only", s.SchemaOnly, "-", "-")
-	t.AddRow("Unimplemented With Schema",
+	// Keep metric labels stable: the CI comment job matches these exact strings.
+	t := newTable(out, "Metric", "Schema", "Meshery", "Cloud")
+	t.AddRow("Total endpoints", s.SchemaEndpoints, s.MesheryEndpoints, s.CloudEndpoints)
+	t.AddRow("Spec applies to consumer", "-", s.AnnotatedMeshery+s.AnnotatedBoth, s.AnnotatedCloud+s.AnnotatedBoth)
+	t.AddRow("Spec targets Meshery only", s.AnnotatedMeshery, "-", "-")
+	t.AddRow("Spec targets Cloud only", s.AnnotatedCloud, "-", "-")
+	t.AddRow("Spec targets both consumers", s.AnnotatedBoth, "-", "-")
+	t.AddRow("Spec passes validation", s.SchemaCompletenessTrue, "-", "-")
+	t.AddRow("Spec only (no handlers)", s.SchemaOnly, "-", "-")
+	t.AddRow("Spec without consumer handler",
 		"-",
 		cell(s.SchemaOnlyMeshery, s.MesheryEndpoints > 0),
 		cell(s.SchemaOnlyCloud, s.CloudEndpoints > 0))
-	t.AddRow("Consumer Only", "-", s.ConsumerOnlyMeshery, s.ConsumerOnlyCloud)
+	t.AddRow("Handler only (no spec)", "-", s.ConsumerOnlyMeshery, s.ConsumerOnlyCloud)
 	t.Print()
+
+	// Only the two "missing handler" metrics need disambiguation; the rest
+	// are self-explanatory from the label.
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Note:")
+	fmt.Fprintln(out, "Spec only (no handlers) --> no matching handler in any audited consumer.")
+	fmt.Fprintln(out, "Spec without consumer handler --> this consumer is missing it (may exist elsewhere).")
 }
 
 type consumerActionSummary struct {
@@ -156,6 +164,33 @@ type consumerActionSummary struct {
 	applicableSpecs    int
 	unimplemented      int
 	annotationMismatch int
+}
+
+// printPrefixMismatches renders schema paths whose only difference from a live,
+// unmatched consumer route is the `/api` router-group prefix.
+//
+// This gap is silent everywhere else in the pipeline — the spec bundles, the
+// generators run, and the emitted client compiles — so it is called out ahead
+// of the per-consumer counts rather than left to be inferred from the raw
+// spec-only and handler-only totals.
+func printPrefixMismatches(out io.Writer, mismatches []validation.PrefixMismatch) {
+	if len(mismatches) == 0 {
+		return
+	}
+
+	fmt.Fprintf(
+		out,
+		"%d schema %s declared at a path no router serves, while the consumer serves the same operation one %q prefix away:\n",
+		len(mismatches),
+		pluralize("endpoint", len(mismatches)),
+		"/api",
+	)
+	for _, m := range mismatches {
+		fmt.Fprintf(out, "  %s\n", m)
+	}
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Generated clients request the declared path verbatim, so each of these ships a client that cannot reach its handler. See docs/http-api-design.md.")
+	fmt.Fprintln(out)
 }
 
 // printActionItems renders a prose summary of the highest-signal consumer gaps.
@@ -183,13 +218,21 @@ func printActionItems(out io.Writer, result *validation.ConsumerAuditResult, mes
 			result.Summary.CloudEndpoints,
 		))
 	}
-	if len(summaries) == 0 {
+	// A prefix mismatch is worth reporting even when no consumer summary
+	// could be built, so it is emitted before the summaries guard below.
+	if len(result.PrefixMismatches) == 0 && len(summaries) == 0 {
 		return
 	}
 
 	fmt.Fprintln(out)
 	fmt.Fprintln(out, "Action Needed")
 	fmt.Fprintln(out)
+
+	printPrefixMismatches(out, result.PrefixMismatches)
+
+	if len(summaries) == 0 {
+		return
+	}
 
 	for i, summary := range summaries {
 		if summary.annotationMismatch > 0 {

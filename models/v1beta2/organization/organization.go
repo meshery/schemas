@@ -30,6 +30,7 @@ type AvailableOrganization struct {
 	CreatedAt   Time         `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
 	DeletedAt   NullableTime `json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 	Description Text         `json:"description,omitempty" yaml:"description,omitempty"`
+	Domain      Text         `json:"domain,omitempty" yaml:"domain,omitempty"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID *UUID `json:"id,omitempty" yaml:"id,omitempty"`

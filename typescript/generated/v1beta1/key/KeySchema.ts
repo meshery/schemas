@@ -8,6 +8,7 @@ const KeySchema: Record<string, unknown> = {
   "info": {
     "title": "Key",
     "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "description": "OpenAPI schema for authorization key management in Meshery.",
     "version": "v1beta1",
     "contact": {

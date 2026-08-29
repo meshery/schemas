@@ -355,6 +355,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Forbidden */
+        403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Result not found */
         404: {
             headers: {
@@ -386,14 +395,14 @@ export interface components {
         /** @description Get ordered responses */
         order: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
         pageSize: number;
         /**
          * @deprecated
          * @description Get responses by pagesize. Deprecated alias of pageSize.
          */
-        pagesize: string;
+        pagesize: number;
     };
     requestBodies: {
         /** @description Body for creating a team */
@@ -438,14 +447,14 @@ export interface operations {
                 /** @description Get ordered responses */
                 order?: string;
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /**
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
             };
             header?: never;
             path: {
@@ -622,6 +631,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -708,6 +726,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -818,6 +845,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -877,6 +913,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -905,14 +950,14 @@ export interface operations {
                 /** @description Get ordered responses */
                 order?: string;
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /**
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
             };
             header?: never;
             path: {
@@ -923,7 +968,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Team users mapping */
+            /** @description Team members with their roles */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -936,41 +981,16 @@ export interface operations {
                         pageSize?: number;
                         /** @description Total number of items available. */
                         totalCount?: number;
-                        /** @description The user-team mappings on the current page. */
-                        usersTeamsMapping?: {
-                            /** Format: uuid */
-                            id?: string;
-                            /**
-                             * Format: uuid
-                             * @description Team ID
-                             */
-                            teamId?: string;
-                            /**
-                             * Format: uuid
-                             * @description User ID
-                             */
-                            userId?: string;
-                            /**
-                             * Format: uuid
-                             * @description Optional role assigned to this team membership. Nullable because a membership may exist without an explicit role (e.g., team-admin assignments are stamped on insert; non-owner adds may leave `role_id` null until a role is assigned). References `roles.id`.
-                             */
-                            roleId?: string;
+                        /** @description The data of the teammemberspage. */
+                        data?: ({
                             /**
                              * Format: date-time
-                             * @description Timestamp when the mapping was created.
+                             * @description Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.
                              */
-                            createdAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the mapping was last updated.
-                             */
-                            updatedAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the mapping was soft-deleted, if applicable.
-                             */
-                            deletedAt?: string;
-                        }[];
+                            joinedAt?: string;
+                        } & {
+                            [key: string]: unknown;
+                        })[];
                     };
                 };
             };
@@ -985,6 +1005,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1088,6 +1117,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -1149,6 +1187,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -1177,14 +1224,14 @@ export interface operations {
                 /** @description Get ordered responses */
                 order?: string;
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /**
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
             };
             header?: never;
             path: {
@@ -1234,6 +1281,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

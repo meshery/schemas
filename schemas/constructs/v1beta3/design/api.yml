@@ -139,6 +139,12 @@ paths:
       operationId: getPattern
       parameters:
         - $ref: "#/components/parameters/designId"
+        - name: metrics
+          in: query
+          required: false
+          description: Whether to include usage metrics in the response.
+          schema:
+            type: boolean
       responses:
         "200":
           description: Design response
@@ -275,14 +281,21 @@ paths:
               $ref: "#/components/schemas/MesheryPatternImportRequestBody"
       responses:
         "200":
-          description: Successful Import
+          description: >-
+            Successful import. The response body is a JSON array of the saved
+            designs, not a message envelope. The import path saves exactly one
+            design, so the array carries a single element and consumers read the
+            imported design as the first element.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
+                type: array
+                description: >-
+                  Designs persisted by the import, in the order they were saved.
+                  Always a single element on this path.
+                minItems: 1
+                items:
+                  $ref: "#/components/schemas/MesheryPattern"
         "400":
           description: Invalid request format
         "401":

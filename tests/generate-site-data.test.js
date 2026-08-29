@@ -8,6 +8,7 @@ const {
   DEFAULT_OUTPUT_RELATIVE_PATH,
   buildSiteData,
   collectXInternalTags,
+  loadExistingDocsHrefs,
   parseLatestConstructs,
   resolveConstructClassification,
   resolveOutputPath,
@@ -222,6 +223,113 @@ test("buildSiteData returns Jekyll-friendly schema rows", () => {
         extension: false,
       },
     ]);
+  });
+});
+
+test("loadExistingDocsHrefs returns empty object when file does not exist", () => {
+  assert.deepEqual(loadExistingDocsHrefs("/nonexistent/path.json"), {});
+});
+
+test("loadExistingDocsHrefs extracts docs_href entries keyed by construct", () => {
+  const existing = [
+    { construct: "component", version: "v1beta3", href: "/schemas/constructs/v1beta3/component/component.yaml", docs_href: "https://docs.meshery.io/concepts/logical/components", core: false, extension: false },
+    { construct: "connection", version: "v1beta3", href: "/schemas/constructs/v1beta3/connection/connection.yaml", docs_href: "https://docs.meshery.io/concepts/logical/connections", core: true, extension: true },
+    { construct: "academy",   version: "v1beta3", href: "/schemas/constructs/v1beta3/academy/academy.yaml", core: false, extension: true },
+  ];
+
+  withTempRepo({ "data.json": JSON.stringify(existing) }, (tempDir) => {
+    assert.deepEqual(loadExistingDocsHrefs(path.join(tempDir, "data.json")), {
+      component: "https://docs.meshery.io/concepts/logical/components",
+      connection: "https://docs.meshery.io/concepts/logical/connections",
+    });
+  });
+});
+
+test("loadExistingDocsHrefs throws when file contains invalid JSON", () => {
+  withTempRepo({ "data.json": "not valid json" }, (tempDir) => {
+    assert.throws(
+      () => loadExistingDocsHrefs(path.join(tempDir, "data.json")),
+      /Failed to load existing docs hrefs/,
+    );
+  });
+});
+
+test("loadExistingDocsHrefs throws when file contains a non-array", () => {
+  withTempRepo({ "data.json": JSON.stringify({ construct: "component" }) }, (tempDir) => {
+    assert.throws(
+      () => loadExistingDocsHrefs(path.join(tempDir, "data.json")),
+      /Failed to load existing docs hrefs/,
+    );
+  });
+});
+
+test("buildSiteData includes docs_href when provided", () => {
+  withTempRepo({
+    "schemas/constructs/v1/component/component.yaml": "",
+    "schemas/constructs/v1/component/api.yml": API_CLOUD_ONLY,
+  }, (tempRepoRoot) => {
+    const siteData = buildSiteData(
+      tempRepoRoot,
+      [{ construct: "component", version: "v1" }],
+      { component: "https://docs.meshery.io/concepts/logical/components" }
+    );
+
+    assert.deepEqual(siteData, [
+      {
+        construct: "component",
+        version: "v1",
+        href: "/schemas/constructs/v1/component/component.yaml",
+        docs_href: "https://docs.meshery.io/concepts/logical/components",
+        core: false,
+        extension: true,
+      },
+    ]);
+  });
+});
+
+test("buildSiteData omits docs_href when not in map", () => {
+  withTempRepo({
+    "schemas/constructs/v1/academy/academy.yaml": "",
+    "schemas/constructs/v1/academy/api.yml": API_NO_OPERATIONS,
+  }, (tempRepoRoot) => {
+    const siteData = buildSiteData(
+      tempRepoRoot,
+      [{ construct: "academy", version: "v1" }],
+      {}
+    );
+
+    assert.equal("docs_href" in siteData[0], false);
+  });
+});
+
+test("docs_href values survive a full regeneration cycle", () => {
+  withTempRepo({
+    "schemas/constructs/v1/component/component.yaml": "",
+    "schemas/constructs/v1/component/api.yml": API_CLOUD_ONLY,
+    "schemas/constructs/v1/academy/academy.yaml": "",
+    "schemas/constructs/v1/academy/api.yml": API_NO_OPERATIONS,
+  }, (tempRepoRoot) => {
+    const outputPath = path.join(tempRepoRoot, "data.json");
+
+    // Simulate the committed file with docs_href on component only
+    const initial = [
+      { construct: "component", version: "v1", href: "/schemas/constructs/v1/component/component.yaml", docs_href: "https://docs.meshery.io/concepts/logical/components", core: false, extension: true },
+      { construct: "academy",   version: "v1", href: "/schemas/constructs/v1/academy/academy.yaml", core: false, extension: false },
+    ];
+    fs.writeFileSync(outputPath, JSON.stringify(initial));
+
+    // Simulate what CI does: read existing docs_href, regenerate, write
+    const docsHrefs = loadExistingDocsHrefs(outputPath);
+    const regenerated = buildSiteData(
+      tempRepoRoot,
+      [{ construct: "component", version: "v1" }, { construct: "academy", version: "v1" }],
+      docsHrefs
+    );
+    writeSiteData(outputPath, regenerated);
+
+    const result = JSON.parse(fs.readFileSync(outputPath, "utf8"));
+    assert.equal(result.find((e) => e.construct === "component").docs_href, "https://docs.meshery.io/concepts/logical/components");
+    assert.equal("docs_href" in result.find((e) => e.construct === "academy"), false);
   });
 });
 

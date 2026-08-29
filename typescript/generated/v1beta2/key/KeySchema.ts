@@ -68,7 +68,8 @@ const KeySchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -86,7 +87,7 @@ const KeySchema: Record<string, unknown> = {
             "description": "Get responses by pagesize. Deprecated alias of pageSize.",
             "deprecated": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -318,7 +319,8 @@ const KeySchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -336,7 +338,7 @@ const KeySchema: Record<string, unknown> = {
             "description": "Get responses by pagesize. Deprecated alias of pageSize.",
             "deprecated": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -794,7 +796,7 @@ const KeySchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/auth/key/{keyId}": {
+    "/api/auth/keys/{keyId}": {
       "get": {
         "x-internal": [
           "cloud"
@@ -1151,7 +1153,8 @@ const KeySchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer",
+          "minimum": 0
         }
       },
       "pageSize": {
@@ -1169,7 +1172,7 @@ const KeySchema: Record<string, unknown> = {
         "description": "Get responses by pagesize. Deprecated alias of pageSize.",
         "deprecated": true,
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "order": {

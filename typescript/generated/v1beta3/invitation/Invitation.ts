@@ -167,12 +167,12 @@ export interface components {
                  * Format: uuid
                  * @description Unique identifier for the invitation, also used as the invitation code.
                  */
-                id: string;
+                readonly id: string;
                 /**
                  * Format: uuid
                  * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
                  */
-                owner: string;
+                readonly owner: string;
                 /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                 isDefault?: boolean;
                 /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -180,21 +180,21 @@ export interface components {
                 /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                 description: string;
                 /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                emails: string[];
+                emails: string[] | null;
                 /**
                  * Format: uuid
                  * @description ID of the organization to which the user is invited.
                  */
-                orgId: string;
+                readonly orgId: string;
                 /**
                  * Format: date-time
                  * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                  */
-                expiresAt?: string;
+                expiresAt?: string | null;
                 /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                 quota?: number;
                 /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-                acceptedBy: string[];
+                readonly acceptedBy: string[];
                 /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
                 roles: string[];
                 /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
@@ -208,17 +208,17 @@ export interface components {
                  * Format: date-time
                  * @description Timestamp when the invitation was created.
                  */
-                createdAt: string;
+                readonly createdAt: string;
                 /**
                  * Format: date-time
                  * @description Timestamp when the invitation was last updated.
                  */
-                updatedAt: string;
+                readonly updatedAt: string;
                 /**
                  * Format: date-time
                  * @description Timestamp when the invitation was deleted, if applicable.
                  */
-                deletedAt: string;
+                readonly deletedAt: string | null;
             }[];
         };
         /** @description A signup request submitted for organization access. */
@@ -433,12 +433,12 @@ export interface components {
              * Format: uuid
              * @description Unique identifier for the invitation, also used as the invitation code.
              */
-            id: string;
+            readonly id: string;
             /**
              * Format: uuid
              * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
              */
-            owner: string;
+            readonly owner: string;
             /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
             isDefault?: boolean;
             /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -446,21 +446,21 @@ export interface components {
             /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
             description: string;
             /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-            emails: string[];
+            emails: string[] | null;
             /**
              * Format: uuid
              * @description ID of the organization to which the user is invited.
              */
-            orgId: string;
+            readonly orgId: string;
             /**
              * Format: date-time
              * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
              */
-            expiresAt?: string;
+            expiresAt?: string | null;
             /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
             quota?: number;
             /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-            acceptedBy: string[];
+            readonly acceptedBy: string[];
             /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
             roles: string[];
             /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
@@ -474,17 +474,17 @@ export interface components {
              * Format: date-time
              * @description Timestamp when the invitation was created.
              */
-            createdAt: string;
+            readonly createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the invitation was last updated.
              */
-            updatedAt: string;
+            readonly updatedAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the invitation was deleted, if applicable.
              */
-            deletedAt: string;
+            readonly deletedAt: string | null;
         };
     };
     responses: {
@@ -530,6 +530,28 @@ export interface components {
         orgId: string;
         /** @description The ID of the invitation. */
         invitationId: string;
+        /** @description The ID of the signup request being approved or denied. */
+        signupRequestId: string;
+        /** @description First name of the requester. */
+        signupFirstName: string;
+        /** @description Last name of the requester. */
+        signupLastName: string;
+        /** @description Email address of the requester. */
+        signupEmail: string;
+        /** @description Occupation of the requester. */
+        signupOccupation: string;
+        /** @description Organization of the requester. */
+        signupOrganization: string;
+        /** @description Requested role. */
+        signupRole: string;
+        /** @description The signup form variant the request originated from. */
+        signupFormType: string;
+        /** @description Status to record on the signup request. */
+        signupStatus: string;
+        /** @description Tracking task identifier associated with the request. */
+        signupTaskId: string;
+        /** @description Tracking task link associated with the request. */
+        signupTaskLink: string;
     };
     requestBodies: never;
     headers: never;
@@ -560,12 +582,12 @@ export interface operations {
                          * Format: uuid
                          * @description Unique identifier for the invitation, also used as the invitation code.
                          */
-                        id: string;
+                        readonly id: string;
                         /**
                          * Format: uuid
                          * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
                          */
-                        owner: string;
+                        readonly owner: string;
                         /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                         isDefault?: boolean;
                         /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -573,21 +595,21 @@ export interface operations {
                         /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                         description: string;
                         /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                        emails: string[];
+                        emails: string[] | null;
                         /**
                          * Format: uuid
                          * @description ID of the organization to which the user is invited.
                          */
-                        orgId: string;
+                        readonly orgId: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                          */
-                        expiresAt?: string;
+                        expiresAt?: string | null;
                         /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                         quota?: number;
                         /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-                        acceptedBy: string[];
+                        readonly acceptedBy: string[];
                         /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
                         roles: string[];
                         /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
@@ -601,17 +623,17 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the invitation was created.
                          */
-                        createdAt: string;
+                        readonly createdAt: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the invitation was last updated.
                          */
-                        updatedAt: string;
+                        readonly updatedAt: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the invitation was deleted, if applicable.
                          */
-                        deletedAt: string;
+                        readonly deletedAt: string | null;
                     };
                 };
             };
@@ -720,12 +742,12 @@ export interface operations {
                          * Format: uuid
                          * @description Unique identifier for the invitation, also used as the invitation code.
                          */
-                        id: string;
+                        readonly id: string;
                         /**
                          * Format: uuid
                          * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
                          */
-                        owner: string;
+                        readonly owner: string;
                         /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                         isDefault?: boolean;
                         /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -733,21 +755,21 @@ export interface operations {
                         /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                         description: string;
                         /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                        emails: string[];
+                        emails: string[] | null;
                         /**
                          * Format: uuid
                          * @description ID of the organization to which the user is invited.
                          */
-                        orgId: string;
+                        readonly orgId: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                          */
-                        expiresAt?: string;
+                        expiresAt?: string | null;
                         /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                         quota?: number;
                         /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-                        acceptedBy: string[];
+                        readonly acceptedBy: string[];
                         /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
                         roles: string[];
                         /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
@@ -761,17 +783,17 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the invitation was created.
                          */
-                        createdAt: string;
+                        readonly createdAt: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the invitation was last updated.
                          */
-                        updatedAt: string;
+                        readonly updatedAt: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the invitation was deleted, if applicable.
                          */
-                        deletedAt: string;
+                        readonly deletedAt: string | null;
                     };
                 };
             };
@@ -874,9 +896,9 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by pagesize */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */
@@ -909,12 +931,12 @@ export interface operations {
                              * Format: uuid
                              * @description Unique identifier for the invitation, also used as the invitation code.
                              */
-                            id: string;
+                            readonly id: string;
                             /**
                              * Format: uuid
                              * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
                              */
-                            owner: string;
+                            readonly owner: string;
                             /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                             isDefault?: boolean;
                             /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -922,21 +944,21 @@ export interface operations {
                             /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                             description: string;
                             /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                            emails: string[];
+                            emails: string[] | null;
                             /**
                              * Format: uuid
                              * @description ID of the organization to which the user is invited.
                              */
-                            orgId: string;
+                            readonly orgId: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                              */
-                            expiresAt?: string;
+                            expiresAt?: string | null;
                             /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                             quota?: number;
                             /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-                            acceptedBy: string[];
+                            readonly acceptedBy: string[];
                             /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
                             roles: string[];
                             /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
@@ -950,17 +972,17 @@ export interface operations {
                              * Format: date-time
                              * @description Timestamp when the invitation was created.
                              */
-                            createdAt: string;
+                            readonly createdAt: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the invitation was last updated.
                              */
-                            updatedAt: string;
+                            readonly updatedAt: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the invitation was deleted, if applicable.
                              */
-                            deletedAt: string;
+                            readonly deletedAt: string | null;
                         }[];
                     };
                 };
@@ -1058,12 +1080,12 @@ export interface operations {
                          * Format: uuid
                          * @description Unique identifier for the invitation, also used as the invitation code.
                          */
-                        id: string;
+                        readonly id: string;
                         /**
                          * Format: uuid
                          * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
                          */
-                        owner: string;
+                        readonly owner: string;
                         /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                         isDefault?: boolean;
                         /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -1071,21 +1093,21 @@ export interface operations {
                         /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                         description: string;
                         /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                        emails: string[];
+                        emails: string[] | null;
                         /**
                          * Format: uuid
                          * @description ID of the organization to which the user is invited.
                          */
-                        orgId: string;
+                        readonly orgId: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                          */
-                        expiresAt?: string;
+                        expiresAt?: string | null;
                         /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                         quota?: number;
                         /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-                        acceptedBy: string[];
+                        readonly acceptedBy: string[];
                         /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
                         roles: string[];
                         /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
@@ -1099,17 +1121,17 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the invitation was created.
                          */
-                        createdAt: string;
+                        readonly createdAt: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the invitation was last updated.
                          */
-                        updatedAt: string;
+                        readonly updatedAt: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the invitation was deleted, if applicable.
                          */
-                        deletedAt: string;
+                        readonly deletedAt: string | null;
                     };
                 };
             };
@@ -1165,12 +1187,12 @@ export interface operations {
                          * Format: uuid
                          * @description Unique identifier for the invitation, also used as the invitation code.
                          */
-                        id: string;
+                        readonly id: string;
                         /**
                          * Format: uuid
                          * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
                          */
-                        owner: string;
+                        readonly owner: string;
                         /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                         isDefault?: boolean;
                         /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -1178,21 +1200,21 @@ export interface operations {
                         /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                         description: string;
                         /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                        emails: string[];
+                        emails: string[] | null;
                         /**
                          * Format: uuid
                          * @description ID of the organization to which the user is invited.
                          */
-                        orgId: string;
+                        readonly orgId: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                          */
-                        expiresAt?: string;
+                        expiresAt?: string | null;
                         /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                         quota?: number;
                         /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-                        acceptedBy: string[];
+                        readonly acceptedBy: string[];
                         /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
                         roles: string[];
                         /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
@@ -1206,17 +1228,17 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the invitation was created.
                          */
-                        createdAt: string;
+                        readonly createdAt: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the invitation was last updated.
                          */
-                        updatedAt: string;
+                        readonly updatedAt: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the invitation was deleted, if applicable.
                          */
-                        deletedAt: string;
+                        readonly deletedAt: string | null;
                     };
                 };
             };
@@ -1329,9 +1351,9 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by pagesize */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */
@@ -1442,7 +1464,30 @@ export interface operations {
     };
     approveSignupRequest: {
         parameters: {
-            query?: never;
+            query: {
+                /** @description The ID of the signup request being approved or denied. */
+                id: string;
+                /** @description First name of the requester. */
+                firstName?: string;
+                /** @description Last name of the requester. */
+                lastName?: string;
+                /** @description Email address of the requester. */
+                email?: string;
+                /** @description Occupation of the requester. */
+                occupation?: string;
+                /** @description Organization of the requester. */
+                organization?: string;
+                /** @description Requested role. */
+                role?: string;
+                /** @description The signup form variant the request originated from. */
+                formType?: string;
+                /** @description Status to record on the signup request. */
+                status?: string;
+                /** @description Tracking task identifier associated with the request. */
+                taskId?: string;
+                /** @description Tracking task link associated with the request. */
+                taskLink?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1491,7 +1536,30 @@ export interface operations {
     };
     denySignupRequest: {
         parameters: {
-            query?: never;
+            query: {
+                /** @description The ID of the signup request being approved or denied. */
+                id: string;
+                /** @description First name of the requester. */
+                firstName?: string;
+                /** @description Last name of the requester. */
+                lastName?: string;
+                /** @description Email address of the requester. */
+                email?: string;
+                /** @description Occupation of the requester. */
+                occupation?: string;
+                /** @description Organization of the requester. */
+                organization?: string;
+                /** @description Requested role. */
+                role?: string;
+                /** @description The signup form variant the request originated from. */
+                formType?: string;
+                /** @description Status to record on the signup request. */
+                status?: string;
+                /** @description Tracking task identifier associated with the request. */
+                taskId?: string;
+                /** @description Tracking task link associated with the request. */
+                taskLink?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;

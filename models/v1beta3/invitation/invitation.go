@@ -209,3 +209,36 @@ type InvitationId = uuid.UUID
 
 // OrgId defines model for orgId.
 type OrgId = uuid.UUID
+
+// SignupEmail defines model for signupEmail.
+type SignupEmail = openapi_types.Email
+
+// SignupFirstName defines model for signupFirstName.
+type SignupFirstName = string
+
+// SignupFormType defines model for signupFormType.
+type SignupFormType = string
+
+// SignupLastName defines model for signupLastName.
+type SignupLastName = string
+
+// SignupOccupation defines model for signupOccupation.
+type SignupOccupation = string
+
+// SignupOrganization defines model for signupOrganization.
+type SignupOrganization = string
+
+// SignupRequestId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type SignupRequestId = Uuid
+
+// SignupRole defines model for signupRole.
+type SignupRole = string
+
+// SignupStatus defines model for signupStatus.
+type SignupStatus = string
+
+// SignupTaskId defines model for signupTaskId.
+type SignupTaskId = string
+
+// SignupTaskLink defines model for signupTaskLink.
+type SignupTaskLink = string

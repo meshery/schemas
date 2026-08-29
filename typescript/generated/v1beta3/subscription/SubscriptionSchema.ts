@@ -62,7 +62,8 @@ const SubscriptionSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -70,7 +71,7 @@ const SubscriptionSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by pagesize",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -458,6 +459,855 @@ const SubscriptionSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "operationId": "upsertSubscription",
+        "summary": "Update an existing subscription",
+        "description": "Updates the subscription named by `id` in the request body. Despite the historical \"upsert\" name, this route does not create: a body carrying no `id` is refused with 400. Subscriptions are minted from the payment processor's own response, either by the checkout flow (`POST /api/entitlement/subscriptions/create`) or by the payment-processor webhook, and neither of those reaches this route.\n\nTwo independent authorization gates guard this route and they answer differently. The route's own middleware runs first. It authorizes against the organization named by the route's `orgId` path parameter when the route has one, and otherwise against whichever organization the caller currently has *selected* - and this route has no `orgId` parameter, so here it is the selected one. A caller who is not a provider admin, an Organization Admin or an Organization Owner of that organization is refused with 403 before the body is read at all. The handler then re-checks against the *stored* subscription's own organization, which need not be the selected one: the caller must be a provider admin, or an Organization Admin or Organization Owner of that organization, and a caller who is not receives 404 - the same answer an absent subscription gives, and deliberately indistinguishable from it, so that the route cannot be used to discover which subscription IDs exist.\n\nThe fields the payment processor and the webhook own are pinned to the stored row before the write, and any client-supplied value for them is ignored rather than honoured: `orgId`, `billingId`, `status`, `startDate` and `endDate`. The writable surface is `planId` and `quantity`, and the write replaces both - a body that omits one stores that field's zero value rather than preserving the stored one, so send both on every call.\n\nThe 200 body is a `SubscriptionPage` carrying the single updated subscription (`page` 0, `pageSize` 1, `totalCount` 1), not a bare subscription object.",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Body of an update to an existing subscription (`POST /api/entitlement/subscriptions`).\n\nThis is an update payload, never a create payload: `id` names the subscription to update and the server refuses a body without one. It is also a full replacement of the writable surface rather than a partial merge, which is why `planId` and `quantity` are both required - omitting either stores its zero value.\n\nThe fields the payment processor and the webhook own - `orgId`, `billingId`, `status`, `startDate` and `endDate` - are deliberately absent: the server pins each of them to the stored row and ignores any value supplied for them.",
+                "required": [
+                  "planId",
+                  "quantity"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  },
+                  "planId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    },
+                    "x-go-name": "PlanID"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "description": "Number of units subscribed (eg number of users).",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Subscription updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated list of subscriptions.",
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "subscriptions"
+                  ],
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0,
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize"
+                      }
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount"
+                      }
+                    },
+                    "subscriptions": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "Subscription",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "Subscription entity schema.",
+                        "required": [
+                          "id",
+                          "orgId",
+                          "planId",
+                          "billingId",
+                          "status",
+                          "quantity"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            }
+                          },
+                          "orgId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "OrgID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "org_id",
+                              "json": "orgId"
+                            }
+                          },
+                          "planId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "PlanID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "plan_id",
+                              "json": "planId"
+                            }
+                          },
+                          "plan": {
+                            "description": "Eager-loaded plan associated with this subscription.",
+                            "x-go-type": "planv1beta3.Plan",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1beta3/plan",
+                              "name": "planv1beta3"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "belongs_to": "plans",
+                              "fk_id": "PlanID",
+                              "json": "plan,omitempty"
+                            },
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "name",
+                              "cadence",
+                              "unit",
+                              "pricePerUnit",
+                              "minimumUnits",
+                              "currency"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                },
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id",
+                                  "csv": "id"
+                                }
+                              },
+                              "name": {
+                                "description": "Display name of the plan.",
+                                "x-go-type": "PlanName",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name",
+                                  "csv": "name"
+                                },
+                                "type": "string",
+                                "x-enum-casing-exempt": true,
+                                "enum": [
+                                  "Free",
+                                  "Team Designer",
+                                  "Team Operator",
+                                  "Enterprise"
+                                ]
+                              },
+                              "cadence": {
+                                "description": "Billing cadence for the plan (monthly, annually, or none).",
+                                "x-go-type": "PlanCadence",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "cadence",
+                                  "json": "cadence",
+                                  "csv": "cadence"
+                                },
+                                "type": "string",
+                                "enum": [
+                                  "none",
+                                  "monthly",
+                                  "annually"
+                                ]
+                              },
+                              "unit": {
+                                "description": "Unit of consumption this plan charges against (e.g. user).",
+                                "x-go-type": "PlanUnit",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "unit",
+                                  "json": "unit",
+                                  "csv": "unit"
+                                },
+                                "type": "string",
+                                "enum": [
+                                  "user",
+                                  "free"
+                                ]
+                              },
+                              "minimumUnits": {
+                                "type": "integer",
+                                "description": "Minimum number of units required for the plan.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "minimum_units",
+                                  "json": "minimumUnits",
+                                  "csv": "minimum_units"
+                                },
+                                "minimum": 0
+                              },
+                              "pricePerUnit": {
+                                "type": "number",
+                                "description": "Price per unit of the plan.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "price_per_unit",
+                                  "json": "pricePerUnit",
+                                  "csv": "price_per_unit"
+                                },
+                                "minimum": 0
+                              },
+                              "currency": {
+                                "description": "Currency in which the plan is priced.",
+                                "x-go-type": "Currency",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "currency",
+                                  "json": "currency",
+                                  "csv": "currency"
+                                },
+                                "type": "string",
+                                "enum": [
+                                  "usd"
+                                ]
+                              }
+                            }
+                          },
+                          "quantity": {
+                            "type": "integer",
+                            "description": "Number of units subscribed (eg number of users).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "quantity",
+                              "json": "quantity"
+                            },
+                            "minimum": 0
+                          },
+                          "startDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the subscription period started.",
+                            "x-go-type": "time.Time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "start_date",
+                              "json": "startDate"
+                            }
+                          },
+                          "endDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the current subscription period ends.",
+                            "x-go-type": "time.Time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "end_date",
+                              "json": "endDate"
+                            }
+                          },
+                          "status": {
+                            "description": "Current status of the subscription (e.g. active, past_due, canceled).",
+                            "x-go-type": "SubscriptionStatus",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "status",
+                              "json": "status"
+                            },
+                            "type": "string",
+                            "enum": [
+                              "incomplete",
+                              "incomplete_expired",
+                              "trialing",
+                              "active",
+                              "past_due",
+                              "canceled",
+                              "unpaid"
+                            ],
+                            "x-enumDescriptions": {
+                              "incomplete": "The subscription has been created, but the initial payment is pending. It may transition to 'active' or 'incomplete_expired'.",
+                              "incomplete_expired": "The subscription was created but never activated due to failed initial payment. It is now expired.",
+                              "trialing": "The subscription is currently in a trial period before the first payment is due.",
+                              "active": "The subscription is active, and billing is functioning normally.",
+                              "past_due": "The latest payment attempt failed, but the subscription remains active. Stripe may retry the charge.",
+                              "canceled": "The subscription has been canceled and will no longer generate invoices.",
+                              "unpaid": "The subscription is still technically active but has unpaid invoices and is no longer generating new invoices."
+                            }
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the subscription was created.",
+                            "x-go-type": "time.Time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "json": "createdAt"
+                            }
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the subscription was last updated.",
+                            "x-go-type": "time.Time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "json": "updatedAt"
+                            }
+                          },
+                          "deletedAt": {
+                            "description": "Timestamp when the subscription was soft-deleted, if applicable.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type": "sql.NullTime",
+                            "x-go-type-import": {
+                              "path": "database/sql"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "billingId": {
+                            "type": "string",
+                            "description": "Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe).",
+                            "x-id-format": "external",
+                            "x-go-name": "BillingID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "billing_id",
+                              "json": "billingId"
+                            },
+                            "maxLength": 500,
+                            "pattern": "^[A-Za-z0-9_\\-]+$"
+                          }
+                        }
+                      },
+                      "description": "Subscriptions returned on the current page."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/entitlement/subscriptions/{subscriptionId}": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "operationId": "getSubscriptionById",
+        "summary": "Read a single subscription",
+        "description": "Returns the subscription named by `subscriptionId`.\n\nAuthorization is evaluated against the subscription's own organization, the same bar the org-scoped list route (`GET /api/entitlement/subscriptions`) enforces over the same data: the caller must be a provider admin, or an Organization Admin or Organization Owner of that organization. A caller who is not receives 404, deliberately indistinguishable from an absent subscription, so that the route cannot be used to enumerate subscription IDs.\n\nUnlike the update route, this one is registered without any organization-scoped middleware, so it never answers 403: every authorization denial, whether \"not yours\" or \"not there\", is that same 404. A malformed request still answers 400 and an unauthenticated one 401, as below.\n\nA `subscriptionId` that is not a UUID is refused with 400, and an unauthenticated caller with 401.\n\nThe 200 body is a `SubscriptionPage` carrying the single subscription (`page` 0, `pageSize` 1, `totalCount` 1), not a bare subscription object.",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "in": "path",
+            "required": true,
+            "description": "Subscription ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated list of subscriptions.",
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "subscriptions"
+                  ],
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0,
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize"
+                      }
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount"
+                      }
+                    },
+                    "subscriptions": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "Subscription",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "Subscription entity schema.",
+                        "required": [
+                          "id",
+                          "orgId",
+                          "planId",
+                          "billingId",
+                          "status",
+                          "quantity"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            }
+                          },
+                          "orgId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "OrgID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "org_id",
+                              "json": "orgId"
+                            }
+                          },
+                          "planId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "PlanID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "plan_id",
+                              "json": "planId"
+                            }
+                          },
+                          "plan": {
+                            "description": "Eager-loaded plan associated with this subscription.",
+                            "x-go-type": "planv1beta3.Plan",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1beta3/plan",
+                              "name": "planv1beta3"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "belongs_to": "plans",
+                              "fk_id": "PlanID",
+                              "json": "plan,omitempty"
+                            },
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "name",
+                              "cadence",
+                              "unit",
+                              "pricePerUnit",
+                              "minimumUnits",
+                              "currency"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                },
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id",
+                                  "csv": "id"
+                                }
+                              },
+                              "name": {
+                                "description": "Display name of the plan.",
+                                "x-go-type": "PlanName",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name",
+                                  "csv": "name"
+                                },
+                                "type": "string",
+                                "x-enum-casing-exempt": true,
+                                "enum": [
+                                  "Free",
+                                  "Team Designer",
+                                  "Team Operator",
+                                  "Enterprise"
+                                ]
+                              },
+                              "cadence": {
+                                "description": "Billing cadence for the plan (monthly, annually, or none).",
+                                "x-go-type": "PlanCadence",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "cadence",
+                                  "json": "cadence",
+                                  "csv": "cadence"
+                                },
+                                "type": "string",
+                                "enum": [
+                                  "none",
+                                  "monthly",
+                                  "annually"
+                                ]
+                              },
+                              "unit": {
+                                "description": "Unit of consumption this plan charges against (e.g. user).",
+                                "x-go-type": "PlanUnit",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "unit",
+                                  "json": "unit",
+                                  "csv": "unit"
+                                },
+                                "type": "string",
+                                "enum": [
+                                  "user",
+                                  "free"
+                                ]
+                              },
+                              "minimumUnits": {
+                                "type": "integer",
+                                "description": "Minimum number of units required for the plan.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "minimum_units",
+                                  "json": "minimumUnits",
+                                  "csv": "minimum_units"
+                                },
+                                "minimum": 0
+                              },
+                              "pricePerUnit": {
+                                "type": "number",
+                                "description": "Price per unit of the plan.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "price_per_unit",
+                                  "json": "pricePerUnit",
+                                  "csv": "price_per_unit"
+                                },
+                                "minimum": 0
+                              },
+                              "currency": {
+                                "description": "Currency in which the plan is priced.",
+                                "x-go-type": "Currency",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "currency",
+                                  "json": "currency",
+                                  "csv": "currency"
+                                },
+                                "type": "string",
+                                "enum": [
+                                  "usd"
+                                ]
+                              }
+                            }
+                          },
+                          "quantity": {
+                            "type": "integer",
+                            "description": "Number of units subscribed (eg number of users).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "quantity",
+                              "json": "quantity"
+                            },
+                            "minimum": 0
+                          },
+                          "startDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the subscription period started.",
+                            "x-go-type": "time.Time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "start_date",
+                              "json": "startDate"
+                            }
+                          },
+                          "endDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the current subscription period ends.",
+                            "x-go-type": "time.Time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "end_date",
+                              "json": "endDate"
+                            }
+                          },
+                          "status": {
+                            "description": "Current status of the subscription (e.g. active, past_due, canceled).",
+                            "x-go-type": "SubscriptionStatus",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "status",
+                              "json": "status"
+                            },
+                            "type": "string",
+                            "enum": [
+                              "incomplete",
+                              "incomplete_expired",
+                              "trialing",
+                              "active",
+                              "past_due",
+                              "canceled",
+                              "unpaid"
+                            ],
+                            "x-enumDescriptions": {
+                              "incomplete": "The subscription has been created, but the initial payment is pending. It may transition to 'active' or 'incomplete_expired'.",
+                              "incomplete_expired": "The subscription was created but never activated due to failed initial payment. It is now expired.",
+                              "trialing": "The subscription is currently in a trial period before the first payment is due.",
+                              "active": "The subscription is active, and billing is functioning normally.",
+                              "past_due": "The latest payment attempt failed, but the subscription remains active. Stripe may retry the charge.",
+                              "canceled": "The subscription has been canceled and will no longer generate invoices.",
+                              "unpaid": "The subscription is still technically active but has unpaid invoices and is no longer generating new invoices."
+                            }
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the subscription was created.",
+                            "x-go-type": "time.Time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "json": "createdAt"
+                            }
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the subscription was last updated.",
+                            "x-go-type": "time.Time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "json": "updatedAt"
+                            }
+                          },
+                          "deletedAt": {
+                            "description": "Timestamp when the subscription was soft-deleted, if applicable.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type": "sql.NullTime",
+                            "x-go-type-import": {
+                              "path": "database/sql"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "billingId": {
+                            "type": "string",
+                            "description": "Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe).",
+                            "x-id-format": "external",
+                            "x-go-name": "BillingID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "billing_id",
+                              "json": "billingId"
+                            },
+                            "maxLength": 500,
+                            "pattern": "^[A-Za-z0-9_\\-]+$"
+                          }
+                        }
+                      },
+                      "description": "Subscriptions returned on the current page."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -856,6 +1706,16 @@ const SubscriptionSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -988,6 +1848,16 @@ const SubscriptionSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1376,6 +2246,16 @@ const SubscriptionSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -1480,6 +2360,16 @@ const SubscriptionSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1593,6 +2483,16 @@ const SubscriptionSchema: Record<string, unknown> = {
           }
         }
       },
+      "403": {
+        "description": "Forbidden",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "404": {
         "description": "Result not found",
         "content": {
@@ -1637,7 +2537,8 @@ const SubscriptionSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer",
+          "minimum": 0
         }
       },
       "pagesize": {
@@ -1645,7 +2546,7 @@ const SubscriptionSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by pagesize",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "pagesizeWithAll": {
@@ -1721,6 +2622,40 @@ const SubscriptionSchema: Record<string, unknown> = {
               "paypal",
               "braintree"
             ]
+          }
+        }
+      },
+      "SubscriptionUpdatePayload": {
+        "type": "object",
+        "description": "Body of an update to an existing subscription (`POST /api/entitlement/subscriptions`).\n\nThis is an update payload, never a create payload: `id` names the subscription to update and the server refuses a body without one. It is also a full replacement of the writable surface rather than a partial merge, which is why `planId` and `quantity` are both required - omitting either stores its zero value.\n\nThe fields the payment processor and the webhook own - `orgId`, `billingId`, `status`, `startDate` and `endDate` - are deliberately absent: the server pins each of them to the stored row and ignores any value supplied for them.",
+        "required": [
+          "planId",
+          "quantity"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "planId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "PlanID"
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Number of units subscribed (eg number of users).",
+            "minimum": 0
           }
         }
       },

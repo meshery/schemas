@@ -80,6 +80,7 @@ const InvitationSchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "description": "Unique identifier for the invitation, also used as the invitation code.",
+                      "readOnly": true,
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
@@ -94,6 +95,7 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "owner": {
                       "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
+                      "readOnly": true,
                       "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
                         "db": "owner",
@@ -127,11 +129,13 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "emails": {
                       "type": "array",
+                      "nullable": true,
                       "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                       "x-go-type": "pq.StringArray",
                       "x-go-type-import": {
                         "path": "github.com/lib/pq"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "string",
                         "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -141,6 +145,7 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "orgId": {
                       "description": "ID of the organization to which the user is invited.",
+                      "readOnly": true,
                       "x-go-name": "OrgID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
@@ -156,6 +161,7 @@ const InvitationSchema: Record<string, unknown> = {
                     "expiresAt": {
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
@@ -169,11 +175,13 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "acceptedBy": {
                       "type": "array",
+                      "readOnly": true,
                       "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
                       "x-go-type": "pq.StringArray",
                       "x-go-type-import": {
                         "path": "github.com/lib/pq"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "string"
                       },
@@ -218,7 +226,9 @@ const InvitationSchema: Record<string, unknown> = {
                     "createdAt": {
                       "type": "string",
                       "format": "date-time",
+                      "readOnly": true,
                       "description": "Timestamp when the invitation was created.",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
                         "json": "createdAt"
@@ -227,7 +237,9 @@ const InvitationSchema: Record<string, unknown> = {
                     "updatedAt": {
                       "type": "string",
                       "format": "date-time",
+                      "readOnly": true,
                       "description": "Timestamp when the invitation was last updated.",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
                         "json": "updatedAt"
@@ -236,8 +248,11 @@ const InvitationSchema: Record<string, unknown> = {
                     "deletedAt": {
                       "type": "string",
                       "format": "date-time",
+                      "readOnly": true,
+                      "nullable": true,
                       "description": "Timestamp when the invitation was deleted, if applicable.",
                       "x-go-type": "core.NullTime",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
                       },
@@ -548,6 +563,7 @@ const InvitationSchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "description": "Unique identifier for the invitation, also used as the invitation code.",
+                      "readOnly": true,
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
@@ -562,6 +578,7 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "owner": {
                       "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
+                      "readOnly": true,
                       "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
                         "db": "owner",
@@ -595,11 +612,13 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "emails": {
                       "type": "array",
+                      "nullable": true,
                       "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                       "x-go-type": "pq.StringArray",
                       "x-go-type-import": {
                         "path": "github.com/lib/pq"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "string",
                         "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -609,6 +628,7 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "orgId": {
                       "description": "ID of the organization to which the user is invited.",
+                      "readOnly": true,
                       "x-go-name": "OrgID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
@@ -624,6 +644,7 @@ const InvitationSchema: Record<string, unknown> = {
                     "expiresAt": {
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
@@ -637,11 +658,13 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "acceptedBy": {
                       "type": "array",
+                      "readOnly": true,
                       "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
                       "x-go-type": "pq.StringArray",
                       "x-go-type-import": {
                         "path": "github.com/lib/pq"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "string"
                       },
@@ -686,7 +709,9 @@ const InvitationSchema: Record<string, unknown> = {
                     "createdAt": {
                       "type": "string",
                       "format": "date-time",
+                      "readOnly": true,
                       "description": "Timestamp when the invitation was created.",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
                         "json": "createdAt"
@@ -695,7 +720,9 @@ const InvitationSchema: Record<string, unknown> = {
                     "updatedAt": {
                       "type": "string",
                       "format": "date-time",
+                      "readOnly": true,
                       "description": "Timestamp when the invitation was last updated.",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
                         "json": "updatedAt"
@@ -704,8 +731,11 @@ const InvitationSchema: Record<string, unknown> = {
                     "deletedAt": {
                       "type": "string",
                       "format": "date-time",
+                      "readOnly": true,
+                      "nullable": true,
                       "description": "Timestamp when the invitation was deleted, if applicable.",
                       "x-go-type": "core.NullTime",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
                       },
@@ -778,7 +808,8 @@ const InvitationSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -786,7 +817,7 @@ const InvitationSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by pagesize",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -871,6 +902,7 @@ const InvitationSchema: Record<string, unknown> = {
                         "properties": {
                           "id": {
                             "description": "Unique identifier for the invitation, also used as the invitation code.",
+                            "readOnly": true,
                             "x-go-name": "ID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "id",
@@ -885,6 +917,7 @@ const InvitationSchema: Record<string, unknown> = {
                           },
                           "owner": {
                             "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
+                            "readOnly": true,
                             "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
                               "db": "owner",
@@ -918,11 +951,13 @@ const InvitationSchema: Record<string, unknown> = {
                           },
                           "emails": {
                             "type": "array",
+                            "nullable": true,
                             "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                             "x-go-type": "pq.StringArray",
                             "x-go-type-import": {
                               "path": "github.com/lib/pq"
                             },
+                            "x-go-type-skip-optional-pointer": true,
                             "items": {
                               "type": "string",
                               "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -932,6 +967,7 @@ const InvitationSchema: Record<string, unknown> = {
                           },
                           "orgId": {
                             "description": "ID of the organization to which the user is invited.",
+                            "readOnly": true,
                             "x-go-name": "OrgID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "org_id",
@@ -947,6 +983,7 @@ const InvitationSchema: Record<string, unknown> = {
                           "expiresAt": {
                             "type": "string",
                             "format": "date-time",
+                            "nullable": true,
                             "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "expires_at",
@@ -960,11 +997,13 @@ const InvitationSchema: Record<string, unknown> = {
                           },
                           "acceptedBy": {
                             "type": "array",
+                            "readOnly": true,
                             "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
                             "x-go-type": "pq.StringArray",
                             "x-go-type-import": {
                               "path": "github.com/lib/pq"
                             },
+                            "x-go-type-skip-optional-pointer": true,
                             "items": {
                               "type": "string"
                             },
@@ -1009,7 +1048,9 @@ const InvitationSchema: Record<string, unknown> = {
                           "createdAt": {
                             "type": "string",
                             "format": "date-time",
+                            "readOnly": true,
                             "description": "Timestamp when the invitation was created.",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at",
                               "json": "createdAt"
@@ -1018,7 +1059,9 @@ const InvitationSchema: Record<string, unknown> = {
                           "updatedAt": {
                             "type": "string",
                             "format": "date-time",
+                            "readOnly": true,
                             "description": "Timestamp when the invitation was last updated.",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at",
                               "json": "updatedAt"
@@ -1027,8 +1070,11 @@ const InvitationSchema: Record<string, unknown> = {
                           "deletedAt": {
                             "type": "string",
                             "format": "date-time",
+                            "readOnly": true,
+                            "nullable": true,
                             "description": "Timestamp when the invitation was deleted, if applicable.",
                             "x-go-type": "core.NullTime",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/core"
                             },
@@ -1258,6 +1304,7 @@ const InvitationSchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "description": "Unique identifier for the invitation, also used as the invitation code.",
+                      "readOnly": true,
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
@@ -1272,6 +1319,7 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "owner": {
                       "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
+                      "readOnly": true,
                       "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
                         "db": "owner",
@@ -1305,11 +1353,13 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "emails": {
                       "type": "array",
+                      "nullable": true,
                       "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                       "x-go-type": "pq.StringArray",
                       "x-go-type-import": {
                         "path": "github.com/lib/pq"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "string",
                         "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -1319,6 +1369,7 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "orgId": {
                       "description": "ID of the organization to which the user is invited.",
+                      "readOnly": true,
                       "x-go-name": "OrgID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
@@ -1334,6 +1385,7 @@ const InvitationSchema: Record<string, unknown> = {
                     "expiresAt": {
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
@@ -1347,11 +1399,13 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "acceptedBy": {
                       "type": "array",
+                      "readOnly": true,
                       "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
                       "x-go-type": "pq.StringArray",
                       "x-go-type-import": {
                         "path": "github.com/lib/pq"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "string"
                       },
@@ -1396,7 +1450,9 @@ const InvitationSchema: Record<string, unknown> = {
                     "createdAt": {
                       "type": "string",
                       "format": "date-time",
+                      "readOnly": true,
                       "description": "Timestamp when the invitation was created.",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
                         "json": "createdAt"
@@ -1405,7 +1461,9 @@ const InvitationSchema: Record<string, unknown> = {
                     "updatedAt": {
                       "type": "string",
                       "format": "date-time",
+                      "readOnly": true,
                       "description": "Timestamp when the invitation was last updated.",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
                         "json": "updatedAt"
@@ -1414,8 +1472,11 @@ const InvitationSchema: Record<string, unknown> = {
                     "deletedAt": {
                       "type": "string",
                       "format": "date-time",
+                      "readOnly": true,
+                      "nullable": true,
                       "description": "Timestamp when the invitation was deleted, if applicable.",
                       "x-go-type": "core.NullTime",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
                       },
@@ -1511,6 +1572,7 @@ const InvitationSchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "description": "Unique identifier for the invitation, also used as the invitation code.",
+                      "readOnly": true,
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
@@ -1525,6 +1587,7 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "owner": {
                       "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
+                      "readOnly": true,
                       "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
                         "db": "owner",
@@ -1558,11 +1621,13 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "emails": {
                       "type": "array",
+                      "nullable": true,
                       "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                       "x-go-type": "pq.StringArray",
                       "x-go-type-import": {
                         "path": "github.com/lib/pq"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "string",
                         "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -1572,6 +1637,7 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "orgId": {
                       "description": "ID of the organization to which the user is invited.",
+                      "readOnly": true,
                       "x-go-name": "OrgID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
@@ -1587,6 +1653,7 @@ const InvitationSchema: Record<string, unknown> = {
                     "expiresAt": {
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
@@ -1600,11 +1667,13 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "acceptedBy": {
                       "type": "array",
+                      "readOnly": true,
                       "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
                       "x-go-type": "pq.StringArray",
                       "x-go-type-import": {
                         "path": "github.com/lib/pq"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "string"
                       },
@@ -1649,7 +1718,9 @@ const InvitationSchema: Record<string, unknown> = {
                     "createdAt": {
                       "type": "string",
                       "format": "date-time",
+                      "readOnly": true,
                       "description": "Timestamp when the invitation was created.",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
                         "json": "createdAt"
@@ -1658,7 +1729,9 @@ const InvitationSchema: Record<string, unknown> = {
                     "updatedAt": {
                       "type": "string",
                       "format": "date-time",
+                      "readOnly": true,
                       "description": "Timestamp when the invitation was last updated.",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
                         "json": "updatedAt"
@@ -1667,8 +1740,11 @@ const InvitationSchema: Record<string, unknown> = {
                     "deletedAt": {
                       "type": "string",
                       "format": "date-time",
+                      "readOnly": true,
+                      "nullable": true,
                       "description": "Timestamp when the invitation was deleted, if applicable.",
                       "x-go-type": "core.NullTime",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
                       },
@@ -1894,7 +1970,8 @@ const InvitationSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -1902,7 +1979,7 @@ const InvitationSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by pagesize",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -2010,6 +2087,114 @@ const InvitationSchema: Record<string, unknown> = {
           "Invitation"
         ],
         "summary": "Approve a signup request",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "The ID of the signup request being approved or denied.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          },
+          {
+            "name": "firstName",
+            "in": "query",
+            "required": false,
+            "description": "First name of the requester.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "required": false,
+            "description": "Last name of the requester.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "description": "Email address of the requester.",
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          {
+            "name": "occupation",
+            "in": "query",
+            "required": false,
+            "description": "Occupation of the requester.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization",
+            "in": "query",
+            "required": false,
+            "description": "Organization of the requester.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "required": false,
+            "description": "Requested role.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "formType",
+            "in": "query",
+            "required": false,
+            "description": "The signup form variant the request originated from.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Status to record on the signup request.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "taskId",
+            "in": "query",
+            "required": false,
+            "description": "Tracking task identifier associated with the request.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "taskLink",
+            "in": "query",
+            "required": false,
+            "description": "Tracking task link associated with the request.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Signup request approved",
@@ -2065,6 +2250,114 @@ const InvitationSchema: Record<string, unknown> = {
           "Invitation"
         ],
         "summary": "Deny a signup request",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "The ID of the signup request being approved or denied.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          },
+          {
+            "name": "firstName",
+            "in": "query",
+            "required": false,
+            "description": "First name of the requester.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "required": false,
+            "description": "Last name of the requester.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "description": "Email address of the requester.",
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          {
+            "name": "occupation",
+            "in": "query",
+            "required": false,
+            "description": "Occupation of the requester.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization",
+            "in": "query",
+            "required": false,
+            "description": "Organization of the requester.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "required": false,
+            "description": "Requested role.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "formType",
+            "in": "query",
+            "required": false,
+            "description": "The signup form variant the request originated from.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Status to record on the signup request.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "taskId",
+            "in": "query",
+            "required": false,
+            "description": "Tracking task identifier associated with the request.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "taskLink",
+            "in": "query",
+            "required": false,
+            "description": "Tracking task link associated with the request.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Signup request denied",
@@ -2332,6 +2625,112 @@ const InvitationSchema: Record<string, unknown> = {
           "type": "string",
           "format": "uuid"
         }
+      },
+      "signupRequestId": {
+        "name": "id",
+        "in": "query",
+        "required": true,
+        "description": "The ID of the signup request being approved or denied.",
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+          "x-go-type": "uuid.UUID",
+          "x-go-type-import": {
+            "path": "github.com/gofrs/uuid"
+          }
+        }
+      },
+      "signupFirstName": {
+        "name": "firstName",
+        "in": "query",
+        "required": false,
+        "description": "First name of the requester.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "signupLastName": {
+        "name": "lastName",
+        "in": "query",
+        "required": false,
+        "description": "Last name of the requester.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "signupEmail": {
+        "name": "email",
+        "in": "query",
+        "required": false,
+        "description": "Email address of the requester.",
+        "schema": {
+          "type": "string",
+          "format": "email"
+        }
+      },
+      "signupOccupation": {
+        "name": "occupation",
+        "in": "query",
+        "required": false,
+        "description": "Occupation of the requester.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "signupOrganization": {
+        "name": "organization",
+        "in": "query",
+        "required": false,
+        "description": "Organization of the requester.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "signupRole": {
+        "name": "role",
+        "in": "query",
+        "required": false,
+        "description": "Requested role.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "signupFormType": {
+        "name": "formType",
+        "in": "query",
+        "required": false,
+        "description": "The signup form variant the request originated from.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "signupStatus": {
+        "name": "status",
+        "in": "query",
+        "required": false,
+        "description": "Status to record on the signup request.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "signupTaskId": {
+        "name": "taskId",
+        "in": "query",
+        "required": false,
+        "description": "Tracking task identifier associated with the request.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "signupTaskLink": {
+        "name": "taskLink",
+        "in": "query",
+        "required": false,
+        "description": "Tracking task link associated with the request.",
+        "schema": {
+          "type": "string"
+        }
       }
     },
     "responses": {
@@ -2445,6 +2844,7 @@ const InvitationSchema: Record<string, unknown> = {
               "properties": {
                 "id": {
                   "description": "Unique identifier for the invitation, also used as the invitation code.",
+                  "readOnly": true,
                   "x-go-name": "ID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
@@ -2459,6 +2859,7 @@ const InvitationSchema: Record<string, unknown> = {
                 },
                 "owner": {
                   "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
+                  "readOnly": true,
                   "x-go-name": "Owner",
                   "x-oapi-codegen-extra-tags": {
                     "db": "owner",
@@ -2492,11 +2893,13 @@ const InvitationSchema: Record<string, unknown> = {
                 },
                 "emails": {
                   "type": "array",
+                  "nullable": true,
                   "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                   "x-go-type": "pq.StringArray",
                   "x-go-type-import": {
                     "path": "github.com/lib/pq"
                   },
+                  "x-go-type-skip-optional-pointer": true,
                   "items": {
                     "type": "string",
                     "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -2506,6 +2909,7 @@ const InvitationSchema: Record<string, unknown> = {
                 },
                 "orgId": {
                   "description": "ID of the organization to which the user is invited.",
+                  "readOnly": true,
                   "x-go-name": "OrgID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "org_id",
@@ -2521,6 +2925,7 @@ const InvitationSchema: Record<string, unknown> = {
                 "expiresAt": {
                   "type": "string",
                   "format": "date-time",
+                  "nullable": true,
                   "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                   "x-oapi-codegen-extra-tags": {
                     "db": "expires_at",
@@ -2534,11 +2939,13 @@ const InvitationSchema: Record<string, unknown> = {
                 },
                 "acceptedBy": {
                   "type": "array",
+                  "readOnly": true,
                   "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
                   "x-go-type": "pq.StringArray",
                   "x-go-type-import": {
                     "path": "github.com/lib/pq"
                   },
+                  "x-go-type-skip-optional-pointer": true,
                   "items": {
                     "type": "string"
                   },
@@ -2583,7 +2990,9 @@ const InvitationSchema: Record<string, unknown> = {
                 "createdAt": {
                   "type": "string",
                   "format": "date-time",
+                  "readOnly": true,
                   "description": "Timestamp when the invitation was created.",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "created_at",
                     "json": "createdAt"
@@ -2592,7 +3001,9 @@ const InvitationSchema: Record<string, unknown> = {
                 "updatedAt": {
                   "type": "string",
                   "format": "date-time",
+                  "readOnly": true,
                   "description": "Timestamp when the invitation was last updated.",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at",
                     "json": "updatedAt"
@@ -2601,8 +3012,11 @@ const InvitationSchema: Record<string, unknown> = {
                 "deletedAt": {
                   "type": "string",
                   "format": "date-time",
+                  "readOnly": true,
+                  "nullable": true,
                   "description": "Timestamp when the invitation was deleted, if applicable.",
                   "x-go-type": "core.NullTime",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-go-type-import": {
                     "path": "github.com/meshery/schemas/models/core"
                   },
@@ -3275,6 +3689,7 @@ const InvitationSchema: Record<string, unknown> = {
         "properties": {
           "id": {
             "description": "Unique identifier for the invitation, also used as the invitation code.",
+            "readOnly": true,
             "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
               "db": "id",
@@ -3289,6 +3704,7 @@ const InvitationSchema: Record<string, unknown> = {
           },
           "owner": {
             "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
+            "readOnly": true,
             "x-go-name": "Owner",
             "x-oapi-codegen-extra-tags": {
               "db": "owner",
@@ -3322,11 +3738,13 @@ const InvitationSchema: Record<string, unknown> = {
           },
           "emails": {
             "type": "array",
+            "nullable": true,
             "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
             "x-go-type": "pq.StringArray",
             "x-go-type-import": {
               "path": "github.com/lib/pq"
             },
+            "x-go-type-skip-optional-pointer": true,
             "items": {
               "type": "string",
               "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -3336,6 +3754,7 @@ const InvitationSchema: Record<string, unknown> = {
           },
           "orgId": {
             "description": "ID of the organization to which the user is invited.",
+            "readOnly": true,
             "x-go-name": "OrgID",
             "x-oapi-codegen-extra-tags": {
               "db": "org_id",
@@ -3351,6 +3770,7 @@ const InvitationSchema: Record<string, unknown> = {
           "expiresAt": {
             "type": "string",
             "format": "date-time",
+            "nullable": true,
             "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
             "x-oapi-codegen-extra-tags": {
               "db": "expires_at",
@@ -3364,11 +3784,13 @@ const InvitationSchema: Record<string, unknown> = {
           },
           "acceptedBy": {
             "type": "array",
+            "readOnly": true,
             "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
             "x-go-type": "pq.StringArray",
             "x-go-type-import": {
               "path": "github.com/lib/pq"
             },
+            "x-go-type-skip-optional-pointer": true,
             "items": {
               "type": "string"
             },
@@ -3413,7 +3835,9 @@ const InvitationSchema: Record<string, unknown> = {
           "createdAt": {
             "type": "string",
             "format": "date-time",
+            "readOnly": true,
             "description": "Timestamp when the invitation was created.",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "created_at",
               "json": "createdAt"
@@ -3422,7 +3846,9 @@ const InvitationSchema: Record<string, unknown> = {
           "updatedAt": {
             "type": "string",
             "format": "date-time",
+            "readOnly": true,
             "description": "Timestamp when the invitation was last updated.",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "updated_at",
               "json": "updatedAt"
@@ -3431,8 +3857,11 @@ const InvitationSchema: Record<string, unknown> = {
           "deletedAt": {
             "type": "string",
             "format": "date-time",
+            "readOnly": true,
+            "nullable": true,
             "description": "Timestamp when the invitation was deleted, if applicable.",
             "x-go-type": "core.NullTime",
+            "x-go-type-skip-optional-pointer": true,
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/core"
             },

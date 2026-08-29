@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/events/{eventId}": {
+    "/api/events/{eventId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -21,24 +21,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/events": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create a new event */
-        post: operations["createEvent"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/events/delete": {
+    "/api/events/delete": {
         parameters: {
             query?: never;
             header?: never;
@@ -55,7 +38,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/events/status": {
+    "/api/events/status": {
         parameters: {
             query?: never;
             header?: never;
@@ -72,7 +55,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/events/{eventId}/status": {
+    "/api/events/{eventId}/status": {
         parameters: {
             query?: never;
             header?: never;
@@ -119,7 +102,8 @@ export interface paths {
         /** Get events aggregate summary */
         get: operations["getEventsAggregate"];
         put?: never;
-        post?: never;
+        /** Create a new event */
+        post: operations["createEvent"];
         delete?: never;
         options?: never;
         head?: never;
@@ -396,16 +380,16 @@ export interface components {
         /** @description Workspace ID */
         workspaceId: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
         pageSize: number;
         /** @description Get responses by pagesize */
-        pagesize: string;
+        pagesize: number;
         /**
          * @deprecated
          * @description Get responses by pagesize. Deprecated alias of pageSize.
          */
-        pagesizeLegacy: string;
+        pagesizeLegacy: number;
         /** @description Get responses that match search param value */
         search: string;
         /** @description Get ordered responses */
@@ -462,69 +446,6 @@ export interface operations {
             };
             /** @description Result not found */
             404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    createEvent: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * Format: uuid
-                     * @description UUID of the user associated with the event.
-                     */
-                    owner?: string;
-                    /** @description The category of the event. */
-                    category?: string;
-                    /** @description The action of the event. */
-                    action?: string;
-                    /** @description Description of the event. */
-                    description?: string;
-                } & {
-                    [key: string]: unknown;
-                };
-            };
-        };
-        responses: {
-            /** @description Event created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -745,14 +666,14 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /**
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */
@@ -899,13 +820,76 @@ export interface operations {
             };
         };
     };
+    createEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description UUID of the user associated with the event.
+                     */
+                    owner?: string;
+                    /** @description The category of the event. */
+                    category?: string;
+                    /** @description The action of the event. */
+                    action?: string;
+                    /** @description Description of the event. */
+                    description?: string;
+                } & {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Event created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
     getEvents: {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by pagesize */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */
@@ -994,9 +978,9 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by pagesize */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */
@@ -1057,14 +1041,14 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /**
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
             };
             header?: never;
             path?: never;
