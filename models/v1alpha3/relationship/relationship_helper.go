@@ -13,6 +13,7 @@ import (
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	"github.com/meshery/meshkit/utils"
+	"github.com/meshery/schemas/models/core"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -48,15 +49,33 @@ func (r RelationshipDefinition) Type() entity.EntityType {
 	return entity.RelationshipDefinition
 }
 
+// relationshipIdentity is the canonical set of fields hashed by GenerateID.
+// It is a dedicated struct with its own JSON tags rather than a
+// RelationshipDefinition so the identity cannot silently drift with the
+// entity's wire representation: ModelId is json:"-" on the entity, which
+// would drop it from a Marshal of the entity and let equivalent relationships
+// from different models collide on one ID. Every field here is always
+// serialized, so field order and presence are fixed by this struct alone.
+type relationshipIdentity struct {
+	SchemaVersion    core.VersionString         `json:"schemaVersion"`
+	Version          core.SemverString          `json:"version"`
+	Kind             RelationshipDefinitionKind `json:"kind"`
+	RelationshipType string                     `json:"type"`
+	SubType          string                     `json:"subType"`
+	ModelId          *core.Uuid                 `json:"modelId"`
+	EvaluationQuery  *string                    `json:"evaluationQuery"`
+	Selectors        *SelectorSet               `json:"selectors"`
+}
+
 // GenerateID content-addresses the definition from its semantic coordinates,
 // mirroring ModelDefinition.GenerateID. Registering the same definition twice
 // (server re-seeding on restart, re-importing a model package) therefore
 // resolves to the same ID instead of minting a fresh random UUID per
 // registration, which is what let duplicate rows accumulate unboundedly.
-// Volatile and cosmetic fields (ID, Status, Metadata) are deliberately
-// excluded, matching the model identifier's philosophy.
+// Volatile and cosmetic fields (ID, Status, Metadata, Capabilities) are
+// deliberately excluded, matching the model identifier's philosophy.
 func (r *RelationshipDefinition) GenerateID() (uuid.UUID, error) {
-	relationshipIdentifier := RelationshipDefinition{
+	byt, err := json.Marshal(relationshipIdentity{
 		SchemaVersion:    r.SchemaVersion,
 		Version:          r.Version,
 		Kind:             r.Kind,
@@ -65,8 +84,7 @@ func (r *RelationshipDefinition) GenerateID() (uuid.UUID, error) {
 		ModelId:          r.ModelId,
 		EvaluationQuery:  r.EvaluationQuery,
 		Selectors:        r.Selectors,
-	}
-	byt, err := json.Marshal(relationshipIdentifier)
+	})
 	if err != nil {
 		return uuid.UUID{}, err
 	}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
+	capabilityv1alpha1 "github.com/meshery/schemas/models/v1alpha1/capability"
 	"gorm.io/gorm/clause"
 )
 
@@ -48,6 +49,32 @@ func TestGenerateIDIsContentAddressed(t *testing.T) {
 	}
 	if otherID == firstID {
 		t.Fatal("semantically different definitions hashed identically")
+	}
+
+	// ModelId is json:"-" on the entity, so hashing the entity itself would
+	// silently drop it and let the same relationship shipped by two models
+	// share one ID. The identity struct must carry it explicitly.
+	otherModel := first
+	otherModelID := uuid.Must(uuid.NewV4())
+	otherModel.ModelId = &otherModelID
+	otherModelHash, err := otherModel.GenerateID()
+	if err != nil {
+		t.Fatalf("otherModel GenerateID: %v", err)
+	}
+	if otherModelHash == firstID {
+		t.Fatal("definitions under different models hashed identically: ModelId is not part of the identity")
+	}
+
+	// Capabilities are behavioral metadata, not identity: a definition that
+	// differs only in capabilities is the same relationship.
+	withCaps := first
+	withCaps.Capabilities = &[]capabilityv1alpha1.Capability{{DisplayName: "cap"}}
+	withCapsID, err := withCaps.GenerateID()
+	if err != nil {
+		t.Fatalf("withCaps GenerateID: %v", err)
+	}
+	if withCapsID != firstID {
+		t.Fatal("capabilities changed the relationship identity")
 	}
 }
 

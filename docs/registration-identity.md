@@ -16,10 +16,16 @@ existing row's ID.
 | Entity | Identity fields (hashed) | Excluded (volatile/cosmetic) |
 |---|---|---|
 | Model (`v1beta1/model`) | `registrant`, `version`, `schemaVersion`, `name`, `model.version` | `id`, `displayName`, `description`, `metadata`, `status`, category |
-| Relationship (`v1alpha3/relationship`) | `schemaVersion`, `version`, `kind`, `type`, `subType`, `modelId`, `evaluationQuery`, `selectors` | `id`, `status`, `metadata` (description, styles) |
+| Relationship (`v1alpha3/relationship`) | `schemaVersion`, `version`, `kind`, `type`, `subType`, `modelId`, `evaluationQuery`, `selectors` | `id`, `status`, `metadata` (description, styles), `capabilities` |
 
 The hash is `md5(json.Marshal(identifier-struct))` mapped into a UUID, so field
-ordering is fixed by the struct, not by the incoming document.
+ordering is fixed by the struct, not by the incoming document. The relationship
+identifier is a dedicated struct (`relationshipIdentity`) with its own JSON
+tags rather than the entity type: the entity tags `modelId` as `json:"-"`, and
+hashing the entity would silently drop it, letting the same relationship
+shipped by two models collapse onto one ID. Model identity is host-agnostic by
+design (`registrant` is part of the hash; `hostID` is not) and predates this
+contract; changing it would re-identify every registered model.
 
 ## Contract for callers
 
