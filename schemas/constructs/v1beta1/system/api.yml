@@ -270,6 +270,36 @@ paths:
         "500":
           description: Marshal error while serializing the session sync payload.
 
+  /api/system/adapter/status:
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - System
+      summary: Change adapter deploy status
+      description: >-
+        Deploys or undeploys a Meshery adapter. Resolves the adapter's
+        default port when targetPort is omitted, then invokes the
+        adapter tracker to bring the adapter to the requested status.
+      operationId: changeAdapterStatus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeAdapterStatusRequest"
+      responses:
+        "200":
+          description: The adapter status change was processed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChangeAdapterStatusResponse"
+        "400":
+          description: Missing or invalid adapter name, target port, or target status.
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          description: Failed to deploy or undeploy the adapter.
   /api/system/controllers/operator/status:
     get:
       x-internal: ["meshery"]
