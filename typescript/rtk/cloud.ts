@@ -11776,6 +11776,8 @@ export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */
     firstName?: string;
     /** The last name of the user associated with the event. */
     lastName?: string;
+    /** URL to the avatar image of the user associated with the event. */
+    avatarUrl?: string;
     /** Email address of the user associated with the event. */
     email?: string;
     /** Authentication provider of the user associated with the event. */
@@ -11844,6 +11846,8 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
     firstName?: string;
     /** The last name of the user associated with the event. */
     lastName?: string;
+    /** URL to the avatar image of the user associated with the event. */
+    avatarUrl?: string;
     /** Email address of the user associated with the event. */
     email?: string;
     /** Authentication provider of the user associated with the event. */
