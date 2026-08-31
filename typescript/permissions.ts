@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "cadac079689e3d775e5e7d32c7bebe307b526aa3491a40c2720c8811de2f6e25" as const;
+export const PERMISSIONS_INDEX_ID = "e3f7429c44c7707f1b6f39a7ea2666199d6d25124bf0996cd105a1525c49d3ec" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -411,6 +411,17 @@ export const Keys = {
     subcategory: "Designs",
     function: "Download a design",
     description: "Download a Meshery design in OCI or YAML format"
+  },
+
+  /**
+   * Transfer ownership of a design to another user
+   */
+  CatalogManagementTransferDesignOwnership: {
+    id: "576ee93e-0e25-4369-95bf-8a7216342aee" as PermissionKey,
+    category: "Catalog Management",
+    subcategory: "Designs",
+    function: "Transfer Design Ownership",
+    description: "Transfer ownership of a design to another user"
   },
 
   /**
@@ -5120,6 +5131,11 @@ export const PermissionKeys = {
    * Download a Meshery design in OCI or YAML format
    */
   CatalogManagementDownloadADesign: "64de96b7-60db-4aab-b311-afc64066b2c4" as PermissionKey,
+
+  /**
+   * Transfer ownership of a design to another user
+   */
+  CatalogManagementTransferDesignOwnership: "576ee93e-0e25-4369-95bf-8a7216342aee" as PermissionKey,
 
   /**
    * Import a filter

@@ -5,7 +5,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "cadac079689e3d775e5e7d32c7bebe307b526aa3491a40c2720c8811de2f6e25"
+const IndexID = "e3f7429c44c7707f1b6f39a7ea2666199d6d25124bf0996cd105a1525c49d3ec"
 
 
 // PermissionKey represents a permission key identifier.
@@ -128,6 +128,9 @@ var (
 
 	// CatalogManagementDownloadADesign - Download a Meshery design in OCI or YAML format
 	CatalogManagementDownloadADesign = PermissionKey(uuid.Must(uuid.FromString("64de96b7-60db-4aab-b311-afc64066b2c4")))
+
+	// CatalogManagementTransferDesignOwnership - Transfer ownership of a design to another user
+	CatalogManagementTransferDesignOwnership = PermissionKey(uuid.Must(uuid.FromString("576ee93e-0e25-4369-95bf-8a7216342aee")))
 
 	// CatalogManagementImportFilter - Import a filter
 	CatalogManagementImportFilter = PermissionKey(uuid.Must(uuid.FromString("cb79d7fb-19de-45fa-aaf5-0a0afc832bf8")))
