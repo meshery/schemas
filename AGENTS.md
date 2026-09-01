@@ -168,12 +168,13 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/identifier-naming-contributor-guide.md`](docs/identifier-naming-contributor-guide.md)** - reader-friendly cross-repo naming directory with before/after examples.
 - **[`docs/http-api-design.md`](docs/http-api-design.md)** - HTTP method semantics, response codes, bulk-delete-via-POST, resource grouping, path structure.
 - **[`docs/schema-authoring-reference.md`](docs/schema-authoring-reference.md)** - dual-schema worked examples, per-property validation rules (37-42), `x-id-format: external`, RJSF form schemas + enforcement tests, Go helper files, `x-internal`, SQL driver (`Scan`/`Value`) rules.
-- **[`docs/schema-review-checklist.md`](docs/schema-review-checklist.md)** - intentional design decisions (do not flag), the 26 common mistakes, and the full pre-PR schema-change checklist.
+- **[`docs/schema-review-checklist.md`](docs/schema-review-checklist.md)** - intentional design decisions (do not flag), the common mistakes to avoid, and the full pre-PR schema-change checklist.
 - **[`docs/schema-tooling.md`](docs/schema-tooling.md)** - identifier-naming migration status, advisory baseline, consumer audit tooling and CI behavior.
 - **[`docs/superseded-construct-consumer-verification.md`](docs/superseded-construct-consumer-verification.md)** - how to prove no downstream consumer is still on an `x-superseded-by` construct version; why import-path grepping is invalid on the TypeScript/RTK surface.
 - **[`docs/release-procedure.md`](docs/release-procedure.md)** - full release flow, What NOT to Do, and versioning policy.
 - **[`docs/release-procedure-skill.md`](docs/release-procedure-skill.md)** - using the `meshery-schemas-release` skill, verification commands, troubleshooting.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
+- **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
 
 ## Questions?
 

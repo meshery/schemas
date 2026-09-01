@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "bfd819819315ab0192b6f930378760de4b79ecd8acdc4741e72b846d7e7207e2" as const;
+export const PERMISSIONS_INDEX_ID = "cadac079689e3d775e5e7d32c7bebe307b526aa3491a40c2720c8811de2f6e25" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -674,17 +674,6 @@ export const Keys = {
     category: "Extensibility",
     subcategory: "ReST API",
     function: "Swagger integration",
-    description: ""
-  },
-
-  /**
-   * No description available
-   */
-  ExtensibilityNamespacedCustomResolvers: {
-    id: "192cd281-234a-4127-b8a8-3e6f10d9e730" as PermissionKey,
-    category: "Extensibility",
-    subcategory: "GraphQL API",
-    function: "Namespaced custom resolvers",
     description: ""
   },
 
@@ -2017,6 +2006,61 @@ export const Keys = {
     subcategory: "Settings",
     function: "Reset Database",
     description: "Reset Meshery database"
+  },
+
+  /**
+   * Import a model into the capabilities registry
+   */
+  MesherySystemImportModel: {
+    id: "9e412481-744f-4676-bb1c-f40ce9e6c8f8" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Import Model",
+    description: "Import a model into the capabilities registry"
+  },
+
+  /**
+   * Create a new model in the capabilities registry
+   */
+  MesherySystemCreateModel: {
+    id: "272a1166-a023-43e8-9e27-2cd8054115bb" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Create Model",
+    description: "Create a new model in the capabilities registry"
+  },
+
+  /**
+   * Create a new relationship definition in the capabilities registry
+   */
+  MesherySystemCreateRelationship: {
+    id: "60609c21-88b1-4913-8102-5d9d0fa90953" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Create Relationship",
+    description: "Create a new relationship definition in the capabilities registry"
+  },
+
+  /**
+   * View server-wide defaults for Meshery Operator MeshSync and Broker
+   */
+  MesherySystemViewControllersConfig: {
+    id: "278e5f2f-6eca-4e26-864b-44d4246f3c19" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "View Controllers Config",
+    description: "View server-wide defaults for Meshery Operator MeshSync and Broker"
+  },
+
+  /**
+   * Edit and save server-wide defaults for Meshery Operator Meshsync and Broker
+   */
+  MesherySystemEditControllersConfig: {
+    id: "4ea3ffab-dced-4358-b138-b583d90f0451" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Edit Controllers Config",
+    description: "Edit and save server-wide defaults for Meshery Operator Meshsync and Broker"
   },
 
   /**
@@ -5198,11 +5242,6 @@ export const PermissionKeys = {
   ExtensibilitySwaggerIntegration: "045f4c47-95d7-4ee7-923e-b069faa75640" as PermissionKey,
 
   /**
-   * No description available
-   */
-  ExtensibilityNamespacedCustomResolvers: "192cd281-234a-4127-b8a8-3e6f10d9e730" as PermissionKey,
-
-  /**
    * Extend Meshery's capabilities behind a gRPC interface for Model registration and operation invocation
    */
   ExtensibilityAdapters: "65150884-c617-4aa4-bb0f-09dd0532bb83" as PermissionKey,
@@ -5806,6 +5845,31 @@ export const PermissionKeys = {
    * Reset Meshery database
    */
   MesherySystemResetDatabase: "84fc402c-f33e-4a21-a0e3-e14f9e20b125" as PermissionKey,
+
+  /**
+   * Import a model into the capabilities registry
+   */
+  MesherySystemImportModel: "9e412481-744f-4676-bb1c-f40ce9e6c8f8" as PermissionKey,
+
+  /**
+   * Create a new model in the capabilities registry
+   */
+  MesherySystemCreateModel: "272a1166-a023-43e8-9e27-2cd8054115bb" as PermissionKey,
+
+  /**
+   * Create a new relationship definition in the capabilities registry
+   */
+  MesherySystemCreateRelationship: "60609c21-88b1-4913-8102-5d9d0fa90953" as PermissionKey,
+
+  /**
+   * View server-wide defaults for Meshery Operator MeshSync and Broker
+   */
+  MesherySystemViewControllersConfig: "278e5f2f-6eca-4e26-864b-44d4246f3c19" as PermissionKey,
+
+  /**
+   * Edit and save server-wide defaults for Meshery Operator Meshsync and Broker
+   */
+  MesherySystemEditControllersConfig: "4ea3ffab-dced-4358-b138-b583d90f0451" as PermissionKey,
 
   /**
    * No description available
