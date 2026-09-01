@@ -79,10 +79,13 @@ type FAQ struct {
 	Question string `json:"question" yaml:"question"`
 }
 
-// Links Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.
+// Links Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults.
 type Links struct {
 	// Privacy URL of the organization's Privacy Policy page.
 	Privacy *string `json:"privacy,omitempty" yaml:"privacy,omitempty"`
+
+	// Social The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults.
+	Social *Social `json:"social,omitempty" yaml:"social,omitempty"`
 
 	// Support Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number.
 	Support *map[string]string `json:"support,omitempty" yaml:"support,omitempty"`
@@ -224,7 +227,7 @@ type Preferences struct {
 	// Dashboard Preferences specific to dashboard behavior.
 	Dashboard DashboardPrefs `json:"dashboard" yaml:"dashboard"`
 
-	// Links Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.
+	// Links Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults.
 	Links *Links `json:"links,omitempty" yaml:"links,omitempty"`
 
 	// ShowAuthCarousel Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
@@ -232,6 +235,15 @@ type Preferences struct {
 
 	// Theme UI theme configured for an organization.
 	Theme Theme `json:"theme" yaml:"theme"`
+}
+
+// Social The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults.
+type Social struct {
+	// LinkedIn URL of the organization's LinkedIn profile.
+	LinkedIn *string `json:"linkedin,omitempty" yaml:"linkedin,omitempty"`
+
+	// X URL of the organization's X (formerly Twitter) profile.
+	X *string `json:"x,omitempty" yaml:"x,omitempty"`
 }
 
 // TeamsOrganizationsMapping Junction record linking a team to an organization.
