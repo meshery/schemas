@@ -213,6 +213,14 @@ CLOUD_REPO_UI    ?=
 SHEET_ID         ?=
 CREDENTIALS      ?=
 
+# SUPERSEDED_REPORT=1 appends the superseded-construct report: which version of
+# each x-superseded-by construct every consumer resolves. SUPERSEDED_ENFORCE=1
+# additionally exits non-zero when any consumer is on a superseded version.
+# Both default to off — downstream repos legitimately pin superseded versions
+# under the Phase 4.A non-deletion policy, so this is awareness, not a gate.
+SUPERSEDED_REPORT  ?=
+SUPERSEDED_ENFORCE ?=
+
 ## Dry-run the consumer audit without reconciling or updating Google Sheets.
 consumer-audit:
 	@go run ./cmd/consumer-audit \
@@ -221,7 +229,9 @@ consumer-audit:
 		$(if $(EXTENSIONS_REPO),--extensions-repo=$(EXTENSIONS_REPO)) \
 		$(if $(MESHERY_REPO_UI),--meshery-repo-ui=$(MESHERY_REPO_UI)) \
 		$(if $(CLOUD_REPO_UI),--cloud-repo-ui=$(CLOUD_REPO_UI)) \
-		$(if $(VERBOSE),--verbose)
+		$(if $(VERBOSE),--verbose) \
+		$(if $(SUPERSEDED_REPORT),--superseded-report) \
+		$(if $(SUPERSEDED_ENFORCE),--superseded-enforce)
 
 ## Reconcile the consumer audit against the canonical Google Sheet and update it.
 consumer-audit-update:
