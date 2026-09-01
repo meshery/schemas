@@ -263,6 +263,353 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/filter:
+    get:
+      summary: Get Filters
+      description: Returns a paginated list of Meshery Filters.
+      operationId: getFilters
+      tags:
+        - filters
+      x-internal:
+        - meshery
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: visibility
+          in: query
+          description: >-
+            Visibility filter. The backend expects a JSON-encoded array string,
+            e.g. visibility=["public"]. Must remain a string; do not convert to
+            an array type without a corresponding backend change.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved filters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilterPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+    post:
+      summary: Upsert Filter
+      description: >-
+        Create or update a Meshery Filter. This single endpoint covers both
+        local-upload (filterData.filterFile) and remote-URL (url) import paths.
+      operationId: upsertFilter
+      tags:
+        - filters
+      x-internal:
+        - meshery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryServerFilterRequestBody"
+      responses:
+        "200":
+          description: Successfully upserted filter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilter"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/filter/deploy:
+    post:
+      summary: Deploy Filter
+      description: >-
+        Deploy a Meshery Filter to the active Kubernetes context(s). The request
+        body uses the same shape as the design deploy endpoint because the
+        filter deploy handler delegates to the design engine handler.
+      operationId: deployFilter
+      tags:
+        - filters
+      x-internal:
+        - meshery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryFilterDeployPayload"
+      responses:
+        "200":
+          description: Successfully deployed filter
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/filter/undeploy:
+    post:
+      summary: Undeploy Filter
+      description: >-
+        Undeploy a Meshery Filter from the active Kubernetes context(s). Modeled
+        as a POST sub-resource because the operation carries a JSON payload
+        identifying the target filter and Kubernetes context. (Follow-up server
+        alignment will register this POST endpoint alongside legacy DELETE).
+      operationId: undeployFilter
+      tags:
+        - filters
+      x-internal:
+        - meshery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryFilterDeployPayload"
+      responses:
+        "200":
+          description: Successfully undeployed filter
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/filter/catalog:
+    get:
+      summary: Get Catalog Filters
+      description: Returns a paginated list of publicly available Catalog Filters.
+      operationId: getCatalogFilters
+      tags:
+        - filters
+      x-internal:
+        - meshery
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Successfully retrieved catalog filters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilterPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/filter/catalog/publish:
+    post:
+      summary: Publish Catalog Filter
+      description: Submit a request to publish a Meshery Filter to the Catalog.
+      operationId: publishFilter
+      tags:
+        - filters
+      x-internal:
+        - meshery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryCatalogFilterRequestBody"
+      responses:
+        "202":
+          description: Publish request accepted; returns the created catalog request record.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogRequest"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/filter/catalog/unpublish:
+    post:
+      summary: Unpublish Catalog Filter
+      description: >-
+        Submit a request to unpublish a Meshery Filter from the Catalog. Modeled
+        as a POST sub-resource because the operation carries a JSON request body.
+        (Follow-up server alignment will register this POST endpoint alongside legacy DELETE).
+      operationId: unpublishFilter
+      tags:
+        - filters
+      x-internal:
+        - meshery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryCatalogFilterRequestBody"
+      responses:
+        "200":
+          description: Successfully unpublished filter; returns the updated catalog request record.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogRequest"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/filter/{id}:
+    get:
+      summary: Get Filter
+      description: Get a Meshery Filter by ID.
+      operationId: getFilter
+      tags:
+        - filters
+      x-internal:
+        - meshery
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Filter ID
+      responses:
+        "200":
+          description: Successfully retrieved filter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilter"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      summary: Delete Filter
+      description: Delete a Meshery Filter by ID.
+      operationId: deleteFilter
+      tags:
+        - filters
+      x-internal:
+        - meshery
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Filter ID
+      responses:
+        "200":
+          description: Successfully deleted filter
+          content:
+            application/json:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/filter/download/{id}:
+    get:
+      summary: Download Filter File
+      description: >-
+        Download the raw WASM binary for a Meshery Filter. The response
+        Content-Type is application/wasm, not application/json.
+      operationId: getFilterFile
+      tags:
+        - filters
+      x-internal:
+        - meshery
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Filter ID
+      responses:
+        "200":
+          description: Successfully downloaded filter file (WASM binary)
+          content:
+            application/wasm:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/filter/clone/{id}:
+    post:
+      summary: Clone Filter
+      description: Clone an existing Meshery Filter by ID. Optionally provide a new name.
+      operationId: cloneFilter
+      tags:
+        - filters
+      x-internal:
+        - meshery
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Filter ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryFilterCloneRequestBody"
+      responses:
+        "200":
+          description: Successfully cloned filter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilter"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
 components:
   securitySchemes:
     jwt:
@@ -518,3 +865,151 @@ components:
             format (e.g. WASM module identifier or external resource path).
             Required when uploadType is "URL Upload".
           maxLength: 5000
+
+
+    MesheryFilterDeployPayload:
+      type: object
+      description: >-
+        Payload for deploying a Meshery Filter. The filter deploy handler
+        delegates to the design engine handler, which expects this shape
+        (identical to the design deploy payload).
+      required:
+        - patternFile
+        - patternId
+      properties:
+        patternFile:
+          type: string
+          description: The filter/design content as a string (YAML or JSON)
+        patternId:
+          type: string
+          format: uuid
+          description: ID of the filter/design to deploy
+
+    MesheryServerFilterRequestBody:
+      type: object
+      description: >-
+        Request body for creating or updating a Meshery Filter on Meshery Server.
+        Exactly one of `filterData` (local upload) or `url` (remote import)
+        should be provided. The canonical wire key is `filterData` (camelCase).
+        The backend also dual-accepts the legacy `filter_data` (snake_case) via
+        custom UnmarshalJSON for the deprecation window; new clients must use
+        `filterData` only.
+      properties:
+        url:
+          type: string
+          description: URL of a remote filter source
+        path:
+          type: string
+          description: Path within the remote source
+        save:
+          type: boolean
+          description: Whether to persist the filter to the database
+        config:
+          type: string
+          description: Filter configuration string used to generate the WASMFilter component
+        filterData:
+          $ref: "#/components/schemas/MesheryServerFilterPayload"
+
+    MesheryServerFilterPayload:
+      type: object
+      description: The filter object as supplied in an upload/upsert request to Meshery Server.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Filter ID (omit to create; include to update)
+        name:
+          type: string
+          description: Human-readable name for the filter
+        filterFile:
+          type: string
+          format: byte
+          description: Base64-encoded WASM filter binary
+        owner:
+          type: string
+          description: ID of the filter's owner
+        location:
+          type: object
+          x-go-type: "core.Map"
+          x-go-type-skip-optional-pointer: true
+          additionalProperties: {}
+          description: Source location metadata (host, path, type, branch)
+        visibility:
+          type: string
+          description: Visibility of the filter (e.g. "public", "private")
+        catalogData:
+          type: object
+          x-go-type: "core.Map"
+          x-go-type-skip-optional-pointer: true
+          additionalProperties: {}
+          description: Catalog metadata (used when publishing to the Catalog)
+        filterResource:
+          type: string
+          description: Serialized WASMFilter component definition generated from config
+        config:
+          type: string
+          description: Filter configuration string
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    MesheryCatalogFilterRequestBody:
+      type: object
+      description: Request body for publishing or unpublishing a filter to/from the Catalog.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of the filter to publish or unpublish
+        catalogData:
+          type: object
+          x-go-type: "core.Map"
+          x-go-type-skip-optional-pointer: true
+          additionalProperties: {}
+          description: Catalog metadata accompanying the publish/unpublish request
+
+    CatalogRequest:
+      type: object
+      description: >-
+        Represents a catalog publish/unpublish request record as returned by
+        the backend after publish or unpublish operations.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Catalog request ID
+        contentId:
+          type: string
+          format: uuid
+          description: ID of the filter or design being published
+        contentName:
+          type: string
+          description: Name of the content item
+        contentType:
+          type: string
+          description: >-
+            Content type of the catalog item ("pattern" or "filter")
+        firstName:
+          type: string
+          description: First name of the requesting user
+        lastName:
+          type: string
+          description: Last name of the requesting user
+        email:
+          type: string
+          description: Email of the requesting user
+        status:
+          type: string
+          description: >-
+            Catalog request status ("pending", "approved", or "denied")
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the catalog request was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the catalog request was last updated
