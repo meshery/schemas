@@ -261,7 +261,7 @@ export interface components {
         DashboardPrefs: {
             [key: string]: unknown;
         };
-        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         Links: {
             /**
              * Format: uri
@@ -277,6 +277,32 @@ export interface components {
             support?: {
                 [key: string]: string;
             };
+            /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+            social?: {
+                /**
+                 * Format: uri
+                 * @description URL of the organization's LinkedIn profile.
+                 */
+                linkedin?: string;
+                /**
+                 * Format: uri
+                 * @description URL of the organization's X (formerly Twitter) profile.
+                 */
+                x?: string;
+            };
+        };
+        /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        Social: {
+            /**
+             * Format: uri
+             * @description URL of the organization's LinkedIn profile.
+             */
+            linkedin?: string;
+            /**
+             * Format: uri
+             * @description URL of the organization's X (formerly Twitter) profile.
+             */
+            x?: string;
         };
         /** @description A single slide in the auth-page feature carousel. */
         CarouselSlide: {
@@ -390,7 +416,7 @@ export interface components {
                     answer: string;
                 }[];
             };
-            /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+            /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
             links?: {
                 /**
                  * Format: uri
@@ -405,6 +431,19 @@ export interface components {
                 /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                 support?: {
                     [key: string]: string;
+                };
+                /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                social?: {
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's LinkedIn profile.
+                     */
+                    linkedin?: string;
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's X (formerly Twitter) profile.
+                     */
+                    x?: string;
                 };
             };
             /**
@@ -486,7 +525,7 @@ export interface components {
                         answer: string;
                     }[];
                 };
-                /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                 links?: {
                     /**
                      * Format: uri
@@ -501,6 +540,19 @@ export interface components {
                     /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                     support?: {
                         [key: string]: string;
+                    };
+                    /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                    social?: {
+                        /**
+                         * Format: uri
+                         * @description URL of the organization's LinkedIn profile.
+                         */
+                        linkedin?: string;
+                        /**
+                         * Format: uri
+                         * @description URL of the organization's X (formerly Twitter) profile.
+                         */
+                        x?: string;
                     };
                 };
                 /**
@@ -642,7 +694,7 @@ export interface components {
                             answer: string;
                         }[];
                     };
-                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                    /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                     links?: {
                         /**
                          * Format: uri
@@ -657,6 +709,19 @@ export interface components {
                         /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                         support?: {
                             [key: string]: string;
+                        };
+                        /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                        social?: {
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's LinkedIn profile.
+                             */
+                            linkedin?: string;
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's X (formerly Twitter) profile.
+                             */
+                            x?: string;
                         };
                     };
                     /**
@@ -782,7 +847,7 @@ export interface components {
                                 answer: string;
                             }[];
                         };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                        /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                         links?: {
                             /**
                              * Format: uri
@@ -797,6 +862,19 @@ export interface components {
                             /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                             support?: {
                                 [key: string]: string;
+                            };
+                            /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                            social?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's LinkedIn profile.
+                                 */
+                                linkedin?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's X (formerly Twitter) profile.
+                                 */
+                                x?: string;
                             };
                         };
                         /**
@@ -923,7 +1001,7 @@ export interface components {
                                 answer: string;
                             }[];
                         };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                        /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                         links?: {
                             /**
                              * Format: uri
@@ -938,6 +1016,19 @@ export interface components {
                             /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                             support?: {
                                 [key: string]: string;
+                            };
+                            /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                            social?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's LinkedIn profile.
+                                 */
+                                linkedin?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's X (formerly Twitter) profile.
+                                 */
+                                x?: string;
                             };
                         };
                         /**
@@ -1047,7 +1138,7 @@ export interface components {
                         answer: string;
                     }[];
                 };
-                /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                 links?: {
                     /**
                      * Format: uri
@@ -1062,6 +1153,19 @@ export interface components {
                     /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                     support?: {
                         [key: string]: string;
+                    };
+                    /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                    social?: {
+                        /**
+                         * Format: uri
+                         * @description URL of the organization's LinkedIn profile.
+                         */
+                        linkedin?: string;
+                        /**
+                         * Format: uri
+                         * @description URL of the organization's X (formerly Twitter) profile.
+                         */
+                        x?: string;
                     };
                 };
                 /**
@@ -1458,7 +1562,7 @@ export interface components {
                                 answer: string;
                             }[];
                         };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                        /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                         links?: {
                             /**
                              * Format: uri
@@ -1473,6 +1577,19 @@ export interface components {
                             /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                             support?: {
                                 [key: string]: string;
+                            };
+                            /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                            social?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's LinkedIn profile.
+                                 */
+                                linkedin?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's X (formerly Twitter) profile.
+                                 */
+                                x?: string;
                             };
                         };
                         /**
@@ -1615,7 +1732,7 @@ export interface operations {
                                             answer: string;
                                         }[];
                                     };
-                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                                    /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                                     links?: {
                                         /**
                                          * Format: uri
@@ -1630,6 +1747,19 @@ export interface operations {
                                         /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                                         support?: {
                                             [key: string]: string;
+                                        };
+                                        /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                                        social?: {
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's LinkedIn profile.
+                                             */
+                                            linkedin?: string;
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's X (formerly Twitter) profile.
+                                             */
+                                            x?: string;
                                         };
                                     };
                                     /**
@@ -1777,7 +1907,7 @@ export interface operations {
                                 answer: string;
                             }[];
                         };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                        /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                         links?: {
                             /**
                              * Format: uri
@@ -1792,6 +1922,19 @@ export interface operations {
                             /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                             support?: {
                                 [key: string]: string;
+                            };
+                            /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                            social?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's LinkedIn profile.
+                                 */
+                                linkedin?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's X (formerly Twitter) profile.
+                                 */
+                                x?: string;
                             };
                         };
                         /**
@@ -1909,7 +2052,7 @@ export interface operations {
                                             answer: string;
                                         }[];
                                     };
-                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                                    /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                                     links?: {
                                         /**
                                          * Format: uri
@@ -1924,6 +2067,19 @@ export interface operations {
                                         /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                                         support?: {
                                             [key: string]: string;
+                                        };
+                                        /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                                        social?: {
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's LinkedIn profile.
+                                             */
+                                            linkedin?: string;
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's X (formerly Twitter) profile.
+                                             */
+                                            x?: string;
                                         };
                                     };
                                     /**
@@ -2191,7 +2347,7 @@ export interface operations {
                                             answer: string;
                                         }[];
                                     };
-                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                                    /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                                     links?: {
                                         /**
                                          * Format: uri
@@ -2206,6 +2362,19 @@ export interface operations {
                                         /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                                         support?: {
                                             [key: string]: string;
+                                        };
+                                        /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                                        social?: {
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's LinkedIn profile.
+                                             */
+                                            linkedin?: string;
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's X (formerly Twitter) profile.
+                                             */
+                                            x?: string;
                                         };
                                     };
                                     /**
@@ -2367,7 +2536,7 @@ export interface operations {
                                 answer: string;
                             }[];
                         };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                        /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                         links?: {
                             /**
                              * Format: uri
@@ -2382,6 +2551,19 @@ export interface operations {
                             /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                             support?: {
                                 [key: string]: string;
+                            };
+                            /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                            social?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's LinkedIn profile.
+                                 */
+                                linkedin?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's X (formerly Twitter) profile.
+                                 */
+                                x?: string;
                             };
                         };
                         /**
@@ -2499,7 +2681,7 @@ export interface operations {
                                             answer: string;
                                         }[];
                                     };
-                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                                    /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                                     links?: {
                                         /**
                                          * Format: uri
@@ -2514,6 +2696,19 @@ export interface operations {
                                         /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                                         support?: {
                                             [key: string]: string;
+                                        };
+                                        /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                                        social?: {
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's LinkedIn profile.
+                                             */
+                                            linkedin?: string;
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's X (formerly Twitter) profile.
+                                             */
+                                            x?: string;
                                         };
                                     };
                                     /**
@@ -2745,7 +2940,7 @@ export interface operations {
                                     answer: string;
                                 }[];
                             };
-                            /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                            /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
                             links?: {
                                 /**
                                  * Format: uri
@@ -2760,6 +2955,19 @@ export interface operations {
                                 /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
                                 support?: {
                                     [key: string]: string;
+                                };
+                                /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                                social?: {
+                                    /**
+                                     * Format: uri
+                                     * @description URL of the organization's LinkedIn profile.
+                                     */
+                                    linkedin?: string;
+                                    /**
+                                     * Format: uri
+                                     * @description URL of the organization's X (formerly Twitter) profile.
+                                     */
+                                    x?: string;
                                 };
                             };
                             /**

@@ -127,6 +127,22 @@ type SubscriptionPage struct {
 // SubscriptionStatus Possible statuses of a Stripe subscription.
 type SubscriptionStatus string
 
+// SubscriptionUpdatePayload Body of an update to an existing subscription (`POST /api/entitlement/subscriptions`).
+//
+// This is an update payload, never a create payload: `id` names the subscription to update and the server refuses a body without one. It is also a full replacement of the writable surface rather than a partial merge, which is why `planId` and `quantity` are both required - omitting either stores its zero value.
+//
+// The fields the payment processor and the webhook own - `orgId`, `billingId`, `status`, `startDate` and `endDate` - are deliberately absent: the server pins each of them to the stored row and ignores any value supplied for them.
+type SubscriptionUpdatePayload struct {
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID *core.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// PlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	PlanID core.Uuid `json:"planId" yaml:"planId"`
+
+	// Quantity Number of units subscribed (eg number of users).
+	Quantity int `json:"quantity" yaml:"quantity"`
+}
+
 // UpdateUsersRequest Payload for synchronizing the current user count with the payment processor.
 type UpdateUsersRequest struct {
 	// PaymentProcessor Payment processor used to charge the subscription.

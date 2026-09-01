@@ -6,7 +6,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "bfd819819315ab0192b6f930378760de4b79ecd8acdc4741e72b846d7e7207e2"
+const IndexID = "cadac079689e3d775e5e7d32c7bebe307b526aa3491a40c2720c8811de2f6e25"
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -200,9 +200,6 @@ var (
 
 	// ExtensibilitySwaggerIntegration - No description available
 	ExtensibilitySwaggerIntegration = PermissionKey(uuid.Must(uuid.FromString("045f4c47-95d7-4ee7-923e-b069faa75640")))
-
-	// ExtensibilityNamespacedCustomResolvers - No description available
-	ExtensibilityNamespacedCustomResolvers = PermissionKey(uuid.Must(uuid.FromString("192cd281-234a-4127-b8a8-3e6f10d9e730")))
 
 	// ExtensibilityAdapters - Extend Meshery's capabilities behind a gRPC interface for Model registration and operation invocation
 	ExtensibilityAdapters = PermissionKey(uuid.Must(uuid.FromString("65150884-c617-4aa4-bb0f-09dd0532bb83")))
@@ -566,6 +563,21 @@ var (
 
 	// MesherySystemResetDatabase - Reset Meshery database
 	MesherySystemResetDatabase = PermissionKey(uuid.Must(uuid.FromString("84fc402c-f33e-4a21-a0e3-e14f9e20b125")))
+
+	// MesherySystemImportModel - Import a model into the capabilities registry
+	MesherySystemImportModel = PermissionKey(uuid.Must(uuid.FromString("9e412481-744f-4676-bb1c-f40ce9e6c8f8")))
+
+	// MesherySystemCreateModel - Create a new model in the capabilities registry
+	MesherySystemCreateModel = PermissionKey(uuid.Must(uuid.FromString("272a1166-a023-43e8-9e27-2cd8054115bb")))
+
+	// MesherySystemCreateRelationship - Create a new relationship definition in the capabilities registry
+	MesherySystemCreateRelationship = PermissionKey(uuid.Must(uuid.FromString("60609c21-88b1-4913-8102-5d9d0fa90953")))
+
+	// MesherySystemViewControllersConfig - View server-wide defaults for Meshery Operator MeshSync and Broker
+	MesherySystemViewControllersConfig = PermissionKey(uuid.Must(uuid.FromString("278e5f2f-6eca-4e26-864b-44d4246f3c19")))
+
+	// MesherySystemEditControllersConfig - Edit and save server-wide defaults for Meshery Operator Meshsync and Broker
+	MesherySystemEditControllersConfig = PermissionKey(uuid.Must(uuid.FromString("4ea3ffab-dced-4358-b138-b583d90f0451")))
 
 	// KanvasPlaybackServiceTransactionsScrubOverTheHistoryOfChangesToYourDeployments - No description available
 	KanvasPlaybackServiceTransactionsScrubOverTheHistoryOfChangesToYourDeployments = PermissionKey(uuid.Must(uuid.FromString("83784db9-bb58-4e15-aede-cbac7d01f431")))
