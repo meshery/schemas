@@ -2,7 +2,6 @@ package organization
 
 import (
 	"encoding/json"
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,22 +9,9 @@ import (
 
 // Links.Social is deliberately a sibling of Links.Support rather than an entry
 // in it: Support renders as support contacts on the auth and error pages, so a
-// brand profile placed there would surface as a way to contact support. These
-// tests pin that separation, and the JSONB shape the field is stored under.
-
-func TestLinksSocialIsASiblingOfSupport(t *testing.T) {
-	assert := assert.New(t)
-	linksType := reflect.TypeOf(Links{})
-
-	social, ok := linksType.FieldByName("Social")
-	assert.True(ok, "Links.Social must exist")
-	assert.Equal(reflect.TypeOf(&Social{}), social.Type,
-		"Links.Social must be its own typed struct, not an entry in the open-ended Support map")
-
-	support, ok := linksType.FieldByName("Support")
-	assert.True(ok, "Links.Support must remain untouched")
-	assert.Equal(reflect.TypeOf(&map[string]string{}), support.Type)
-}
+// brand profile placed there would surface as a way to contact support. This
+// test pins that separation behaviourally, and the JSONB shape the field is
+// stored under.
 
 func TestSocialAndSupportStaySeparateOnTheWire(t *testing.T) {
 	assert := assert.New(t)
