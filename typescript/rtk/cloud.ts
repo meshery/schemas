@@ -1954,6 +1954,8 @@ export type GetUserCredentialsApiResponse = /** status 200 Credentials response 
     name: string;
     /** UUID of the user who owns this credential. */
     userId: string;
+    /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+    orgOwner?: string;
     /** Credential type (e.g. token, basic, AWS). */
     type: string;
     /** Key-value pairs containing the sensitive credential data. */
@@ -1991,6 +1993,8 @@ export type SaveUserCredentialApiResponse = /** status 201 Credential saved */ {
   name: string;
   /** UUID of the user who owns this credential. */
   userId: string;
+  /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+  orgOwner?: string;
   /** Credential type (e.g. token, basic, AWS). */
   type: string;
   /** Key-value pairs containing the sensitive credential data. */
@@ -2010,6 +2014,8 @@ export type SaveUserCredentialApiArg = {
     name: string;
     /** UUID of the user who owns this credential. */
     userId?: string;
+    /** UUID of the organization to designate as the owner of this credential. A caller may supply this field; the server authorizes it against the authenticated principal and rejects the request when that principal may not write for the named organization. */
+    orgOwner?: string;
     /** Credential type (e.g. token, basic, AWS). */
     type: string;
     /** Key-value pairs containing the sensitive credential data. */
@@ -2023,6 +2029,8 @@ export type UpdateUserCredentialApiResponse = /** status 200 Credential updated 
   name: string;
   /** UUID of the user who owns this credential. */
   userId: string;
+  /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+  orgOwner?: string;
   /** Credential type (e.g. token, basic, AWS). */
   type: string;
   /** Key-value pairs containing the sensitive credential data. */
@@ -2042,6 +2050,8 @@ export type UpdateUserCredentialApiArg = {
     name: string;
     /** UUID of the user who owns this credential. */
     userId?: string;
+    /** UUID of the organization to designate as the owner of this credential. A caller may supply this field; the server authorizes it against the authenticated principal and rejects the request when that principal may not write for the named organization. */
+    orgOwner?: string;
     /** Credential type (e.g. token, basic, AWS). */
     type: string;
     /** Key-value pairs containing the sensitive credential data. */
@@ -2060,6 +2070,8 @@ export type GetCredentialByIdApiResponse = /** status 200 Credential response */
   name: string;
   /** UUID of the user who owns this credential. */
   userId: string;
+  /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+  orgOwner?: string;
   /** Credential type (e.g. token, basic, AWS). */
   type: string;
   /** Key-value pairs containing the sensitive credential data. */
@@ -2729,7 +2741,7 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
             answer: string;
           }[];
         };
-        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
           termsOfService?: string;
@@ -2738,6 +2750,13 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
           /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
           support?: {
             [key: string]: string;
+          };
+          /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+          social?: {
+            /** URL of the organization's LinkedIn profile. */
+            linkedin?: string;
+            /** URL of the organization's X (formerly Twitter) profile. */
+            x?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -2854,7 +2873,7 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
             answer: string;
           }[];
         };
-        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
           termsOfService?: string;
@@ -2863,6 +2882,13 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
           /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
           support?: {
             [key: string]: string;
+          };
+          /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+          social?: {
+            /** URL of the organization's LinkedIn profile. */
+            linkedin?: string;
+            /** URL of the organization's X (formerly Twitter) profile. */
+            x?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -2955,7 +2981,7 @@ export type CreateOrgApiArg = {
           answer: string;
         }[];
       };
-      /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+      /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
       links?: {
         /** URL of the organization's Terms of Service page. */
         termsOfService?: string;
@@ -2964,6 +2990,13 @@ export type CreateOrgApiArg = {
         /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
         support?: {
           [key: string]: string;
+        };
+        /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        social?: {
+          /** URL of the organization's LinkedIn profile. */
+          linkedin?: string;
+          /** URL of the organization's X (formerly Twitter) profile. */
+          x?: string;
         };
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3089,7 +3122,7 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
             answer: string;
           }[];
         };
-        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
           termsOfService?: string;
@@ -3098,6 +3131,13 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
           /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
           support?: {
             [key: string]: string;
+          };
+          /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+          social?: {
+            /** URL of the organization's LinkedIn profile. */
+            linkedin?: string;
+            /** URL of the organization's X (formerly Twitter) profile. */
+            x?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3211,7 +3251,7 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
             answer: string;
           }[];
         };
-        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
           termsOfService?: string;
@@ -3220,6 +3260,13 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
           /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
           support?: {
             [key: string]: string;
+          };
+          /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+          social?: {
+            /** URL of the organization's LinkedIn profile. */
+            linkedin?: string;
+            /** URL of the organization's X (formerly Twitter) profile. */
+            x?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3314,7 +3361,7 @@ export type UpdateOrgApiArg = {
           answer: string;
         }[];
       };
-      /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+      /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
       links?: {
         /** URL of the organization's Terms of Service page. */
         termsOfService?: string;
@@ -3323,6 +3370,13 @@ export type UpdateOrgApiArg = {
         /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
         support?: {
           [key: string]: string;
+        };
+        /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        social?: {
+          /** URL of the organization's LinkedIn profile. */
+          linkedin?: string;
+          /** URL of the organization's X (formerly Twitter) profile. */
+          x?: string;
         };
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3396,7 +3450,7 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
         answer: string;
       }[];
     };
-    /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+    /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
     links?: {
       /** URL of the organization's Terms of Service page. */
       termsOfService?: string;
@@ -3405,6 +3459,13 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
       /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
       support?: {
         [key: string]: string;
+      };
+      /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+      social?: {
+        /** URL of the organization's LinkedIn profile. */
+        linkedin?: string;
+        /** URL of the organization's X (formerly Twitter) profile. */
+        x?: string;
       };
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
