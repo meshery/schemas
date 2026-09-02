@@ -141,6 +141,9 @@ async function main() {
     // Change to project root
     process.chdir(paths.getProjectRoot());
 
+    // Generated Go must be gofmt-clean as generated; fail before writing anything.
+    requireGofmt(logger);
+
     logger.header("🔑 Generating Go permission key constants...");
 
     // Resolve source path (make relative paths absolute from project root)
@@ -174,8 +177,6 @@ const goContent = generateGoFile(index.items, index.id);
 
     paths.ensureParentDir(outputPath);
     fs.writeFileSync(outputPath, goContent, "utf-8");
-    // Generated Go must be gofmt-clean as generated.
-    requireGofmt(logger);
     formatGoFile(outputPath);
 
     logger.success(`Generated: ${paths.relativePath(outputPath)}`);
