@@ -37,6 +37,7 @@ Detailed reference for how the build scripts consume OpenAPI schemas and produce
 
 **Script**: `build/generate-golang.js`
 **Dependency**: `oapi-codegen` v2.x (pinned via `tool` directive in `go.mod`)
+**Also requires**: `gofmt` (Go toolchain) - the generator runs it on every file it emits
 **Prerequisite**: `bundle-openapi.js` must run first (enforced by `make generate-golang` depending on `bundle-openapi`, and by `build/index.js` marking `golang` as `dependsOn: "bundle"`). The Go generator reads source `api.yml` files directly, but the standard build runs bundling first.
 
 ### Go generator flow
@@ -50,6 +51,7 @@ Detailed reference for how the build scripts consume OpenAPI schemas and produce
 7. Rewrites external import aliases to readable names and preserves explicit `x-go-type-import.name` aliases
 8. Infers repetitive helper methods from generated package types and existing handwritten helpers
 9. Applies extra tags and field-name/type overrides post-generation
+10. Runs `gofmt -w` on each emitted file as the final step, so generated Go is gofmt-clean as generated
 
 ### Output location
 

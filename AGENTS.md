@@ -39,6 +39,13 @@ Generated artifacts (`models/`, `typescript/generated/`) are committed by automa
 - ❌ Generated TypeScript in `typescript/generated/`
 - ❌ Built files in `dist/`
 
+The Go generators (`build/generate-golang.js`, `build/generate-permission-golang.js`)
+run every file they emit through `gofmt -w` as their final step via
+`build/lib/gofmt.js`, so generated Go under `models/` is gofmt-clean as generated.
+Any new emitter of Go source must do the same. Hand-written Go in `models/`
+(`*_helper.go`, `const.go`, `import.go`, `*_conversion.go`, `models/core/`) is not
+covered by that step.
+
 ## Required on Every PR
 
 - **Tests accompany every behavioral change.** Run every locally-runnable test

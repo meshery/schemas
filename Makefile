@@ -47,7 +47,7 @@ generate-site-index: site-data-generate
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup generate-ts generate-enums-ts test-enums-ts publish-ts bundle-openapi generate-golang generate-rtk test-rtk test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
+.PHONY: setup generate-ts generate-enums-ts test-enums-ts publish-ts bundle-openapi generate-golang test-gofmt generate-rtk test-rtk test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -83,6 +83,11 @@ bundle-openapi: dep-check
 ## Generate Golang Models (requires bundle-openapi)
 generate-golang: bundle-openapi
 	node build/generate-golang.js
+	$(MAKE) --no-print-directory test-gofmt
+
+## Run gofmt helper regression tests
+test-gofmt:
+	node --test tests/gofmt.test.js
 
 ## Generate RTK Query clients (requires bundle-openapi)
 generate-rtk: bundle-openapi
