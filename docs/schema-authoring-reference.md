@@ -121,6 +121,35 @@ billing_id:
   pattern: '^[A-Za-z0-9_\-]+$'
 ```
 
+## Operation and Parameter Documentation
+
+Alongside the per-property rules, the validator enforces two advisory documentation rules on operations and parameters. Like Rules 37–42 they are advisory by default and blocking under `--strict`.
+
+| Rule | What it checks |
+|---|---|
+| 48 | Every operation has a `summary` or a `description` |
+| 49 | Every `path`, `query`, and `header` parameter has a `description` |
+
+Rule 49 checks inline parameters where they are declared and shared parameters at their definition under `components.parameters`. A parameter used via `$ref` is not re-checked at the use site; its description is validated once at the definition (in this file, or in the file the `$ref` points to when that file is audited). `cookie` parameters are out of scope.
+
+```yaml
+paths:
+  /api/identity/tokens:
+    get:
+      summary: Get tokens
+      description: Retrieves tokens associated with the authenticated user.
+      parameters:
+      - $ref: '#/components/parameters/page'
+components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Page number to retrieve.
+      schema:
+        type: integer
+```
+
 The annotation is self-documenting: the exemption lives with the schema property where the domain knowledge is, not in a hardcoded allowlist. Use it only for properties that genuinely hold non-UUID external identifiers.
 
 ## Canonical RJSF form schemas
