@@ -1116,7 +1116,7 @@ var (
 	// WorkspaceManagementAssignConnectionsToEnvironment - Add new connections to environments
 	WorkspaceManagementAssignConnectionsToEnvironment = PermissionKey(uuid.Must(uuid.FromString("52cbe0b8-9aa7-4605-8eed-aa37e595adbb")))
 
-	// WorkspaceManagementRemoveConnectionsFromEnvironment - Remove connections from environment, 
+	// WorkspaceManagementRemoveConnectionsFromEnvironment - Remove connections from environment,
 	WorkspaceManagementRemoveConnectionsFromEnvironment = PermissionKey(uuid.Must(uuid.FromString("65648682-e47f-43d7-a5ad-dc042803f951")))
 
 	// WorkspaceManagementViewProjects - View all of your projects
