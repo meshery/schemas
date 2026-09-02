@@ -111,6 +111,7 @@ All build scripts share common utilities located in `build/lib/`:
 | `logger.js` | Colored console output and logging |
 | `config.js` | Dynamic schema discovery and path configuration |
 | `exec.js` | Command execution utilities |
+| `gofmt.js` | Runs `gofmt -w` on emitted Go files; every Go emitter must use it |
 | `paths.js` | Path resolution and file operations |
 
 ## Dynamic Schema Discovery
@@ -196,6 +197,8 @@ Generates Go structs from the bundled OpenAPI specifications.
 1. Reads bundled OpenAPI JSON files from `_openapi_build/constructs/`
 2. Generates Go structs with JSON and YAML struct tags using `oapi-codegen`
 3. Outputs Go files to `models/<version>/<package>/`
+4. Runs `gofmt -w` (via `lib/gofmt.js`) on every file it emits, as the final
+   step, so generated Go is gofmt-clean as generated
 
 **Usage:**
 ```bash
@@ -212,6 +215,7 @@ make generate-golang  # Auto-runs bundle-openapi first
 **Prerequisites:**
 - Requires `_openapi_build/` directory (run `bundle-openapi.js` first)
 - Requires `oapi-codegen` Go tool
+- Requires `gofmt` (ships with the Go toolchain)
 
 ---
 
