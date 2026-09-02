@@ -863,12 +863,13 @@ components:
         - registrationCount
         properties:
           registrationCount:
-            type: number
+            type: integer
+            format: int64
             description: Number of registrations associated with this curriculum.
             minimum: 0
             x-oapi-codegen-extra-tags:
-              db: registration_count,omitempty
-              json: registrationCount,omitempty
+              db: registration_count
+              json: registrationCount
           invitation:
             $ref: ../invitation/api.yml#/components/schemas/Invitation
             x-go-type: invitationv1beta3.Invitation
@@ -946,12 +947,13 @@ components:
         - registrationCount
         properties:
           registrationCount:
-            type: number
+            type: integer
+            format: int64
             description: Number of registrations associated with this curriculum.
             minimum: 0
             x-oapi-codegen-extra-tags:
-              db: registration_count,omitempty
-              json: registrationCount,omitempty
+              db: registration_count
+              json: registrationCount
     AcademyCurriculaListResponse:
       type: object
       properties:
