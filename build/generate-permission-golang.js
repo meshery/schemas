@@ -44,6 +44,7 @@ const fs = require("fs");
 const logger = require("./lib/logger");
 const paths = require("./lib/paths");
 const { loadPermissions, generateGoFile, buildIndex, saveIndex } = require("./lib/permissions");
+const { formatGoFile, requireGofmt } = require("./lib/gofmt");
 
 // Default values
 const DEFAULT_SOURCE = "build/permissions.csv";
@@ -173,6 +174,9 @@ const goContent = generateGoFile(index.items, index.id);
 
     paths.ensureParentDir(outputPath);
     fs.writeFileSync(outputPath, goContent, "utf-8");
+    // Generated Go must be gofmt-clean as generated.
+    requireGofmt(logger);
+    formatGoFile(outputPath);
 
     logger.success(`Generated: ${paths.relativePath(outputPath)}`);
 
