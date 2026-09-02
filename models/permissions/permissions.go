@@ -5,7 +5,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "cadac079689e3d775e5e7d32c7bebe307b526aa3491a40c2720c8811de2f6e25"
+const IndexID = "074bfd49fc94fbe7125cfac2215c0844135ca66e378e6e1bfa6a8a9de7ca1be8"
 
 
 // PermissionKey represents a permission key identifier.
@@ -411,8 +411,8 @@ var (
 	// IdentityAccessManagementDomainRoutingAndRemoval - Assigned domains direct user traffic to organizations; clearing the field removes the assignment.
 	IdentityAccessManagementDomainRoutingAndRemoval = PermissionKey(uuid.Must(uuid.FromString("88fc2f27-f9b2-42c8-99b5-e36389398796")))
 
-	// IdentityAccessManagementManageRecogntions - Create, update , delete and manage recogntions awarded by your organization
-	IdentityAccessManagementManageRecogntions = PermissionKey(uuid.Must(uuid.FromString("0a887b7f-b6c2-4a33-b080-bec9c3894d0c")))
+	// IdentityAccessManagementManageRecognitions - Create, update , delete and manage recogntions awarded by your organization
+	IdentityAccessManagementManageRecognitions = PermissionKey(uuid.Must(uuid.FromString("0a887b7f-b6c2-4a33-b080-bec9c3894d0c")))
 
 	// IdentityAccessManagementManageInvitations - Create, update , delete and manage invitations to your organization
 	IdentityAccessManagementManageInvitations = PermissionKey(uuid.Must(uuid.FromString("0204fb47-b120-4074-83db-984d595d9f69")))
@@ -812,9 +812,6 @@ var (
 
 	// KanvasViewMetricsInVisualizer - View real-time resource metrics in Kanvas Operator
 	KanvasViewMetricsInVisualizer = PermissionKey(uuid.Must(uuid.FromString("2988a366-a743-48e7-9946-daff9b2ab0a1")))
-
-	// KanvasPerformConformanceTest - Perform a conformance test in Kanvas Operator
-	KanvasPerformConformanceTest = PermissionKey(uuid.Must(uuid.FromString("901ca054-0656-4db5-8d58-d618e0b82b39")))
 
 	// KanvasStreamContainerLogs - Stream container logs in Kanvas Operator
 	KanvasStreamContainerLogs = PermissionKey(uuid.Must(uuid.FromString("c1ff0f0d-95b5-4765-8c64-d77af99e5d4f")))
