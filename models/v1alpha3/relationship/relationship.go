@@ -140,9 +140,9 @@ type MatchSelector struct {
 // MatchSelectorItem Match selector item for binding between nodes
 type MatchSelectorItem struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID         *core.Uuid `json:"id" yaml:"id"`
-	Kind       string             `json:"kind" yaml:"kind"`
-	MutatedRef *MutatedRef        `json:"mutatedRef,omitempty" yaml:"mutatedRef,omitempty"`
+	ID         *core.Uuid  `json:"id" yaml:"id"`
+	Kind       string      `json:"kind" yaml:"kind"`
+	MutatedRef *MutatedRef `json:"mutatedRef,omitempty" yaml:"mutatedRef,omitempty"`
 
 	// MutatorRef JSON ref to value from where patch should be applied.
 	MutatorRef *MutatorRef `json:"mutatorRef,omitempty" yaml:"mutatorRef,omitempty"`
@@ -380,7 +380,7 @@ type Selector struct {
 type SelectorItem struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID   *core.Uuid `json:"id" yaml:"id"`
-	Kind *string            `json:"kind" yaml:"kind"`
+	Kind *string    `json:"kind" yaml:"kind"`
 
 	// Match Match configuration for selector
 	Match *MatchSelector `json:"match,omitempty" yaml:"match,omitempty"`

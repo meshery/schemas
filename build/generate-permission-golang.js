@@ -40,6 +40,7 @@
  *   - Go file with PermissionKey type and constants
  */
 
+const { execSync } = require("child_process");
 const fs = require("fs");
 const logger = require("./lib/logger");
 const paths = require("./lib/paths");
@@ -173,6 +174,8 @@ const goContent = generateGoFile(index.items, index.id);
 
     paths.ensureParentDir(outputPath);
     fs.writeFileSync(outputPath, goContent, "utf-8");
+
+    execSync(`gofmt -w "${outputPath}"`, { stdio: "inherit" });
 
     logger.success(`Generated: ${paths.relativePath(outputPath)}`);
 

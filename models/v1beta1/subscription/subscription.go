@@ -69,7 +69,7 @@ type PaymentProcessor string
 // Subscription defines model for Subscription.
 type Subscription struct {
 	// BillingId Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
-	BillingId string                   `db:"billing_id" json:"billing_id" yaml:"billing_id"`
+	BillingId string           `db:"billing_id" json:"billing_id" yaml:"billing_id"`
 	CreatedAt core.Time        `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	DeletedAt core.SqlNullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 	EndDate   core.Time        `db:"end_date" json:"end_date,omitempty" yaml:"end_date,omitempty"`
@@ -78,17 +78,17 @@ type Subscription struct {
 	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrgId core.Uuid  `db:"org_id" json:"org_id" yaml:"org_id"`
+	OrgId core.Uuid         `db:"org_id" json:"org_id" yaml:"org_id"`
 	Plan  *planv1beta1.Plan `fk_id:"PlanId" belongs_to:"plans" json:"plan,omitempty" yaml:"plan,omitempty"`
 
 	// PlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	PlanId    core.Uuid `db:"plan_id" json:"plan_id" yaml:"plan_id"`
-	Quantity  int               `db:"quantity" json:"quantity" yaml:"quantity"`
+	Quantity  int       `db:"quantity" json:"quantity" yaml:"quantity"`
 	StartDate core.Time `db:"start_date" json:"start_date,omitempty" yaml:"start_date,omitempty"`
 
 	// Status Possible statuses of a Stripe subscription.
 	Status    SubscriptionStatus `db:"status" json:"status" yaml:"status"`
-	UpdatedAt core.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt core.Time          `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // SubscriptionPage defines model for SubscriptionPage.

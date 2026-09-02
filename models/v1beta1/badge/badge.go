@@ -4,8 +4,8 @@
 package badge
 
 import (
-	"github.com/meshery/schemas/models/core"
 	"github.com/gofrs/uuid"
+	"github.com/meshery/schemas/models/core"
 )
 
 // Badge defines model for Badge.

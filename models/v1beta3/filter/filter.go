@@ -4,9 +4,9 @@
 package filter
 
 import (
+	"github.com/gofrs/uuid"
 	core "github.com/meshery/schemas/models/core"
 	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
-	"github.com/gofrs/uuid"
 )
 
 // Defines values for MesheryFilterImportFormPayloadUploadType.
@@ -44,17 +44,17 @@ type MesheryFilter struct {
 	// FilterResource Filter resource discriminator describing the filter body's source
 	// format (e.g. WASM module identifier or external resource path).
 	// Stored in the `filter_resource` text column.
-	FilterResource *string                `db:"filter_resource" json:"filterResource,omitempty" yaml:"filterResource,omitempty"`
+	FilterResource *string        `db:"filter_resource" json:"filterResource,omitempty" yaml:"filterResource,omitempty"`
 	Location       core.MapObject `json:"location,omitempty" yaml:"location,omitempty"`
 
 	// Visibility Visibility level of a resource. Controls who can see and access it.
 	// - `private`: Only the owner and explicitly shared users can access.
 	// - `public`: Anyone in the organization (or anonymous, depending on resource) can discover and access.
 	// - `published`: Promoted to the catalog for broad discovery beyond the owning organization.
-	Visibility  core.Visibility   `json:"visibility,omitempty" yaml:"visibility,omitempty"`
+	Visibility  core.Visibility              `json:"visibility,omitempty" yaml:"visibility,omitempty"`
 	CatalogData *catalogv1alpha2.CatalogData `db:"catalog_data" json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
-	CreatedAt   core.Time         `db:"created_at" json:"createdAt" yaml:"createdAt"`
-	UpdatedAt   core.Time         `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+	CreatedAt   core.Time                    `db:"created_at" json:"createdAt" yaml:"createdAt"`
+	UpdatedAt   core.Time                    `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 }
 
 // MesheryFilterCloneRequestBody Payload for `POST /api/content/filters/clone/{filterId}`. The
@@ -162,12 +162,12 @@ type MesheryFilterRequestBody struct {
 	// `updatedAt` and the owning `userId` (which the server derives
 	// from the authenticated session) are intentionally excluded.
 	FilterData *MesheryFilterPayload `json:"filterData,omitempty" yaml:"filterData,omitempty"`
-	Path       core.Text     `json:"path,omitempty" yaml:"path,omitempty"`
+	Path       core.Text             `json:"path,omitempty" yaml:"path,omitempty"`
 
 	// Save When true, persist the filter in addition to parsing it.
 	// When false, the server returns the parsed payload without
 	// committing it to the database.
-	Save *bool                 `json:"save,omitempty" yaml:"save,omitempty"`
+	Save *bool         `json:"save,omitempty" yaml:"save,omitempty"`
 	Url  core.Endpoint `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
