@@ -377,7 +377,8 @@ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 | `make build` | Run full build pipeline (validate → bundle → generate → test) |
 | `make validate-schemas` | Run the Go schema validator |
 | `make bundle-openapi` | Bundle and merge OpenAPI specs |
-| `make generate-golang` | Generate Go code (auto-runs bundle) |
+| `make generate-golang` | Generate Go code (auto-runs bundle, then `test-gofmt`) |
+| `make test-gofmt` | Run the `lib/gofmt.js` regression tests |
 | `make generate-rtk` | Generate RTK Query clients (auto-runs bundle) |
 | `make generate-ts` | Generate TypeScript types and schema exports |
 | `make setup` | Install all dependencies |
