@@ -1,0 +1,441 @@
+openapi: 3.0.0
+info:
+  title: MeshSync
+  description: >-
+    OpenAPI schema for Meshery's MeshSync resources API. This API is used for
+    fetching and managing Kubernetes resources discovered by MeshSync.
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+
+tags:
+  - name: MeshSync
+    description: Operations on MeshSync resources.
+
+paths:
+  /api/system/meshsync/resources:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - MeshSync
+      operationId: getMeshSyncResources
+      summary: List MeshSync resources
+      description: >-
+        Returns a paginated list of Kubernetes resources discovered by MeshSync.
+        When `asDesign` is true the resources are converted to a Meshery design
+        and relationship-evaluated before being returned.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: kind
+          in: query
+          description: >-
+            Filter by Kubernetes resource kind. Accepts multiple values
+            (repeated query param).
+          required: false
+          schema:
+            type: array
+            maxItems: 50
+            items:
+              type: string
+              maxLength: 255
+        - name: model
+          in: query
+          description: >-
+            Filter by model name. Accepts multiple values (repeated query
+            param).
+          required: false
+          schema:
+            type: array
+            maxItems: 50
+            items:
+              type: string
+              maxLength: 255
+        - name: namespace
+          in: query
+          description: >-
+            Filter by namespace. Accepts multiple values (repeated query
+            param).
+          required: false
+          schema:
+            type: array
+            maxItems: 50
+            items:
+              type: string
+              maxLength: 255
+        - name: clusterId
+          in: query
+          description: >-
+            Cluster IDs to scope the query. Accepts multiple values (repeated query param).
+          required: false
+          schema:
+            type: array
+            maxItems: 50
+            items:
+              type: string
+              maxLength: 255
+        - name: label
+          in: query
+          description: >-
+            Filter by label key-value pair. Accepts multiple values (repeated
+            query param).
+          required: false
+          schema:
+            type: array
+            maxItems: 50
+            items:
+              type: string
+              maxLength: 255
+        - name: labels
+          in: query
+          description: >-
+            When `true`, embeds the full label map on each returned resource.
+          required: false
+          schema:
+            type: boolean
+        - name: status
+          in: query
+          description: >-
+            When `true`, embeds the status sub-resource on each returned
+            resource.
+          required: false
+          schema:
+            type: boolean
+        - name: annotations
+          in: query
+          description: >-
+            When `true`, embeds the full annotation map on each returned
+            resource.
+          required: false
+          schema:
+            type: boolean
+        - name: spec
+          in: query
+          description: When `true`, embeds the spec sub-resource on each returned resource.
+          required: false
+          schema:
+            type: boolean
+        - name: apiVersion
+          in: query
+          description: Filter by Kubernetes API version (e.g. `apps/v1`).
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - name: asDesign
+          in: query
+          description: >-
+            When `true`, converts the matched resources into a Meshery design,
+            evaluates relationships, and returns the design in the `design`
+            field instead of `resources`.
+          required: false
+          schema:
+            type: boolean
+        - name: patternId
+          in: query
+          description: >-
+            Filter resources by the Meshery pattern (design) ID. Accepts
+            multiple values (repeated query param).
+          required: false
+          schema:
+            type: array
+            maxItems: 50
+            items:
+              type: string
+              maxLength: 255
+      responses:
+        "200":
+          description: Paginated list of MeshSync resources.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeshSyncResourcesPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/system/meshsync/resources/summary:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - MeshSync
+      operationId: getMeshSyncResourceKinds
+      summary: Get MeshSync resource kinds summary
+      description: >-
+        Returns a summary of discovered resource kinds (with per-kind counts),
+        distinct namespaces, and distinct labels for the requested clusters.
+      parameters:
+        - name: clusterId
+          in: query
+          description: >-
+            Cluster IDs to scope the summary. Accepts multiple values (repeated
+            query param). At least one value is required.
+          required: true
+          schema:
+            type: array
+            minItems: 1
+            maxItems: 50
+            items:
+              type: string
+              maxLength: 255
+        - name: namespace
+          in: query
+          description: >-
+            Restrict the summary to the given namespaces. Accepts multiple
+            values (repeated query param).
+          required: false
+          schema:
+            type: array
+            maxItems: 50
+            items:
+              type: string
+              maxLength: 255
+        - name: patternId
+          in: query
+          description: >-
+            Restrict the summary to resources belonging to the given Meshery
+            pattern IDs. Accepts multiple values (repeated query param).
+          required: false
+          schema:
+            type: array
+            maxItems: 50
+            items:
+              type: string
+              maxLength: 255
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: MeshSync resource kinds summary.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeshSyncResourcesSummary"
+        "400":
+          description: Bad request - `clusterId` is required but was not provided.
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/system/meshsync/resources/{resourceId}:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - MeshSync
+      operationId: getMeshSyncResourceById
+      summary: Get a MeshSync resource by ID
+      description: >-
+        Returns a single MeshSync-discovered Kubernetes resource by its ID,
+        including its full spec, status, labels, and annotations. The resource
+        is converted and returned as a Meshery component definition.
+      parameters:
+        - $ref: "#/components/parameters/resourceId"
+      responses:
+        "200":
+          description: The MeshSync resource represented as a component definition.
+          content:
+            application/json:
+              schema:
+                $ref: "../component/component.yaml"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["meshery"]
+      tags:
+        - MeshSync
+      operationId: deleteMeshSyncResource
+      summary: Delete a MeshSync resource
+      description: Deletes a specific MeshSync-discovered resource by ID.
+      parameters:
+        - $ref: "#/components/parameters/resourceId"
+      responses:
+        "200":
+          description: Resource deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeshSyncDeleteResponse"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+    500:
+      $ref: "../core/api.yml#/components/responses/500"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    page:
+      $ref: "../core/api.yml#/components/parameters/page"
+    pageSize:
+      name: pageSize
+      in: query
+      description: Number of results to return per page.
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+    search:
+      $ref: "../core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../core/api.yml#/components/parameters/order"
+    resourceId:
+      name: resourceId
+      in: path
+      description: Resource ID.
+      required: true
+      schema:
+        type: string
+        maxLength: 255
+
+  schemas:
+    MeshSyncResourcesPage:
+      description: A paginated list of MeshSync-discovered Kubernetes resources.
+      type: object
+      additionalProperties: false
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - resources
+      properties:
+        page:
+          type: integer
+          description: Current page number (zero-indexed).
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items in this page.
+          minimum: 1
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of matching resources across all pages.
+          minimum: 0
+        resources:
+          type: array
+          description: >-
+            The discovered Kubernetes resources. Empty when `asDesign` is true.
+          items:
+            type: object
+        design:
+          $ref: "../design/design.yaml"
+          description: >-
+            Present (and `resources` is empty) when `asDesign=true`. Contains
+            the relationship-evaluated Meshery design built from the matched
+            resources.
+
+    MeshSyncKindCount:
+      description: Per-kind resource count for a given model.
+      type: object
+      additionalProperties: false
+      required:
+        - kind
+        - model
+        - count
+      properties:
+        kind:
+          type: string
+          description: Kubernetes resource kind.
+          maxLength: 255
+        model:
+          type: string
+          description: Meshery model name that registered this kind.
+          maxLength: 255
+        count:
+          type: integer
+          format: int64
+          description: Number of discovered resources of this kind.
+          minimum: 0
+
+    MeshSyncKeyValue:
+      description: A discovered Kubernetes key-value pair (e.g. a label).
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - uniqueId
+        - kind
+        - key
+        - value
+      properties:
+        id:
+          type: string
+          description: MeshSync resource ID associated with this key-value pair.
+          maxLength: 255
+        uniqueId:
+          type: string
+          description: Internal unique identifier for this key-value pair.
+          maxLength: 255
+        kind:
+          type: string
+          description: Key-value kind, such as `label` or `annotation`.
+          maxLength: 255
+        key:
+          type: string
+          description: The key of the key-value pair.
+          maxLength: 255
+        value:
+          type: string
+          description: The value of the key-value pair.
+          maxLength: 255
+
+    MeshSyncResourcesSummary:
+      description: Summary of discovered MeshSync resources for the requested clusters.
+      type: object
+      additionalProperties: false
+      required:
+        - kinds
+        - namespaces
+        - labels
+      properties:
+        kinds:
+          type: array
+          description: Per-kind resource counts.
+          items:
+            $ref: "#/components/schemas/MeshSyncKindCount"
+        namespaces:
+          type: array
+          description: Distinct namespaces containing discovered resources.
+          items:
+            type: string
+            maxLength: 255
+        labels:
+          type: array
+          description: Distinct label key-value pairs found on discovered resources.
+          items:
+            $ref: "#/components/schemas/MeshSyncKeyValue"
+
+    MeshSyncDeleteResponse:
+      description: Response returned after deleting a MeshSync resource.
+      type: object
+      additionalProperties: false
+      required:
+        - deleted
+      properties:
+        deleted:
+          type: boolean
+          description: Whether the MeshSync resource was deleted.
