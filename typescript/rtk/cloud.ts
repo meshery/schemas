@@ -4987,7 +4987,7 @@ export type CreateViewApiResponse = /** status 201 Created view */ {
   deletedAt?: string | null;
 };
 export type CreateViewApiArg = {
-  /** Body for creating or updating a view */
+  /** Body for creating a view */
   body: {
     /** Display name of the view. */
     name: string;
@@ -5122,10 +5122,10 @@ export type UpdateViewApiResponse = /** status 200 Updated view */ {
 export type UpdateViewApiArg = {
   /** View ID */
   viewId: string;
-  /** Body for creating or updating a view */
+  /** Body for partially updating a view. Omitted properties retain their stored value. */
   body: {
     /** Display name of the view. */
-    name: string;
+    name?: string;
     /** Filter configuration for this view. */
     filters?: object;
     /** Visibility level of the view. */

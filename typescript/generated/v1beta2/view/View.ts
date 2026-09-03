@@ -181,10 +181,21 @@ export interface components {
              */
             deletedAt?: string | null;
         };
-        /** @description Payload for creating or updating a view. */
+        /** @description Payload for creating a view. */
         ViewPayload: {
             /** @description Display name of the view. */
             name: string;
+            /** @description Filter configuration for this view. */
+            filters?: Record<string, never>;
+            /** @description Visibility level of the view. */
+            visibility?: string;
+            /** @description Metadata associated with the view. */
+            metadata?: Record<string, never>;
+        };
+        /** @description Partial update for a view. Every property is optional; an omitted property retains its stored value. A supplied name still cannot be empty. */
+        ViewUpdatePayload: {
+            /** @description Display name of the view. */
+            name?: string;
             /** @description Filter configuration for this view. */
             filters?: Record<string, never>;
             /** @description Visibility level of the view. */
@@ -344,12 +355,27 @@ export interface components {
         userIdQuery: string;
     };
     requestBodies: {
-        /** @description Body for creating or updating a view */
+        /** @description Body for creating a view */
         viewPayload: {
             content: {
                 "application/json": {
                     /** @description Display name of the view. */
                     name: string;
+                    /** @description Filter configuration for this view. */
+                    filters?: Record<string, never>;
+                    /** @description Visibility level of the view. */
+                    visibility?: string;
+                    /** @description Metadata associated with the view. */
+                    metadata?: Record<string, never>;
+                };
+            };
+        };
+        /** @description Body for partially updating a view. Omitted properties retain their stored value. */
+        viewUpdatePayload: {
+            content: {
+                "application/json": {
+                    /** @description Display name of the view. */
+                    name?: string;
                     /** @description Filter configuration for this view. */
                     filters?: Record<string, never>;
                     /** @description Visibility level of the view. */
@@ -513,7 +539,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        /** @description Body for creating or updating a view */
+        /** @description Body for creating a view */
         requestBody: {
             content: {
                 "application/json": {
@@ -789,12 +815,12 @@ export interface operations {
             };
             cookie?: never;
         };
-        /** @description Body for creating or updating a view */
+        /** @description Body for partially updating a view. Omitted properties retain their stored value. */
         requestBody: {
             content: {
                 "application/json": {
                     /** @description Display name of the view. */
-                    name: string;
+                    name?: string;
                     /** @description Filter configuration for this view. */
                     filters?: Record<string, never>;
                     /** @description Visibility level of the view. */
