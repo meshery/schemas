@@ -1,0 +1,516 @@
+openapi: 3.0.0
+info:
+  title: Organization SMTP Configuration
+  description: >-
+    OpenAPI schema for per-organization outbound mail. A Cloud deployment ships
+    with one shared SMTP relay owned by the provider organization, so every
+    message - whichever tenant it concerns - leaves from the provider's domain.
+    These operations let an organization register its own mail server and
+    credentials instead, so that every email whose reader belongs to that
+    organization is delivered from the organization's own domain. This covers
+    application notifications and identity-flow mail (account verification,
+    password recovery) alike, because both are rendered and sent by Cloud.
+
+    The password is encrypted at rest and never returned. A configuration
+    cannot be enabled until control of its from domain has been proven, and a
+    failing server falls back to the provider relay unless the organization has
+    opted out.
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+
+tags:
+  - name: OrganizationSmtp
+    description: Operations on an organization's own outbound mail server.
+
+paths:
+  /api/identity/orgs/{orgId}/smtp-configuration:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - OrganizationSmtp
+      operationId: getOrganizationSmtpConfiguration
+      summary: Get an organization's SMTP configuration
+      description: >-
+        Returns the organization's mail server configuration, including its
+        current health and from-domain verification state. The password is
+        always the redaction sentinel `***`.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: The organization's SMTP configuration.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationSmtpConfiguration"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - OrganizationSmtp
+      operationId: upsertOrganizationSmtpConfiguration
+      summary: Create or replace an organization's SMTP configuration
+      description: >-
+        Writes the organization's single mail server configuration, creating it
+        if absent. The whole document is replaced, with one exception: a
+        `password` of `***` or an empty string preserves the stored password,
+        so a client may edit an unrelated field after a read without erasing
+        the credential.
+
+        Changing the from address resets from-domain verification, and
+        `enabled` is refused while the from domain is unverified.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        $ref: "#/components/requestBodies/organizationSmtpConfigurationPayload"
+      responses:
+        "200":
+          description: The stored SMTP configuration.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationSmtpConfiguration"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - OrganizationSmtp
+      operationId: deleteOrganizationSmtpConfiguration
+      summary: Remove an organization's SMTP configuration
+      description: >-
+        Removes the configuration and its stored credential. The organization's
+        mail reverts to the provider's shared relay.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "204":
+          description: The configuration was removed.
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgId}/smtp-configuration/test:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - OrganizationSmtp
+      operationId: testOrganizationSmtpConfiguration
+      summary: Send a test message through an organization's SMTP configuration
+      description: >-
+        Delivers a real message through the configured server and reports a
+        classified outcome. A real delivery rather than a connection probe on
+        purpose: a server that connects and authenticates but refuses the
+        sender or the recipient is the most common misconfiguration, and a
+        probe reports it healthy.
+
+        The recipient defaults to the calling administrator's own address. The
+        outcome is a classification, never the remote server's own text.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        $ref: "#/components/requestBodies/organizationSmtpTestRequest"
+      responses:
+        "200":
+          description: The classified outcome of the delivery attempt.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationSmtpTestResult"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/429"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgId}/smtp-configuration/domain-verification:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - OrganizationSmtp
+      operationId: getOrganizationSmtpDomainVerification
+      summary: Get the from-domain verification challenge
+      description: >-
+        Returns the DNS record the organization must publish to prove control
+        of its from domain, together with the current verification state. A
+        from domain that matches the organization's own registered custom
+        domain is already proven and needs no record.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: The verification challenge and its current state.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationSmtpDomainChallenge"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - OrganizationSmtp
+      operationId: verifyOrganizationSmtpDomain
+      summary: Check the from-domain verification challenge
+      description: >-
+        Resolves the challenge record and records the result. Proving the
+        domain is what permits the configuration to be enabled.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: The outcome of the verification check.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationSmtpDomainChallenge"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/429"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    400:
+      $ref: "../core/api.yml#/components/responses/400"
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+    403:
+      description: Caller lacks the permission key required for this organization
+      content:
+        text/plain:
+          schema:
+            type: string
+    404:
+      $ref: "../core/api.yml#/components/responses/404"
+    429:
+      description: Too many attempts for this organization
+      content:
+        text/plain:
+          schema:
+            type: string
+    500:
+      $ref: "../core/api.yml#/components/responses/500"
+
+  parameters:
+    orgId:
+      name: orgId
+      in: path
+      description: Organization ID
+      required: true
+      schema:
+        $ref: ../core/api.yml#/components/schemas/uuid
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  requestBodies:
+    organizationSmtpConfigurationPayload:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrganizationSmtpConfigurationPayload"
+    organizationSmtpTestRequest:
+      required: false
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrganizationSmtpTestRequest"
+
+  schemas:
+    OrganizationSmtpConfiguration:
+      $ref: "./organization_smtp.yaml"
+
+    OrganizationSmtpConfigurationPayload:
+      type: object
+      additionalProperties: false
+      description: >-
+        Client-settable fields of an organization's mail server configuration.
+        Health, verification state and timestamps are server-owned and are not
+        accepted here.
+      required:
+        - host
+        - port
+        - fromAddress
+      properties:
+        id:
+          $ref: ../core/api.yml#/components/schemas/uuid
+          description: Existing configuration identifier, for an update.
+          x-order: 1
+          x-oapi-codegen-extra-tags:
+            json: id,omitempty
+        host:
+          type: string
+          description: Hostname of the organization's SMTP server.
+          minLength: 1
+          maxLength: 253
+          x-order: 2
+          x-go-type-skip-optional-pointer: true
+        port:
+          type: integer
+          description: TCP port the organization's SMTP server listens on.
+          minimum: 1
+          maximum: 65535
+          default: 587
+          x-order: 3
+          x-go-type-skip-optional-pointer: true
+        encryption:
+          type: string
+          description: >-
+            Transport encryption to negotiate. `starttls` upgrades a cleartext
+            connection (typically port 587), `tls` opens an implicit TLS
+            connection (typically port 465), and `none` sends in cleartext.
+          enum:
+            - starttls
+            - tls
+            - none
+          default: starttls
+          x-order: 4
+          x-go-type-skip-optional-pointer: true
+        authMechanism:
+          type: string
+          description: >-
+            SMTP authentication mechanism. Any mechanism other than `none`
+            requires both a username and a password.
+          enum:
+            - plain
+            - cram-md5
+            - none
+          default: plain
+          x-order: 5
+          x-go-type-skip-optional-pointer: true
+        username:
+          type: string
+          description: Username presented to the organization's SMTP server.
+          maxLength: 320
+          x-order: 6
+          x-oapi-codegen-extra-tags:
+            json: username,omitempty
+        password:
+          type: string
+          description: >-
+            Password presented to the organization's SMTP server. Write-only.
+            `***` or an empty string preserves the stored password, so a client
+            may round-trip a read without erasing the credential.
+          maxLength: 512
+          x-order: 7
+          x-oapi-codegen-extra-tags:
+            json: password,omitempty
+        fromAddress:
+          $ref: ../core/api.yml#/components/schemas/email
+          description: >-
+            Address the organization's mail is sent from. Changing it resets
+            from-domain verification.
+          x-order: 8
+        fromDisplayName:
+          type: string
+          description: Display name shown alongside the from address.
+          maxLength: 255
+          x-order: 9
+          x-oapi-codegen-extra-tags:
+            json: fromDisplayName,omitempty
+        replyToAddress:
+          $ref: ../core/api.yml#/components/schemas/email
+          description: Address replies are directed to.
+          x-order: 10
+          x-oapi-codegen-extra-tags:
+            json: replyToAddress,omitempty
+        enabled:
+          type: boolean
+          description: >-
+            Whether mail is routed through this server. Refused while the from
+            domain is unverified.
+          default: false
+          x-order: 11
+          x-go-type-skip-optional-pointer: true
+        fallbackToProvider:
+          type: boolean
+          description: >-
+            Whether a message this server fails to accept is re-sent through the
+            provider's shared relay. Disabling it means a failure is a dropped
+            message, account verification and password recovery included.
+          default: true
+          x-order: 12
+          x-go-type-skip-optional-pointer: true
+
+    OrganizationSmtpTestRequest:
+      type: object
+      additionalProperties: false
+      description: Options for a test delivery.
+      properties:
+        to:
+          $ref: ../core/api.yml#/components/schemas/email
+          description: >-
+            Recipient of the test message. Defaults to the calling
+            administrator's own address.
+          x-order: 1
+          x-oapi-codegen-extra-tags:
+            json: to,omitempty
+
+    OrganizationSmtpTestResult:
+      type: object
+      additionalProperties: false
+      description: >-
+        Classified outcome of a test delivery. Carries no text from the remote
+        server, so a refusal reveals nothing about what the network can reach.
+      required:
+        - outcome
+        - testedAt
+      properties:
+        outcome:
+          type: string
+          description: >-
+            What happened. `delivered` means the server accepted the message;
+            every other value names the stage that refused it.
+          enum:
+            - delivered
+            - blocked_target
+            - connect_refused
+            - connect_timeout
+            - tls_failed
+            - starttls_unsupported
+            - auth_rejected
+            - relay_rejected_sender
+            - relay_rejected_recipient
+            - delivery_failed
+            - credential_unreadable
+          x-order: 1
+          x-go-type-skip-optional-pointer: true
+        message:
+          type: string
+          description: Human-readable summary of the outcome, drawn from a fixed set of phrasings.
+          maxLength: 1000
+          x-order: 2
+          x-oapi-codegen-extra-tags:
+            json: message,omitempty
+        sentTo:
+          $ref: ../core/api.yml#/components/schemas/email
+          description: Address the test message was addressed to.
+          x-order: 3
+          x-oapi-codegen-extra-tags:
+            json: sentTo,omitempty
+        testedAt:
+          type: string
+          format: date-time
+          description: When the delivery was attempted.
+          x-go-type: time.Time
+          x-order: 4
+          x-go-type-skip-optional-pointer: true
+
+    OrganizationSmtpDomainChallenge:
+      type: object
+      additionalProperties: false
+      description: >-
+        The DNS record proving control of an organization's from domain, and
+        the current state of that proof.
+      required:
+        - domain
+        - verified
+        - method
+      properties:
+        domain:
+          type: string
+          description: Registrable domain the proof applies to.
+          maxLength: 253
+          x-order: 1
+          x-go-type-skip-optional-pointer: true
+        method:
+          type: string
+          description: >-
+            How the domain is proven. `custom-domain` means it matches the
+            organization's own registered custom domain and needs no record;
+            `dns-txt` means the record below must be published.
+          enum:
+            - custom-domain
+            - dns-txt
+          x-order: 2
+          x-go-type-skip-optional-pointer: true
+        recordName:
+          type: string
+          description: Fully qualified name of the TXT record to publish.
+          maxLength: 253
+          x-order: 3
+          x-oapi-codegen-extra-tags:
+            json: recordName,omitempty
+        recordValue:
+          type: string
+          description: Value the TXT record must carry.
+          maxLength: 512
+          x-order: 4
+          x-oapi-codegen-extra-tags:
+            json: recordValue,omitempty
+        verified:
+          type: boolean
+          description: Whether control of the domain is currently proven.
+          x-order: 5
+          x-go-type-skip-optional-pointer: true
+        verifiedAt:
+          $ref: ../core/api.yml#/components/schemas/nullTime
+          description: When control was last proven. Null while unproven.
+          nullable: true
+          x-order: 6
+        failureReason:
+          type: string
+          description: Why the last check did not prove control.
+          enum:
+            - record_not_found
+            - record_mismatch
+            - lookup_failed
+            - domain_reserved
+          x-order: 7
+          x-oapi-codegen-extra-tags:
+            json: failureReason,omitempty

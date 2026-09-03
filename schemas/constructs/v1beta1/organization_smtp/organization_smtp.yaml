@@ -1,0 +1,301 @@
+$id: https://schemas.meshery.io/organization_smtp.yaml
+$schema: http://json-schema.org/draft-07/schema#
+title: OrganizationSmtpConfiguration
+description: >-
+  An organization's own outbound mail server. When present and enabled, every
+  transactional email whose reader belongs to this organization - application
+  notifications and identity-flow mail (account verification, password
+  recovery) alike - is delivered through this server rather than through the
+  provider's shared relay, so the message leaves from the organization's own
+  domain. At most one live configuration exists per organization. The SMTP
+  password is encrypted at rest and is never returned; reads always carry the
+  redaction sentinel instead.
+additionalProperties: false
+type: object
+example:
+  id: 00000000-0000-0000-0000-000000000000
+  organizationId: 00000000-0000-0000-0000-000000000000
+  host: smtp.example.com
+  port: 587
+  encryption: starttls
+  authMechanism: plain
+  username: no-reply@example.com
+  password: "***"
+  fromAddress: no-reply@example.com
+  fromDisplayName: Example Corp
+  replyToAddress: support@example.com
+  enabled: true
+  fallbackToProvider: true
+  fromDomain: example.com
+  fromDomainVerificationToken: 0f6a5d2c9b1e4a7f8c3d6b0e2a4f7c19
+  fromDomainVerifiedAt: null
+  verificationState: unverified
+  lastSuccessAt: null
+  lastFailureAt: null
+  lastFailureReason: null
+  consecutiveFailures: 0
+  createdBy: 00000000-0000-0000-0000-000000000000
+  createdAt: "0001-01-01T00:00:00Z"
+  updatedAt: "0001-01-01T00:00:00Z"
+  deletedAt: null
+required:
+  - id
+  - organizationId
+  - host
+  - port
+  - encryption
+  - authMechanism
+  - fromAddress
+  - enabled
+  - fallbackToProvider
+  - verificationState
+  - consecutiveFailures
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../core/api.yml#/components/schemas/uuid
+    description: Unique identifier of the SMTP configuration.
+    x-order: 1
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+  organizationId:
+    $ref: ../core/api.yml#/components/schemas/uuid
+    description: Organization that owns this mail server configuration.
+    x-order: 2
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+  host:
+    type: string
+    description: Hostname of the organization's SMTP server.
+    minLength: 1
+    maxLength: 253
+    x-order: 3
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: host
+  port:
+    type: integer
+    description: TCP port the organization's SMTP server listens on.
+    minimum: 1
+    maximum: 65535
+    default: 587
+    x-order: 4
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: port
+  encryption:
+    type: string
+    description: >-
+      Transport encryption to negotiate. `starttls` upgrades a cleartext
+      connection (typically port 587), `tls` opens an implicit TLS connection
+      (typically port 465), and `none` sends in cleartext and is intended only
+      for an internal relay on a trusted network.
+    enum:
+      - starttls
+      - tls
+      - none
+    default: starttls
+    x-order: 5
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: encryption
+  authMechanism:
+    type: string
+    description: >-
+      SMTP authentication mechanism. `none` is permitted only for a relay that
+      authorizes by source address; a configuration using any other mechanism
+      must carry both a username and a password.
+    enum:
+      - plain
+      - cram-md5
+      - none
+    default: plain
+    x-order: 6
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: auth_mechanism
+  username:
+    type: string
+    description: Username presented to the organization's SMTP server.
+    maxLength: 320
+    x-order: 7
+    x-oapi-codegen-extra-tags:
+      db: username
+      json: username,omitempty
+  password:
+    type: string
+    description: >-
+      Password presented to the organization's SMTP server. Write-only. A read
+      always returns the redaction sentinel `***`; the stored value is
+      encrypted at rest and is never projected into a response. Writing `***`
+      or an empty string preserves the stored password, so a client may
+      round-trip a read without erasing the credential.
+    maxLength: 512
+    x-order: 8
+    x-oapi-codegen-extra-tags:
+      db: "-"
+      json: password,omitempty
+  fromAddress:
+    $ref: ../core/api.yml#/components/schemas/email
+    description: >-
+      Address the organization's mail is sent from. Its domain must be verified
+      before the configuration can be enabled.
+    x-order: 9
+    x-oapi-codegen-extra-tags:
+      db: from_address
+  fromDisplayName:
+    type: string
+    description: Display name shown alongside the from address in the message header.
+    maxLength: 255
+    x-order: 10
+    x-oapi-codegen-extra-tags:
+      db: from_display_name
+      json: fromDisplayName,omitempty
+  replyToAddress:
+    $ref: ../core/api.yml#/components/schemas/email
+    description: >-
+      Address replies are directed to. It is also the address carried when a
+      message falls back to the provider relay, which rewrites the from address
+      to the provider's own so the message stays aligned for SPF and DMARC.
+    x-order: 11
+    x-oapi-codegen-extra-tags:
+      db: reply_to_address
+      json: replyToAddress,omitempty
+  enabled:
+    type: boolean
+    description: >-
+      Whether mail is routed through this server. Cannot be set while the from
+      domain is unverified.
+    default: false
+    x-order: 12
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: enabled
+  fallbackToProvider:
+    type: boolean
+    description: >-
+      Whether a message that this server fails to accept is re-sent through the
+      provider's shared relay. Disabling it means the organization owns delivery
+      entirely and a failure is a dropped message, including account
+      verification and password recovery.
+    default: true
+    x-order: 13
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: fallback_to_provider
+  fromDomain:
+    type: string
+    description: Registrable domain of the from address, held separately as the unit that ownership is proven for.
+    maxLength: 253
+    x-order: 14
+    x-oapi-codegen-extra-tags:
+      db: from_domain
+      json: fromDomain,omitempty
+  fromDomainVerificationToken:
+    type: string
+    description: >-
+      Token the organization publishes in DNS to prove control of the from
+      domain. Not a credential - it authorizes nothing and grants no access.
+    maxLength: 128
+    x-order: 15
+    x-oapi-codegen-extra-tags:
+      db: from_domain_verification_token
+      json: fromDomainVerificationToken,omitempty
+  fromDomainVerifiedAt:
+    $ref: ../core/api.yml#/components/schemas/nullTime
+    description: Timestamp at which control of the from domain was last proven. Null while unproven.
+    nullable: true
+    x-order: 16
+    x-oapi-codegen-extra-tags:
+      db: from_domain_verified_at
+  verificationState:
+    type: string
+    description: >-
+      Health of the configuration. `unverified` means it has never delivered a
+      test message, `verified` means the last delivery attempt succeeded, and
+      `failing` means consecutive failures have opened the circuit and mail is
+      being handled under the fallback setting without dialling this server.
+    enum:
+      - unverified
+      - verified
+      - failing
+    default: unverified
+    x-order: 17
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: verification_state
+  lastSuccessAt:
+    $ref: ../core/api.yml#/components/schemas/nullTime
+    description: Timestamp of the last message this server accepted.
+    nullable: true
+    x-order: 18
+    x-oapi-codegen-extra-tags:
+      db: last_success_at
+  lastFailureAt:
+    $ref: ../core/api.yml#/components/schemas/nullTime
+    description: Timestamp of the last delivery attempt this server rejected or failed to accept.
+    nullable: true
+    x-order: 19
+    x-oapi-codegen-extra-tags:
+      db: last_failure_at
+  lastFailureReason:
+    type: string
+    description: >-
+      Classification of the last failure. Always a classification, never the
+      remote server's own message: the set is closed on purpose, because
+      reporting a remote server's text back to a caller would turn a refusal
+      into an oracle for what the network can reach.
+    enum:
+      - blocked_target
+      - connect_refused
+      - connect_timeout
+      - tls_failed
+      - starttls_unsupported
+      - auth_rejected
+      - relay_rejected_sender
+      - relay_rejected_recipient
+      - delivery_failed
+      - credential_unreadable
+    x-order: 20
+    x-oapi-codegen-extra-tags:
+      db: last_failure_reason
+      json: lastFailureReason,omitempty
+  consecutiveFailures:
+    type: integer
+    description: Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server.
+    minimum: 0
+    default: 0
+    x-order: 21
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: consecutive_failures
+  createdBy:
+    $ref: ../core/api.yml#/components/schemas/uuid
+    description: >-
+      User who created the configuration. Retained for audit only, and cleared
+      rather than cascaded when that account is removed, so an organization's
+      mail survives the departure of the administrator who set it up.
+    nullable: true
+    x-order: 22
+    x-oapi-codegen-extra-tags:
+      db: created_by
+      json: createdBy,omitempty
+  createdAt:
+    $ref: ../core/api.yml#/components/schemas/created_at
+    description: Timestamp when the configuration was created.
+    x-order: 23
+  updatedAt:
+    $ref: ../core/api.yml#/components/schemas/updated_at
+    description: Timestamp when the configuration was last changed.
+    x-order: 24
+  deletedAt:
+    $ref: ../core/api.yml#/components/schemas/nullTime
+    description: Timestamp when the configuration was soft deleted. Null while it remains active.
+    nullable: true
+    x-order: 25
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+
