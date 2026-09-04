@@ -245,13 +245,12 @@ this release-gating constraint applies to the meshery row alone.
 `db:"purpose"`, and `server/models/model_environment.go` aliases the schemas
 struct directly (`type Environment = schemasEnvironment.Environment`), so the bump
 adds the field to the Pop model itself. Pop names every `db`-tagged column
-explicitly instead of issuing `SELECT *`, so the DAO lookup in
-`server/dao/environment_identity_providers.go` selects `environments.purpose` and
-the insert names it too - against a table whose definition in
-`database/migrations/20190402165033_create_initial_schema.postgres.up.sql` has no
-such column and which no later migration alters. Every environment read **and**
-write fails with `column environments.purpose does not exist` until the migration
-lands. It must therefore be deployed ahead of the bump, not after it.
+explicitly instead of issuing `SELECT *`, so every environment lookup selects
+`environments.purpose` and every insert names it too - against a table whose
+initial-schema definition has no such column and which no later migration alters.
+Every environment read **and** write fails with `column environments.purpose does
+not exist` until the migration lands. It must therefore be deployed ahead of the
+bump, not after it.
 
 **If you are adding a row to [Consumers of this
 contract](#consumers-of-this-contract), check your own query builder rather than
@@ -306,34 +305,34 @@ a storage default actually takes effect.
 
 | Repo | Surface | What it must do | Tracked |
 | --- | --- | --- | --- |
-| `layer5io/meshery-cloud` | `server/dao/environment_identity_providers.go`, environment handlers, Pop/Postgres migrations | See [meshery-cloud](#meshery-cloud) below. | Follow-up |
+| `layer5io/meshery-cloud` | Environment resolution, environment handlers, Pop/Postgres migrations | See [meshery-cloud](#meshery-cloud) below. | Follow-up |
 | `meshery/meshery` (server) | `server/models/system_migration.go`, `server/models/environment_persister.go`, `server/models/default_local_provider.go`, `server/handlers/component_handler.go` (`RegisterMeshmodelComponents`) | Point `SystemDatabaseModels()` at `v1beta3` so the column is created (it currently registers the `v1beta1` struct while the persister queries the `v1beta3` one), and refuse `purpose` on input from **both** request surfaces: never populate `Purpose` from `EnvironmentPayload` - including on update, which rebuilds the entity from the payload and persists it whole - and discard the `purpose` carried inside `RegistrantData.connection.environments[]` on the registrant path rather than letting it reach persistence if those environments are ever persisted. Must land before the next schemas release is cut, because the bump pull request is opened automatically by this repo's release fan-out rather than initiated by a Meshery maintainer - see [Sequencing against the schemas dependency bump](#sequencing-against-the-schemas-dependency-bump). | [meshery/meshery#21802](https://github.com/meshery/meshery/issues/21802) |
 | `meshery/meshery` (UI) | `ui/components/environments/` | Surface administrative environments as such; add no form control that sets the property. The create-or-edit modal already renders the canonical RJSF schema, which omits it. | [meshery/meshery#21803](https://github.com/meshery/meshery/issues/21803) |
 | `meshery/meshery` (mesheryctl) | `mesheryctl/internal/cli/root/environments/` | Move off the superseded `v1beta1` import to `v1beta3`, display the purpose, and expose no flag that sets it. | [meshery/meshery#21804](https://github.com/meshery/meshery/issues/21804) |
 
 ### meshery-cloud
 
-The resolver that reads an organization's identity-provider configuration
-currently selects its environment by name.
+The obligations below are the target state. The specifics of the current
+implementation are carried in the tracking issue rather than here, because this
+repository is public and the consumer change has not landed yet.
 
-1. **Replace the name-based lookup with a purpose-based one.** Select on
-   `purpose` and `organization_id`, not on `name`. Delete the name constant's
-   role as a selector once nothing reads it; keep it only if something still
-   needs the display string.
-2. **Fail closed on multiple live matches.** The existing lookup takes the first
-   row of an unordered single-row fetch. Replace that with a query that
-   distinguishes three outcomes: exactly one match, no match (the ordinary state
-   for most organizations, and not an error - the cloud-brokered fallback chain
-   depends on it staying a non-error signal), and more than one match, which must
-   return an error rather than a row.
+1. **Resolve the environment on `purpose` and `organization_id`.** The
+   designation, not the name, is what selects an environment holding
+   organization-level configuration. Retain the name constant only if something
+   still needs it as a display string, not as a selector.
+2. **Fail closed on multiple live matches.** Resolution must distinguish three
+   outcomes: exactly one match; no match, which is the ordinary state for most
+   organizations and must stay a non-error signal, because the cloud-brokered
+   fallback chain depends on it; and more than one match, which must return an
+   error rather than any row. A single-row fetch without a total order over a
+   duplicated purpose is not an acceptable resolution.
 3. **Add the column before the schemas bump is deployed, not after.**
    `server/models/model_environment.go` aliases the schemas struct, and Pop names
-   every `db`-tagged column explicitly, so the moment the bump lands the DAO
-   `SELECT` in `server/dao/environment_identity_providers.go` and the environment
-   insert both name `environments.purpose` against a table that has no such
-   column - every environment read and write fails, not only writes. See
-   [Sequencing against the schemas dependency
-   bump](#sequencing-against-the-schemas-dependency-bump).
+   every `db`-tagged column explicitly, so from the moment the bump lands both
+   the environment `SELECT` and the environment insert name
+   `environments.purpose`. Against a table without that column, every environment
+   read and write fails - not only writes. See [Sequencing against the schemas
+   dependency bump](#sequencing-against-the-schemas-dependency-bump).
 4. **Migrate existing rows** per [Migration](#migration): add the column
    `NOT NULL DEFAULT 'user'`, set `purpose = 'administrative'` on the rows the
    name convention selected, then add the partial unique index over the
