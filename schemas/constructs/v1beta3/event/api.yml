@@ -13,6 +13,8 @@ info:
 tags:
 - name: events
   description: APIs for Meshery Cloud events.
+security:
+- jwt: []
 paths:
   /api/events/{eventId}:
     delete:
@@ -122,8 +124,6 @@ paths:
       - cloud
       tags:
       - events
-      security:
-      - jwt: []
       operationId: getEventsOfWorkspace
       summary: Get workspace events
       description: Gets events for a workspace.
@@ -199,16 +199,16 @@ paths:
           $ref: '#/components/responses/500'
   /api/events/list:
     get:
-      x-internal:
-      - cloud
+      x-internal: ["cloud", "meshery"]
       tags:
       - events
       operationId: getEvents
       summary: Get events list
       parameters:
       - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/pagesize'
+      - $ref: '#/components/parameters/pageSize'
       - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/sort'
       - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/eventsFilter'
       responses:
@@ -234,7 +234,7 @@ paths:
       summary: Get event summary by user
       parameters:
       - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/pagesize'
+      - $ref: '#/components/parameters/pageSize'
       - $ref: '#/components/parameters/search'
       - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/filter'
@@ -253,8 +253,7 @@ paths:
           description: Server error
   /api/events/types:
     get:
-      x-internal:
-      - cloud
+      x-internal: ["cloud", "meshery"]
       tags:
       - events
       operationId: getEventTypes
@@ -278,6 +277,53 @@ paths:
           description: Not found
         '500':
           description: Server error
+  # Meshery-server-only: event log level configuration.
+  # TODO: Migrate to /api/events/config once Meshery Server drops /api/system/ prefix.
+  /api/system/events/config:
+    get:
+      x-internal: ["meshery"]
+      tags:
+      - events
+      operationId: getEventConfig
+      summary: Get server event log level configuration
+      description: Returns the current server event log level and the list of available levels.
+      responses:
+        '200':
+          description: Event configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventConfig'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+    put:
+      x-internal: ["meshery"]
+      tags:
+      - events
+      operationId: updateEventConfig
+      summary: Update server event log level configuration
+      description: Sets the server event log level to the requested value.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventConfigPayload'
+      responses:
+        '200':
+          description: Event configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventConfig'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
 components:
   responses:
     400:
@@ -308,8 +354,7 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/page
     pageSize:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/pageSize
-    pagesize:
-      $ref: ../../v1beta2/core/api.yml#/components/parameters/pagesize
+
     pagesizeLegacy:
       name: pagesize
       in: query
@@ -319,6 +364,14 @@ components:
         type: integer
     search:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/search
+    sort:
+      name: sort
+      in: query
+      description: Field name to sort responses by.
+      required: false
+      schema:
+        type: string
+        maxLength: 255
     order:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/order
     cumulative:
@@ -464,6 +517,19 @@ components:
           minimum: 0
           x-oapi-codegen-extra-tags:
             json: "totalCount,omitempty"
+        readCount:
+          type: integer
+          description: Number of events the user has already read.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "readCount,omitempty"
+        countBySeverityLevel:
+          type: array
+          description: Event count grouped by severity level.
+          items:
+            $ref: '#/components/schemas/SeverityCount'
+          x-oapi-codegen-extra-tags:
+            json: "countBySeverityLevel,omitempty"
         data:
           type: array
           items:
@@ -519,6 +585,59 @@ components:
           type: string
           description: The action of the event type.
           maxLength: 500
+    SeverityCount:
+      type: object
+      description: Event count for a specific severity level.
+      properties:
+        severity:
+          type: string
+          description: Severity level name.
+          maxLength: 100
+        count:
+          type: integer
+          description: Number of events at this severity level.
+          minimum: 0
+    LogLevel:
+      type: string
+      description: Valid server event log levels.
+      enum: [panic, fatal, error, warning, info, debug, trace]
+      maxLength: 20
+    EventConfig:
+      type: object
+      description: Server event log level configuration.
+      required:
+      - eventLogLevel
+      - availableLevels
+      properties:
+        status:
+          type: string
+          description: Operation result status.
+          maxLength: 50
+          x-oapi-codegen-extra-tags:
+            json: "status,omitempty"
+        eventLogLevel:
+          $ref: '#/components/schemas/LogLevel'
+          description: Current server log level.
+          x-oapi-codegen-extra-tags:
+            json: "eventLogLevel"
+        availableLevels:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogLevel'
+          description: All log levels supported by this server.
+          x-oapi-codegen-extra-tags:
+            json: "availableLevels"
+    EventConfigPayload:
+      type: object
+      description: Payload for updating the server event log level.
+      required:
+      - eventLogLevel
+      properties:
+        eventLogLevel:
+          $ref: '#/components/schemas/LogLevel'
+          description: Desired server log level.
+          x-oapi-codegen-extra-tags:
+            json: "eventLogLevel"
     ErrorResponse:
       type: object
       description: Generic error envelope returned for non-2xx responses.
