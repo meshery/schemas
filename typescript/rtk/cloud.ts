@@ -1,6 +1,7 @@
 import { cloudBaseApi as api } from "./api";
 export const addTagTypes = [
   "Feature_Features",
+  "Organization_SMTP_Configuration_OrganizationSmtp",
   "Support_Support",
   "System_API_System",
   "Badge_Badge",
@@ -52,6 +53,59 @@ const injectedRtkApi = api
       getFeaturesByOrganization: build.query<GetFeaturesByOrganizationApiResponse, GetFeaturesByOrganizationApiArg>({
         query: (queryArg) => ({ url: `/api/entitlement/subscriptions/organizations/${queryArg.orgId}/features` }),
         providesTags: ["Feature_Features"],
+      }),
+      getOrganizationSmtpConfiguration: build.query<
+        GetOrganizationSmtpConfigurationApiResponse,
+        GetOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/smtp-configuration` }),
+        providesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      upsertOrganizationSmtpConfiguration: build.mutation<
+        UpsertOrganizationSmtpConfigurationApiResponse,
+        UpsertOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/smtp-configuration`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      deleteOrganizationSmtpConfiguration: build.mutation<
+        DeleteOrganizationSmtpConfigurationApiResponse,
+        DeleteOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/smtp-configuration`, method: "DELETE" }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      testOrganizationSmtpConfiguration: build.mutation<
+        TestOrganizationSmtpConfigurationApiResponse,
+        TestOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/smtp-configuration/test`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      getOrganizationSmtpDomainVerification: build.query<
+        GetOrganizationSmtpDomainVerificationApiResponse,
+        GetOrganizationSmtpDomainVerificationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/smtp-configuration/domain-verification` }),
+        providesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      verifyOrganizationSmtpDomain: build.mutation<
+        VerifyOrganizationSmtpDomainApiResponse,
+        VerifyOrganizationSmtpDomainApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/smtp-configuration/domain-verification`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
       }),
       submitSupportRequest: build.mutation<SubmitSupportRequestApiResponse, SubmitSupportRequestApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/support`, method: "POST", body: queryArg.body }),
@@ -1789,6 +1843,240 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features respo
 }[];
 export type GetFeaturesByOrganizationApiArg = {
   /** The ID of the organization */
+  orgId: string;
+};
+export type GetOrganizationSmtpConfigurationApiResponse = /** status 200 The organization's SMTP configuration. */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Hostname of the organization's SMTP server. */
+  host: string;
+  /** TCP port the organization's SMTP server listens on. */
+  port: number;
+  /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+  encryption: "starttls" | "tls" | "none";
+  /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+  authMechanism: "plain" | "cram-md5" | "none";
+  /** Username presented to the organization's SMTP server. */
+  username?: string;
+  /** Password presented to the organization's SMTP server. Write-only. A read always returns the redaction sentinel `***`; the stored value is encrypted at rest and is never projected into a response. Writing `***` or an empty string preserves the stored password, so a client may round-trip a read without erasing the credential. */
+  password?: string;
+  /** Address the organization's mail is sent from. Its domain must be verified before the configuration can be enabled. */
+  fromAddress: string;
+  /** Display name shown alongside the from address in the message header. */
+  fromDisplayName?: string;
+  /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+  replyToAddress?: string;
+  /** Whether mail is routed through this server. Cannot be set while the from domain is unverified. */
+  enabled: boolean;
+  /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+  fallbackToProvider: boolean;
+  /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+  fromDomain?: string;
+  /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+  fromDomainVerificationToken?: string;
+  /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+  fromDomainVerifiedAt?: string | null;
+  /** Health of the configuration. `unverified` means it has never delivered a test message, `verified` means the last delivery attempt succeeded, and `failing` means consecutive failures have opened the circuit and mail is being handled under the fallback setting without dialling this server. */
+  verificationState: "unverified" | "verified" | "failing";
+  /** Timestamp of the last message this server accepted. */
+  lastSuccessAt?: string | null;
+  /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+  lastFailureAt?: string | null;
+  /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+  lastFailureReason?:
+    | "blocked_target"
+    | "connect_refused"
+    | "connect_timeout"
+    | "tls_failed"
+    | "starttls_unsupported"
+    | "auth_rejected"
+    | "relay_rejected_sender"
+    | "relay_rejected_recipient"
+    | "delivery_failed"
+    | "credential_unreadable";
+  /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+  consecutiveFailures: number;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string | null;
+  /** Timestamp when the configuration was created. */
+  createdAt: string;
+  /** Timestamp when the configuration was last changed. */
+  updatedAt: string;
+  /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+  deletedAt?: string | null;
+};
+export type GetOrganizationSmtpConfigurationApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type UpsertOrganizationSmtpConfigurationApiResponse = /** status 200 The stored SMTP configuration. */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Hostname of the organization's SMTP server. */
+  host: string;
+  /** TCP port the organization's SMTP server listens on. */
+  port: number;
+  /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+  encryption: "starttls" | "tls" | "none";
+  /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+  authMechanism: "plain" | "cram-md5" | "none";
+  /** Username presented to the organization's SMTP server. */
+  username?: string;
+  /** Password presented to the organization's SMTP server. Write-only. A read always returns the redaction sentinel `***`; the stored value is encrypted at rest and is never projected into a response. Writing `***` or an empty string preserves the stored password, so a client may round-trip a read without erasing the credential. */
+  password?: string;
+  /** Address the organization's mail is sent from. Its domain must be verified before the configuration can be enabled. */
+  fromAddress: string;
+  /** Display name shown alongside the from address in the message header. */
+  fromDisplayName?: string;
+  /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+  replyToAddress?: string;
+  /** Whether mail is routed through this server. Cannot be set while the from domain is unverified. */
+  enabled: boolean;
+  /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+  fallbackToProvider: boolean;
+  /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+  fromDomain?: string;
+  /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+  fromDomainVerificationToken?: string;
+  /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+  fromDomainVerifiedAt?: string | null;
+  /** Health of the configuration. `unverified` means it has never delivered a test message, `verified` means the last delivery attempt succeeded, and `failing` means consecutive failures have opened the circuit and mail is being handled under the fallback setting without dialling this server. */
+  verificationState: "unverified" | "verified" | "failing";
+  /** Timestamp of the last message this server accepted. */
+  lastSuccessAt?: string | null;
+  /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+  lastFailureAt?: string | null;
+  /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+  lastFailureReason?:
+    | "blocked_target"
+    | "connect_refused"
+    | "connect_timeout"
+    | "tls_failed"
+    | "starttls_unsupported"
+    | "auth_rejected"
+    | "relay_rejected_sender"
+    | "relay_rejected_recipient"
+    | "delivery_failed"
+    | "credential_unreadable";
+  /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+  consecutiveFailures: number;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string | null;
+  /** Timestamp when the configuration was created. */
+  createdAt: string;
+  /** Timestamp when the configuration was last changed. */
+  updatedAt: string;
+  /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+  deletedAt?: string | null;
+};
+export type UpsertOrganizationSmtpConfigurationApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** Hostname of the organization's SMTP server. */
+    host: string;
+    /** TCP port the organization's SMTP server listens on. */
+    port: number;
+    /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext. */
+    encryption?: "starttls" | "tls" | "none";
+    /** SMTP authentication mechanism. Any mechanism other than `none` requires both a username and a password. */
+    authMechanism?: "plain" | "cram-md5" | "none";
+    /** Username presented to the organization's SMTP server. */
+    username?: string;
+    /** Password presented to the organization's SMTP server. Write-only. `***` or an empty string preserves the stored password, so a client may round-trip a read without erasing the credential. */
+    password?: string;
+    /** Address the organization's mail is sent from. Changing it resets from-domain verification. */
+    fromAddress: string;
+    /** Display name shown alongside the from address. */
+    fromDisplayName?: string;
+    /** Address replies are directed to. */
+    replyToAddress?: string;
+    /** Whether mail is routed through this server. Refused while the from domain is unverified. */
+    enabled?: boolean;
+    /** Whether a message this server fails to accept is re-sent through the provider's shared relay. Disabling it means a failure is a dropped message, account verification and password recovery included. */
+    fallbackToProvider?: boolean;
+  };
+};
+export type DeleteOrganizationSmtpConfigurationApiResponse = unknown;
+export type DeleteOrganizationSmtpConfigurationApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type TestOrganizationSmtpConfigurationApiResponse =
+  /** status 200 The classified outcome of the delivery attempt. */ {
+    /** What happened. `delivered` means the server accepted the message; every other value names the stage that refused it. */
+    outcome:
+      | "delivered"
+      | "blocked_target"
+      | "connect_refused"
+      | "connect_timeout"
+      | "tls_failed"
+      | "starttls_unsupported"
+      | "auth_rejected"
+      | "relay_rejected_sender"
+      | "relay_rejected_recipient"
+      | "delivery_failed"
+      | "credential_unreadable";
+    /** Human-readable summary of the outcome, drawn from a fixed set of phrasings. */
+    message?: string;
+    /** Address the test message was addressed to. */
+    sentTo?: string;
+    /** When the delivery was attempted. */
+    testedAt: string;
+  };
+export type TestOrganizationSmtpConfigurationApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** Recipient of the test message. Defaults to the calling administrator's own address. */
+    to?: string;
+  };
+};
+export type GetOrganizationSmtpDomainVerificationApiResponse =
+  /** status 200 The verification challenge and its current state. */ {
+    /** Registrable domain the proof applies to. */
+    domain: string;
+    /** How the domain is proven. `custom-domain` means it matches the organization's own registered custom domain and needs no record; `dns-txt` means the record below must be published. */
+    method: "custom-domain" | "dns-txt";
+    /** Fully qualified name of the TXT record to publish. */
+    recordName?: string;
+    /** Value the TXT record must carry. */
+    recordValue?: string;
+    /** Whether control of the domain is currently proven. */
+    verified: boolean;
+    /** When control was last proven. Null while unproven. */
+    verifiedAt?: string | null;
+    /** Why the last check did not prove control. */
+    failureReason?: "record_not_found" | "record_mismatch" | "lookup_failed" | "domain_reserved";
+  };
+export type GetOrganizationSmtpDomainVerificationApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type VerifyOrganizationSmtpDomainApiResponse = /** status 200 The outcome of the verification check. */ {
+  /** Registrable domain the proof applies to. */
+  domain: string;
+  /** How the domain is proven. `custom-domain` means it matches the organization's own registered custom domain and needs no record; `dns-txt` means the record below must be published. */
+  method: "custom-domain" | "dns-txt";
+  /** Fully qualified name of the TXT record to publish. */
+  recordName?: string;
+  /** Value the TXT record must carry. */
+  recordValue?: string;
+  /** Whether control of the domain is currently proven. */
+  verified: boolean;
+  /** When control was last proven. Null while unproven. */
+  verifiedAt?: string | null;
+  /** Why the last check did not prove control. */
+  failureReason?: "record_not_found" | "record_mismatch" | "lookup_failed" | "domain_reserved";
+};
+export type VerifyOrganizationSmtpDomainApiArg = {
+  /** Organization ID */
   orgId: string;
 };
 export type SubmitSupportRequestApiResponse = /** status 201 Support request submitted */ {
@@ -15506,6 +15794,14 @@ export const {
   useLazyGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
   useLazyGetFeaturesByOrganizationQuery,
+  useGetOrganizationSmtpConfigurationQuery,
+  useLazyGetOrganizationSmtpConfigurationQuery,
+  useUpsertOrganizationSmtpConfigurationMutation,
+  useDeleteOrganizationSmtpConfigurationMutation,
+  useTestOrganizationSmtpConfigurationMutation,
+  useGetOrganizationSmtpDomainVerificationQuery,
+  useLazyGetOrganizationSmtpDomainVerificationQuery,
+  useVerifyOrganizationSmtpDomainMutation,
   useSubmitSupportRequestMutation,
   useGetSystemVersionQuery,
   useLazyGetSystemVersionQuery,
