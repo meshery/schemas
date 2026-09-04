@@ -12,6 +12,7 @@ on:
       - 'cmd/consumer-audit/**'
       - 'schemas/**'
       - 'models/**'
+      - 'tests/**'
       - 'go.mod'
       - 'go.sum'
   push:
@@ -26,6 +27,7 @@ on:
       - 'cmd/consumer-audit/**'
       - 'schemas/**'
       - 'models/**'
+      - 'tests/**'
       - 'go.mod'
       - 'go.sum'
 
@@ -46,6 +48,24 @@ jobs:
 
       - name: Run blocking schema validation
         run: make validate-schemas
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          # >= 22.6 for `node --test` native TypeScript type-stripping.
+          node-version: '22'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Run schema guard tests
+        run: go test ./validation/... ./models/...
+
+      # `test-rtk` depends on `bundle-openapi`, so the bundled specs the
+      # readOnly guard reads are produced by this step rather than validated
+      # stale from a previous run.
+      - name: Run RTK guard tests
+        run: make test-rtk
 
   advisory-audit:
     name: Full schema audit

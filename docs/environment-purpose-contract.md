@@ -57,7 +57,10 @@ Two independent things enforce it, and they are not substitutes for each other.
 
 `validation/environment_purpose_test.go` fails if the payload exclusion, the
 entity property's declared shape, or the form omission changes. It does not
-assert the wording of the description.
+assert the wording of the description. The `blocking-validation` job in
+`.github/workflows/schema-audit.yml` runs it, the helper tests under `models/`,
+and `make test-rtk` on every pull request, so a change that removes one of these
+guarantees is caught before merge rather than after it.
 
 **The environment endpoints are not the only request surface.** `RegistrantData`
 inlines the full `Environment` entity through the registrant connection
@@ -219,9 +222,24 @@ today. While that mismatch stands, the table Meshery Server creates has no
 environment creation fails at runtime. Reads survive, because GORM issues
 `SELECT *`.
 [meshery/meshery#21802](https://github.com/meshery/meshery/issues/21802)
-therefore has to land **before** `meshery/meshery` bumps its `meshery/schemas`
-dependency to a release carrying this property, not merely at some point after
-it.
+therefore has to land **before the next `meshery/schemas` release is cut**, not
+"before `meshery/meshery` decides to bump" - the bump is not a decision a Meshery
+maintainer initiates. This repo's own release fan-out opens it:
+`.github/workflows/notify-dependents.yml`, job `bump-meshery`, checks out
+meshery/meshery on every release, runs `go get github.com/meshery/schemas@vX.Y.Z`
+against the root and `server/policies/wasm` modules, and opens
+`[Chore]: Bump meshery/schemas to vX.Y.Z` as a non-draft pull request assigned to
+meshery-ci. The failing sequence therefore requires no mistake by anyone: a
+release is cut before #21802 lands, the bot opens a routine-looking chore PR, a
+maintainer merges it as the ordinary bump it appears to be,
+`SystemDatabaseModels()` still registers the `v1beta1` struct while
+`environment_persister.go` queries `v1beta3`, and `DB.Create` emits an `INSERT`
+naming `purpose` against a table `AutoMigrate` created without it - environment
+creation fails at runtime.
+
+`layer5io/meshery-cloud` is **not** in that fan-out, which bumps only
+meshery/meshery and meshery/meshkit. Its sequencing genuinely stays manual, so
+this release-gating constraint applies to the meshery row alone.
 
 **`layer5io/meshery-cloud`.** Reads fail as well as writes. `purpose` carries
 `db:"purpose"`, and `server/models/model_environment.go` aliases the schemas
@@ -289,7 +307,7 @@ a storage default actually takes effect.
 | Repo | Surface | What it must do | Tracked |
 | --- | --- | --- | --- |
 | `layer5io/meshery-cloud` | `server/dao/environment_identity_providers.go`, environment handlers, Pop/Postgres migrations | See [meshery-cloud](#meshery-cloud) below. | Follow-up |
-| `meshery/meshery` (server) | `server/models/system_migration.go`, `server/models/environment_persister.go`, `server/models/default_local_provider.go`, `server/handlers/component_handler.go` (`RegisterMeshmodelComponents`) | Point `SystemDatabaseModels()` at `v1beta3` so the column is created (it currently registers the `v1beta1` struct while the persister queries the `v1beta3` one), and refuse `purpose` on input from **both** request surfaces: never populate `Purpose` from `EnvironmentPayload` - including on update, which rebuilds the entity from the payload and persists it whole - and discard the `purpose` carried inside `RegistrantData.connection.environments[]` on the registrant path rather than letting it reach persistence if those environments are ever persisted. Must land before the schemas dependency bump - see [Sequencing against the schemas dependency bump](#sequencing-against-the-schemas-dependency-bump). | [meshery/meshery#21802](https://github.com/meshery/meshery/issues/21802) |
+| `meshery/meshery` (server) | `server/models/system_migration.go`, `server/models/environment_persister.go`, `server/models/default_local_provider.go`, `server/handlers/component_handler.go` (`RegisterMeshmodelComponents`) | Point `SystemDatabaseModels()` at `v1beta3` so the column is created (it currently registers the `v1beta1` struct while the persister queries the `v1beta3` one), and refuse `purpose` on input from **both** request surfaces: never populate `Purpose` from `EnvironmentPayload` - including on update, which rebuilds the entity from the payload and persists it whole - and discard the `purpose` carried inside `RegistrantData.connection.environments[]` on the registrant path rather than letting it reach persistence if those environments are ever persisted. Must land before the next schemas release is cut, because the bump pull request is opened automatically by this repo's release fan-out rather than initiated by a Meshery maintainer - see [Sequencing against the schemas dependency bump](#sequencing-against-the-schemas-dependency-bump). | [meshery/meshery#21802](https://github.com/meshery/meshery/issues/21802) |
 | `meshery/meshery` (UI) | `ui/components/environments/` | Surface administrative environments as such; add no form control that sets the property. The create-or-edit modal already renders the canonical RJSF schema, which omits it. | [meshery/meshery#21803](https://github.com/meshery/meshery/issues/21803) |
 | `meshery/meshery` (mesheryctl) | `mesheryctl/internal/cli/root/environments/` | Move off the superseded `v1beta1` import to `v1beta3`, display the purpose, and expose no flag that sets it. | [meshery/meshery#21804](https://github.com/meshery/meshery/issues/21804) |
 

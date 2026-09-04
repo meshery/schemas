@@ -106,3 +106,25 @@ func TestPurposeIsOmittedWhenAbsent(t *testing.T) {
 		t.Fatalf("purpose = %v, want %q", got["purpose"], EnvironmentPurposeAdministrative)
 	}
 }
+
+// TestPurposeConstantsCarryTheirWireValues pins the generated constants to the
+// literals the schema enum declares. Every other test in this file compares
+// symbolically, so all of them survive an inversion of `x-enum-varnames` in
+// schemas/constructs/v1beta3/environment/environment.yaml: that list is
+// positional, and swapping its two entries makes oapi-codegen emit
+// EnvironmentPurposeAdministrative = "user". IsAdministrative() would then answer
+// true for every ordinary environment while this file stayed green, because a
+// symbolic comparison is satisfied by whatever the constant happens to hold.
+// Only a comparison against the literal detects the misgeneration, and it does
+// so whatever the cause - a reordered varnames list, a generator change, or a
+// hand edit.
+func TestPurposeConstantsCarryTheirWireValues(t *testing.T) {
+	if EnvironmentPurposeAdministrative != "administrative" {
+		t.Errorf("EnvironmentPurposeAdministrative = %q, want %q",
+			string(EnvironmentPurposeAdministrative), "administrative")
+	}
+	if EnvironmentPurposeUser != "user" {
+		t.Errorf("EnvironmentPurposeUser = %q, want %q",
+			string(EnvironmentPurposeUser), "user")
+	}
+}
