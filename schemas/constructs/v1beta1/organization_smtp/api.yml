@@ -532,7 +532,11 @@ components:
           x-go-type-skip-optional-pointer: true
         username:
           type: string
-          description: Username presented to the organization's SMTP server.
+          description: >-
+            Username presented to the organization's SMTP server. Required by
+            the server, together with `password`, for every `authMechanism`
+            other than `none`; see that property for why the pairing is a
+            server-enforced contract rather than a schema constraint.
           maxLength: 320
           x-order: 5
           x-oapi-codegen-extra-tags:
@@ -540,8 +544,18 @@ components:
         password:
           type: string
           description: >-
-            Password presented to the organization's SMTP server. Required
-            unless `authMechanism` is `none`.
+            Password presented to the organization's SMTP server. The server
+            requires it, together with `username`, for every `authMechanism`
+            other than `none`, and answers 400 when either is missing.
+
+            That rule is deliberately NOT encoded in `required` or as a
+            `oneOf`/`if`-`then`. Both encodings were measured against the
+            generator: `if`/`then` collapses this payload to `interface{}`, and
+            `oneOf` injects a `union json.RawMessage` field with a custom
+            marshaller, either of which costs every consumer its generated type
+            or its wire behaviour to express a constraint the server enforces
+            anyway. Treat this property as conditionally required by contract,
+            not by schema.
 
             This is the ONLY operation that accepts the password alongside the
             settings, so that registering a mail server is one call and no

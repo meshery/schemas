@@ -153,6 +153,7 @@ properties:
       there.
     readOnly: true
     default: "***"
+    pattern: '^\*\*\*$'
     maxLength: 512
     x-order: 8
     x-oapi-codegen-extra-tags:
