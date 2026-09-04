@@ -43,7 +43,6 @@ example:
   fromDomainVerifiedAt: null
   lastSuccessAt: null
   lastFailureAt: null
-  lastFailureReason: null
   consecutiveFailures: 0
   createdBy: 00000000-0000-0000-0000-000000000000
   createdAt: "0001-01-01T00:00:00Z"
@@ -137,9 +136,11 @@ properties:
   password:
     type: string
     description: >-
-      Password presented to the organization's SMTP server. Write-only: a read
-      always returns the redaction sentinel `***`, and the stored value is
-      encrypted at rest and never projected into a response.
+      Password presented to the organization's SMTP server. Response-only and
+      always the redaction sentinel `***`: this schema is the response half of
+      the dual-schema pair, no request body references it, and the stored value
+      is encrypted at rest and never projected into a response. The real
+      password is carried by the payload schemas, never by this one.
 
       It is accepted on create, alongside the settings, so that registering a
       mail server is one operation and no configuration ever exists without the

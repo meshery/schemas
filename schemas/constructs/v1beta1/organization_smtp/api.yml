@@ -68,7 +68,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: ../../v1beta3/environment/environment.yaml
+                $ref: ../../v1beta3/environment/api.yml#/components/schemas/Environment
         "401":
           $ref: "#/components/responses/401"
         "403":
