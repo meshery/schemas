@@ -149,6 +149,7 @@ properties:
       wherever it can be written, rather than treated as a no-op, so a client
       that round-trips a read cannot silently overwrite the stored credential
       with `***`.
+    readOnly: true
     maxLength: 512
     x-order: 8
     x-oapi-codegen-extra-tags:
