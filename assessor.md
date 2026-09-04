@@ -1,6 +1,4 @@
-Now I have comprehensive information to provide a detailed breakdown of the various validation and audit scripts. Let me create a well-organized response.
-
-## Breakdown of Schema Assessment Scripts
+# Schema Assessment Scripts
 
 The `meshery/schemas` repository employs a multi-layered validation and audit system to assess schema state, code generation, and downstream implementation alignment. Here's a complete breakdown:
 
