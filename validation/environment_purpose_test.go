@@ -19,9 +19,11 @@ const (
 // and resolvers that read organization-level configuration trust environments
 // carrying that designation. The whole value of the property over the naming
 // convention it replaces is that it cannot be set by whoever can merely create
-// an environment. These tests pin the two schema-side halves of that:
-// `purpose` stays off every client-supplied surface, and the entity declares it
-// read-only.
+// an environment. These tests pin the schema-side half of that: `purpose` stays
+// out of `EnvironmentPayload` and out of the create-or-edit form, and the entity
+// declares it in the shape those guarantees depend on - which deliberately
+// excludes `readOnly`, because that annotation breaks the generated RTK request
+// types.
 //
 // Neither is access control. The schema cannot stop a server from copying a
 // request body into an entity struct; each consumer enforces that itself. What
@@ -84,7 +86,7 @@ func TestEnvironmentEntityPurposeShape(t *testing.T) {
 	// which is untrue for every row written before the column existed. The
 	// absent-means-user rule lives in the description; the column-level default
 	// belongs in each consumer's migration. See
-	// docs/environment-purpose-contract.md#why-there-is-no-default.
+	// docs/environment-purpose-contract.md#default-user.
 	if def, ok := mappingValue(purpose, "default"); ok {
 		t.Errorf("purpose must not declare a default (got %v) - it makes the "+
 			"generated TypeScript claim the property is always present", def)

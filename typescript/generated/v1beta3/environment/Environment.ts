@@ -140,9 +140,11 @@ export interface components {
              *
              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
              *
-             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+             *     At most one live environment per organization may carry any single non-`user` purpose. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
              *
-             *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+             *
+             *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
              * @enum {string}
              */
             purpose?: "user" | "administrative";
@@ -180,7 +182,7 @@ export interface components {
              */
             deletedAt?: string;
         };
-        /** @description Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them, and `purpose` because permission to create an environment must not confer the ability to designate it administrative. Do not add `purpose` here - see docs/environment-purpose-contract.md. */
+        /** @description Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them, and `purpose` because permission to create an environment must not confer the ability to designate it administrative. Excluding it here is a codegen guarantee rather than access control: the registrant connection inlines the full environment entity, so `purpose` still reaches the `registerRegistryComponent` and `registerRegistryRelationship` request types, and every consumer must refuse it on input whatever surface it arrives on. Do not add `purpose` here - see https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
         EnvironmentPayload: {
             /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
             name: string;
@@ -256,9 +258,11 @@ export interface components {
                  *
                  *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                  *
-                 *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                 *     At most one live environment per organization may carry any single non-`user` purpose. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                  *
-                 *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+                 *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                 *
+                 *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                  * @enum {string}
                  */
                 purpose?: "user" | "administrative";
@@ -503,9 +507,11 @@ export interface operations {
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
-                             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *     At most one live environment per organization may carry any single non-`user` purpose. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                              *
-                             *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+                             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *
+                             *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
                              */
                             purpose?: "user" | "administrative";
@@ -618,9 +624,11 @@ export interface operations {
                          *
                          *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                          *
-                         *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                         *     At most one live environment per organization may carry any single non-`user` purpose. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                          *
-                         *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+                         *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                         *
+                         *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                          * @enum {string}
                          */
                         purpose?: "user" | "administrative";
@@ -740,9 +748,11 @@ export interface operations {
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
-                             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *     At most one live environment per organization may carry any single non-`user` purpose. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                              *
-                             *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+                             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *
+                             *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
                              */
                             purpose?: "user" | "administrative";
@@ -884,9 +894,11 @@ export interface operations {
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
-                             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *     At most one live environment per organization may carry any single non-`user` purpose. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                              *
-                             *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+                             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *
+                             *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
                              */
                             purpose?: "user" | "administrative";

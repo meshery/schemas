@@ -46,15 +46,30 @@ Two independent things enforce it, and they are not substitutes for each other.
 ### 1. Schema: `purpose` is off every client-supplied surface
 
 - `EnvironmentPayload` in `api.yml` has no `purpose` property, and it is the
-  schema every `POST` and `PUT` `requestBody` references. Generated Go, TypeScript
-  and RTK clients therefore have no field for it, and a body that supplies one
-  decodes to nothing.
+  schema every environment `POST` and `PUT` `requestBody` references. The
+  generated Go, TypeScript and RTK clients therefore have no field for it on the
+  environment create and update endpoints, and a body that supplies one decodes
+  to nothing.
 - `forms/createOrEdit.json` (the RJSF create-or-edit modal) has no `purpose`
   field, so no UI control offers it.
 - The property description states the obligation, so it travels into every
   generated artifact and into the published OpenAPI documentation.
 
-`validation/environment_purpose_test.go` fails if any of those change.
+`validation/environment_purpose_test.go` fails if the payload exclusion, the
+entity property's declared shape, or the form omission changes. It does not
+assert the wording of the description.
+
+**The environment endpoints are not the only request surface.** `RegistrantData`
+inlines the full `Environment` entity through the registrant connection
+(`connection.yaml`), so `registerRegistryComponent` and
+`registerRegistryRelationship` do carry `purpose` in a request type, and each
+consumer must refuse it on input there. That is the same inlining path described
+under [`readOnly: true`](#readonly-true), and it is consistent with what this
+contract already says rather than an exception to it: payload exclusion is a
+codegen guarantee, never access control, so the server-side refusal required by
+[2. Servers: each consumer refuses it
+independently](#2-servers-each-consumer-refuses-it-independently) applies
+whatever surface a value arrives on.
 
 The entity property is **not** marked `readOnly: true`, which is the annotation a
 reader will expect. See
@@ -132,7 +147,10 @@ Environments that are administrative by naming convention today are migrated by
 each consumer, **never through the API**:
 
 1. Add the column as `NOT NULL DEFAULT 'user'`, so existing rows become
-   explicitly ordinary and no row is ever NULL.
+   explicitly ordinary and no row is ever NULL. The entity property carries
+   `gorm:"not null;default:user"`, so a GORM `AutoMigrate` of the `v1beta3`
+   struct creates the column with that constraint; consumers whose migrations
+   are hand-written (Pop, raw SQL) must state it themselves.
 2. Set `purpose = 'administrative'` on the rows that the previous name-based
    convention selected, scoped per organization.
 3. Add the partial unique index. If step 2 produced a duplicate for any
@@ -145,6 +163,21 @@ each consumer, **never through the API**:
 Steps 1 to 3 change shared state and must land only after the matching code
 change is committed and deployed, so a rollback does not leave the database
 ahead of the code.
+
+### Sequencing against the schemas dependency bump
+
+`purpose` is the first `db`-tag divergence between `models/v1beta1/environment`,
+which `server/models/system_migration.go` registers for `AutoMigrate`, and
+`models/v1beta3/environment`, which `server/models/environment_persister.go`
+queries - every other column matches today. While that mismatch stands, the table
+Meshery Server creates has no `purpose` column even though the struct it writes
+names one, so `DB.Create(environment)` emits an `INSERT` naming a column that
+does not exist and environment creation fails at runtime.
+
+[meshery/meshery#21802](https://github.com/meshery/meshery/issues/21802)
+therefore has to land **before** `meshery/meshery` bumps its `meshery/schemas`
+dependency to a release carrying this property, not merely at some point after
+it.
 
 ## Two annotations this property deliberately does not carry
 
@@ -191,7 +224,7 @@ a storage default actually takes effect.
 | Repo | Surface | What it must do | Tracked |
 | --- | --- | --- | --- |
 | `layer5io/meshery-cloud` | `server/dao/environment_identity_providers.go`, environment handlers, Pop/Postgres migrations | See [meshery-cloud](#meshery-cloud) below. | Follow-up |
-| `meshery/meshery` (server) | `server/models/system_migration.go`, `server/models/environment_persister.go`, `server/models/default_local_provider.go` | Point `SystemDatabaseModels()` at `v1beta3` so the column is created (it currently registers the `v1beta1` struct while the persister queries the `v1beta3` one), and never populate `Purpose` from `EnvironmentPayload` - including on update, which rebuilds the entity from the payload and persists it whole. | [meshery/meshery#21802](https://github.com/meshery/meshery/issues/21802) |
+| `meshery/meshery` (server) | `server/models/system_migration.go`, `server/models/environment_persister.go`, `server/models/default_local_provider.go` | Point `SystemDatabaseModels()` at `v1beta3` so the column is created (it currently registers the `v1beta1` struct while the persister queries the `v1beta3` one), and never populate `Purpose` from `EnvironmentPayload` - including on update, which rebuilds the entity from the payload and persists it whole. Must land before the schemas dependency bump - see [Sequencing against the schemas dependency bump](#sequencing-against-the-schemas-dependency-bump). | [meshery/meshery#21802](https://github.com/meshery/meshery/issues/21802) |
 | `meshery/meshery` (UI) | `ui/components/environments/` | Surface administrative environments as such; add no form control that sets the property. The create-or-edit modal already renders the canonical RJSF schema, which omits it. | [meshery/meshery#21803](https://github.com/meshery/meshery/issues/21803) |
 | `meshery/meshery` (mesheryctl) | `mesheryctl/internal/cli/root/environments/` | Move off the superseded `v1beta1` import to `v1beta3`, display the purpose, and expose no flag that sets it. | [meshery/meshery#21804](https://github.com/meshery/meshery/issues/21804) |
 
