@@ -54,29 +54,69 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/entitlement/subscriptions/organizations/${queryArg.orgId}/features` }),
         providesTags: ["Feature_Features"],
       }),
+      getOrganizationSmtpEnvironment: build.query<
+        GetOrganizationSmtpEnvironmentApiResponse,
+        GetOrganizationSmtpEnvironmentApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/orgs/${queryArg.orgId}/environments/mail-relay` }),
+        providesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      deleteOrganizationSmtpEnvironment: build.mutation<
+        DeleteOrganizationSmtpEnvironmentApiResponse,
+        DeleteOrganizationSmtpEnvironmentApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/orgs/${queryArg.orgId}/environments/mail-relay`, method: "DELETE" }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
       getOrganizationSmtpConfiguration: build.query<
         GetOrganizationSmtpConfigurationApiResponse,
         GetOrganizationSmtpConfigurationApiArg
       >({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/smtp-configuration` }),
+        query: (queryArg) => ({ url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection` }),
         providesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
       }),
-      upsertOrganizationSmtpConfiguration: build.mutation<
-        UpsertOrganizationSmtpConfigurationApiResponse,
-        UpsertOrganizationSmtpConfigurationApiArg
+      createOrganizationSmtpConfiguration: build.mutation<
+        CreateOrganizationSmtpConfigurationApiResponse,
+        CreateOrganizationSmtpConfigurationApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/smtp-configuration`,
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      updateOrganizationSmtpConfiguration: build.mutation<
+        UpdateOrganizationSmtpConfigurationApiResponse,
+        UpdateOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection`,
           method: "PUT",
           body: queryArg.body,
         }),
         invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
       }),
-      deleteOrganizationSmtpConfiguration: build.mutation<
-        DeleteOrganizationSmtpConfigurationApiResponse,
-        DeleteOrganizationSmtpConfigurationApiArg
+      rotateOrganizationSmtpCredential: build.mutation<
+        RotateOrganizationSmtpCredentialApiResponse,
+        RotateOrganizationSmtpCredentialApiArg
       >({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/smtp-configuration`, method: "DELETE" }),
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection/credential`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      setOrganizationSmtpEnablement: build.mutation<
+        SetOrganizationSmtpEnablementApiResponse,
+        SetOrganizationSmtpEnablementApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection/enablement`,
+          method: "POST",
+          body: queryArg.body,
+        }),
         invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
       }),
       testOrganizationSmtpConfiguration: build.mutation<
@@ -84,7 +124,7 @@ const injectedRtkApi = api
         TestOrganizationSmtpConfigurationApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/smtp-configuration/test`,
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection/test`,
           method: "POST",
           body: queryArg.body,
         }),
@@ -94,7 +134,7 @@ const injectedRtkApi = api
         GetOrganizationSmtpDomainVerificationApiResponse,
         GetOrganizationSmtpDomainVerificationApiArg
       >({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/smtp-configuration/domain-verification` }),
+        query: (queryArg) => ({ url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/domain-verification` }),
         providesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
       }),
       verifyOrganizationSmtpDomain: build.mutation<
@@ -102,7 +142,7 @@ const injectedRtkApi = api
         VerifyOrganizationSmtpDomainApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/smtp-configuration/domain-verification`,
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/domain-verification`,
           method: "POST",
         }),
         invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
@@ -1845,6 +1885,38 @@ export type GetFeaturesByOrganizationApiArg = {
   /** The ID of the organization */
   orgId: string;
 };
+export type GetOrganizationSmtpEnvironmentApiResponse =
+  /** status 200 The organization has its own mail-relay environment. The canonical Environment shape, not a bespoke one: this endpoint returns an ordinary environment row that happens to carry the well-known name. */ {
+    /** ID */
+    id: string;
+    /** Specifies the version of the schema to which the environment conforms. */
+    schemaVersion: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organizationId: string;
+    /** Environment owner */
+    owner?: string;
+    /** Timestamp when the environment was created. */
+    createdAt?: string;
+    /** Additional metadata associated with the environment. */
+    metadata?: object;
+    /** Timestamp when the environment was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+    deletedAt?: string | null;
+  };
+export type GetOrganizationSmtpEnvironmentApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type DeleteOrganizationSmtpEnvironmentApiResponse = unknown;
+export type DeleteOrganizationSmtpEnvironmentApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
 export type GetOrganizationSmtpConfigurationApiResponse = /** status 200 The organization's SMTP configuration. */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
@@ -1852,24 +1924,27 @@ export type GetOrganizationSmtpConfigurationApiResponse = /** status 200 The org
   organizationId: string;
   /** Hostname of the organization's SMTP server. */
   host: string;
-  /** TCP port the organization's SMTP server listens on. */
+  /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
   port: number;
   /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
   encryption: "starttls" | "tls" | "none";
   /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
   authMechanism: "plain" | "cram-md5" | "none";
-  /** Username presented to the organization's SMTP server. */
+  /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
   username?: string;
-  /** Password presented to the organization's SMTP server. Write-only. A read always returns the redaction sentinel `***`; the stored value is encrypted at rest and is never projected into a response. Writing `***` or an empty string preserves the stored password, so a client may round-trip a read without erasing the credential. */
+  /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
   password?: string;
-  /** Address the organization's mail is sent from. Its domain must be verified before the configuration can be enabled. */
+  /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
   fromAddress: string;
   /** Display name shown alongside the from address in the message header. */
   fromDisplayName?: string;
   /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
   replyToAddress?: string;
-  /** Whether mail is routed through this server. Cannot be set while the from domain is unverified. */
-  enabled: boolean;
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+  status: "registered" | "connected" | "disconnected" | "ignored";
   /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
   fallbackToProvider: boolean;
   /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
@@ -1878,8 +1953,6 @@ export type GetOrganizationSmtpConfigurationApiResponse = /** status 200 The org
   fromDomainVerificationToken?: string;
   /** Timestamp at which control of the from domain was last proven. Null while unproven. */
   fromDomainVerifiedAt?: string | null;
-  /** Health of the configuration. `unverified` means it has never delivered a test message, `verified` means the last delivery attempt succeeded, and `failing` means consecutive failures have opened the circuit and mail is being handled under the fallback setting without dialling this server. */
-  verificationState: "unverified" | "verified" | "failing";
   /** Timestamp of the last message this server accepted. */
   lastSuccessAt?: string | null;
   /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
@@ -1911,31 +1984,34 @@ export type GetOrganizationSmtpConfigurationApiArg = {
   /** Organization ID */
   orgId: string;
 };
-export type UpsertOrganizationSmtpConfigurationApiResponse = /** status 200 The stored SMTP configuration. */ {
+export type CreateOrganizationSmtpConfigurationApiResponse = /** status 201 The stored SMTP configuration. */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   organizationId: string;
   /** Hostname of the organization's SMTP server. */
   host: string;
-  /** TCP port the organization's SMTP server listens on. */
+  /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
   port: number;
   /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
   encryption: "starttls" | "tls" | "none";
   /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
   authMechanism: "plain" | "cram-md5" | "none";
-  /** Username presented to the organization's SMTP server. */
+  /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
   username?: string;
-  /** Password presented to the organization's SMTP server. Write-only. A read always returns the redaction sentinel `***`; the stored value is encrypted at rest and is never projected into a response. Writing `***` or an empty string preserves the stored password, so a client may round-trip a read without erasing the credential. */
+  /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
   password?: string;
-  /** Address the organization's mail is sent from. Its domain must be verified before the configuration can be enabled. */
+  /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
   fromAddress: string;
   /** Display name shown alongside the from address in the message header. */
   fromDisplayName?: string;
   /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
   replyToAddress?: string;
-  /** Whether mail is routed through this server. Cannot be set while the from domain is unverified. */
-  enabled: boolean;
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+  status: "registered" | "connected" | "disconnected" | "ignored";
   /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
   fallbackToProvider: boolean;
   /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
@@ -1944,8 +2020,6 @@ export type UpsertOrganizationSmtpConfigurationApiResponse = /** status 200 The 
   fromDomainVerificationToken?: string;
   /** Timestamp at which control of the from domain was last proven. Null while unproven. */
   fromDomainVerifiedAt?: string | null;
-  /** Health of the configuration. `unverified` means it has never delivered a test message, `verified` means the last delivery attempt succeeded, and `failing` means consecutive failures have opened the circuit and mail is being handled under the fallback setting without dialling this server. */
-  verificationState: "unverified" | "verified" | "failing";
   /** Timestamp of the last message this server accepted. */
   lastSuccessAt?: string | null;
   /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
@@ -1973,40 +2047,264 @@ export type UpsertOrganizationSmtpConfigurationApiResponse = /** status 200 The 
   /** Timestamp when the configuration was soft deleted. Null while it remains active. */
   deletedAt?: string | null;
 };
-export type UpsertOrganizationSmtpConfigurationApiArg = {
+export type CreateOrganizationSmtpConfigurationApiArg = {
   /** Organization ID */
   orgId: string;
   body: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id?: string;
     /** Hostname of the organization's SMTP server. */
     host: string;
-    /** TCP port the organization's SMTP server listens on. */
+    /** TCP port the organization's SMTP server listens on. Restricted further by a submission-port allowlist. */
     port: number;
     /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext. */
     encryption?: "starttls" | "tls" | "none";
     /** SMTP authentication mechanism. Any mechanism other than `none` requires both a username and a password. */
     authMechanism?: "plain" | "cram-md5" | "none";
-    /** Username presented to the organization's SMTP server. */
+    /** Username presented to the organization's SMTP server. Required by the server, together with `password`, for every `authMechanism` other than `none`; see that property for why the pairing is a server-enforced contract rather than a schema constraint. */
     username?: string;
-    /** Password presented to the organization's SMTP server. Write-only. `***` or an empty string preserves the stored password, so a client may round-trip a read without erasing the credential. */
+    /** Password presented to the organization's SMTP server. The server requires it, together with `username`, for every `authMechanism` other than `none`, and answers 400 when either is missing.
+        That rule is deliberately NOT encoded in `required` or as a `oneOf`/`if`-`then`. Both encodings were measured against the generator: `if`/`then` collapses this payload to `interface{}`, and `oneOf` injects a `union json.RawMessage` field with a custom marshaller, either of which costs every consumer its generated type or its wire behaviour to express a constraint the server enforces anyway. Treat this property as conditionally required by contract, not by schema.
+        This is the ONLY operation that accepts the password alongside the settings, so that registering a mail server is one call and no configuration exists in a state where it is expected to send but holds no credential. Afterwards the password is written only by the rotation operation, never by the settings update, whose payload declares no `password` property at all.
+        The redaction sentinel `***` is refused, and so is the empty string - omit the property instead of sending it empty, which the `minLength` below enforces so this payload and the rotation payload agree. */
     password?: string;
-    /** Address the organization's mail is sent from. Changing it resets from-domain verification. */
+    /** Address the organization's mail is sent from. */
     fromAddress: string;
     /** Display name shown alongside the from address. */
     fromDisplayName?: string;
     /** Address replies are directed to. */
     replyToAddress?: string;
-    /** Whether mail is routed through this server. Refused while the from domain is unverified. */
-    enabled?: boolean;
     /** Whether a message this server fails to accept is re-sent through the provider's shared relay. Disabling it means a failure is a dropped message, account verification and password recovery included. */
     fallbackToProvider?: boolean;
   };
 };
-export type DeleteOrganizationSmtpConfigurationApiResponse = unknown;
-export type DeleteOrganizationSmtpConfigurationApiArg = {
+export type UpdateOrganizationSmtpConfigurationApiResponse = /** status 200 The stored SMTP configuration. */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Hostname of the organization's SMTP server. */
+  host: string;
+  /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+  port: number;
+  /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+  encryption: "starttls" | "tls" | "none";
+  /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+  authMechanism: "plain" | "cram-md5" | "none";
+  /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+  username?: string;
+  /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+  password?: string;
+  /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+  fromAddress: string;
+  /** Display name shown alongside the from address in the message header. */
+  fromDisplayName?: string;
+  /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+  replyToAddress?: string;
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+  status: "registered" | "connected" | "disconnected" | "ignored";
+  /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+  fallbackToProvider: boolean;
+  /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+  fromDomain?: string;
+  /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+  fromDomainVerificationToken?: string;
+  /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+  fromDomainVerifiedAt?: string | null;
+  /** Timestamp of the last message this server accepted. */
+  lastSuccessAt?: string | null;
+  /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+  lastFailureAt?: string | null;
+  /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+  lastFailureReason?:
+    | "blocked_target"
+    | "connect_refused"
+    | "connect_timeout"
+    | "tls_failed"
+    | "starttls_unsupported"
+    | "auth_rejected"
+    | "relay_rejected_sender"
+    | "relay_rejected_recipient"
+    | "delivery_failed"
+    | "credential_unreadable";
+  /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+  consecutiveFailures: number;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string | null;
+  /** Timestamp when the configuration was created. */
+  createdAt: string;
+  /** Timestamp when the configuration was last changed. */
+  updatedAt: string;
+  /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+  deletedAt?: string | null;
+};
+export type UpdateOrganizationSmtpConfigurationApiArg = {
   /** Organization ID */
   orgId: string;
+  body: {
+    /** Hostname of the organization's SMTP server. */
+    host: string;
+    /** TCP port the organization's SMTP server listens on. Restricted further by a submission-port allowlist. */
+    port: number;
+    /** Transport encryption to negotiate. */
+    encryption?: "starttls" | "tls" | "none";
+    /** SMTP authentication mechanism. Changing this to a mechanism other than `none` while no password is stored is refused; rotate the credential first. */
+    authMechanism?: "plain" | "cram-md5" | "none";
+    /** Username presented to the organization's SMTP server. */
+    username?: string;
+    /** Address the organization's mail is sent from. Changing it to a different registrable domain resets from-domain verification. */
+    fromAddress: string;
+    /** Display name shown alongside the from address. */
+    fromDisplayName?: string;
+    /** Address replies are directed to. */
+    replyToAddress?: string;
+    /** Whether a message this server fails to accept is re-sent through the provider's shared relay. */
+    fallbackToProvider?: boolean;
+  };
+};
+export type RotateOrganizationSmtpCredentialApiResponse =
+  /** status 200 The stored SMTP configuration, with the password redacted. */ {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Hostname of the organization's SMTP server. */
+    host: string;
+    /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+    port: number;
+    /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+    encryption: "starttls" | "tls" | "none";
+    /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+    authMechanism: "plain" | "cram-md5" | "none";
+    /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+    username?: string;
+    /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+    password?: string;
+    /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+    fromAddress: string;
+    /** Display name shown alongside the from address in the message header. */
+    fromDisplayName?: string;
+    /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+    replyToAddress?: string;
+    /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+    status: "registered" | "connected" | "disconnected" | "ignored";
+    /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+    fallbackToProvider: boolean;
+    /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+    fromDomain?: string;
+    /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+    fromDomainVerificationToken?: string;
+    /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+    fromDomainVerifiedAt?: string | null;
+    /** Timestamp of the last message this server accepted. */
+    lastSuccessAt?: string | null;
+    /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+    lastFailureAt?: string | null;
+    /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+    lastFailureReason?:
+      | "blocked_target"
+      | "connect_refused"
+      | "connect_timeout"
+      | "tls_failed"
+      | "starttls_unsupported"
+      | "auth_rejected"
+      | "relay_rejected_sender"
+      | "relay_rejected_recipient"
+      | "delivery_failed"
+      | "credential_unreadable";
+    /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+    consecutiveFailures: number;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    createdBy?: string | null;
+    /** Timestamp when the configuration was created. */
+    createdAt: string;
+    /** Timestamp when the configuration was last changed. */
+    updatedAt: string;
+    /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+    deletedAt?: string | null;
+  };
+export type RotateOrganizationSmtpCredentialApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** New password. The redaction sentinel `***` and the empty string are refused with a 400 rather than treated as "leave the stored value alone", so echoing a read back cannot erase the credential. */
+    password: string;
+  };
+};
+export type SetOrganizationSmtpEnablementApiResponse = /** status 200 The stored SMTP configuration. */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Hostname of the organization's SMTP server. */
+  host: string;
+  /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+  port: number;
+  /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+  encryption: "starttls" | "tls" | "none";
+  /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+  authMechanism: "plain" | "cram-md5" | "none";
+  /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+  username?: string;
+  /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+  password?: string;
+  /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+  fromAddress: string;
+  /** Display name shown alongside the from address in the message header. */
+  fromDisplayName?: string;
+  /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+  replyToAddress?: string;
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+  status: "registered" | "connected" | "disconnected" | "ignored";
+  /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+  fallbackToProvider: boolean;
+  /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+  fromDomain?: string;
+  /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+  fromDomainVerificationToken?: string;
+  /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+  fromDomainVerifiedAt?: string | null;
+  /** Timestamp of the last message this server accepted. */
+  lastSuccessAt?: string | null;
+  /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+  lastFailureAt?: string | null;
+  /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+  lastFailureReason?:
+    | "blocked_target"
+    | "connect_refused"
+    | "connect_timeout"
+    | "tls_failed"
+    | "starttls_unsupported"
+    | "auth_rejected"
+    | "relay_rejected_sender"
+    | "relay_rejected_recipient"
+    | "delivery_failed"
+    | "credential_unreadable";
+  /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+  consecutiveFailures: number;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string | null;
+  /** Timestamp when the configuration was created. */
+  createdAt: string;
+  /** Timestamp when the configuration was last changed. */
+  updatedAt: string;
+  /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+  deletedAt?: string | null;
+};
+export type SetOrganizationSmtpEnablementApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** True returns the configuration to `registered` so it may prove itself and carry mail; false moves it to `ignored`. Turning it on is refused while the from domain is unverified. */
+    enabled: boolean;
+  };
 };
 export type TestOrganizationSmtpConfigurationApiResponse =
   /** status 200 The classified outcome of the delivery attempt. */ {
@@ -15794,10 +16092,15 @@ export const {
   useLazyGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
   useLazyGetFeaturesByOrganizationQuery,
+  useGetOrganizationSmtpEnvironmentQuery,
+  useLazyGetOrganizationSmtpEnvironmentQuery,
+  useDeleteOrganizationSmtpEnvironmentMutation,
   useGetOrganizationSmtpConfigurationQuery,
   useLazyGetOrganizationSmtpConfigurationQuery,
-  useUpsertOrganizationSmtpConfigurationMutation,
-  useDeleteOrganizationSmtpConfigurationMutation,
+  useCreateOrganizationSmtpConfigurationMutation,
+  useUpdateOrganizationSmtpConfigurationMutation,
+  useRotateOrganizationSmtpCredentialMutation,
+  useSetOrganizationSmtpEnablementMutation,
   useTestOrganizationSmtpConfigurationMutation,
   useGetOrganizationSmtpDomainVerificationQuery,
   useLazyGetOrganizationSmtpDomainVerificationQuery,

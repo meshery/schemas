@@ -23,11 +23,12 @@ const (
 	OrganizationSmtpConfigurationAuthMechanismPlain   OrganizationSmtpConfigurationAuthMechanism = "plain"
 )
 
-// Defines values for OrganizationSmtpConfigurationVerificationState.
+// Defines values for OrganizationSmtpConfigurationStatus.
 const (
-	Failing    OrganizationSmtpConfigurationVerificationState = "failing"
-	Unverified OrganizationSmtpConfigurationVerificationState = "unverified"
-	Verified   OrganizationSmtpConfigurationVerificationState = "verified"
+	Connected    OrganizationSmtpConfigurationStatus = "connected"
+	Disconnected OrganizationSmtpConfigurationStatus = "disconnected"
+	Ignored      OrganizationSmtpConfigurationStatus = "ignored"
+	Registered   OrganizationSmtpConfigurationStatus = "registered"
 )
 
 // Defines values for OrganizationSmtpConfigurationLastFailureReason.
@@ -72,6 +73,20 @@ const (
 	RecordNotFound OrganizationSmtpDomainChallengeFailureReason = "record_not_found"
 )
 
+// Defines values for OrganizationSmtpSettingsPayloadEncryption.
+const (
+	OrganizationSmtpSettingsPayloadEncryptionNone     OrganizationSmtpSettingsPayloadEncryption = "none"
+	OrganizationSmtpSettingsPayloadEncryptionStarttls OrganizationSmtpSettingsPayloadEncryption = "starttls"
+	OrganizationSmtpSettingsPayloadEncryptionTls      OrganizationSmtpSettingsPayloadEncryption = "tls"
+)
+
+// Defines values for OrganizationSmtpSettingsPayloadAuthMechanism.
+const (
+	OrganizationSmtpSettingsPayloadAuthMechanismCramMd5 OrganizationSmtpSettingsPayloadAuthMechanism = "cram-md5"
+	OrganizationSmtpSettingsPayloadAuthMechanismNone    OrganizationSmtpSettingsPayloadAuthMechanism = "none"
+	OrganizationSmtpSettingsPayloadAuthMechanismPlain   OrganizationSmtpSettingsPayloadAuthMechanism = "plain"
+)
+
 // Defines values for OrganizationSmtpTestResultOutcome.
 const (
 	OrganizationSmtpTestResultOutcomeAuthRejected           OrganizationSmtpTestResultOutcome = "auth_rejected"
@@ -87,73 +102,77 @@ const (
 	OrganizationSmtpTestResultOutcomeTlsFailed              OrganizationSmtpTestResultOutcome = "tls_failed"
 )
 
-// OrganizationSmtpConfiguration An organization's own outbound mail server. When present and enabled, every transactional email whose reader belongs to this organization - application notifications and identity-flow mail (account verification, password recovery) alike - is delivered through this server rather than through the provider's shared relay, so the message leaves from the organization's own domain. At most one live configuration exists per organization. The SMTP password is encrypted at rest and is never returned; reads always carry the redaction sentinel instead.
+// OrganizationSmtpConfiguration An organization's own outbound mail server. When present and healthy, every transactional email whose reader belongs to this organization - application notifications and identity-flow mail (account verification, password recovery) alike - is delivered through this server rather than through the provider's shared relay, so the message leaves from the organization's own domain. At most one live configuration exists per organization. The SMTP password is encrypted at rest and is never returned; reads always carry the redaction sentinel instead.
+//
+// This is a WIRE contract only. It is not backed by a table of its own: the configuration is stored on the same environment/connection/credential chain that bring-your-own identity providers already uses - a well-known per-organization Environment, joined through environments_connections_mappings to a Connection whose credential_id points at a Credential. The organization relationship lives on `environments.organization_id`, the dial target on `connections.url` and `connections.metadata`, the transport verdict on `connections.status`, and the password alone in `credentials.secret`.
+//
+// No property here carries a construct-specific `db` tag, because no property here names a column of its own. The exception is deliberate and inherited: `createdAt` and `updatedAt` `$ref` the shared core definitions, which declare `db: created_at` / `db: updated_at` for every construct that uses them, and those two tags are accurate for the underlying connection row.
 type OrganizationSmtpConfiguration struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID meshcore.Uuid `db:"id" json:"id" yaml:"id"`
+	ID meshcore.Uuid `json:"id" yaml:"id"`
 
 	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrganizationID meshcore.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`
+	OrganizationID meshcore.Uuid `json:"organizationId" yaml:"organizationId"`
 
 	// Host Hostname of the organization's SMTP server.
-	Host string `db:"host" json:"host" yaml:"host"`
+	Host string `json:"host" yaml:"host"`
 
-	// Port TCP port the organization's SMTP server listens on.
-	Port int `db:"port" json:"port" yaml:"port"`
+	// Port TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused.
+	Port int `json:"port" yaml:"port"`
 
 	// Encryption Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network.
-	Encryption OrganizationSmtpConfigurationEncryption `db:"encryption" json:"encryption" yaml:"encryption"`
+	Encryption OrganizationSmtpConfigurationEncryption `json:"encryption" yaml:"encryption"`
 
 	// AuthMechanism SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password.
-	AuthMechanism OrganizationSmtpConfigurationAuthMechanism `db:"auth_mechanism" json:"authMechanism" yaml:"authMechanism"`
+	AuthMechanism OrganizationSmtpConfigurationAuthMechanism `json:"authMechanism" yaml:"authMechanism"`
 
-	// Username Username presented to the organization's SMTP server.
-	Username *string `db:"username" json:"username,omitempty" yaml:"username,omitempty"`
+	// Username Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read.
+	Username *string `json:"username,omitempty" yaml:"username,omitempty"`
 
-	// Password Password presented to the organization's SMTP server. Write-only. A read always returns the redaction sentinel `***`; the stored value is encrypted at rest and is never projected into a response. Writing `***` or an empty string preserves the stored password, so a client may round-trip a read without erasing the credential.
-	Password *string `db:"-" json:"password,omitempty" yaml:"password,omitempty"`
+	// Password Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+	// Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there.
+	Password *string `json:"password,omitempty" yaml:"password,omitempty"`
 
 	// FromAddress email
-	FromAddress meshcore.Email `db:"from_address" json:"fromAddress" yaml:"fromAddress"`
+	FromAddress meshcore.Email `json:"fromAddress" yaml:"fromAddress"`
 
 	// FromDisplayName Display name shown alongside the from address in the message header.
-	FromDisplayName *string `db:"from_display_name" json:"fromDisplayName,omitempty" yaml:"fromDisplayName,omitempty"`
+	FromDisplayName *string `json:"fromDisplayName,omitempty" yaml:"fromDisplayName,omitempty"`
 
 	// ReplyToAddress email
-	ReplyToAddress meshcore.Email `db:"reply_to_address" json:"replyToAddress,omitempty" yaml:"replyToAddress,omitempty"`
+	ReplyToAddress meshcore.Email `json:"replyToAddress,omitempty" yaml:"replyToAddress,omitempty"`
 
-	// Enabled Whether mail is routed through this server. Cannot be set while the from domain is unverified.
-	Enabled bool `db:"enabled" json:"enabled" yaml:"enabled"`
+	// Status Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+	//
+	// The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
+	Status OrganizationSmtpConfigurationStatus `json:"status" yaml:"status"`
 
 	// FallbackToProvider Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery.
-	FallbackToProvider bool `db:"fallback_to_provider" json:"fallbackToProvider" yaml:"fallbackToProvider"`
+	FallbackToProvider bool `json:"fallbackToProvider" yaml:"fallbackToProvider"`
 
 	// FromDomain Registrable domain of the from address, held separately as the unit that ownership is proven for.
-	FromDomain *string `db:"from_domain" json:"fromDomain,omitempty" yaml:"fromDomain,omitempty"`
+	FromDomain *string `json:"fromDomain,omitempty" yaml:"fromDomain,omitempty"`
 
 	// FromDomainVerificationToken Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access.
-	FromDomainVerificationToken *string `db:"from_domain_verification_token" json:"fromDomainVerificationToken,omitempty" yaml:"fromDomainVerificationToken,omitempty"`
+	FromDomainVerificationToken *string `json:"fromDomainVerificationToken,omitempty" yaml:"fromDomainVerificationToken,omitempty"`
 
 	// FromDomainVerifiedAt SQL null Timestamp to handle null values of time.
-	FromDomainVerifiedAt meshcore.NullTime `db:"from_domain_verified_at" json:"fromDomainVerifiedAt,omitempty" yaml:"fromDomainVerifiedAt,omitempty"`
-
-	// VerificationState Health of the configuration. `unverified` means it has never delivered a test message, `verified` means the last delivery attempt succeeded, and `failing` means consecutive failures have opened the circuit and mail is being handled under the fallback setting without dialling this server.
-	VerificationState OrganizationSmtpConfigurationVerificationState `db:"verification_state" json:"verificationState" yaml:"verificationState"`
+	FromDomainVerifiedAt meshcore.NullTime `json:"fromDomainVerifiedAt,omitempty" yaml:"fromDomainVerifiedAt,omitempty"`
 
 	// LastSuccessAt SQL null Timestamp to handle null values of time.
-	LastSuccessAt meshcore.NullTime `db:"last_success_at" json:"lastSuccessAt,omitempty" yaml:"lastSuccessAt,omitempty"`
+	LastSuccessAt meshcore.NullTime `json:"lastSuccessAt,omitempty" yaml:"lastSuccessAt,omitempty"`
 
 	// LastFailureAt SQL null Timestamp to handle null values of time.
-	LastFailureAt meshcore.NullTime `db:"last_failure_at" json:"lastFailureAt,omitempty" yaml:"lastFailureAt,omitempty"`
+	LastFailureAt meshcore.NullTime `json:"lastFailureAt,omitempty" yaml:"lastFailureAt,omitempty"`
 
 	// LastFailureReason Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach.
-	LastFailureReason *OrganizationSmtpConfigurationLastFailureReason `db:"last_failure_reason" json:"lastFailureReason,omitempty" yaml:"lastFailureReason,omitempty"`
+	LastFailureReason *OrganizationSmtpConfigurationLastFailureReason `json:"lastFailureReason,omitempty" yaml:"lastFailureReason,omitempty"`
 
 	// ConsecutiveFailures Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server.
-	ConsecutiveFailures int `db:"consecutive_failures" json:"consecutiveFailures" yaml:"consecutiveFailures"`
+	ConsecutiveFailures int `json:"consecutiveFailures" yaml:"consecutiveFailures"`
 
 	// CreatedBy A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	CreatedBy *meshcore.Uuid `db:"created_by" json:"createdBy,omitempty" yaml:"createdBy,omitempty"`
+	CreatedBy *meshcore.Uuid `json:"createdBy,omitempty" yaml:"createdBy,omitempty"`
 
 	// CreatedAt Timestamp when the resource was created.
 	CreatedAt meshcore.CreatedAt `db:"created_at" json:"createdAt" yaml:"createdAt"`
@@ -162,7 +181,7 @@ type OrganizationSmtpConfiguration struct {
 	UpdatedAt meshcore.UpdatedAt `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt meshcore.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
+	DeletedAt meshcore.NullTime `json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 }
 
 // OrganizationSmtpConfigurationEncryption Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network.
@@ -171,21 +190,21 @@ type OrganizationSmtpConfigurationEncryption string
 // OrganizationSmtpConfigurationAuthMechanism SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password.
 type OrganizationSmtpConfigurationAuthMechanism string
 
-// OrganizationSmtpConfigurationVerificationState Health of the configuration. `unverified` means it has never delivered a test message, `verified` means the last delivery attempt succeeded, and `failing` means consecutive failures have opened the circuit and mail is being handled under the fallback setting without dialling this server.
-type OrganizationSmtpConfigurationVerificationState string
+// OrganizationSmtpConfigurationStatus Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+//
+// The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
+type OrganizationSmtpConfigurationStatus string
 
 // OrganizationSmtpConfigurationLastFailureReason Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach.
 type OrganizationSmtpConfigurationLastFailureReason string
 
-// OrganizationSmtpConfigurationPayload Client-settable fields of an organization's mail server configuration. Health, verification state and timestamps are server-owned and are not accepted here.
+// OrganizationSmtpConfigurationPayload Everything needed to register an organization's mail server, settings and password together, so that registration is one operation. Accepted only on create; afterwards the settings and the credential are written by separate operations.
+// `status`, the delivery counters behind it, the from-domain proof and the timestamps are all server-owned and are not accepted here. A new configuration therefore always starts at `registered`, whatever the caller sends.
 type OrganizationSmtpConfigurationPayload struct {
-	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID *meshcore.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
-
 	// Host Hostname of the organization's SMTP server.
 	Host string `json:"host" yaml:"host"`
 
-	// Port TCP port the organization's SMTP server listens on.
+	// Port TCP port the organization's SMTP server listens on. Restricted further by a submission-port allowlist.
 	Port int `json:"port" yaml:"port"`
 
 	// Encryption Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext.
@@ -194,10 +213,13 @@ type OrganizationSmtpConfigurationPayload struct {
 	// AuthMechanism SMTP authentication mechanism. Any mechanism other than `none` requires both a username and a password.
 	AuthMechanism OrganizationSmtpConfigurationPayloadAuthMechanism `json:"authMechanism,omitempty" yaml:"authMechanism,omitempty"`
 
-	// Username Username presented to the organization's SMTP server.
+	// Username Username presented to the organization's SMTP server. Required by the server, together with `password`, for every `authMechanism` other than `none`; see that property for why the pairing is a server-enforced contract rather than a schema constraint.
 	Username *string `json:"username,omitempty" yaml:"username,omitempty"`
 
-	// Password Password presented to the organization's SMTP server. Write-only. `***` or an empty string preserves the stored password, so a client may round-trip a read without erasing the credential.
+	// Password Password presented to the organization's SMTP server. The server requires it, together with `username`, for every `authMechanism` other than `none`, and answers 400 when either is missing.
+	// That rule is deliberately NOT encoded in `required` or as a `oneOf`/`if`-`then`. Both encodings were measured against the generator: `if`/`then` collapses this payload to `interface{}`, and `oneOf` injects a `union json.RawMessage` field with a custom marshaller, either of which costs every consumer its generated type or its wire behaviour to express a constraint the server enforces anyway. Treat this property as conditionally required by contract, not by schema.
+	// This is the ONLY operation that accepts the password alongside the settings, so that registering a mail server is one call and no configuration exists in a state where it is expected to send but holds no credential. Afterwards the password is written only by the rotation operation, never by the settings update, whose payload declares no `password` property at all.
+	// The redaction sentinel `***` is refused, and so is the empty string - omit the property instead of sending it empty, which the `minLength` below enforces so this payload and the rotation payload agree.
 	Password *string `json:"password,omitempty" yaml:"password,omitempty"`
 
 	// FromAddress email
@@ -209,9 +231,6 @@ type OrganizationSmtpConfigurationPayload struct {
 	// ReplyToAddress email
 	ReplyToAddress meshcore.Email `json:"replyToAddress,omitempty" yaml:"replyToAddress,omitempty"`
 
-	// Enabled Whether mail is routed through this server. Refused while the from domain is unverified.
-	Enabled bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
-
 	// FallbackToProvider Whether a message this server fails to accept is re-sent through the provider's shared relay. Disabling it means a failure is a dropped message, account verification and password recovery included.
 	FallbackToProvider bool `json:"fallbackToProvider,omitempty" yaml:"fallbackToProvider,omitempty"`
 }
@@ -221,6 +240,12 @@ type OrganizationSmtpConfigurationPayloadEncryption string
 
 // OrganizationSmtpConfigurationPayloadAuthMechanism SMTP authentication mechanism. Any mechanism other than `none` requires both a username and a password.
 type OrganizationSmtpConfigurationPayloadAuthMechanism string
+
+// OrganizationSmtpCredentialPayload The password presented to an organization's SMTP server. The only payload that carries it after creation.
+type OrganizationSmtpCredentialPayload struct {
+	// Password New password. The redaction sentinel `***` and the empty string are refused with a 400 rather than treated as "leave the stored value alone", so echoing a read back cannot erase the credential.
+	Password string `json:"password" yaml:"password"`
+}
 
 // OrganizationSmtpDomainChallenge The DNS record proving control of an organization's from domain, and the current state of that proof.
 type OrganizationSmtpDomainChallenge struct {
@@ -251,6 +276,48 @@ type OrganizationSmtpDomainChallengeMethod string
 
 // OrganizationSmtpDomainChallengeFailureReason Why the last check did not prove control.
 type OrganizationSmtpDomainChallengeFailureReason string
+
+// OrganizationSmtpEnablementPayload Administrative on/off for an organization's own mail server. It cannot express the delivery-driven states, which are written by outcomes alone.
+type OrganizationSmtpEnablementPayload struct {
+	// Enabled True returns the configuration to `registered` so it may prove itself and carry mail; false moves it to `ignored`. Turning it on is refused while the from domain is unverified.
+	Enabled bool `json:"enabled" yaml:"enabled"`
+}
+
+// OrganizationSmtpSettingsPayload Client-settable settings of an organization's mail server, WITHOUT the password. The omission is deliberate and structural: because this schema forbids unknown properties, a client cannot send a credential through this operation at all, so the read-then-write round trip that would otherwise overwrite a stored password with the redaction sentinel is not expressible. Rotate the password through its own operation.
+type OrganizationSmtpSettingsPayload struct {
+	// Host Hostname of the organization's SMTP server.
+	Host string `json:"host" yaml:"host"`
+
+	// Port TCP port the organization's SMTP server listens on. Restricted further by a submission-port allowlist.
+	Port int `json:"port" yaml:"port"`
+
+	// Encryption Transport encryption to negotiate.
+	Encryption OrganizationSmtpSettingsPayloadEncryption `json:"encryption,omitempty" yaml:"encryption,omitempty"`
+
+	// AuthMechanism SMTP authentication mechanism. Changing this to a mechanism other than `none` while no password is stored is refused; rotate the credential first.
+	AuthMechanism OrganizationSmtpSettingsPayloadAuthMechanism `json:"authMechanism,omitempty" yaml:"authMechanism,omitempty"`
+
+	// Username Username presented to the organization's SMTP server.
+	Username *string `json:"username,omitempty" yaml:"username,omitempty"`
+
+	// FromAddress email
+	FromAddress meshcore.Email `json:"fromAddress" yaml:"fromAddress"`
+
+	// FromDisplayName Display name shown alongside the from address.
+	FromDisplayName *string `json:"fromDisplayName,omitempty" yaml:"fromDisplayName,omitempty"`
+
+	// ReplyToAddress email
+	ReplyToAddress meshcore.Email `json:"replyToAddress,omitempty" yaml:"replyToAddress,omitempty"`
+
+	// FallbackToProvider Whether a message this server fails to accept is re-sent through the provider's shared relay.
+	FallbackToProvider bool `json:"fallbackToProvider,omitempty" yaml:"fallbackToProvider,omitempty"`
+}
+
+// OrganizationSmtpSettingsPayloadEncryption Transport encryption to negotiate.
+type OrganizationSmtpSettingsPayloadEncryption string
+
+// OrganizationSmtpSettingsPayloadAuthMechanism SMTP authentication mechanism. Changing this to a mechanism other than `none` while no password is stored is refused; rotate the credential first.
+type OrganizationSmtpSettingsPayloadAuthMechanism string
 
 // OrganizationSmtpTestRequest Options for a test delivery.
 type OrganizationSmtpTestRequest struct {
