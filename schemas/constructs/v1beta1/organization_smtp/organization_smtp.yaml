@@ -19,9 +19,14 @@ description: >-
   to a Connection whose credential_id points at a Credential. The organization
   relationship lives on `environments.organization_id`, the dial target on
   `connections.url` and `connections.metadata`, the transport verdict on
-  `connections.status`, and the password alone in `credentials.secret`. No
-  property here carries a `db` tag, because no property here names a column of
-  its own.
+  `connections.status`, and the password alone in `credentials.secret`.
+
+
+  No property here carries a construct-specific `db` tag, because no property
+  here names a column of its own. The exception is deliberate and inherited:
+  `createdAt` and `updatedAt` `$ref` the shared core definitions, which declare
+  `db: created_at` / `db: updated_at` for every construct that uses them, and
+  those two tags are accurate for the underlying connection row.
 additionalProperties: false
 type: object
 example:
@@ -147,6 +152,7 @@ properties:
       `OrganizationSmtpCredentialPayload` on rotation - and are documented
       there.
     readOnly: true
+    default: "***"
     maxLength: 512
     x-order: 8
     x-oapi-codegen-extra-tags:
