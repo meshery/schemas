@@ -61,11 +61,14 @@ paths:
         - $ref: "#/components/parameters/orgId"
       responses:
         "200":
-          description: The organization has its own mail-relay environment.
+          description: >-
+            The organization has its own mail-relay environment. The canonical
+            Environment shape, not a bespoke one: this endpoint returns an
+            ordinary environment row that happens to carry the well-known name.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OrganizationSmtpEnvironment"
+                $ref: ../../v1beta3/environment/environment.yaml
         "401":
           $ref: "#/components/responses/401"
         "403":
@@ -462,60 +465,6 @@ components:
   schemas:
     OrganizationSmtpConfiguration:
       $ref: "./organization_smtp.yaml"
-
-    OrganizationSmtpEnvironment:
-      type: object
-      additionalProperties: false
-      description: >-
-        The well-known environment holding an organization's mail-relay
-        connection. Its presence is the organization's opt-in; it is provisioned
-        on the organization's behalf when the first configuration is created and
-        removed when the configuration is removed.
-      required:
-        - id
-        - name
-        - organizationId
-        - createdAt
-        - updatedAt
-      properties:
-        id:
-          $ref: ../core/api.yml#/components/schemas/uuid
-          description: Identifier of the environment.
-          x-order: 1
-          x-go-name: ID
-        name:
-          type: string
-          description: The well-known environment name. Reserved; it cannot be claimed or renamed through the generic environment operations.
-          maxLength: 255
-          x-order: 2
-          x-go-type-skip-optional-pointer: true
-        description:
-          type: string
-          description: Human-readable description applied at creation.
-          maxLength: 255
-          x-order: 3
-          x-oapi-codegen-extra-tags:
-            json: description,omitempty
-        organizationId:
-          $ref: ../core/api.yml#/components/schemas/uuid
-          description: Organization the environment belongs to.
-          x-order: 4
-          x-go-name: OrganizationID
-        createdBy:
-          $ref: ../core/api.yml#/components/schemas/uuid
-          description: User who provisioned the environment, retained for audit.
-          nullable: true
-          x-order: 5
-          x-oapi-codegen-extra-tags:
-            json: createdBy,omitempty
-        createdAt:
-          $ref: ../core/api.yml#/components/schemas/created_at
-          description: Timestamp when the environment was created.
-          x-order: 6
-        updatedAt:
-          $ref: ../core/api.yml#/components/schemas/updated_at
-          description: Timestamp when the environment was last changed.
-          x-order: 7
 
     OrganizationSmtpConfigurationPayload:
       type: object
