@@ -120,9 +120,14 @@ properties:
 
 
       At most one live environment per organization may carry any single
-      non-`user` purpose. A resolver that selects an environment by purpose
-      MUST fail closed when more than one live row matches: return an error
-      rather than whichever row the database happened to return first.
+      privileged purpose - `administrative`, and each privileged value a later
+      version adds. Name those values explicitly wherever the rule is
+      enforced, including the database index predicate: a "not `user`" test
+      also matches the empty value that unmigrated rows and un-normalised
+      writes read back as, which means ordinary. A resolver that selects an
+      environment by purpose MUST fail closed when more than one live row
+      matches: return an error rather than whichever row the database happened
+      to return first.
 
 
       Server-owned and not client-settable. It is absent from

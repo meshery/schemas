@@ -69,7 +69,10 @@ contract already says rather than an exception to it: payload exclusion is a
 codegen guarantee, never access control, so the server-side refusal required by
 [2. Servers: each consumer refuses it
 independently](#2-servers-each-consumer-refuses-it-independently) applies
-whatever surface a value arrives on.
+whatever surface a value arrives on. That obligation is assigned, not merely
+stated: the registrant handler is named in the Meshery Server row of
+[Consumers of this contract](#consumers-of-this-contract), under the same issue
+as the payload path, so one maintainer closes both surfaces together.
 
 The entity property is **not** marked `readOnly: true`, which is the annotation a
 reader will expect. See
@@ -106,17 +109,36 @@ which grants authority by accident.
 Go consumers call `models/v1beta3/environment.Environment.IsAdministrative()`.
 TypeScript consumers compare against the literal `"administrative"`.
 
+This generalises beyond Go, and beyond reads. **Every predicate that selects
+privileged environments names the privileged values explicitly.** It holds for
+resolver queries, for the database index predicate under
+[Uniqueness](#uniqueness), and for each privileged value the enum later gains. A
+`<> 'user'` predicate matches `''` as well, and `''` means ordinary.
+
 ## Uniqueness
 
-**At most one live environment per organization may carry any single non-`user`
-purpose.**
+**At most one live environment per organization may carry any single privileged
+purpose** - `administrative`, and each privileged value the enum later gains.
+
+The rule is stated over the privileged values rather than as "not `user`", for
+the reason given under [Reading the value](#reading-the-value): `''` is a real
+stored value that means ordinary, and a negative predicate sweeps it in.
 
 - **Schema** cannot express it. JSON Schema and OpenAPI constrain one document;
   this is a cross-row constraint. It is stated here and in the property
   description, and enforced nowhere in this repo.
 - **Database** is where it is enforced: a partial unique index over
-  (`organization_id`, `purpose`), restricted to live rows with a non-`user`
-  purpose. Each consumer adds it in its own migration.
+  (`organization_id`, `purpose`) restricted to live rows carrying a privileged
+  purpose - `WHERE deleted_at IS NULL AND purpose = 'administrative'`, widened
+  to an `IN` list as further privileged values are added. Each consumer adds it
+  in its own migration. `WHERE purpose <> 'user'` is the predicate to avoid: it
+  indexes ordinary rows stored as `''`, so the second ordinary environment an
+  organization creates collides with the first and fails to insert.
+- **Writers** must normalise. A consumer persisting an environment whose purpose
+  is absent stores `user`, not `''`;
+  `models/v1beta3/environment.Environment.EffectivePurpose()` returns the value
+  to store. The index predicate only decides which rows are constrained - it
+  does not repair rows already written as `''`.
 - **Resolvers** must still fail closed. A resolver that selects an environment
   by purpose returns an error when more than one live row matches, rather than
   taking whichever row the database happened to return first. The index makes
@@ -151,9 +173,19 @@ each consumer, **never through the API**:
    `gorm:"not null;default:user"`, so a GORM `AutoMigrate` of the `v1beta3`
    struct creates the column with that constraint; consumers whose migrations
    are hand-written (Pop, raw SQL) must state it themselves.
+
+   Neither half of that constrains what later writes store. The `gorm` tag is
+   inert outside GORM - a Pop-based consumer such as meshery-cloud names every
+   `db`-tagged column in its `INSERT`, so the column `DEFAULT` never fires and
+   an environment created through the API, correctly carrying no purpose
+   because `EnvironmentPayload` has no such field, stores `''`. `NOT NULL` does
+   not reject `''` either. Normalising on write is what keeps the column
+   holding `user`; see [Uniqueness](#uniqueness).
 2. Set `purpose = 'administrative'` on the rows that the previous name-based
    convention selected, scoped per organization.
-3. Add the partial unique index. If step 2 produced a duplicate for any
+3. Add the partial unique index over the privileged values -
+   `... WHERE deleted_at IS NULL AND purpose = 'administrative'`, not
+   `WHERE purpose <> 'user'`. If step 2 produced a duplicate for any
    organization, the index creation fails - resolve that data before the
    migration lands rather than dropping the index.
 4. Repoint the resolver at `purpose` and delete the name-based lookup. Until the
@@ -224,7 +256,7 @@ a storage default actually takes effect.
 | Repo | Surface | What it must do | Tracked |
 | --- | --- | --- | --- |
 | `layer5io/meshery-cloud` | `server/dao/environment_identity_providers.go`, environment handlers, Pop/Postgres migrations | See [meshery-cloud](#meshery-cloud) below. | Follow-up |
-| `meshery/meshery` (server) | `server/models/system_migration.go`, `server/models/environment_persister.go`, `server/models/default_local_provider.go` | Point `SystemDatabaseModels()` at `v1beta3` so the column is created (it currently registers the `v1beta1` struct while the persister queries the `v1beta3` one), and never populate `Purpose` from `EnvironmentPayload` - including on update, which rebuilds the entity from the payload and persists it whole. Must land before the schemas dependency bump - see [Sequencing against the schemas dependency bump](#sequencing-against-the-schemas-dependency-bump). | [meshery/meshery#21802](https://github.com/meshery/meshery/issues/21802) |
+| `meshery/meshery` (server) | `server/models/system_migration.go`, `server/models/environment_persister.go`, `server/models/default_local_provider.go`, `server/handlers/component_handler.go` (`RegisterMeshmodelComponents`) | Point `SystemDatabaseModels()` at `v1beta3` so the column is created (it currently registers the `v1beta1` struct while the persister queries the `v1beta3` one), and refuse `purpose` on input from **both** request surfaces: never populate `Purpose` from `EnvironmentPayload` - including on update, which rebuilds the entity from the payload and persists it whole - and discard the `purpose` carried inside `RegistrantData.connection.environments[]` on the registrant path rather than letting it reach persistence if those environments are ever persisted. Must land before the schemas dependency bump - see [Sequencing against the schemas dependency bump](#sequencing-against-the-schemas-dependency-bump). | [meshery/meshery#21802](https://github.com/meshery/meshery/issues/21802) |
 | `meshery/meshery` (UI) | `ui/components/environments/` | Surface administrative environments as such; add no form control that sets the property. The create-or-edit modal already renders the canonical RJSF schema, which omits it. | [meshery/meshery#21803](https://github.com/meshery/meshery/issues/21803) |
 | `meshery/meshery` (mesheryctl) | `mesheryctl/internal/cli/root/environments/` | Move off the superseded `v1beta1` import to `v1beta3`, display the purpose, and expose no flag that sets it. | [meshery/meshery#21804](https://github.com/meshery/meshery/issues/21804) |
 
@@ -245,8 +277,11 @@ currently selects its environment by name.
    return an error rather than a row.
 3. **Migrate existing rows** per [Migration](#migration): add the column
    `NOT NULL DEFAULT 'user'`, set `purpose = 'administrative'` on the rows the
-   name convention selected, then add the partial unique index. Never through the
-   API.
+   name convention selected, then add the partial unique index over the
+   privileged values. Never through the API. Pop never lets that column
+   `DEFAULT` fire on insert, so normalise an absent purpose to `user` on write
+   with `EffectivePurpose()`; otherwise ordinary environments store `''` and
+   land inside any `<> 'user'` index.
 4. **Gate provisioning on organization administration**, not on the privilege to
    create an environment. Creating an environment and designating one
    administrative are different capabilities and must be authorised separately -

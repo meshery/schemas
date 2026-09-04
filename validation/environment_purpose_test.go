@@ -106,6 +106,27 @@ func TestEnvironmentEntityPurposeShape(t *testing.T) {
 				"before the column existed omits it, and absent already means ordinary")
 		}
 	}
+
+	// The storage tags are load-bearing, not cosmetic. `db` names the column the
+	// migration in docs/environment-purpose-contract.md adds and that every
+	// consumer's resolver selects on. `gorm` is what makes a GORM AutoMigrate of
+	// this struct - the remediation the contract prescribes for Meshery Server -
+	// create the column as NOT NULL DEFAULT 'user'; drop it and AutoMigrate
+	// creates a nullable, defaultless column while every test here still passes.
+	tags := mustLookup(t, purpose, "x-oapi-codegen-extra-tags")
+	for _, want := range []struct{ key, value string }{
+		{"db", "purpose"},
+		{"gorm", "not null;default:user"},
+	} {
+		got, ok := mappingValue(tags, want.key)
+		if !ok {
+			t.Errorf("purpose must declare the %q extra tag as %q", want.key, want.value)
+			continue
+		}
+		if got != want.value {
+			t.Errorf("purpose %q extra tag = %v, want %q", want.key, got, want.value)
+		}
+	}
 }
 
 // TestEnvironmentCreateFormOmitsPurpose covers the surface a schema reviewer is
