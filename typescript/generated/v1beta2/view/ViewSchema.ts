@@ -516,10 +516,59 @@ const ViewSchema: Record<string, unknown> = {
       },
       "ViewPayload": {
         "type": "object",
-        "description": "Payload for creating or updating a view.",
+        "description": "Payload for creating a view.",
         "required": [
           "name"
         ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Display name of the view.",
+            "maxLength": 255,
+            "minLength": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "name,omitempty"
+            }
+          },
+          "filters": {
+            "type": "object",
+            "description": "Filter configuration for this view.",
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
+            },
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "filters,omitempty"
+            }
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Visibility level of the view.",
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "json": "visibility,omitempty"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Metadata associated with the view.",
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
+            },
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "metadata,omitempty"
+            }
+          }
+        }
+      },
+      "ViewUpdatePayload": {
+        "type": "object",
+        "description": "Partial update for a view. Every property is optional; an omitted property retains its stored value. A supplied name still cannot be empty.\n",
         "properties": {
           "name": {
             "type": "string",
@@ -825,16 +874,73 @@ const ViewSchema: Record<string, unknown> = {
     },
     "requestBodies": {
       "viewPayload": {
-        "description": "Body for creating or updating a view",
+        "description": "Body for creating a view",
         "required": true,
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
-              "description": "Payload for creating or updating a view.",
+              "description": "Payload for creating a view.",
               "required": [
                 "name"
               ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Display name of the view.",
+                  "maxLength": 255,
+                  "minLength": 1,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "name,omitempty"
+                  }
+                },
+                "filters": {
+                  "type": "object",
+                  "description": "Filter configuration for this view.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core",
+                    "name": "core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "filters,omitempty"
+                  }
+                },
+                "visibility": {
+                  "type": "string",
+                  "description": "Visibility level of the view.",
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "visibility,omitempty"
+                  }
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Metadata associated with the view.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core",
+                    "name": "core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "metadata,omitempty"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "viewUpdatePayload": {
+        "description": "Body for partially updating a view. Omitted properties retain their stored value.",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "Partial update for a view. Every property is optional; an omitted property retains its stored value. A supplied name still cannot be empty.\n",
               "properties": {
                 "name": {
                   "type": "string",
@@ -953,13 +1059,13 @@ const ViewSchema: Record<string, unknown> = {
         "summary": "Create a view",
         "description": "Creates a new view with the given filters and metadata.",
         "requestBody": {
-          "description": "Body for creating or updating a view",
+          "description": "Body for creating a view",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating a view.",
+                "description": "Payload for creating a view.",
                 "required": [
                   "name"
                 ],
@@ -1928,16 +2034,13 @@ const ViewSchema: Record<string, unknown> = {
           }
         ],
         "requestBody": {
-          "description": "Body for creating or updating a view",
+          "description": "Body for partially updating a view. Omitted properties retain their stored value.",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating a view.",
-                "required": [
-                  "name"
-                ],
+                "description": "Partial update for a view. Every property is optional; an omitted property retains its stored value. A supplied name still cannot be empty.\n",
                 "properties": {
                   "name": {
                     "type": "string",
