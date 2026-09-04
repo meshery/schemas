@@ -118,7 +118,14 @@ components:
             json: deletedAt
     EnvironmentPayload:
       type: object
-      description: Payload for creating or updating an environment.
+      description: >-
+        Payload for creating or updating an environment. Carries only the
+        client-settable fields. Server-owned fields are deliberately absent:
+        `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the
+        server assigns them, and `purpose` because permission to create an
+        environment must not confer the ability to designate it
+        administrative. Do not add `purpose` here - see
+        docs/environment-purpose-contract.md.
       required:
         - name
         - organizationId

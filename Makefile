@@ -97,6 +97,7 @@ generate-rtk: bundle-openapi
 ## Run RTK Query generation regression tests
 test-rtk:
 	node --test tests/generate-rtk.test.js
+	node --test tests/readonly-request-body.test.js
 
 ## Run TypeScript unit tests (node --test with native type-stripping; needs Node >= 22.6)
 test-ts:

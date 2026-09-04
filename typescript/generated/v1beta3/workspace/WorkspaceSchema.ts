@@ -1901,6 +1901,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           "schemaVersion": "environments.meshery.io/v1beta3",
                           "name": "Production Environment",
                           "description": "Connections and credentials for the production cluster.",
+                          "purpose": "user",
                           "organizationId": "00000000-0000-0000-0000-000000000000",
                           "owner": "00000000-0000-0000-0000-000000000000",
                           "createdAt": "0001-01-01T00:00:00Z",
@@ -2054,6 +2055,24 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
+                          },
+                          "purpose": {
+                            "type": "string",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.",
+                            "enum": [
+                              "user",
+                              "administrative"
+                            ],
+                            "x-enum-varnames": [
+                              "EnvironmentPurposeUser",
+                              "EnvironmentPurposeAdministrative"
+                            ],
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "purpose",
+                              "json": "purpose,omitempty"
+                            },
+                            "x-order": 11
                           }
                         }
                       },

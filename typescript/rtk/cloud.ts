@@ -7684,6 +7684,14 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+            
+            Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+            
+            Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            
+            The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md. */
+      purpose?: "user" | "administrative";
     }[];
     /** Specifies the version of the schema used for the definition. */
     schemaVersion: string;
@@ -7991,6 +7999,14 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -8439,6 +8455,14 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -8708,6 +8732,14 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -11888,6 +11920,14 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   updatedAt?: string;
   /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
   deletedAt?: string | null;
+  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    
+    Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+    
+    Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+    
+    The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md. */
+  purpose?: "user" | "administrative";
 };
 export type CreateEnvironmentApiArg = {
   /** Body for creating environment */
@@ -11929,6 +11969,14 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
 };
 export type GetEnvironmentsApiArg = {
@@ -11974,6 +12022,14 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
 };
 export type GetEnvironmentByIdApiArg = {
@@ -12011,6 +12067,14 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
 };
 export type UpdateEnvironmentApiArg = {
@@ -14582,6 +14646,14 @@ export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
 };
 export type GetEnvironmentsOfWorkspaceApiArg = {

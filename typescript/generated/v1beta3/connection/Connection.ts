@@ -560,6 +560,17 @@ export interface components {
                  * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                  */
                 deletedAt?: string | null;
+                /**
+                 * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+                 *
+                 *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                 *
+                 *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                 *
+                 *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+                 * @enum {string}
+                 */
+                purpose?: "user" | "administrative";
             }[];
             /**
              * @description Specifies the version of the schema used for the definition.
@@ -1181,6 +1192,17 @@ export interface components {
                      * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                      */
                     deletedAt?: string | null;
+                    /**
+                     * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+                     *
+                     *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                     *
+                     *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                     *
+                     *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+                     * @enum {string}
+                     */
+                    purpose?: "user" | "administrative";
                 }[];
                 /**
                  * @description Specifies the version of the schema used for the definition.
@@ -2140,6 +2162,17 @@ export interface operations {
                                  * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                                  */
                                 deletedAt?: string | null;
+                                /**
+                                 * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+                                 *
+                                 *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                                 *
+                                 *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                                 *
+                                 *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+                                 * @enum {string}
+                                 */
+                                purpose?: "user" | "administrative";
                             }[];
                             /**
                              * @description Specifies the version of the schema used for the definition.
@@ -2729,6 +2762,17 @@ export interface operations {
                              * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                              */
                             deletedAt?: string | null;
+                            /**
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+                             *
+                             *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                             *
+                             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *
+                             *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+                             * @enum {string}
+                             */
+                            purpose?: "user" | "administrative";
                         }[];
                         /**
                          * @description Specifies the version of the schema used for the definition.
@@ -3242,6 +3286,17 @@ export interface operations {
                              * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                              */
                             deletedAt?: string | null;
+                            /**
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+                             *
+                             *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                             *
+                             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *
+                             *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+                             * @enum {string}
+                             */
+                            purpose?: "user" | "administrative";
                         }[];
                         /**
                          * @description Specifies the version of the schema used for the definition.
@@ -3832,6 +3887,17 @@ export interface operations {
                              * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                              */
                             deletedAt?: string | null;
+                            /**
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+                             *
+                             *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                             *
+                             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *
+                             *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+                             * @enum {string}
+                             */
+                            purpose?: "user" | "administrative";
                         }[];
                         /**
                          * @description Specifies the version of the schema used for the definition.
@@ -4291,6 +4357,17 @@ export interface operations {
                              * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                              */
                             deletedAt?: string | null;
+                            /**
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+                             *
+                             *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+                             *
+                             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *
+                             *     The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+                             * @enum {string}
+                             */
+                            purpose?: "user" | "administrative";
                         }[];
                         /**
                          * @description Specifies the version of the schema used for the definition.

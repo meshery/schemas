@@ -8,6 +8,12 @@ import (
 	"github.com/meshery/schemas/models/core"
 )
 
+// Defines values for EnvironmentPurpose.
+const (
+	EnvironmentPurposeAdministrative EnvironmentPurpose = "administrative"
+	EnvironmentPurposeUser           EnvironmentPurpose = "user"
+)
+
 // Environment Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments
 type Environment struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -39,7 +45,25 @@ type Environment struct {
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
 	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt,omitempty"`
+
+	// Purpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+	//
+	// Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+	//
+	// Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+	//
+	// The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+	Purpose EnvironmentPurpose `db:"purpose" json:"purpose,omitempty" yaml:"purpose,omitempty"`
 }
+
+// EnvironmentPurpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+//
+// Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+//
+// Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every POST and PUT requestBody references, so no generated client has a field to send it in. That exclusion is a codegen guarantee, never access control: every consumer MUST also refuse to set it from request input on its own side, and assign it only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+//
+// The uniqueness invariant, the fail-closed resolver requirement and the migration path for environments that are administrative by naming convention today are specified in docs/environment-purpose-contract.md.
+type EnvironmentPurpose string
 
 // EnvironmentConnectionMapping Junction record linking an environment to a connection.
 type EnvironmentConnectionMapping struct {
@@ -95,7 +119,7 @@ type EnvironmentPage struct {
 	TotalCount   core.Number   `json:"totalCount" yaml:"totalCount,omitempty"`
 }
 
-// EnvironmentPayload Payload for creating or updating an environment.
+// EnvironmentPayload Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them, and `purpose` because permission to create an environment must not confer the ability to designate it administrative. Do not add `purpose` here - see docs/environment-purpose-contract.md.
 type EnvironmentPayload struct {
 	Description core.Text `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        core.Text `json:"name" yaml:"name"`
