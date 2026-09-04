@@ -94,8 +94,8 @@ generate-rtk: bundle-openapi
 	node build/generate-rtk.js
 	$(MAKE) --no-print-directory test-rtk
 
-## Run RTK Query generation regression tests
-test-rtk:
+## Run RTK Query generation regression tests (requires bundle-openapi)
+test-rtk: bundle-openapi
 	node --test tests/generate-rtk.test.js
 	node --test tests/readonly-request-body.test.js
 

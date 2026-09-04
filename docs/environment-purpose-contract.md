@@ -192,24 +192,57 @@ each consumer, **never through the API**:
    resolver is repointed, the flag is inert and the name is still the
    enforcement point.
 
-Steps 1 to 3 change shared state and must land only after the matching code
-change is committed and deployed, so a rollback does not leave the database
-ahead of the code.
+**Step 1 comes first, before the schemas dependency bump is deployed.** Adding
+the column is not a step that can wait for the code to ship: a consumer's model
+gains `purpose` the moment it bumps `meshery/schemas`, and from that moment its
+queries may name a column its table does not have. See [Sequencing against the
+schemas dependency bump](#sequencing-against-the-schemas-dependency-bump).
+
+Steps 2 and 3 are the ones the after-the-code rule is actually right for. A
+backfilled value and an index the previous code does not know about change shared
+state in the direction a rollback would strand, so they land only after the
+matching code change is committed and deployed.
 
 ### Sequencing against the schemas dependency bump
 
-`purpose` is the first `db`-tag divergence between `models/v1beta1/environment`,
-which `server/models/system_migration.go` registers for `AutoMigrate`, and
-`models/v1beta3/environment`, which `server/models/environment_persister.go`
-queries - every other column matches today. While that mismatch stands, the table
-Meshery Server creates has no `purpose` column even though the struct it writes
-names one, so `DB.Create(environment)` emits an `INSERT` naming a column that
-does not exist and environment creation fails at runtime.
+**The column has to exist before the bump reaches the consumer.** Both consumers
+break in the window between the two, on different paths and for different
+reasons.
 
+**`meshery/meshery`.** `purpose` is the first `db`-tag divergence between
+`models/v1beta1/environment`, which `server/models/system_migration.go` registers
+for `AutoMigrate`, and `models/v1beta3/environment`, which
+`server/models/environment_persister.go` queries - every other column matches
+today. While that mismatch stands, the table Meshery Server creates has no
+`purpose` column even though the struct it writes names one, so
+`DB.Create(environment)` emits an `INSERT` naming a column that does not exist and
+environment creation fails at runtime. Reads survive, because GORM issues
+`SELECT *`.
 [meshery/meshery#21802](https://github.com/meshery/meshery/issues/21802)
 therefore has to land **before** `meshery/meshery` bumps its `meshery/schemas`
 dependency to a release carrying this property, not merely at some point after
 it.
+
+**`layer5io/meshery-cloud`.** Reads fail as well as writes. `purpose` carries
+`db:"purpose"`, and `server/models/model_environment.go` aliases the schemas
+struct directly (`type Environment = schemasEnvironment.Environment`), so the bump
+adds the field to the Pop model itself. Pop names every `db`-tagged column
+explicitly instead of issuing `SELECT *`, so the DAO lookup in
+`server/dao/environment_identity_providers.go` selects `environments.purpose` and
+the insert names it too - against a table whose definition in
+`database/migrations/20190402165033_create_initial_schema.postgres.up.sql` has no
+such column and which no later migration alters. Every environment read **and**
+write fails with `column environments.purpose does not exist` until the migration
+lands. It must therefore be deployed ahead of the bump, not after it.
+
+**If you are adding a row to [Consumers of this
+contract](#consumers-of-this-contract), check your own query builder rather than
+inheriting an assumption from the consumers already listed.** A model that knows a
+column its table lacks is survivable under one ORM and fatal under another: GORM's
+`SELECT *` keeps reads working and fails only on write; Pop's explicit column list
+fails both. A sequencing rule derived from one consumer's ORM is not valid for
+another's. That is a property of the ORM, not of this column - it recurs for every
+field this repo adds to a shared entity.
 
 ## Two annotations this property deliberately does not carry
 
@@ -275,14 +308,22 @@ currently selects its environment by name.
    for most organizations, and not an error - the cloud-brokered fallback chain
    depends on it staying a non-error signal), and more than one match, which must
    return an error rather than a row.
-3. **Migrate existing rows** per [Migration](#migration): add the column
+3. **Add the column before the schemas bump is deployed, not after.**
+   `server/models/model_environment.go` aliases the schemas struct, and Pop names
+   every `db`-tagged column explicitly, so the moment the bump lands the DAO
+   `SELECT` in `server/dao/environment_identity_providers.go` and the environment
+   insert both name `environments.purpose` against a table that has no such
+   column - every environment read and write fails, not only writes. See
+   [Sequencing against the schemas dependency
+   bump](#sequencing-against-the-schemas-dependency-bump).
+4. **Migrate existing rows** per [Migration](#migration): add the column
    `NOT NULL DEFAULT 'user'`, set `purpose = 'administrative'` on the rows the
    name convention selected, then add the partial unique index over the
    privileged values. Never through the API. Pop never lets that column
    `DEFAULT` fire on insert, so normalise an absent purpose to `user` on write
    with `EffectivePurpose()`; otherwise ordinary environments store `''` and
    land inside any `<> 'user'` index.
-4. **Gate provisioning on organization administration**, not on the privilege to
+5. **Gate provisioning on organization administration**, not on the privilege to
    create an environment. Creating an environment and designating one
    administrative are different capabilities and must be authorised separately -
    this is the requirement the whole property exists to satisfy.
