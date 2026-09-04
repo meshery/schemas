@@ -537,10 +537,19 @@ components:
           type: string
           description: >-
             Password presented to the organization's SMTP server. Required
-            unless `authMechanism` is `none`. The redaction sentinel `***` is
-            refused, and so is the empty string - omit the property instead of
-            sending it empty, which the `minLength` below enforces so this
-            payload and the rotation payload agree.
+            unless `authMechanism` is `none`.
+
+            This is the ONLY operation that accepts the password alongside the
+            settings, so that registering a mail server is one call and no
+            configuration exists in a state where it is expected to send but
+            holds no credential. Afterwards the password is written only by the
+            rotation operation, never by the settings update, whose payload
+            declares no `password` property at all.
+
+            The redaction sentinel `***` is refused, and so is the empty string
+            - omit the property instead of sending it empty, which the
+            `minLength` below enforces so this payload and the rotation payload
+            agree.
           minLength: 1
           maxLength: 512
           x-order: 6

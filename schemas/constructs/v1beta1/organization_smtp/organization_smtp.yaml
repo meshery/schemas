@@ -136,20 +136,16 @@ properties:
   password:
     type: string
     description: >-
-      Password presented to the organization's SMTP server. Response-only and
-      always the redaction sentinel `***`: this schema is the response half of
-      the dual-schema pair, no request body references it, and the stored value
-      is encrypted at rest and never projected into a response. The real
-      password is carried by the payload schemas, never by this one.
+      Always the redaction sentinel `***`. The stored password is encrypted at
+      rest and is never projected into a response, so this property carries no
+      information and exists only so the shape of a configuration is the same
+      whether or not a credential is stored.
 
-      It is accepted on create, alongside the settings, so that registering a
-      mail server is one operation and no configuration ever exists without the
-      credential it needs. After that it is written ONLY by the dedicated
-      credential-rotation operation - never by the settings write, whose payload
-      declares no `password` property at all. Writing the sentinel is REFUSED
-      wherever it can be written, rather than treated as a no-op, so a client
-      that round-trips a read cannot silently overwrite the stored credential
-      with `***`.
+      Read-only, and read-only here means read-only: no request body references
+      this schema. The write semantics belong to the payload schemas -
+      `OrganizationSmtpConfigurationPayload` on create and
+      `OrganizationSmtpCredentialPayload` on rotation - and are documented
+      there.
     readOnly: true
     maxLength: 512
     x-order: 8
