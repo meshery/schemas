@@ -69,6 +69,7 @@ These patterns are deliberate. Do not suggest changes during code review:
 - [ ] (New entity with writes) `api.yml` defines a `{Construct}Payload` with only client-settable fields
 - [ ] (New entity with writes) All `POST`/`PUT` `requestBody` entries reference `{Construct}Payload`, not `{Construct}`
 - [ ] (New entity) `GET` responses reference the full `{Construct}` entity schema
+- [ ] (Server-owned property) A property whose value carries authority is absent from the `*Payload`, absent from the RJSF form, and guarded by a test - and its description says which consumer enforces it at runtime. Do not add `readOnly: true`; it deletes unrelated fields from the generated RTK request types. See [Server-owned properties](schema-authoring-reference.md#server-owned-properties)
 - [ ] (New SQL driver) `Value()` always marshals - never returns `(nil, nil)`
 - [ ] (New SQL driver) Prefer `Scan()` implementations that set `*m = nil` when `src` is nil; some legacy drivers may still return early
 - [ ] (New endpoint) `operationId` is lower camelCase verbNoun

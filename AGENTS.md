@@ -180,6 +180,7 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/superseded-construct-consumer-verification.md`](docs/superseded-construct-consumer-verification.md)** - how to prove no downstream consumer is still on an `x-superseded-by` construct version; why import-path grepping is invalid on the TypeScript/RTK surface.
 - **[`docs/release-procedure.md`](docs/release-procedure.md)** - full release flow, What NOT to Do, and versioning policy.
 - **[`docs/release-procedure-skill.md`](docs/release-procedure-skill.md)** - using the `meshery-schemas-release` skill, verification commands, troubleshooting.
+- **[`docs/environment-purpose-contract.md`](docs/environment-purpose-contract.md)** - what `Environment.purpose` means, why it is not client-settable, and what each consumer must enforce for that to hold.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
 - **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
 
