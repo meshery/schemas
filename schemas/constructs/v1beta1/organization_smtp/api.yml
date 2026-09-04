@@ -11,8 +11,22 @@ info:
     application notifications and identity-flow mail (account verification,
     password recovery) alike, because both are rendered and sent by Cloud.
 
-    The password is encrypted at rest and never returned. A configuration
-    cannot be enabled until control of its from domain has been proven, and a
+    The configuration is stored on the same environment/connection/credential
+    chain that bring-your-own identity providers already uses, under a second
+    well-known environment name, so these operations are shaped around that
+    chain: an environment that is provisioned and torn down as the
+    organization's opt-in, a connection carrying the dial target and the
+    message identity, and a credential carrying only the password.
+
+    These operations are deliberately NOT folded into the generic connection
+    and credential operations. They exist to carry validation those cannot: the
+    internal-address screen, the submission-port allowlist, the from-domain
+    proof, the refusal of the redaction sentinel and the classified test
+    outcome. Reaching these rows through the generic operations would run none
+    of it.
+
+    The password is encrypted at rest and never returned. Mail is not routed
+    through the server until control of its from domain has been proven, and a
     failing server falls back to the provider relay unless the organization has
     opted out.
   version: v1beta1
@@ -32,7 +46,58 @@ tags:
     description: Operations on an organization's own outbound mail server.
 
 paths:
-  /api/identity/orgs/{orgId}/smtp-configuration:
+  /api/orgs/{orgId}/environments/mail-relay:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - OrganizationSmtp
+      operationId: getOrganizationSmtpEnvironment
+      summary: Probe whether an organization has brought its own mail server
+      description: >-
+        Returns the organization's mail-relay environment when it exists. A 404
+        is the ordinary answer for an organization using the provider's shared
+        relay, and is not an error condition.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: The organization has its own mail-relay environment.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationSmtpEnvironment"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - OrganizationSmtp
+      operationId: deleteOrganizationSmtpEnvironment
+      summary: Remove an organization's mail server entirely
+      description: >-
+        Removes the configuration, its stored credential and the environment
+        that held them, together. The organization's mail reverts to the
+        provider's shared relay. Idempotent: removing an absent configuration
+        succeeds.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "204":
+          description: The configuration was removed.
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/orgs/{orgId}/environments/mail-relay/connection:
     get:
       x-internal: ["cloud"]
       tags:
@@ -41,7 +106,7 @@ paths:
       summary: Get an organization's SMTP configuration
       description: >-
         Returns the organization's mail server configuration, including its
-        current health and from-domain verification state. The password is
+        current status and from-domain verification state. The password is
         always the redaction sentinel `***`.
       parameters:
         - $ref: "#/components/parameters/orgId"
@@ -60,25 +125,62 @@ paths:
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
-    put:
+    post:
       x-internal: ["cloud"]
       tags:
         - OrganizationSmtp
-      operationId: upsertOrganizationSmtpConfiguration
-      summary: Create or replace an organization's SMTP configuration
+      operationId: createOrganizationSmtpConfiguration
+      summary: Register an organization's SMTP server
       description: >-
-        Writes the organization's single mail server configuration, creating it
-        if absent. The whole document is replaced, with one exception: a
-        `password` of `***` or an empty string preserves the stored password,
-        so a client may edit an unrelated field after a read without erasing
-        the credential.
+        Creates the configuration, provisioning the mail-relay environment on
+        the organization's behalf when it does not yet exist. This is the only
+        operation that accepts the password alongside the settings; afterwards
+        the two are written separately.
 
-        Changing the from address resets from-domain verification, and
-        `enabled` is refused while the from domain is unverified.
+        The new configuration starts unproven, so mail continues to take the
+        provider relay until the from domain is verified and a test delivery
+        succeeds.
       parameters:
         - $ref: "#/components/parameters/orgId"
       requestBody:
         $ref: "#/components/requestBodies/organizationSmtpConfigurationPayload"
+      responses:
+        "201":
+          description: The stored SMTP configuration.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationSmtpConfiguration"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - OrganizationSmtp
+      operationId: updateOrganizationSmtpConfiguration
+      summary: Update an organization's SMTP settings
+      description: >-
+        Replaces the settings. The payload has no `password` property at all and
+        rejects unknown properties, so this operation cannot carry a credential
+        even by accident - rotating the password is a separate operation. That
+        is what lets an administrator rename a display name without retyping a
+        secret, while the redaction sentinel stays refused everywhere it can be
+        written.
+
+        Changing the from address to a different registrable domain resets
+        from-domain verification and returns the configuration to `registered`.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        $ref: "#/components/requestBodies/organizationSmtpSettingsPayload"
       responses:
         "200":
           description: The stored SMTP configuration.
@@ -96,20 +198,32 @@ paths:
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
-    delete:
+
+  /api/orgs/{orgId}/environments/mail-relay/connection/credential:
+    put:
       x-internal: ["cloud"]
       tags:
         - OrganizationSmtp
-      operationId: deleteOrganizationSmtpConfiguration
-      summary: Remove an organization's SMTP configuration
+      operationId: rotateOrganizationSmtpCredential
+      summary: Rotate the password presented to an organization's SMTP server
       description: >-
-        Removes the configuration and its stored credential. The organization's
-        mail reverts to the provider's shared relay.
+        Replaces the stored password. The redaction sentinel `***` and the empty
+        string are REFUSED with a 400 rather than treated as "leave it alone",
+        so a client that echoes a read back cannot overwrite the credential with
+        the sentinel.
       parameters:
         - $ref: "#/components/parameters/orgId"
+      requestBody:
+        $ref: "#/components/requestBodies/organizationSmtpCredentialPayload"
       responses:
-        "204":
-          description: The configuration was removed.
+        "200":
+          description: The stored SMTP configuration, with the password redacted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationSmtpConfiguration"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "403":
@@ -119,7 +233,48 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/identity/orgs/{orgId}/smtp-configuration/test:
+  /api/orgs/{orgId}/environments/mail-relay/connection/enablement:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - OrganizationSmtp
+      operationId: setOrganizationSmtpEnablement
+      summary: Turn an organization's own mail server on or off
+      description: >-
+        The only operation by which an administrator writes the configuration's
+        status, and it can write only the two administrative states: turning it
+        off moves the configuration to `ignored`, and turning it on returns it
+        to `registered` so that it must prove itself again before mail is
+        routed. `connected` and `disconnected` are written by delivery outcomes
+        alone and are never settable here, which is what keeps a deliberate
+        opt-out distinguishable from a failing relay.
+
+        Turning it on is refused with a 409 while the from domain is unverified.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        $ref: "#/components/requestBodies/organizationSmtpEnablementPayload"
+      responses:
+        "200":
+          description: The stored SMTP configuration.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationSmtpConfiguration"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/orgs/{orgId}/environments/mail-relay/connection/test:
     post:
       x-internal: ["cloud"]
       tags:
@@ -132,6 +287,12 @@ paths:
         purpose: a server that connects and authenticates but refuses the
         sender or the recipient is the most common misconfiguration, and a
         probe reports it healthy.
+
+        A successful test is also what promotes a verified configuration from
+        `registered` to `connected`, so this operation is part of the lifecycle
+        rather than a convenience. It takes the same permission as a write,
+        because there is no read-only form of dialling an arbitrary host, and it
+        is rate limited per organization.
 
         The recipient defaults to the calling administrator's own address. The
         outcome is a classification, never the remote server's own text.
@@ -159,7 +320,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/identity/orgs/{orgId}/smtp-configuration/domain-verification:
+  /api/orgs/{orgId}/environments/mail-relay/domain-verification:
     get:
       x-internal: ["cloud"]
       tags:
@@ -196,7 +357,8 @@ paths:
       summary: Check the from-domain verification challenge
       description: >-
         Resolves the challenge record and records the result. Proving the
-        domain is what permits the configuration to be enabled.
+        domain is what permits mail to be routed through the organization's
+        server. Rate limited per organization.
       parameters:
         - $ref: "#/components/parameters/orgId"
       responses:
@@ -233,6 +395,14 @@ components:
             type: string
     404:
       $ref: "../core/api.yml#/components/responses/404"
+    409:
+      description: >-
+        The configuration already exists, or the requested state transition is
+        refused in the configuration's current state
+      content:
+        text/plain:
+          schema:
+            type: string
     429:
       description: Too many attempts for this organization
       content:
@@ -264,6 +434,24 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/OrganizationSmtpConfigurationPayload"
+    organizationSmtpSettingsPayload:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrganizationSmtpSettingsPayload"
+    organizationSmtpCredentialPayload:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrganizationSmtpCredentialPayload"
+    organizationSmtpEnablementPayload:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrganizationSmtpEnablementPayload"
     organizationSmtpTestRequest:
       required: false
       content:
@@ -275,38 +463,90 @@ components:
     OrganizationSmtpConfiguration:
       $ref: "./organization_smtp.yaml"
 
+    OrganizationSmtpEnvironment:
+      type: object
+      additionalProperties: false
+      description: >-
+        The well-known environment holding an organization's mail-relay
+        connection. Its presence is the organization's opt-in; it is provisioned
+        on the organization's behalf when the first configuration is created and
+        removed when the configuration is removed.
+      required:
+        - id
+        - name
+        - organizationId
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          $ref: ../core/api.yml#/components/schemas/uuid
+          description: Identifier of the environment.
+          x-order: 1
+          x-go-name: ID
+        name:
+          type: string
+          description: The well-known environment name. Reserved; it cannot be claimed or renamed through the generic environment operations.
+          maxLength: 255
+          x-order: 2
+          x-go-type-skip-optional-pointer: true
+        description:
+          type: string
+          description: Human-readable description applied at creation.
+          maxLength: 255
+          x-order: 3
+          x-oapi-codegen-extra-tags:
+            json: description,omitempty
+        organizationId:
+          $ref: ../core/api.yml#/components/schemas/uuid
+          description: Organization the environment belongs to.
+          x-order: 4
+          x-go-name: OrganizationID
+        createdBy:
+          $ref: ../core/api.yml#/components/schemas/uuid
+          description: User who provisioned the environment, retained for audit.
+          nullable: true
+          x-order: 5
+          x-oapi-codegen-extra-tags:
+            json: createdBy,omitempty
+        createdAt:
+          $ref: ../core/api.yml#/components/schemas/created_at
+          description: Timestamp when the environment was created.
+          x-order: 6
+        updatedAt:
+          $ref: ../core/api.yml#/components/schemas/updated_at
+          description: Timestamp when the environment was last changed.
+          x-order: 7
+
     OrganizationSmtpConfigurationPayload:
       type: object
       additionalProperties: false
       description: >-
-        Client-settable fields of an organization's mail server configuration.
-        Health, verification state and timestamps are server-owned and are not
-        accepted here.
+        Everything needed to register an organization's mail server, settings
+        and password together. Accepted only on create; afterwards settings and
+        the credential are written by separate operations. Status, health,
+        verification state and timestamps are server-owned and are not accepted
+        here.
       required:
         - host
         - port
         - fromAddress
       properties:
-        id:
-          $ref: ../core/api.yml#/components/schemas/uuid
-          description: Existing configuration identifier, for an update.
-          x-order: 1
-          x-oapi-codegen-extra-tags:
-            json: id,omitempty
         host:
           type: string
           description: Hostname of the organization's SMTP server.
           minLength: 1
           maxLength: 253
-          x-order: 2
+          x-order: 1
           x-go-type-skip-optional-pointer: true
         port:
           type: integer
-          description: TCP port the organization's SMTP server listens on.
+          description: >-
+            TCP port the organization's SMTP server listens on. Restricted
+            further by a submission-port allowlist.
           minimum: 1
           maximum: 65535
           default: 587
-          x-order: 3
+          x-order: 2
           x-go-type-skip-optional-pointer: true
         encryption:
           type: string
@@ -319,7 +559,7 @@ components:
             - tls
             - none
           default: starttls
-          x-order: 4
+          x-order: 3
           x-go-type-skip-optional-pointer: true
         authMechanism:
           type: string
@@ -331,52 +571,42 @@ components:
             - cram-md5
             - none
           default: plain
-          x-order: 5
+          x-order: 4
           x-go-type-skip-optional-pointer: true
         username:
           type: string
           description: Username presented to the organization's SMTP server.
           maxLength: 320
-          x-order: 6
+          x-order: 5
           x-oapi-codegen-extra-tags:
             json: username,omitempty
         password:
           type: string
           description: >-
-            Password presented to the organization's SMTP server. Write-only.
-            `***` or an empty string preserves the stored password, so a client
-            may round-trip a read without erasing the credential.
+            Password presented to the organization's SMTP server. Required
+            unless `authMechanism` is `none`. The redaction sentinel `***` is
+            refused.
           maxLength: 512
-          x-order: 7
+          x-order: 6
           x-oapi-codegen-extra-tags:
             json: password,omitempty
         fromAddress:
           $ref: ../core/api.yml#/components/schemas/email
-          description: >-
-            Address the organization's mail is sent from. Changing it resets
-            from-domain verification.
-          x-order: 8
+          description: Address the organization's mail is sent from.
+          x-order: 7
         fromDisplayName:
           type: string
           description: Display name shown alongside the from address.
           maxLength: 255
-          x-order: 9
+          x-order: 8
           x-oapi-codegen-extra-tags:
             json: fromDisplayName,omitempty
         replyToAddress:
           $ref: ../core/api.yml#/components/schemas/email
           description: Address replies are directed to.
-          x-order: 10
+          x-order: 9
           x-oapi-codegen-extra-tags:
             json: replyToAddress,omitempty
-        enabled:
-          type: boolean
-          description: >-
-            Whether mail is routed through this server. Refused while the from
-            domain is unverified.
-          default: false
-          x-order: 11
-          x-go-type-skip-optional-pointer: true
         fallbackToProvider:
           type: boolean
           description: >-
@@ -384,7 +614,135 @@ components:
             provider's shared relay. Disabling it means a failure is a dropped
             message, account verification and password recovery included.
           default: true
-          x-order: 12
+          x-order: 10
+          x-go-type-skip-optional-pointer: true
+
+    OrganizationSmtpSettingsPayload:
+      type: object
+      additionalProperties: false
+      description: >-
+        Client-settable settings of an organization's mail server, WITHOUT the
+        password. The omission is deliberate and structural: because this schema
+        forbids unknown properties, a client cannot send a credential through
+        this operation at all, so the read-then-write round trip that would
+        otherwise overwrite a stored password with the redaction sentinel is not
+        expressible. Rotate the password through its own operation.
+      required:
+        - host
+        - port
+        - fromAddress
+      properties:
+        host:
+          type: string
+          description: Hostname of the organization's SMTP server.
+          minLength: 1
+          maxLength: 253
+          x-order: 1
+          x-go-type-skip-optional-pointer: true
+        port:
+          type: integer
+          description: >-
+            TCP port the organization's SMTP server listens on. Restricted
+            further by a submission-port allowlist.
+          minimum: 1
+          maximum: 65535
+          default: 587
+          x-order: 2
+          x-go-type-skip-optional-pointer: true
+        encryption:
+          type: string
+          description: Transport encryption to negotiate.
+          enum:
+            - starttls
+            - tls
+            - none
+          default: starttls
+          x-order: 3
+          x-go-type-skip-optional-pointer: true
+        authMechanism:
+          type: string
+          description: >-
+            SMTP authentication mechanism. Changing this to a mechanism other
+            than `none` while no password is stored is refused; rotate the
+            credential first.
+          enum:
+            - plain
+            - cram-md5
+            - none
+          default: plain
+          x-order: 4
+          x-go-type-skip-optional-pointer: true
+        username:
+          type: string
+          description: Username presented to the organization's SMTP server.
+          maxLength: 320
+          x-order: 5
+          x-oapi-codegen-extra-tags:
+            json: username,omitempty
+        fromAddress:
+          $ref: ../core/api.yml#/components/schemas/email
+          description: >-
+            Address the organization's mail is sent from. Changing it to a
+            different registrable domain resets from-domain verification.
+          x-order: 6
+        fromDisplayName:
+          type: string
+          description: Display name shown alongside the from address.
+          maxLength: 255
+          x-order: 7
+          x-oapi-codegen-extra-tags:
+            json: fromDisplayName,omitempty
+        replyToAddress:
+          $ref: ../core/api.yml#/components/schemas/email
+          description: Address replies are directed to.
+          x-order: 8
+          x-oapi-codegen-extra-tags:
+            json: replyToAddress,omitempty
+        fallbackToProvider:
+          type: boolean
+          description: >-
+            Whether a message this server fails to accept is re-sent through the
+            provider's shared relay.
+          default: true
+          x-order: 9
+          x-go-type-skip-optional-pointer: true
+
+    OrganizationSmtpCredentialPayload:
+      type: object
+      additionalProperties: false
+      description: >-
+        The password presented to an organization's SMTP server. The only
+        payload that carries it after creation.
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          description: >-
+            New password. The redaction sentinel `***` and the empty string are
+            refused with a 400 rather than treated as "leave the stored value
+            alone", so echoing a read back cannot erase the credential.
+          minLength: 1
+          maxLength: 512
+          x-order: 1
+          x-go-type-skip-optional-pointer: true
+
+    OrganizationSmtpEnablementPayload:
+      type: object
+      additionalProperties: false
+      description: >-
+        Administrative on/off for an organization's own mail server. It cannot
+        express the delivery-driven states, which are written by outcomes alone.
+      required:
+        - enabled
+      properties:
+        enabled:
+          type: boolean
+          description: >-
+            True returns the configuration to `registered` so it may prove
+            itself and carry mail; false moves it to `ignored`. Turning it on is
+            refused while the from domain is unverified.
+          x-order: 1
           x-go-type-skip-optional-pointer: true
 
     OrganizationSmtpTestRequest:
