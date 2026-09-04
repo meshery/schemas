@@ -470,6 +470,33 @@ const EnvironmentSchema: Record<string, unknown> = {
           }
         }
       },
+      "EnvironmentUpdatePayload": {
+        "type": "object",
+        "description": "Partial update for an environment. Every property is optional; an omitted property retains its stored value. organizationId is accepted for symmetry with the create payload but is not actually mutable - see its own description - so omitting it is the normal case.",
+        "properties": {
+          "name": {
+            "description": "An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.",
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "description": {
+            "description": "An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments).",
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "organizationId": {
+            "type": "string",
+            "description": "The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.",
+            "x-go-type-skip-optional-pointer": true,
+            "x-go-name": "OrgID",
+            "x-oapi-codegen-extra-tags": {
+              "json": "organizationId"
+            },
+            "maxLength": 500,
+            "format": "uuid"
+          }
+        }
+      },
       "EnvironmentPage": {
         "type": "object",
         "description": "Paginated list of environments.",
@@ -855,7 +882,7 @@ const EnvironmentSchema: Record<string, unknown> = {
     },
     "requestBodies": {
       "environmentPayload": {
-        "description": "Body for creating environment",
+        "description": "Body for creating an environment",
         "required": true,
         "content": {
           "application/json": {
@@ -892,6 +919,41 @@ const EnvironmentSchema: Record<string, unknown> = {
             }
           }
         }
+      },
+      "environmentUpdatePayload": {
+        "description": "Body for partially updating an environment. Omitted properties retain their stored value.",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "Partial update for an environment. Every property is optional; an omitted property retains its stored value. organizationId is accepted for symmetry with the create payload but is not actually mutable - see its own description - so omitting it is the normal case.",
+              "properties": {
+                "name": {
+                  "description": "An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.",
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "description": {
+                  "description": "An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments).",
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-go-name": "OrgID",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "organizationId"
+                  },
+                  "maxLength": 500,
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -909,7 +971,7 @@ const EnvironmentSchema: Record<string, unknown> = {
         "summary": "Create an environment",
         "description": "Creates a new environment",
         "requestBody": {
-          "description": "Body for creating environment",
+          "description": "Body for creating an environment",
           "required": true,
           "content": {
             "application/json": {
@@ -1838,17 +1900,13 @@ const EnvironmentSchema: Record<string, unknown> = {
           }
         ],
         "requestBody": {
-          "description": "Body for creating environment",
+          "description": "Body for partially updating an environment. Omitted properties retain their stored value.",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them, and `purpose` because permission to create an environment must not confer the ability to designate it administrative. Excluding it here is a codegen guarantee rather than access control: the registrant connection inlines the full environment entity, so `purpose` still reaches the `registerRegistryComponent` and `registerRegistryRelationship` request types, and every consumer must refuse it on input whatever surface it arrives on. Do not add `purpose` here - see https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
-                "required": [
-                  "name",
-                  "organizationId"
-                ],
+                "description": "Partial update for an environment. Every property is optional; an omitted property retains its stored value. organizationId is accepted for symmetry with the create payload but is not actually mutable - see its own description - so omitting it is the normal case.",
                 "properties": {
                   "name": {
                     "description": "An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.",
@@ -1862,7 +1920,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                   },
                   "organizationId": {
                     "type": "string",
-                    "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
+                    "description": "The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.",
                     "x-go-type-skip-optional-pointer": true,
                     "x-go-name": "OrgID",
                     "x-oapi-codegen-extra-tags": {

@@ -89,6 +89,15 @@ type EnvironmentPayload struct {
 	OrgId uuid.UUID `json:"organization_id" yaml:"organization_id"`
 }
 
+// EnvironmentUpdatePayload Partial update for an environment. Every property is optional; an omitted property retains its stored value. organization_id is accepted for symmetry with the create payload but is not actually mutable - see its own description - so omitting it is the normal case.
+type EnvironmentUpdatePayload struct {
+	Description core.Text `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        core.Text `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// OrgId The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.
+	OrgId uuid.UUID `json:"organization_id" yaml:"organization_id"`
+}
+
 // EnvironmentId defines model for environmentId.
 type EnvironmentId = core.Id
 

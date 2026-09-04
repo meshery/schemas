@@ -15705,7 +15705,7 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   purpose?: "user" | "administrative";
 };
 export type CreateEnvironmentApiArg = {
-  /** Body for creating environment */
+  /** Body for creating an environment */
   body: {
     /** An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
     name: string;
@@ -15861,14 +15861,14 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
 export type UpdateEnvironmentApiArg = {
   /** Environment ID */
   environmentId: string;
-  /** Body for creating environment */
+  /** Body for partially updating an environment. Omitted properties retain their stored value. */
   body: {
     /** An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
-    name: string;
+    name?: string;
     /** An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
     description?: string;
-    /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
-    organizationId: string;
+    /** The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update. */
+    organizationId?: string;
   };
 };
 export type DeleteEnvironmentApiResponse = unknown;
