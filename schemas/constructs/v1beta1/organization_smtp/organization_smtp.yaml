@@ -154,7 +154,6 @@ properties:
       `OrganizationSmtpCredentialPayload` on rotation - and are documented
       there.
     readOnly: true
-    default: "***"
     pattern: '^\*\*\*$'
     maxLength: 512
     x-order: 8
