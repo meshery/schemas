@@ -1,6 +1,6 @@
 {
   "title": "Mail Server",
-  "description": "RJSF form schema for an organization's outbound mail server. Captures the user-input fields of the canonical OrganizationSmtpConfigurationPayload, the create payload (id, status, health, verification state and timestamps are server-owned and intentionally absent; so is the administrative on/off, which is its own operation). Field shape, types, enums, and required list MUST stay a subset of meshery/schemas/constructs/v1beta1/organization_smtp/api.yml#/components/schemas/OrganizationSmtpConfigurationPayload; the Go validator at validation/forms_test.go enforces that.",
+  "description": "RJSF form schema for an organization's outbound mail server. Captures the user-input fields of the canonical OrganizationSmtpConfigurationPayload, the create payload. Server-owned fields are intentionally absent: the id and timestamps, the `status` lifecycle and the delivery counters behind it, and the from-domain proof. So is the administrative on/off, which is a state transition the server can refuse rather than a form value. Field shape, types, enums, and required list MUST stay a subset of meshery/schemas/constructs/v1beta1/organization_smtp/api.yml#/components/schemas/OrganizationSmtpConfigurationPayload; the Go validator at validation/forms_test.go enforces that.",
   "type": "object",
   "properties": {
     "host": {

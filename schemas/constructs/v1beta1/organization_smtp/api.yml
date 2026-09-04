@@ -522,10 +522,14 @@ components:
       additionalProperties: false
       description: >-
         Everything needed to register an organization's mail server, settings
-        and password together. Accepted only on create; afterwards settings and
-        the credential are written by separate operations. Status, health,
-        verification state and timestamps are server-owned and are not accepted
-        here.
+        and password together, so that registration is one operation. Accepted
+        only on create; afterwards the settings and the credential are written
+        by separate operations.
+
+        `status`, the delivery counters behind it, the from-domain proof and the
+        timestamps are all server-owned and are not accepted here. A new
+        configuration therefore always starts at `registered`, whatever the
+        caller sends.
       required:
         - host
         - port
@@ -585,7 +589,10 @@ components:
           description: >-
             Password presented to the organization's SMTP server. Required
             unless `authMechanism` is `none`. The redaction sentinel `***` is
-            refused.
+            refused, and so is the empty string - omit the property instead of
+            sending it empty, which the `minLength` below enforces so this
+            payload and the rotation payload agree.
+          minLength: 1
           maxLength: 512
           x-order: 6
           x-oapi-codegen-extra-tags:

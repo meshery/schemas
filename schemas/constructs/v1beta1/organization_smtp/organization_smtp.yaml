@@ -137,12 +137,18 @@ properties:
   password:
     type: string
     description: >-
-      Password presented to the organization's SMTP server. Write-only, and
-      written only through the dedicated credential operation. A read always
-      returns the redaction sentinel `***`; the stored value is encrypted at
-      rest and is never projected into a response. Writing the sentinel is
-      REFUSED rather than treated as a no-op, so a client that round-trips a
-      read cannot silently overwrite the stored credential with `***`.
+      Password presented to the organization's SMTP server. Write-only: a read
+      always returns the redaction sentinel `***`, and the stored value is
+      encrypted at rest and never projected into a response.
+
+      It is accepted on create, alongside the settings, so that registering a
+      mail server is one operation and no configuration ever exists without the
+      credential it needs. After that it is written ONLY by the dedicated
+      credential-rotation operation - never by the settings write, whose payload
+      declares no `password` property at all. Writing the sentinel is REFUSED
+      wherever it can be written, rather than treated as a no-op, so a client
+      that round-trips a read cannot silently overwrite the stored credential
+      with `***`.
     maxLength: 512
     x-order: 8
     x-oapi-codegen-extra-tags:

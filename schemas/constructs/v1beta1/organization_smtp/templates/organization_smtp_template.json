@@ -10,7 +10,7 @@
   "fromAddress": "no-reply@example.com",
   "fromDisplayName": "Example Corp",
   "replyToAddress": "support@example.com",
-  "status": "connected",
+  "status": "registered",
   "fallbackToProvider": true,
   "fromDomain": "example.com",
   "fromDomainVerificationToken": "0f6a5d2c9b1e4a7f8c3d6b0e2a4f7c19",
