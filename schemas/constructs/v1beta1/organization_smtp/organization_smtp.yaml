@@ -141,10 +141,12 @@ properties:
   password:
     type: string
     description: >-
-      Always the redaction sentinel `***`. The stored password is encrypted at
-      rest and is never projected into a response, so this property carries no
-      information and exists only so the shape of a configuration is the same
-      whether or not a credential is stored.
+      Present only when a password is stored, and then always the redaction
+      sentinel `***` - never the stored value, which is encrypted at rest and is
+      never projected into a response. Its presence is therefore the only thing
+      it reports: a configuration whose `authMechanism` is `none` stores no
+      password and omits this property entirely. It is optional rather than
+      required for exactly that reason.
 
       Read-only, and read-only here means read-only: no request body references
       this schema. The write semantics belong to the payload schemas -

@@ -86,8 +86,13 @@ paths:
       description: >-
         Removes the configuration, its stored credential and the environment
         that held them, together. The organization's mail reverts to the
-        provider's shared relay. Idempotent: removing an absent configuration
-        succeeds.
+        provider's shared relay.
+
+        Idempotent, and deliberately declares no 404: removing an absent
+        configuration succeeds with the same 204 as removing a present one, so
+        "not found" is not an outcome this operation has. An unknown or
+        unauthorized organization is answered by the permission middleware
+        before the handler runs.
       parameters:
         - $ref: "#/components/parameters/orgId"
       responses:
@@ -97,8 +102,6 @@ paths:
           $ref: "#/components/responses/401"
         "403":
           $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
@@ -145,6 +148,10 @@ paths:
         The new configuration starts unproven, so mail continues to take the
         provider relay until the from domain is verified and a test delivery
         succeeds.
+
+        Declares no 404 for the same reason the delete does not: this operation
+        brings the configuration into existence, so its absence beforehand is
+        the normal case rather than an error.
       parameters:
         - $ref: "#/components/parameters/orgId"
       requestBody:
@@ -162,8 +169,6 @@ paths:
           $ref: "#/components/responses/401"
         "403":
           $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
         "409":
           $ref: "#/components/responses/409"
         "500":

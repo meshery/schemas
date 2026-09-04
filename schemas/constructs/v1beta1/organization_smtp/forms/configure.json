@@ -46,16 +46,17 @@
     "username": {
       "type": "string",
       "title": "Username",
-      "description": "Username presented to the organization's SMTP server.",
+      "description": "Username presented to the organization's SMTP server. Required by the server, together with Password, for every Authentication other than None.",
       "maxLength": 320,
       "x-rjsf-grid-area": "6"
     },
     "password": {
       "type": "string",
       "title": "Password",
-      "description": "Presented to the SMTP server and stored encrypted; never displayed. Required unless Authentication is None. After creation this field is written only by the separate credential-rotation operation, and the redaction sentinel is refused rather than treated as 'leave unchanged'.",
+      "description": "Presented to the SMTP server and stored encrypted; never displayed. The server requires it, together with Username, for every Authentication other than None, and rejects a save without them - this form cannot express that conditional pairing, so it is validated server-side rather than here. After creation the password is written only by the separate credential-rotation operation, and the redaction sentinel is refused rather than treated as 'leave unchanged'.",
       "maxLength": 512,
-      "x-rjsf-grid-area": "6"
+      "x-rjsf-grid-area": "6",
+      "minLength": 1
     },
     "fromAddress": {
       "type": "string",
