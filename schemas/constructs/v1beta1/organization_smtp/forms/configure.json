@@ -1,6 +1,6 @@
 {
   "title": "Mail Server",
-  "description": "RJSF form schema for an organization's outbound mail server. Captures the user-input fields of the canonical OrganizationSmtpConfigurationPayload (id, health, verification state and timestamps are server-owned and intentionally absent). Field shape, types, enums, and required list MUST stay a subset of meshery/schemas/constructs/v1beta1/organization_smtp/api.yml#/components/schemas/OrganizationSmtpConfigurationPayload; the Go validator at validation/forms_test.go enforces that.",
+  "description": "RJSF form schema for an organization's outbound mail server. Captures the user-input fields of the canonical OrganizationSmtpConfigurationPayload, the create payload. Server-owned fields are intentionally absent: the id and timestamps, the `status` lifecycle and the delivery counters behind it, and the from-domain proof. So is the administrative on/off, which is a state transition the server can refuse rather than a form value. Field shape, types, enums, and required list MUST stay a subset of meshery/schemas/constructs/v1beta1/organization_smtp/api.yml#/components/schemas/OrganizationSmtpConfigurationPayload; the Go validator at validation/forms_test.go enforces that.",
   "type": "object",
   "properties": {
     "host": {
@@ -23,7 +23,11 @@
       "type": "string",
       "title": "Encryption",
       "description": "STARTTLS upgrades a cleartext connection (typically port 587); TLS opens an implicit TLS connection (typically port 465); None sends in cleartext and is intended only for an internal relay on a trusted network.",
-      "enum": ["starttls", "tls", "none"],
+      "enum": [
+        "starttls",
+        "tls",
+        "none"
+      ],
       "default": "starttls",
       "x-rjsf-grid-area": "6"
     },
@@ -31,28 +35,33 @@
       "type": "string",
       "title": "Authentication",
       "description": "Any mechanism other than None requires both a username and a password.",
-      "enum": ["plain", "cram-md5", "none"],
+      "enum": [
+        "plain",
+        "cram-md5",
+        "none"
+      ],
       "default": "plain",
       "x-rjsf-grid-area": "6"
     },
     "username": {
       "type": "string",
       "title": "Username",
-      "description": "Username presented to the organization's SMTP server.",
+      "description": "Username presented to the organization's SMTP server. Required by the server, together with Password, for every Authentication other than None.",
       "maxLength": 320,
       "x-rjsf-grid-area": "6"
     },
     "password": {
       "type": "string",
       "title": "Password",
-      "description": "Stored encrypted and never displayed. Leave unchanged to keep the saved password.",
+      "description": "Presented to the SMTP server and stored encrypted; never displayed. The server requires it, together with Username, for every Authentication other than None, and rejects a save without them - this form cannot express that conditional pairing, so it is validated server-side rather than here. After creation the password is written only by the separate credential-rotation operation, and the redaction sentinel is refused rather than treated as 'leave unchanged'.",
       "maxLength": 512,
-      "x-rjsf-grid-area": "6"
+      "x-rjsf-grid-area": "6",
+      "minLength": 1
     },
     "fromAddress": {
       "type": "string",
       "title": "From Address",
-      "description": "Address the organization's mail is sent from. Its domain must be verified before mail can be routed through this server, and changing it resets that verification.",
+      "description": "Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server, and changing it to a different domain resets that verification.",
       "format": "email",
       "x-rjsf-grid-area": "6"
     },
@@ -70,13 +79,6 @@
       "format": "email",
       "x-rjsf-grid-area": "12"
     },
-    "enabled": {
-      "type": "boolean",
-      "title": "Route mail through this server",
-      "description": "Cannot be turned on while the from domain is unverified.",
-      "default": false,
-      "x-rjsf-grid-area": "12"
-    },
     "fallbackToProvider": {
       "type": "boolean",
       "title": "Fall back to the provider mail server on failure",
@@ -85,5 +87,9 @@
       "x-rjsf-grid-area": "12"
     }
   },
-  "required": ["host", "port", "fromAddress"]
+  "required": [
+    "host",
+    "port",
+    "fromAddress"
+  ]
 }

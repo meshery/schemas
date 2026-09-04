@@ -1,5 +1,7 @@
 {
-  "ui:options": { "label": false },
+  "ui:options": {
+    "label": false
+  },
   "password": {
     "ui:widget": "password"
   },
@@ -16,7 +18,6 @@
     "fromAddress",
     "fromDisplayName",
     "replyToAddress",
-    "enabled",
     "fallbackToProvider"
   ]
 }
