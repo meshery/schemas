@@ -2,6 +2,7 @@ package validation
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -206,4 +207,238 @@ func schemaHasBinaryProperty(s *openapi3.Schema) bool {
 		}
 	}
 	return false
+}
+
+// --- Rule 48: Detect placeholder schemas using `type: object + additionalProperties: true` without properties or free-form description ---
+
+type placeholderSchemaContext int
+
+const (
+	contextComponent placeholderSchemaContext = iota
+	contextRequestBody
+	contextResponse
+	contextArrayItems
+	contextProperty
+)
+
+var freeFormKeywords = []string{
+	"free-form", "freeform", "arbitrary", "opaque", "key-value",
+	"metadata", "dictionary", "map", "json", "jsonb", "serializer",
+}
+
+var reservedMapPropNames = map[string]bool{
+	"metadata":       true,
+	"configuration":  true,
+	"secret":         true,
+	"selectors":      true,
+	"traits":         true,
+	"settings":       true,
+	"labels":         true,
+	"annotations":    true,
+	"preferences":    true,
+	"custom_headers": true,
+}
+
+func hasFreeFormIntentDescription(desc string) bool {
+	if desc == "" {
+		return false
+	}
+	lower := strings.ToLower(desc)
+	for _, kw := range freeFormKeywords {
+		if strings.Contains(lower, kw) {
+			return true
+		}
+	}
+	return false
+}
+
+func isReservedMapPropertyName(name string) bool {
+	return reservedMapPropNames[strings.ToLower(name)]
+}
+
+func checkRule48(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
+	if doc == nil {
+		return nil
+	}
+	var out []Violation
+	onPath := make(map[*openapi3.Schema]bool)
+	visited := make(map[*openapi3.Schema]placeholderSchemaContext)
+
+	// 1. Walk components/schemas
+	if doc.Components != nil && doc.Components.Schemas != nil {
+		schemaNames := make([]string, 0, len(doc.Components.Schemas))
+		for name := range doc.Components.Schemas {
+			schemaNames = append(schemaNames, name)
+		}
+		sort.Strings(schemaNames)
+		for _, name := range schemaNames {
+			ref := doc.Components.Schemas[name]
+			if ref != nil && ref.Value != nil {
+				walkPlaceholderSchemas(filePath, fmt.Sprintf("Schema %q", name), "", ref, contextComponent, opts, &out, onPath, visited)
+			}
+		}
+	}
+
+	// 2. Walk operations in doc.Paths
+	if doc.Paths != nil {
+		paths := make([]string, 0, len(doc.Paths.Map()))
+		pathsMap := doc.Paths.Map()
+		for p := range pathsMap {
+			paths = append(paths, p)
+		}
+		sort.Strings(paths)
+
+		for _, path := range paths {
+			item := pathsMap[path]
+			if item == nil {
+				continue
+			}
+			for _, method := range httpMethods {
+				op := getOperation(item, method)
+				if op == nil {
+					continue
+				}
+				opLabel := fmt.Sprintf("%s %s", strings.ToUpper(method), path)
+
+				// Walk RequestBody
+				if op.RequestBody != nil && op.RequestBody.Value != nil {
+					for contentType, media := range op.RequestBody.Value.Content {
+						if media != nil && media.Schema != nil && media.Schema.Value != nil {
+							label := fmt.Sprintf("%s requestBody (%s)", opLabel, contentType)
+							walkPlaceholderSchemas(filePath, label, "", media.Schema, contextRequestBody, opts, &out, onPath, visited)
+						}
+					}
+				}
+
+				// Walk Responses
+				if op.Responses != nil {
+					codes := make([]string, 0, len(op.Responses.Map()))
+					respMap := op.Responses.Map()
+					for code := range respMap {
+						codes = append(codes, code)
+					}
+					sort.Strings(codes)
+					for _, code := range codes {
+						respRef := respMap[code]
+						if respRef == nil || respRef.Value == nil {
+							continue
+						}
+						for contentType, media := range respRef.Value.Content {
+							if media != nil && media.Schema != nil && media.Schema.Value != nil {
+								label := fmt.Sprintf("%s response %s (%s)", opLabel, code, contentType)
+								walkPlaceholderSchemas(filePath, label, "", media.Schema, contextResponse, opts, &out, onPath, visited)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return out
+}
+
+func walkPlaceholderSchemas(
+	filePath, label, propName string,
+	ref *openapi3.SchemaRef,
+	ctx placeholderSchemaContext,
+	opts AuditOptions,
+	out *[]Violation,
+	onPath map[*openapi3.Schema]bool,
+	visited map[*openapi3.Schema]placeholderSchemaContext,
+) {
+	if ref == nil || ref.Value == nil || ref.Ref != "" {
+		return
+	}
+	schema := ref.Value
+	if onPath[schema] {
+		return
+	}
+
+	onPath[schema] = true
+	defer delete(onPath, schema)
+
+	isCandidate := ref.Ref == "" && schema.Type != nil && schema.Type.Is("object") &&
+		schema.AdditionalProperties.Has != nil && *schema.AdditionalProperties.Has &&
+		schema.AdditionalProperties.Schema == nil &&
+		len(schema.Properties) == 0 &&
+		!hasFreeFormIntentDescription(schema.Description) &&
+		!isReservedMapPropertyName(propName)
+
+	prevCtx, alreadyVisited := visited[schema]
+	shouldReport := false
+	if isCandidate {
+		if !alreadyVisited {
+			shouldReport = true
+			visited[schema] = ctx
+		} else if ctx == contextArrayItems && prevCtx != contextArrayItems {
+			shouldReport = true
+			visited[schema] = ctx
+		}
+	}
+
+	if shouldReport {
+		sev := SeverityAdvisory
+		if ctx == contextArrayItems {
+			sev = SeverityBlocking
+		}
+
+		msg := fmt.Sprintf(
+			`%s — schema is a zero-property object with additionalProperties: true and no free-form description. `+
+				`It appears to be an unmodeled placeholder schema missing a concrete $ref.`,
+			label,
+		)
+
+		*out = append(*out, Violation{
+			File:       filePath,
+			Message:    msg,
+			Severity:   sev,
+			RuleNumber: 48,
+		})
+	}
+
+	// Recurse into Properties
+	if schema.Properties != nil {
+		propNames := make([]string, 0, len(schema.Properties))
+		for name := range schema.Properties {
+			propNames = append(propNames, name)
+		}
+		sort.Strings(propNames)
+		for _, name := range propNames {
+			propRef := schema.Properties[name]
+			if propRef != nil && propRef.Value != nil {
+				subLabel := label + "." + name
+				walkPlaceholderSchemas(filePath, subLabel, name, propRef, contextProperty, opts, out, onPath, visited)
+			}
+		}
+	}
+
+	// Recurse into Items
+	if schema.Items != nil && schema.Items.Value != nil {
+		subLabel := label + ".items"
+		walkPlaceholderSchemas(filePath, subLabel, "", schema.Items, contextArrayItems, opts, out, onPath, visited)
+	}
+
+	// Recurse into Combiners
+	for _, combiner := range []struct {
+		name string
+		refs openapi3.SchemaRefs
+	}{
+		{name: "allOf", refs: schema.AllOf},
+		{name: "oneOf", refs: schema.OneOf},
+		{name: "anyOf", refs: schema.AnyOf},
+	} {
+		for i, ref := range combiner.refs {
+			if ref != nil && ref.Value != nil {
+				subLabel := fmt.Sprintf("%s.%s[%d]", label, combiner.name, i)
+				walkPlaceholderSchemas(filePath, subLabel, "", ref, ctx, opts, out, onPath, visited)
+			}
+		}
+	}
+
+	// Recurse into AdditionalProperties.Schema (if typed additionalProperties)
+	if schema.AdditionalProperties.Schema != nil && schema.AdditionalProperties.Schema.Value != nil {
+		subLabel := label + ".additionalProperties"
+		walkPlaceholderSchemas(filePath, subLabel, "", schema.AdditionalProperties.Schema, contextProperty, opts, out, onPath, visited)
+	}
 }
