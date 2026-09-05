@@ -158,7 +158,7 @@ properties:
     additionalProperties:
       type: array
       items:
-        $ref: ./api.yml#/components/schemas/ConnectionStateTransition
+        $ref: ../../v1beta3/connection/api.yml#/components/schemas/ConnectionStateTransition
     x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
