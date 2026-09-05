@@ -274,7 +274,7 @@ func checkRule48(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 		for _, name := range schemaNames {
 			ref := doc.Components.Schemas[name]
 			if ref != nil && ref.Value != nil {
-				walkPlaceholderSchemas(filePath, fmt.Sprintf("Schema %q", name), "", ref.Value, contextComponent, opts, &out, onPath, visited)
+				walkPlaceholderSchemas(filePath, fmt.Sprintf("Schema %q", name), "", ref, contextComponent, opts, &out, onPath, visited)
 			}
 		}
 	}
@@ -305,7 +305,7 @@ func checkRule48(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 					for contentType, media := range op.RequestBody.Value.Content {
 						if media != nil && media.Schema != nil && media.Schema.Value != nil {
 							label := fmt.Sprintf("%s requestBody (%s)", opLabel, contentType)
-							walkPlaceholderSchemas(filePath, label, "", media.Schema.Value, contextRequestBody, opts, &out, onPath, visited)
+							walkPlaceholderSchemas(filePath, label, "", media.Schema, contextRequestBody, opts, &out, onPath, visited)
 						}
 					}
 				}
@@ -326,7 +326,7 @@ func checkRule48(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 						for contentType, media := range respRef.Value.Content {
 							if media != nil && media.Schema != nil && media.Schema.Value != nil {
 								label := fmt.Sprintf("%s response %s (%s)", opLabel, code, contentType)
-								walkPlaceholderSchemas(filePath, label, "", media.Schema.Value, contextResponse, opts, &out, onPath, visited)
+								walkPlaceholderSchemas(filePath, label, "", media.Schema, contextResponse, opts, &out, onPath, visited)
 							}
 						}
 					}
@@ -340,21 +340,25 @@ func checkRule48(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 
 func walkPlaceholderSchemas(
 	filePath, label, propName string,
-	schema *openapi3.Schema,
+	ref *openapi3.SchemaRef,
 	ctx placeholderSchemaContext,
 	opts AuditOptions,
 	out *[]Violation,
 	onPath map[*openapi3.Schema]bool,
 	visited map[*openapi3.Schema]placeholderSchemaContext,
 ) {
-	if schema == nil || onPath[schema] {
+	if ref == nil || ref.Value == nil || ref.Ref != "" {
+		return
+	}
+	schema := ref.Value
+	if onPath[schema] {
 		return
 	}
 
 	onPath[schema] = true
 	defer delete(onPath, schema)
 
-	isCandidate := schema.Type != nil && schema.Type.Is("object") &&
+	isCandidate := ref.Ref == "" && schema.Type != nil && schema.Type.Is("object") &&
 		schema.AdditionalProperties.Has != nil && *schema.AdditionalProperties.Has &&
 		schema.AdditionalProperties.Schema == nil &&
 		len(schema.Properties) == 0 &&
@@ -404,7 +408,7 @@ func walkPlaceholderSchemas(
 			propRef := schema.Properties[name]
 			if propRef != nil && propRef.Value != nil {
 				subLabel := label + "." + name
-				walkPlaceholderSchemas(filePath, subLabel, name, propRef.Value, contextProperty, opts, out, onPath, visited)
+				walkPlaceholderSchemas(filePath, subLabel, name, propRef, contextProperty, opts, out, onPath, visited)
 			}
 		}
 	}
@@ -412,7 +416,7 @@ func walkPlaceholderSchemas(
 	// Recurse into Items
 	if schema.Items != nil && schema.Items.Value != nil {
 		subLabel := label + ".items"
-		walkPlaceholderSchemas(filePath, subLabel, "", schema.Items.Value, contextArrayItems, opts, out, onPath, visited)
+		walkPlaceholderSchemas(filePath, subLabel, "", schema.Items, contextArrayItems, opts, out, onPath, visited)
 	}
 
 	// Recurse into Combiners
@@ -427,7 +431,7 @@ func walkPlaceholderSchemas(
 		for i, ref := range combiner.refs {
 			if ref != nil && ref.Value != nil {
 				subLabel := fmt.Sprintf("%s.%s[%d]", label, combiner.name, i)
-				walkPlaceholderSchemas(filePath, subLabel, "", ref.Value, ctx, opts, out, onPath, visited)
+				walkPlaceholderSchemas(filePath, subLabel, "", ref, ctx, opts, out, onPath, visited)
 			}
 		}
 	}
@@ -435,6 +439,6 @@ func walkPlaceholderSchemas(
 	// Recurse into AdditionalProperties.Schema (if typed additionalProperties)
 	if schema.AdditionalProperties.Schema != nil && schema.AdditionalProperties.Schema.Value != nil {
 		subLabel := label + ".additionalProperties"
-		walkPlaceholderSchemas(filePath, subLabel, "", schema.AdditionalProperties.Schema.Value, contextProperty, opts, out, onPath, visited)
+		walkPlaceholderSchemas(filePath, subLabel, "", schema.AdditionalProperties.Schema, contextProperty, opts, out, onPath, visited)
 	}
 }

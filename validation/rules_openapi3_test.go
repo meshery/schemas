@@ -423,3 +423,63 @@ func TestCheckRule48_TypedAdditionalProperties_NoViolation(t *testing.T) {
 		t.Errorf("expected 0 violations for typed additionalProperties schema, got %d", len(vs))
 	}
 }
+
+func TestCheckRule48_RefTargetInArrayItems_NoBlockingViolation(t *testing.T) {
+	trueVal := true
+	componentSchema := &openapi3.Schema{
+		Type:        &openapi3.Types{"object"},
+		Description: "Per-user event summary entry.",
+		AdditionalProperties: openapi3.AdditionalProperties{
+			Has: &trueVal,
+		},
+	}
+	componentRef := &openapi3.SchemaRef{
+		Ref:   "#/components/schemas/EventSummary",
+		Value: componentSchema,
+	}
+	arraySchema := &openapi3.Schema{
+		Type:  &openapi3.Types{"array"},
+		Items: componentRef,
+	}
+	resp := &openapi3.Response{
+		Content: openapi3.Content{
+			"application/json": &openapi3.MediaType{
+				Schema: &openapi3.SchemaRef{Value: arraySchema},
+			},
+		},
+	}
+	responses := openapi3.NewResponses()
+	responses.Set("200", &openapi3.ResponseRef{Value: resp})
+
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"EventSummary": &openapi3.SchemaRef{
+					Ref:   "",
+					Value: componentSchema,
+				},
+			},
+		},
+	}
+	doc.Paths.Set("/api/events", &openapi3.PathItem{
+		Get: &openapi3.Operation{Responses: responses},
+	})
+
+	vs := checkRule48("api.yml", doc, AuditOptions{})
+
+	for _, v := range vs {
+		if v.Severity == SeverityBlocking {
+			t.Errorf("expected no blocking violation for $ref target in array items, got %v", v)
+		}
+	}
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 advisory violation for component schema, got %d", len(vs))
+	}
+	if vs[0].Severity != SeverityAdvisory {
+		t.Errorf("expected SeverityAdvisory for component schema, got %v", vs[0].Severity)
+	}
+}
