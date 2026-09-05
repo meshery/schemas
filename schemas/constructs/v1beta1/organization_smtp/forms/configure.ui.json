@@ -1,0 +1,23 @@
+{
+  "ui:options": {
+    "label": false
+  },
+  "password": {
+    "ui:widget": "password"
+  },
+  "replyToAddress": {
+    "ui:widget": "email"
+  },
+  "ui:order": [
+    "host",
+    "port",
+    "encryption",
+    "authMechanism",
+    "username",
+    "password",
+    "fromAddress",
+    "fromDisplayName",
+    "replyToAddress",
+    "fallbackToProvider"
+  ]
+}

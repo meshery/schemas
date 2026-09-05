@@ -39,6 +39,13 @@ Generated artifacts (`models/`, `typescript/generated/`) are committed by automa
 - ❌ Generated TypeScript in `typescript/generated/`
 - ❌ Built files in `dist/`
 
+The Go generators (`build/generate-golang.js`, `build/generate-permission-golang.js`)
+run every file they emit through `gofmt -w` as their final step via
+`build/lib/gofmt.js`, so generated Go under `models/` is gofmt-clean as generated.
+Any new emitter of Go source must do the same. Hand-written Go in `models/`
+(`*_helper.go`, `const.go`, `import.go`, `*_conversion.go`, `models/core/`) is not
+covered by that step.
+
 ## Required on Every PR
 
 - **Tests accompany every behavioral change.** Run every locally-runnable test
@@ -173,6 +180,7 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/superseded-construct-consumer-verification.md`](docs/superseded-construct-consumer-verification.md)** - how to prove no downstream consumer is still on an `x-superseded-by` construct version; why import-path grepping is invalid on the TypeScript/RTK surface.
 - **[`docs/release-procedure.md`](docs/release-procedure.md)** - full release flow, What NOT to Do, and versioning policy.
 - **[`docs/release-procedure-skill.md`](docs/release-procedure-skill.md)** - using the `meshery-schemas-release` skill, verification commands, troubleshooting.
+- **[`docs/environment-purpose-contract.md`](docs/environment-purpose-contract.md)** - what `Environment.purpose` means, why it is not client-settable, and what each consumer must enforce for that to hold.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
 - **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
 

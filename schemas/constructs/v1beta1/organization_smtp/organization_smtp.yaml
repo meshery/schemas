@@ -1,0 +1,305 @@
+$id: https://schemas.meshery.io/organization_smtp.yaml
+$schema: http://json-schema.org/draft-07/schema#
+title: OrganizationSmtpConfiguration
+description: >-
+  An organization's own outbound mail server. When present and healthy, every
+  transactional email whose reader belongs to this organization - application
+  notifications and identity-flow mail (account verification, password
+  recovery) alike - is delivered through this server rather than through the
+  provider's shared relay, so the message leaves from the organization's own
+  domain. At most one live configuration exists per organization. The SMTP
+  password is encrypted at rest and is never returned; reads always carry the
+  redaction sentinel instead.
+
+
+  This is a WIRE contract only. It is not backed by a table of its own: the
+  configuration is stored on the same environment/connection/credential chain
+  that bring-your-own identity providers already uses - a well-known
+  per-organization Environment, joined through environments_connections_mappings
+  to a Connection whose credential_id points at a Credential. The organization
+  relationship lives on `environments.organization_id`, the dial target on
+  `connections.url` and `connections.metadata`, the transport verdict on
+  `connections.status`, and the password alone in `credentials.secret`.
+
+
+  No property here carries a construct-specific `db` tag, because no property
+  here names a column of its own. The exception is deliberate and inherited:
+  `createdAt` and `updatedAt` `$ref` the shared core definitions, which declare
+  `db: created_at` / `db: updated_at` for every construct that uses them, and
+  those two tags are accurate for the underlying connection row.
+additionalProperties: false
+type: object
+example:
+  id: 00000000-0000-0000-0000-000000000000
+  organizationId: 00000000-0000-0000-0000-000000000000
+  host: smtp.example.com
+  port: 587
+  encryption: starttls
+  authMechanism: plain
+  username: no-reply@example.com
+  password: "***"
+  fromAddress: no-reply@example.com
+  fromDisplayName: Example Corp
+  replyToAddress: support@example.com
+  status: registered
+  fallbackToProvider: true
+  fromDomain: example.com
+  fromDomainVerificationToken: 0f6a5d2c9b1e4a7f8c3d6b0e2a4f7c19
+  fromDomainVerifiedAt: null
+  lastSuccessAt: null
+  lastFailureAt: null
+  consecutiveFailures: 0
+  createdBy: 00000000-0000-0000-0000-000000000000
+  createdAt: "0001-01-01T00:00:00Z"
+  updatedAt: "0001-01-01T00:00:00Z"
+  deletedAt: null
+required:
+  - id
+  - organizationId
+  - host
+  - port
+  - encryption
+  - authMechanism
+  - fromAddress
+  - status
+  - fallbackToProvider
+  - consecutiveFailures
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../core/api.yml#/components/schemas/uuid
+    description: >-
+      Identifier of the configuration, which is the identifier of the
+      underlying connection row. Stable for the life of the configuration.
+    x-order: 1
+    x-go-name: ID
+  organizationId:
+    $ref: ../core/api.yml#/components/schemas/uuid
+    description: >-
+      Organization that owns this mail server configuration. Projected from the
+      owning environment, which carries the organization relationship.
+    x-order: 2
+    x-go-name: OrganizationID
+  host:
+    type: string
+    description: Hostname of the organization's SMTP server.
+    minLength: 1
+    maxLength: 253
+    x-order: 3
+    x-go-type-skip-optional-pointer: true
+  port:
+    type: integer
+    description: >-
+      TCP port the organization's SMTP server listens on. The server additionally
+      restricts this to a submission-port allowlist; a syntactically valid port
+      outside it is refused.
+    minimum: 1
+    maximum: 65535
+    default: 587
+    x-order: 4
+    x-go-type-skip-optional-pointer: true
+  encryption:
+    type: string
+    description: >-
+      Transport encryption to negotiate. `starttls` upgrades a cleartext
+      connection (typically port 587), `tls` opens an implicit TLS connection
+      (typically port 465), and `none` sends in cleartext and is intended only
+      for an internal relay on a trusted network.
+    enum:
+      - starttls
+      - tls
+      - none
+    default: starttls
+    x-order: 5
+    x-go-type-skip-optional-pointer: true
+  authMechanism:
+    type: string
+    description: >-
+      SMTP authentication mechanism. `none` is permitted only for a relay that
+      authorizes by source address; a configuration using any other mechanism
+      must carry both a username and a password.
+    enum:
+      - plain
+      - cram-md5
+      - none
+    default: plain
+    x-order: 6
+    x-go-type-skip-optional-pointer: true
+  username:
+    type: string
+    description: >-
+      Username presented to the organization's SMTP server. Held beside the host
+      rather than with the password because it is an identifier rather than a
+      secret, and the health surface must show it without a decryption round
+      trip. It is usually an email address, so it is returned only on an
+      authorized read.
+    maxLength: 320
+    x-order: 7
+    x-oapi-codegen-extra-tags:
+      json: username,omitempty
+  password:
+    type: string
+    description: >-
+      Present only when a password is stored, and then always the redaction
+      sentinel `***` - never the stored value, which is encrypted at rest and is
+      never projected into a response. Its presence is therefore the only thing
+      it reports: a configuration whose `authMechanism` is `none` stores no
+      password and omits this property entirely. It is optional rather than
+      required for exactly that reason.
+
+      Read-only, and read-only here means read-only: no request body references
+      this schema. The write semantics belong to the payload schemas -
+      `OrganizationSmtpConfigurationPayload` on create and
+      `OrganizationSmtpCredentialPayload` on rotation - and are documented
+      there.
+    readOnly: true
+    pattern: '^\*\*\*$'
+    maxLength: 512
+    x-order: 8
+    x-oapi-codegen-extra-tags:
+      json: password,omitempty
+  fromAddress:
+    $ref: ../core/api.yml#/components/schemas/email
+    description: >-
+      Address the organization's mail is sent from. Its domain must be verified
+      before mail is routed through this server.
+    x-order: 9
+  fromDisplayName:
+    type: string
+    description: Display name shown alongside the from address in the message header.
+    maxLength: 255
+    x-order: 10
+    x-oapi-codegen-extra-tags:
+      json: fromDisplayName,omitempty
+  replyToAddress:
+    $ref: ../core/api.yml#/components/schemas/email
+    description: >-
+      Address replies are directed to. It is also the address carried when a
+      message falls back to the provider relay, which rewrites the from address
+      to the provider's own so the message stays aligned for SPF and DMARC.
+    x-order: 11
+    x-oapi-codegen-extra-tags:
+      json: replyToAddress,omitempty
+  status:
+    type: string
+    description: >-
+      Lifecycle and transport verdict, carrying the connection status vocabulary
+      because the configuration IS a connection. `registered` means configured
+      but never proven - the from domain is unverified, or no message has yet
+      been delivered - and mail takes the provider relay. `connected` means the
+      last delivery attempt succeeded and mail is routed through this server.
+      `disconnected` means consecutive failures opened the circuit, so the
+      server is no longer dialled and the fallback setting decides what happens.
+      `ignored` means an administrator turned it off.
+
+
+      The writers are disjoint on purpose: only an administrator writes
+      `ignored`, and only the delivery circuit writes `connected` or
+      `disconnected`. That is what keeps a deliberate opt-out distinguishable
+      from a failing relay. It also makes "enabled while the from domain is
+      unverified" unrepresentable rather than merely forbidden, which is why
+      this property replaces the separate `enabled` and `verificationState`
+      pair it supersedes.
+    enum:
+      - registered
+      - connected
+      - disconnected
+      - ignored
+    default: registered
+    x-order: 12
+    x-go-type-skip-optional-pointer: true
+  fallbackToProvider:
+    type: boolean
+    description: >-
+      Whether a message that this server fails to accept is re-sent through the
+      provider's shared relay. Disabling it means the organization owns delivery
+      entirely and a failure is a dropped message, including account
+      verification and password recovery.
+    default: true
+    x-order: 13
+    x-go-type-skip-optional-pointer: true
+  fromDomain:
+    type: string
+    description: Registrable domain of the from address, held separately as the unit that ownership is proven for.
+    maxLength: 253
+    x-order: 14
+    x-oapi-codegen-extra-tags:
+      json: fromDomain,omitempty
+  fromDomainVerificationToken:
+    type: string
+    description: >-
+      Token the organization publishes in DNS to prove control of the from
+      domain. Not a credential - it authorizes nothing and grants no access.
+    maxLength: 128
+    x-order: 15
+    x-oapi-codegen-extra-tags:
+      json: fromDomainVerificationToken,omitempty
+  fromDomainVerifiedAt:
+    $ref: ../core/api.yml#/components/schemas/nullTime
+    description: Timestamp at which control of the from domain was last proven. Null while unproven.
+    nullable: true
+    x-order: 16
+  lastSuccessAt:
+    $ref: ../core/api.yml#/components/schemas/nullTime
+    description: Timestamp of the last message this server accepted.
+    nullable: true
+    x-order: 17
+  lastFailureAt:
+    $ref: ../core/api.yml#/components/schemas/nullTime
+    description: Timestamp of the last delivery attempt this server rejected or failed to accept.
+    nullable: true
+    x-order: 18
+  lastFailureReason:
+    type: string
+    description: >-
+      Classification of the last failure. Always a classification, never the
+      remote server's own message: the set is closed on purpose, because
+      reporting a remote server's text back to a caller would turn a refusal
+      into an oracle for what the network can reach.
+    enum:
+      - blocked_target
+      - connect_refused
+      - connect_timeout
+      - tls_failed
+      - starttls_unsupported
+      - auth_rejected
+      - relay_rejected_sender
+      - relay_rejected_recipient
+      - delivery_failed
+      - credential_unreadable
+    x-order: 19
+    x-oapi-codegen-extra-tags:
+      json: lastFailureReason,omitempty
+  consecutiveFailures:
+    type: integer
+    description: Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server.
+    minimum: 0
+    default: 0
+    x-order: 20
+    x-go-type-skip-optional-pointer: true
+  createdBy:
+    $ref: ../core/api.yml#/components/schemas/uuid
+    description: >-
+      User who created the configuration, retained for audit. The organization's
+      mail does not depend on this account remaining active: the organization
+      relationship is carried by the owning environment, and the stored
+      credential is designated to the organization so that it is re-pointed at a
+      surviving administrator if this account is ever removed.
+    nullable: true
+    x-order: 21
+    x-oapi-codegen-extra-tags:
+      json: createdBy,omitempty
+  createdAt:
+    $ref: ../core/api.yml#/components/schemas/created_at
+    description: Timestamp when the configuration was created.
+    x-order: 22
+  updatedAt:
+    $ref: ../core/api.yml#/components/schemas/updated_at
+    description: Timestamp when the configuration was last changed.
+    x-order: 23
+  deletedAt:
+    $ref: ../core/api.yml#/components/schemas/nullTime
+    description: Timestamp when the configuration was soft deleted. Null while it remains active.
+    nullable: true
+    x-order: 24

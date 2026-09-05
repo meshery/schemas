@@ -948,7 +948,7 @@ schemas/constructs/          (OpenAPI YAML source files)
 
 ### Go Generation Pipeline
 
-`build/generate-golang.js` runs a 10-stage pipeline per package. The pipeline generates, transforms, and validates Go structs.
+`build/generate-golang.js` runs an 11-stage pipeline per package. The pipeline generates, transforms, and validates Go structs.
 
 | Stage | Function | What it does |
 | --- | --- | --- |
@@ -962,6 +962,7 @@ schemas/constructs/          (OpenAPI YAML source files)
 | 8 | `ensureRequiredImports()` | Adds missing Go imports (e.g., `uuid`) when inlined `x-go-type` requires them |
 | 9 | `validateGeneratedDbTags()` | Verifies every `db:` tag declared in the schema is present in generated Go |
 | 10 | `validateGeneratedJsonTags()` | Verifies every `json:` tag in generated Go matches the schema property name |
+| 11 | `formatGoFile()` | Runs `gofmt -w` on the finished file so generated Go is gofmt-clean as generated |
 
 The **property name is the single source of truth** for the json wire format. oapi-codegen reads it verbatim (stage 1), and `validateGeneratedJsonTags` confirms it survived the pipeline unchanged (stage 10).
 

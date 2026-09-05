@@ -162,6 +162,13 @@
     "extension": true
   },
   {
+    "construct": "organization_smtp",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/organization_smtp/organization_smtp.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "pattern_resource",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/pattern_resource/pattern_resource.yaml",

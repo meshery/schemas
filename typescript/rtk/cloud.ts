@@ -1,6 +1,7 @@
 import { cloudBaseApi as api } from "./api";
 export const addTagTypes = [
   "Feature_Features",
+  "Organization_SMTP_Configuration_OrganizationSmtp",
   "Support_Support",
   "System_API_System",
   "Badge_Badge",
@@ -52,6 +53,99 @@ const injectedRtkApi = api
       getFeaturesByOrganization: build.query<GetFeaturesByOrganizationApiResponse, GetFeaturesByOrganizationApiArg>({
         query: (queryArg) => ({ url: `/api/entitlement/subscriptions/organizations/${queryArg.orgId}/features` }),
         providesTags: ["Feature_Features"],
+      }),
+      getOrganizationSmtpEnvironment: build.query<
+        GetOrganizationSmtpEnvironmentApiResponse,
+        GetOrganizationSmtpEnvironmentApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/orgs/${queryArg.orgId}/environments/mail-relay` }),
+        providesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      deleteOrganizationSmtpEnvironment: build.mutation<
+        DeleteOrganizationSmtpEnvironmentApiResponse,
+        DeleteOrganizationSmtpEnvironmentApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/orgs/${queryArg.orgId}/environments/mail-relay`, method: "DELETE" }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      getOrganizationSmtpConfiguration: build.query<
+        GetOrganizationSmtpConfigurationApiResponse,
+        GetOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection` }),
+        providesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      createOrganizationSmtpConfiguration: build.mutation<
+        CreateOrganizationSmtpConfigurationApiResponse,
+        CreateOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      updateOrganizationSmtpConfiguration: build.mutation<
+        UpdateOrganizationSmtpConfigurationApiResponse,
+        UpdateOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      rotateOrganizationSmtpCredential: build.mutation<
+        RotateOrganizationSmtpCredentialApiResponse,
+        RotateOrganizationSmtpCredentialApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection/credential`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      setOrganizationSmtpEnablement: build.mutation<
+        SetOrganizationSmtpEnablementApiResponse,
+        SetOrganizationSmtpEnablementApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection/enablement`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      testOrganizationSmtpConfiguration: build.mutation<
+        TestOrganizationSmtpConfigurationApiResponse,
+        TestOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection/test`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      getOrganizationSmtpDomainVerification: build.query<
+        GetOrganizationSmtpDomainVerificationApiResponse,
+        GetOrganizationSmtpDomainVerificationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/domain-verification` }),
+        providesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      verifyOrganizationSmtpDomain: build.mutation<
+        VerifyOrganizationSmtpDomainApiResponse,
+        VerifyOrganizationSmtpDomainApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/domain-verification`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
       }),
       submitSupportRequest: build.mutation<SubmitSupportRequestApiResponse, SubmitSupportRequestApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/support`, method: "POST", body: queryArg.body }),
@@ -1789,6 +1883,508 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features respo
 }[];
 export type GetFeaturesByOrganizationApiArg = {
   /** The ID of the organization */
+  orgId: string;
+};
+export type GetOrganizationSmtpEnvironmentApiResponse =
+  /** status 200 The organization has its own mail-relay environment. The canonical Environment shape, not a bespoke one: this endpoint returns an ordinary environment row that happens to carry the well-known name. */ {
+    /** ID */
+    id: string;
+    /** Specifies the version of the schema to which the environment conforms. */
+    schemaVersion: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organizationId: string;
+    /** Environment owner */
+    owner?: string;
+    /** Timestamp when the environment was created. */
+    createdAt?: string;
+    /** Additional metadata associated with the environment. */
+    metadata?: object;
+    /** Timestamp when the environment was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+    deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    
+    Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+    
+    At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+    
+    Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+    
+    The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
+  };
+export type GetOrganizationSmtpEnvironmentApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type DeleteOrganizationSmtpEnvironmentApiResponse = unknown;
+export type DeleteOrganizationSmtpEnvironmentApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type GetOrganizationSmtpConfigurationApiResponse = /** status 200 The organization's SMTP configuration. */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Hostname of the organization's SMTP server. */
+  host: string;
+  /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+  port: number;
+  /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+  encryption: "starttls" | "tls" | "none";
+  /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+  authMechanism: "plain" | "cram-md5" | "none";
+  /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+  username?: string;
+  /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+  password?: string;
+  /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+  fromAddress: string;
+  /** Display name shown alongside the from address in the message header. */
+  fromDisplayName?: string;
+  /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+  replyToAddress?: string;
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+  status: "registered" | "connected" | "disconnected" | "ignored";
+  /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+  fallbackToProvider: boolean;
+  /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+  fromDomain?: string;
+  /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+  fromDomainVerificationToken?: string;
+  /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+  fromDomainVerifiedAt?: string | null;
+  /** Timestamp of the last message this server accepted. */
+  lastSuccessAt?: string | null;
+  /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+  lastFailureAt?: string | null;
+  /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+  lastFailureReason?:
+    | "blocked_target"
+    | "connect_refused"
+    | "connect_timeout"
+    | "tls_failed"
+    | "starttls_unsupported"
+    | "auth_rejected"
+    | "relay_rejected_sender"
+    | "relay_rejected_recipient"
+    | "delivery_failed"
+    | "credential_unreadable";
+  /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+  consecutiveFailures: number;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string | null;
+  /** Timestamp when the configuration was created. */
+  createdAt: string;
+  /** Timestamp when the configuration was last changed. */
+  updatedAt: string;
+  /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+  deletedAt?: string | null;
+};
+export type GetOrganizationSmtpConfigurationApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type CreateOrganizationSmtpConfigurationApiResponse = /** status 201 The stored SMTP configuration. */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Hostname of the organization's SMTP server. */
+  host: string;
+  /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+  port: number;
+  /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+  encryption: "starttls" | "tls" | "none";
+  /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+  authMechanism: "plain" | "cram-md5" | "none";
+  /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+  username?: string;
+  /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+  password?: string;
+  /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+  fromAddress: string;
+  /** Display name shown alongside the from address in the message header. */
+  fromDisplayName?: string;
+  /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+  replyToAddress?: string;
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+  status: "registered" | "connected" | "disconnected" | "ignored";
+  /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+  fallbackToProvider: boolean;
+  /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+  fromDomain?: string;
+  /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+  fromDomainVerificationToken?: string;
+  /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+  fromDomainVerifiedAt?: string | null;
+  /** Timestamp of the last message this server accepted. */
+  lastSuccessAt?: string | null;
+  /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+  lastFailureAt?: string | null;
+  /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+  lastFailureReason?:
+    | "blocked_target"
+    | "connect_refused"
+    | "connect_timeout"
+    | "tls_failed"
+    | "starttls_unsupported"
+    | "auth_rejected"
+    | "relay_rejected_sender"
+    | "relay_rejected_recipient"
+    | "delivery_failed"
+    | "credential_unreadable";
+  /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+  consecutiveFailures: number;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string | null;
+  /** Timestamp when the configuration was created. */
+  createdAt: string;
+  /** Timestamp when the configuration was last changed. */
+  updatedAt: string;
+  /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+  deletedAt?: string | null;
+};
+export type CreateOrganizationSmtpConfigurationApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** Hostname of the organization's SMTP server. */
+    host: string;
+    /** TCP port the organization's SMTP server listens on. Restricted further by a submission-port allowlist. */
+    port: number;
+    /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext. */
+    encryption?: "starttls" | "tls" | "none";
+    /** SMTP authentication mechanism. Any mechanism other than `none` requires both a username and a password. */
+    authMechanism?: "plain" | "cram-md5" | "none";
+    /** Username presented to the organization's SMTP server. Required by the server, together with `password`, for every `authMechanism` other than `none`; see that property for why the pairing is a server-enforced contract rather than a schema constraint. */
+    username?: string;
+    /** Password presented to the organization's SMTP server. The server requires it, together with `username`, for every `authMechanism` other than `none`, and answers 400 when either is missing.
+        That rule is deliberately NOT encoded in `required` or as a `oneOf`/`if`-`then`. Both encodings were measured against the generator: `if`/`then` collapses this payload to `interface{}`, and `oneOf` injects a `union json.RawMessage` field with a custom marshaller, either of which costs every consumer its generated type or its wire behaviour to express a constraint the server enforces anyway. Treat this property as conditionally required by contract, not by schema.
+        This is the ONLY operation that accepts the password alongside the settings, so that registering a mail server is one call and no configuration exists in a state where it is expected to send but holds no credential. Afterwards the password is written only by the rotation operation, never by the settings update, whose payload declares no `password` property at all.
+        The redaction sentinel `***` is refused, and so is the empty string - omit the property instead of sending it empty, which the `minLength` below enforces so this payload and the rotation payload agree. */
+    password?: string;
+    /** Address the organization's mail is sent from. */
+    fromAddress: string;
+    /** Display name shown alongside the from address. */
+    fromDisplayName?: string;
+    /** Address replies are directed to. */
+    replyToAddress?: string;
+    /** Whether a message this server fails to accept is re-sent through the provider's shared relay. Disabling it means a failure is a dropped message, account verification and password recovery included. */
+    fallbackToProvider?: boolean;
+  };
+};
+export type UpdateOrganizationSmtpConfigurationApiResponse = /** status 200 The stored SMTP configuration. */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Hostname of the organization's SMTP server. */
+  host: string;
+  /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+  port: number;
+  /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+  encryption: "starttls" | "tls" | "none";
+  /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+  authMechanism: "plain" | "cram-md5" | "none";
+  /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+  username?: string;
+  /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+  password?: string;
+  /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+  fromAddress: string;
+  /** Display name shown alongside the from address in the message header. */
+  fromDisplayName?: string;
+  /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+  replyToAddress?: string;
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+  status: "registered" | "connected" | "disconnected" | "ignored";
+  /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+  fallbackToProvider: boolean;
+  /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+  fromDomain?: string;
+  /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+  fromDomainVerificationToken?: string;
+  /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+  fromDomainVerifiedAt?: string | null;
+  /** Timestamp of the last message this server accepted. */
+  lastSuccessAt?: string | null;
+  /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+  lastFailureAt?: string | null;
+  /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+  lastFailureReason?:
+    | "blocked_target"
+    | "connect_refused"
+    | "connect_timeout"
+    | "tls_failed"
+    | "starttls_unsupported"
+    | "auth_rejected"
+    | "relay_rejected_sender"
+    | "relay_rejected_recipient"
+    | "delivery_failed"
+    | "credential_unreadable";
+  /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+  consecutiveFailures: number;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string | null;
+  /** Timestamp when the configuration was created. */
+  createdAt: string;
+  /** Timestamp when the configuration was last changed. */
+  updatedAt: string;
+  /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+  deletedAt?: string | null;
+};
+export type UpdateOrganizationSmtpConfigurationApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** Hostname of the organization's SMTP server. */
+    host: string;
+    /** TCP port the organization's SMTP server listens on. Restricted further by a submission-port allowlist. */
+    port: number;
+    /** Transport encryption to negotiate. */
+    encryption?: "starttls" | "tls" | "none";
+    /** SMTP authentication mechanism. Changing this to a mechanism other than `none` while no password is stored is refused; rotate the credential first. */
+    authMechanism?: "plain" | "cram-md5" | "none";
+    /** Username presented to the organization's SMTP server. */
+    username?: string;
+    /** Address the organization's mail is sent from. Changing it to a different registrable domain resets from-domain verification. */
+    fromAddress: string;
+    /** Display name shown alongside the from address. */
+    fromDisplayName?: string;
+    /** Address replies are directed to. */
+    replyToAddress?: string;
+    /** Whether a message this server fails to accept is re-sent through the provider's shared relay. */
+    fallbackToProvider?: boolean;
+  };
+};
+export type RotateOrganizationSmtpCredentialApiResponse =
+  /** status 200 The stored SMTP configuration, with the password redacted. */ {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Hostname of the organization's SMTP server. */
+    host: string;
+    /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+    port: number;
+    /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+    encryption: "starttls" | "tls" | "none";
+    /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+    authMechanism: "plain" | "cram-md5" | "none";
+    /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+    username?: string;
+    /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+    password?: string;
+    /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+    fromAddress: string;
+    /** Display name shown alongside the from address in the message header. */
+    fromDisplayName?: string;
+    /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+    replyToAddress?: string;
+    /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+    status: "registered" | "connected" | "disconnected" | "ignored";
+    /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+    fallbackToProvider: boolean;
+    /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+    fromDomain?: string;
+    /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+    fromDomainVerificationToken?: string;
+    /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+    fromDomainVerifiedAt?: string | null;
+    /** Timestamp of the last message this server accepted. */
+    lastSuccessAt?: string | null;
+    /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+    lastFailureAt?: string | null;
+    /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+    lastFailureReason?:
+      | "blocked_target"
+      | "connect_refused"
+      | "connect_timeout"
+      | "tls_failed"
+      | "starttls_unsupported"
+      | "auth_rejected"
+      | "relay_rejected_sender"
+      | "relay_rejected_recipient"
+      | "delivery_failed"
+      | "credential_unreadable";
+    /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+    consecutiveFailures: number;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    createdBy?: string | null;
+    /** Timestamp when the configuration was created. */
+    createdAt: string;
+    /** Timestamp when the configuration was last changed. */
+    updatedAt: string;
+    /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+    deletedAt?: string | null;
+  };
+export type RotateOrganizationSmtpCredentialApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** New password. The redaction sentinel `***` and the empty string are refused with a 400 rather than treated as "leave the stored value alone", so echoing a read back cannot erase the credential. */
+    password: string;
+  };
+};
+export type SetOrganizationSmtpEnablementApiResponse = /** status 200 The stored SMTP configuration. */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Hostname of the organization's SMTP server. */
+  host: string;
+  /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+  port: number;
+  /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+  encryption: "starttls" | "tls" | "none";
+  /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+  authMechanism: "plain" | "cram-md5" | "none";
+  /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+  username?: string;
+  /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+  password?: string;
+  /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+  fromAddress: string;
+  /** Display name shown alongside the from address in the message header. */
+  fromDisplayName?: string;
+  /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+  replyToAddress?: string;
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+  status: "registered" | "connected" | "disconnected" | "ignored";
+  /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+  fallbackToProvider: boolean;
+  /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+  fromDomain?: string;
+  /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+  fromDomainVerificationToken?: string;
+  /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+  fromDomainVerifiedAt?: string | null;
+  /** Timestamp of the last message this server accepted. */
+  lastSuccessAt?: string | null;
+  /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+  lastFailureAt?: string | null;
+  /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+  lastFailureReason?:
+    | "blocked_target"
+    | "connect_refused"
+    | "connect_timeout"
+    | "tls_failed"
+    | "starttls_unsupported"
+    | "auth_rejected"
+    | "relay_rejected_sender"
+    | "relay_rejected_recipient"
+    | "delivery_failed"
+    | "credential_unreadable";
+  /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+  consecutiveFailures: number;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string | null;
+  /** Timestamp when the configuration was created. */
+  createdAt: string;
+  /** Timestamp when the configuration was last changed. */
+  updatedAt: string;
+  /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+  deletedAt?: string | null;
+};
+export type SetOrganizationSmtpEnablementApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** True returns the configuration to `registered` so it may prove itself and carry mail; false moves it to `ignored`. Turning it on is refused while the from domain is unverified. */
+    enabled: boolean;
+  };
+};
+export type TestOrganizationSmtpConfigurationApiResponse =
+  /** status 200 The classified outcome of the delivery attempt. */ {
+    /** What happened. `delivered` means the server accepted the message; every other value names the stage that refused it. */
+    outcome:
+      | "delivered"
+      | "blocked_target"
+      | "connect_refused"
+      | "connect_timeout"
+      | "tls_failed"
+      | "starttls_unsupported"
+      | "auth_rejected"
+      | "relay_rejected_sender"
+      | "relay_rejected_recipient"
+      | "delivery_failed"
+      | "credential_unreadable";
+    /** Human-readable summary of the outcome, drawn from a fixed set of phrasings. */
+    message?: string;
+    /** Address the test message was addressed to. */
+    sentTo?: string;
+    /** When the delivery was attempted. */
+    testedAt: string;
+  };
+export type TestOrganizationSmtpConfigurationApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** Recipient of the test message. Defaults to the calling administrator's own address. */
+    to?: string;
+  };
+};
+export type GetOrganizationSmtpDomainVerificationApiResponse =
+  /** status 200 The verification challenge and its current state. */ {
+    /** Registrable domain the proof applies to. */
+    domain: string;
+    /** How the domain is proven. `custom-domain` means it matches the organization's own registered custom domain and needs no record; `dns-txt` means the record below must be published. */
+    method: "custom-domain" | "dns-txt";
+    /** Fully qualified name of the TXT record to publish. */
+    recordName?: string;
+    /** Value the TXT record must carry. */
+    recordValue?: string;
+    /** Whether control of the domain is currently proven. */
+    verified: boolean;
+    /** When control was last proven. Null while unproven. */
+    verifiedAt?: string | null;
+    /** Why the last check did not prove control. */
+    failureReason?: "record_not_found" | "record_mismatch" | "lookup_failed" | "domain_reserved";
+  };
+export type GetOrganizationSmtpDomainVerificationApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type VerifyOrganizationSmtpDomainApiResponse = /** status 200 The outcome of the verification check. */ {
+  /** Registrable domain the proof applies to. */
+  domain: string;
+  /** How the domain is proven. `custom-domain` means it matches the organization's own registered custom domain and needs no record; `dns-txt` means the record below must be published. */
+  method: "custom-domain" | "dns-txt";
+  /** Fully qualified name of the TXT record to publish. */
+  recordName?: string;
+  /** Value the TXT record must carry. */
+  recordValue?: string;
+  /** Whether control of the domain is currently proven. */
+  verified: boolean;
+  /** When control was last proven. Null while unproven. */
+  verifiedAt?: string | null;
+  /** Why the last check did not prove control. */
+  failureReason?: "record_not_found" | "record_mismatch" | "lookup_failed" | "domain_reserved";
+};
+export type VerifyOrganizationSmtpDomainApiArg = {
+  /** Organization ID */
   orgId: string;
 };
 export type SubmitSupportRequestApiResponse = /** status 201 Support request submitted */ {
@@ -7396,6 +7992,16 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+            
+            Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+            
+            At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+            
+            Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            
+            The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+      purpose?: "user" | "administrative";
     }[];
     /** Specifies the version of the schema used for the definition. */
     schemaVersion: string;
@@ -7703,6 +8309,16 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -8151,6 +8767,16 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -8420,6 +9046,16 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -11600,6 +12236,16 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   updatedAt?: string;
   /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
   deletedAt?: string | null;
+  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    
+    Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+    
+    At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+    
+    Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+    
+    The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+  purpose?: "user" | "administrative";
 };
 export type CreateEnvironmentApiArg = {
   /** Body for creating environment */
@@ -11641,6 +12287,16 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
 };
 export type GetEnvironmentsApiArg = {
@@ -11686,6 +12342,16 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
 };
 export type GetEnvironmentByIdApiArg = {
@@ -11723,6 +12389,16 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
 };
 export type UpdateEnvironmentApiArg = {
@@ -14294,6 +14970,16 @@ export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
   }[];
 };
 export type GetEnvironmentsOfWorkspaceApiArg = {
@@ -15506,6 +16192,19 @@ export const {
   useLazyGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
   useLazyGetFeaturesByOrganizationQuery,
+  useGetOrganizationSmtpEnvironmentQuery,
+  useLazyGetOrganizationSmtpEnvironmentQuery,
+  useDeleteOrganizationSmtpEnvironmentMutation,
+  useGetOrganizationSmtpConfigurationQuery,
+  useLazyGetOrganizationSmtpConfigurationQuery,
+  useCreateOrganizationSmtpConfigurationMutation,
+  useUpdateOrganizationSmtpConfigurationMutation,
+  useRotateOrganizationSmtpCredentialMutation,
+  useSetOrganizationSmtpEnablementMutation,
+  useTestOrganizationSmtpConfigurationMutation,
+  useGetOrganizationSmtpDomainVerificationQuery,
+  useLazyGetOrganizationSmtpDomainVerificationQuery,
+  useVerifyOrganizationSmtpDomainMutation,
   useSubmitSupportRequestMutation,
   useGetSystemVersionQuery,
   useLazyGetSystemVersionQuery,

@@ -95,6 +95,52 @@ post:
           $ref: "#/components/schemas/KeychainPayload"
 ```
 
+## Server-owned properties
+
+A *server-generated* field (`id`, `createdAt`) is one the server fills in. A
+*server-owned* field is stronger: one the client must not be able to influence at
+all, because the value carries authority. `Environment.purpose` is the worked
+example - it designates an environment administrative, and resolvers of
+organization-level configuration trust that designation.
+
+Express it two ways, because each covers a different surface:
+
+1. **Leave it out of the `*Payload` schema.** This is the load-bearing one. The
+   payload is what every `POST`/`PUT` `requestBody` references, so the generated
+   Go, TypeScript and RTK clients get no field at all and a supplied value
+   decodes to nothing.
+2. **Leave it out of the construct's RJSF form schema**, so no UI control offers
+   it.
+
+Then say so in the property `description`, which is the only part that travels
+into every generated artifact and into the published OpenAPI docs - and write a
+test that fails if either exclusion is undone (see
+`validation/environment_purpose_test.go`). Without one, restoring the property to
+the payload out of symmetry with the entity is a one-line edit that reviews
+cleanly.
+
+**Do not reach for `readOnly: true`.** It is the natural annotation and it
+corrupts the generated RTK client: `oazapfts` propagates `readOnly` up through
+inlined subschemas and then drops every request-body property whose subtree
+contains one, deleting unrelated - possibly required - fields from published
+endpoints with no build or validation failure.
+`tests/readonly-request-body.test.js` holds that line repo-wide; the full
+mechanism is in
+[`environment-purpose-contract.md`](environment-purpose-contract.md#readonly-true).
+The payload exclusion is stronger anyway: it removes the field from generated
+clients rather than asking a client not to send it.
+
+**None of that is access control.** `readOnly` stops nothing at runtime, and a
+server that decodes a request body straight into the entity struct bypasses the
+payload exclusion entirely. The schema's job is to make the guarantee legible and
+its loss noisy; each consumer still has to refuse the write on its own side.
+State that obligation in the property description, and name the specific place
+each consumer enforces it - a reader who only sees `readOnly` will assume the
+schema is doing the work.
+
+Full worked contract, including the uniqueness invariant and the migration path:
+[`environment-purpose-contract.md`](environment-purpose-contract.md).
+
 ## Per-Property Validation Constraints
 
 The schema validator (`validation/` Go package, invoked via `go run ./cmd/validate-schemas`) enforces per-property constraints as advisory rules (Rules 37–42). These do not block CI but are reported on `--warn` runs and should be resolved in new schemas.

@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "cadac079689e3d775e5e7d32c7bebe307b526aa3491a40c2720c8811de2f6e25" as const;
+export const PERMISSIONS_INDEX_ID = "074bfd49fc94fbe7125cfac2215c0844135ca66e378e6e1bfa6a8a9de7ca1be8" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -1450,11 +1450,11 @@ export const Keys = {
   /**
    * Create, update , delete and manage recogntions awarded by your organization
    */
-  IdentityAccessManagementManageRecogntions: {
+  IdentityAccessManagementManageRecognitions: {
     id: "0a887b7f-b6c2-4a33-b080-bec9c3894d0c" as PermissionKey,
     category: "Identity & Access Management",
     subcategory: "Organization",
-    function: "Manage Recogntions",
+    function: "Manage Recognitions",
     description: "Create, update , delete and manage recogntions awarded by your organization"
   },
 
@@ -2919,17 +2919,6 @@ export const Keys = {
     subcategory: "Operator",
     function: "View metrics in visualizer",
     description: "View real-time resource metrics in Kanvas Operator"
-  },
-
-  /**
-   * Perform a conformance test in Kanvas Operator
-   */
-  KanvasPerformConformanceTest: {
-    id: "901ca054-0656-4db5-8d58-d618e0b82b39" as PermissionKey,
-    category: "Kanvas",
-    subcategory: "Operator",
-    function: "Perform conformance test",
-    description: "Perform a conformance test in Kanvas Operator"
   },
 
   /**
@@ -5594,7 +5583,7 @@ export const PermissionKeys = {
   /**
    * Create, update , delete and manage recogntions awarded by your organization
    */
-  IdentityAccessManagementManageRecogntions: "0a887b7f-b6c2-4a33-b080-bec9c3894d0c" as PermissionKey,
+  IdentityAccessManagementManageRecognitions: "0a887b7f-b6c2-4a33-b080-bec9c3894d0c" as PermissionKey,
 
   /**
    * Create, update , delete and manage invitations to your organization
@@ -6260,11 +6249,6 @@ export const PermissionKeys = {
    * View real-time resource metrics in Kanvas Operator
    */
   KanvasViewMetricsInVisualizer: "2988a366-a743-48e7-9946-daff9b2ab0a1" as PermissionKey,
-
-  /**
-   * Perform a conformance test in Kanvas Operator
-   */
-  KanvasPerformConformanceTest: "901ca054-0656-4db5-8d58-d618e0b82b39" as PermissionKey,
 
   /**
    * Stream container logs in Kanvas Operator

@@ -53,6 +53,10 @@ import helmCreateConnectionUiSchema from "../../schemas/constructs/v1beta3/conne
 import helpAndSupportSchema from "../../schemas/constructs/v1beta1/support/forms/helpAndSupport.json";
 import helpAndSupportUiSchema from "../../schemas/constructs/v1beta1/support/forms/helpAndSupport.ui.json";
 
+// v1beta1/organization_smtp
+import configureOrganizationSmtpSchema from "../../schemas/constructs/v1beta1/organization_smtp/forms/configure.json";
+import configureOrganizationSmtpUiSchema from "../../schemas/constructs/v1beta1/organization_smtp/forms/configure.ui.json";
+
 // v1beta1/credential
 import kubernetesCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/kubernetes.json";
 import kubernetesCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/kubernetes.ui.json";
@@ -102,3 +106,8 @@ export const PrometheusCredentialRjsfUiSchemaV1Beta1 =
 
 export const SupportRequestRjsfSchemaV1Beta1 = helpAndSupportSchema as RJSFSchema;
 export const SupportRequestRjsfUiSchemaV1Beta1 = helpAndSupportUiSchema as UiSchema;
+
+export const OrganizationSmtpConfigureRjsfSchemaV1Beta1 =
+  configureOrganizationSmtpSchema as RJSFSchema;
+export const OrganizationSmtpConfigureRjsfUiSchemaV1Beta1 =
+  configureOrganizationSmtpUiSchema as UiSchema;
