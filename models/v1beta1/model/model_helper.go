@@ -92,7 +92,15 @@ func (m *ModelDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.U
 		m.ID = modelID
 		m.CategoryId = id
 		m.RegistrantId = hostID
-		err = db.Omit(clause.Associations).Create(&m).Error
+		// The lock above only serializes callers within this process. Separate
+		// processes sharing a database (server replicas) can both pass the
+		// exists check above and race into this insert; insertIgnoringConflict
+		// turns the loser's duplicate-key error into a no-op, mirroring
+		// RelationshipDefinition.Create. Since modelID is content-addressed
+		// from m.Registrant (which also determines hostID upstream), a
+		// conflicting row is necessarily this same model, so the fields set
+		// above already match what is persisted.
+		err = m.insertIgnoringConflict(db)
 		if err != nil {
 			return uuid.UUID{}, err
 		}
@@ -116,6 +124,15 @@ func (m *ModelDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.U
 	m.CategoryId = model.CategoryId
 	m.RegistrantId = model.RegistrantId
 	return model.ID, nil
+}
+
+// insertIgnoringConflict persists the model, treating a primary-key collision
+// as a successful no-op. It is the single seam Create relies on to survive
+// the cross-process race described there, mirroring
+// RelationshipDefinition.insertIgnoringConflict, and is unexported so tests
+// can drive the conflict path directly without racing two connections.
+func (m *ModelDefinition) insertIgnoringConflict(db *database.Handler) error {
+	return db.Omit(clause.Associations).Clauses(clause.OnConflict{DoNothing: true}).Create(m).Error
 }
 
 func (m *ModelDefinition) UpdateStatus(db *database.Handler, status entity.EntityStatus) error {
