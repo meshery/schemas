@@ -16200,7 +16200,7 @@ export type GetProviderCapabilitiesApiResponse = /** status 200 Provider capabil
   /** Access restrictions the provider imposes on the Meshery UI. */
   restrictedAccess?: {
     /** Whether the Meshery UI is restricted for this provider. */
-    isMesheryUiRestricted?: boolean;
+    isMesheryUIRestricted?: boolean;
     /** UI components permitted when the Meshery UI is restricted. An open, UI-defined object (navigator and header component toggles) whose inner shape is intentionally not fixed by this schema. */
     allowedComponents?: object;
   };

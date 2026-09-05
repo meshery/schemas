@@ -1,5 +1,5 @@
 {
-  "providerType": "",
+  "providerType": "local",
   "providerName": "",
   "providerDescription": [],
   "providerUrl": "",
@@ -8,7 +8,7 @@
   "capabilities": [],
   "extensions": {},
   "restrictedAccess": {
-    "isMesheryUiRestricted": false,
+    "isMesheryUIRestricted": false,
     "allowedComponents": {}
   },
   "redirects": {}
