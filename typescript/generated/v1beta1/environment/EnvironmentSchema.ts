@@ -440,10 +440,9 @@ const EnvironmentSchema: Record<string, unknown> = {
           "organization_id": {
             "type": "string",
             "description": "The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.",
-            "x-go-type-skip-optional-pointer": true,
             "x-go-name": "OrgId",
             "x-oapi-codegen-extra-tags": {
-              "json": "organization_id"
+              "json": "organization_id,omitempty"
             },
             "maxLength": 500,
             "format": "uuid"
@@ -730,10 +729,9 @@ const EnvironmentSchema: Record<string, unknown> = {
                 "organization_id": {
                   "type": "string",
                   "description": "The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.",
-                  "x-go-type-skip-optional-pointer": true,
                   "x-go-name": "OrgId",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "organization_id"
+                    "json": "organization_id,omitempty"
                   },
                   "maxLength": 500,
                   "format": "uuid"
@@ -1609,10 +1607,9 @@ const EnvironmentSchema: Record<string, unknown> = {
                   "organization_id": {
                     "type": "string",
                     "description": "The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.",
-                    "x-go-type-skip-optional-pointer": true,
                     "x-go-name": "OrgId",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "organization_id"
+                      "json": "organization_id,omitempty"
                     },
                     "maxLength": 500,
                     "format": "uuid"

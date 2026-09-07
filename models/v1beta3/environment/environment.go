@@ -138,7 +138,7 @@ type EnvironmentUpdatePayload struct {
 	Name        core.Text `json:"name,omitempty" yaml:"name,omitempty"`
 
 	// OrgID The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.
-	OrgID uuid.UUID `json:"organizationId" yaml:"organizationId"`
+	OrgID *uuid.UUID `json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
 }
 
 // EnvironmentId defines model for environmentId.
