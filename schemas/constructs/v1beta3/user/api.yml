@@ -865,7 +865,14 @@ components:
           description: The dashboard preferences of the preference.
         selectedOrganizationId:
           type: string
-          description: ID of the associated selectedOrganization.
+          description:
+            ID of the associated selectedOrganization. Meshery Server also
+            accepts the deprecated all-caps spelling `selectedOrganizationID`
+            on read, so preferences persisted under the legacy key survive.
+            That alias is described here rather than declared as its own
+            property on purpose - declaring it binds legacy rows to the alias
+            and leaves this field zero. Always read and write
+            `selectedOrganizationId`.
           maxLength: 500
           format: uuid
         selectedWorkspaceForOrganizations:
