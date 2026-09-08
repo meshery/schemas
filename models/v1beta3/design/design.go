@@ -89,6 +89,24 @@ type DesignPreferences struct {
 	Layers map[string]interface{} `json:"layers" yaml:"layers"`
 }
 
+// CatalogAuthor Public projection of a user as served on unauthenticated catalog endpoints (e.g. GET /api/catalog/content/{type}). Carries only the fields the Cloud privacy ruling permits an anonymous caller to see: identity, display names, and avatar URL. Email and every other personally-identifying or account-internal field are deliberately absent (meshery/schemas#1106). For the full authenticated user record see User in v1beta2/user/api.yml.
+type CatalogAuthor struct {
+	// AvatarUrl URL to the user's avatar image.
+	AvatarUrl string `db:"avatar_url" json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
+
+	// FirstName User's first name. Real names are permitted on public catalog responses under the Cloud privacy ruling.
+	FirstName string `db:"first_name" json:"firstName,omitempty" yaml:"firstName,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
+
+	// LastName User's last name. Real names are permitted on public catalog responses under the Cloud privacy ruling.
+	LastName string `db:"last_name" json:"lastName,omitempty" yaml:"lastName,omitempty"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID *core.Uuid `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
+}
+
 // CatalogContentClass defines model for CatalogContentClass.
 type CatalogContentClass struct {
 	// Class The class of the catalogcontentclass.
@@ -265,9 +283,9 @@ type MesheryPattern struct {
 	SourceContent *[]byte   `db:"source_content" json:"sourceContent,omitempty" yaml:"sourceContent,omitempty"`
 	UpdatedAt     core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 
-	// User Represents a user
-	User   *userV1beta.User `db:"-" json:"user,omitempty" yaml:"user,omitempty"`
-	UserId core.Id          `db:"owner" json:"userId,omitempty" yaml:"userId,omitempty"`
+	// User Public projection of a user as served on unauthenticated catalog endpoints (e.g. GET /api/catalog/content/{type}). Carries only the fields the Cloud privacy ruling permits an anonymous caller to see: identity, display names, and avatar URL. Email and every other personally-identifying or account-internal field are deliberately absent (meshery/schemas#1106). For the full authenticated user record see User in v1beta2/user/api.yml.
+	User   *CatalogAuthor `db:"-" json:"user,omitempty" yaml:"user,omitempty"`
+	UserId core.Id        `db:"owner" json:"userId,omitempty" yaml:"userId,omitempty"`
 
 	// ViewCount Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
 	ViewCount *int `db:"view_count" json:"viewCount,omitempty" yaml:"viewCount,omitempty"`
