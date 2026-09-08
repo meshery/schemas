@@ -42,11 +42,16 @@ func TestOrganizationSmtpStatusDescriptionDoesNotClaimACircuit(t *testing.T) {
 	// The correction is only useful if it says what DOES happen. A description
 	// that merely deleted the circuit sentence would leave a reader unable to
 	// tell whether one failure or fifty produce this status.
-	for _, want := range []string{"single failure", "no failure threshold"} {
+	// "being dialled for the next message" is the one that carries the
+	// operational consequence, and it is the one a forbidden-phrase check
+	// cannot protect: deleting the sentence removes no banned wording, so
+	// without this the description could quietly lose the only statement that
+	// tells an operator a failing relay is still in rotation.
+	for _, want := range []string{"single failure", "no failure threshold", "being dialled for the next message"} {
 		if !strings.Contains(strings.ToLower(description), want) {
-			t.Errorf("the status description must state that a %s records `disconnected`; "+
-				"missing %q. Deleting the false claim is not enough - a reader still needs "+
-				"to know the status is a verdict on the last attempt alone.", want, want)
+			t.Errorf("the status description is missing the required phrase %q. Deleting the "+
+				"false circuit claim is not enough - a reader still needs to know the status "+
+				"is a verdict on the last attempt alone and that the relay stays in rotation.", want)
 		}
 	}
 
