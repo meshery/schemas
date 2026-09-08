@@ -289,6 +289,11 @@ export interface components {
                  * @description URL of the organization's X (formerly Twitter) profile.
                  */
                 x?: string;
+                /**
+                 * Format: uri
+                 * @description URL of the organization's YouTube channel.
+                 */
+                youtube?: string;
             };
         };
         /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
@@ -303,6 +308,11 @@ export interface components {
              * @description URL of the organization's X (formerly Twitter) profile.
              */
             x?: string;
+            /**
+             * Format: uri
+             * @description URL of the organization's YouTube channel.
+             */
+            youtube?: string;
         };
         /** @description A single slide in the auth-page feature carousel. */
         CarouselSlide: {
@@ -444,6 +454,11 @@ export interface components {
                      * @description URL of the organization's X (formerly Twitter) profile.
                      */
                     x?: string;
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's YouTube channel.
+                     */
+                    youtube?: string;
                 };
             };
             /**
@@ -553,6 +568,11 @@ export interface components {
                          * @description URL of the organization's X (formerly Twitter) profile.
                          */
                         x?: string;
+                        /**
+                         * Format: uri
+                         * @description URL of the organization's YouTube channel.
+                         */
+                        youtube?: string;
                     };
                 };
                 /**
@@ -722,6 +742,11 @@ export interface components {
                              * @description URL of the organization's X (formerly Twitter) profile.
                              */
                             x?: string;
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's YouTube channel.
+                             */
+                            youtube?: string;
                         };
                     };
                     /**
@@ -875,6 +900,11 @@ export interface components {
                                  * @description URL of the organization's X (formerly Twitter) profile.
                                  */
                                 x?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's YouTube channel.
+                                 */
+                                youtube?: string;
                             };
                         };
                         /**
@@ -1029,6 +1059,11 @@ export interface components {
                                  * @description URL of the organization's X (formerly Twitter) profile.
                                  */
                                 x?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's YouTube channel.
+                                 */
+                                youtube?: string;
                             };
                         };
                         /**
@@ -1166,6 +1201,11 @@ export interface components {
                          * @description URL of the organization's X (formerly Twitter) profile.
                          */
                         x?: string;
+                        /**
+                         * Format: uri
+                         * @description URL of the organization's YouTube channel.
+                         */
+                        youtube?: string;
                     };
                 };
                 /**
@@ -1590,6 +1630,11 @@ export interface components {
                                  * @description URL of the organization's X (formerly Twitter) profile.
                                  */
                                 x?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's YouTube channel.
+                                 */
+                                youtube?: string;
                             };
                         };
                         /**
@@ -1760,6 +1805,11 @@ export interface operations {
                                              * @description URL of the organization's X (formerly Twitter) profile.
                                              */
                                             x?: string;
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's YouTube channel.
+                                             */
+                                            youtube?: string;
                                         };
                                     };
                                     /**
@@ -1935,6 +1985,11 @@ export interface operations {
                                  * @description URL of the organization's X (formerly Twitter) profile.
                                  */
                                 x?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's YouTube channel.
+                                 */
+                                youtube?: string;
                             };
                         };
                         /**
@@ -2080,6 +2135,11 @@ export interface operations {
                                              * @description URL of the organization's X (formerly Twitter) profile.
                                              */
                                             x?: string;
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's YouTube channel.
+                                             */
+                                            youtube?: string;
                                         };
                                     };
                                     /**
@@ -2375,6 +2435,11 @@ export interface operations {
                                              * @description URL of the organization's X (formerly Twitter) profile.
                                              */
                                             x?: string;
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's YouTube channel.
+                                             */
+                                            youtube?: string;
                                         };
                                     };
                                     /**
@@ -2564,6 +2629,11 @@ export interface operations {
                                  * @description URL of the organization's X (formerly Twitter) profile.
                                  */
                                 x?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's YouTube channel.
+                                 */
+                                youtube?: string;
                             };
                         };
                         /**
@@ -2709,6 +2779,11 @@ export interface operations {
                                              * @description URL of the organization's X (formerly Twitter) profile.
                                              */
                                             x?: string;
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's YouTube channel.
+                                             */
+                                            youtube?: string;
                                         };
                                     };
                                     /**
@@ -2968,6 +3043,11 @@ export interface operations {
                                      * @description URL of the organization's X (formerly Twitter) profile.
                                      */
                                     x?: string;
+                                    /**
+                                     * Format: uri
+                                     * @description URL of the organization's YouTube channel.
+                                     */
+                                    youtube?: string;
                                 };
                             };
                             /**

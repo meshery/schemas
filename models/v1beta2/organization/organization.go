@@ -244,6 +244,9 @@ type Social struct {
 
 	// X URL of the organization's X (formerly Twitter) profile.
 	X *string `json:"x,omitempty" yaml:"x,omitempty"`
+
+	// YouTube URL of the organization's YouTube channel.
+	YouTube *string `json:"youtube,omitempty" yaml:"youtube,omitempty"`
 }
 
 // TeamsOrganizationsMapping Junction record linking a team to an organization.
