@@ -17,7 +17,7 @@ const organizationSMTPEntitySpec = "schemas/constructs/v1beta1/organization_smtp
 // verdict writes `disconnected` on a SINGLE failed attempt with no threshold,
 // nothing reads the count, and no code path takes a relay out of rotation. The
 // stop-dialling circuit is deliberately unbuilt and tracked in
-// layer5io/meshery-cloud#6057.
+// meshery-cloud#6057.
 //
 // That overstatement is load-bearing rather than cosmetic, which is why it is
 // pinned by a test rather than left to review. A consumer that believes the
@@ -101,7 +101,7 @@ func assertNoCircuitClaim(t *testing.T, property, description string) {
 	for _, f := range forbidden {
 		if strings.Contains(lowered, f.phrase) {
 			t.Errorf("the %s description asserts a failure circuit this platform does not implement: "+
-				"it contains %q, but %s. The circuit is tracked in layer5io/meshery-cloud#6057; "+
+				"it contains %q, but %s. The circuit is tracked in meshery-cloud#6057; "+
 				"describe what the server does today and point at the issue for what it does not.",
 				property, f.phrase, f.why)
 		}
@@ -115,7 +115,7 @@ func assertTracksTheUnbuiltCircuit(t *testing.T, property, description string) {
 	t.Helper()
 
 	if !strings.Contains(description, "meshery-cloud#6057") {
-		t.Errorf("the %s description must cite layer5io/meshery-cloud#6057, where the unbuilt "+
+		t.Errorf("the %s description must cite meshery-cloud#6057, where the unbuilt "+
 			"circuit is tracked; got:\n%s", property, description)
 	}
 }
