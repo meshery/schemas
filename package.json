@@ -70,7 +70,7 @@
     "@apidevtools/json-schema-ref-parser": "^15.2.0",
     "@reduxjs/toolkit": "^2.8.1",
     "@rtk-query/codegen-openapi": "^2.2.0",
-    "csv-parse": "^6.1.0",
+    "csv-parse": "^7.0.2",
     "esbuild-runner": "^2.2.2",
     "glob": "^11.1.0",
     "js-yaml": "^4.3.1",
