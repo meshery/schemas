@@ -234,9 +234,9 @@ export interface components {
              */
             replyToAddress?: string;
             /**
-             * @description Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+             * @description Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in layer5io/meshery-cloud#6057. `ignored` means an administrator turned it off.
              *
-             *     The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
+             *     The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
              * @default registered
              * @enum {string}
              */
@@ -271,7 +271,7 @@ export interface components {
              */
             lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
             /**
-             * @description Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server.
+             * @description Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under layer5io/meshery-cloud#6057.
              * @default 0
              */
             consecutiveFailures: number;
@@ -889,9 +889,9 @@ export interface operations {
                          */
                         replyToAddress?: string;
                         /**
-                         * @description Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+                         * @description Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in layer5io/meshery-cloud#6057. `ignored` means an administrator turned it off.
                          *
-                         *     The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
+                         *     The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
                          * @default registered
                          * @enum {string}
                          */
@@ -926,7 +926,7 @@ export interface operations {
                          */
                         lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
                         /**
-                         * @description Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server.
+                         * @description Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under layer5io/meshery-cloud#6057.
                          * @default 0
                          */
                         consecutiveFailures: number;
@@ -1102,9 +1102,9 @@ export interface operations {
                          */
                         replyToAddress?: string;
                         /**
-                         * @description Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+                         * @description Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in layer5io/meshery-cloud#6057. `ignored` means an administrator turned it off.
                          *
-                         *     The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
+                         *     The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
                          * @default registered
                          * @enum {string}
                          */
@@ -1139,7 +1139,7 @@ export interface operations {
                          */
                         lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
                         /**
-                         * @description Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server.
+                         * @description Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under layer5io/meshery-cloud#6057.
                          * @default 0
                          */
                         consecutiveFailures: number;
@@ -1331,9 +1331,9 @@ export interface operations {
                          */
                         replyToAddress?: string;
                         /**
-                         * @description Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+                         * @description Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in layer5io/meshery-cloud#6057. `ignored` means an administrator turned it off.
                          *
-                         *     The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
+                         *     The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
                          * @default registered
                          * @enum {string}
                          */
@@ -1368,7 +1368,7 @@ export interface operations {
                          */
                         lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
                         /**
-                         * @description Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server.
+                         * @description Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under layer5io/meshery-cloud#6057.
                          * @default 0
                          */
                         consecutiveFailures: number;
@@ -1517,9 +1517,9 @@ export interface operations {
                          */
                         replyToAddress?: string;
                         /**
-                         * @description Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+                         * @description Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in layer5io/meshery-cloud#6057. `ignored` means an administrator turned it off.
                          *
-                         *     The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
+                         *     The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
                          * @default registered
                          * @enum {string}
                          */
@@ -1554,7 +1554,7 @@ export interface operations {
                          */
                         lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
                         /**
-                         * @description Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server.
+                         * @description Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under layer5io/meshery-cloud#6057.
                          * @default 0
                          */
                         consecutiveFailures: number;
@@ -1703,9 +1703,9 @@ export interface operations {
                          */
                         replyToAddress?: string;
                         /**
-                         * @description Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+                         * @description Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in layer5io/meshery-cloud#6057. `ignored` means an administrator turned it off.
                          *
-                         *     The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
+                         *     The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes.
                          * @default registered
                          * @enum {string}
                          */
@@ -1740,7 +1740,7 @@ export interface operations {
                          */
                         lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
                         /**
-                         * @description Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server.
+                         * @description Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under layer5io/meshery-cloud#6057.
                          * @default 0
                          */
                         consecutiveFailures: number;
