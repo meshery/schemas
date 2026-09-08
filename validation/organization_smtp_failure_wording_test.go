@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-const organizationSmtpEntitySpec = "schemas/constructs/v1beta1/organization_smtp/organization_smtp.yaml"
+const organizationSMTPEntitySpec = "schemas/constructs/v1beta1/organization_smtp/organization_smtp.yaml"
 
 // A schema description is a contract statement, and these two used to describe
 // a failure circuit that no server implements. `disconnected` read "consecutive
@@ -35,7 +35,7 @@ const organizationSmtpEntitySpec = "schemas/constructs/v1beta1/organization_smtp
 // TestOrganizationSmtpStatusDescriptionDoesNotClaimACircuit pins the
 // `disconnected` half.
 func TestOrganizationSmtpStatusDescriptionDoesNotClaimACircuit(t *testing.T) {
-	description := organizationSmtpPropertyDescription(t, "status")
+	description := organizationSMTPPropertyDescription(t, "status")
 
 	assertNoCircuitClaim(t, "status", description)
 
@@ -56,7 +56,7 @@ func TestOrganizationSmtpStatusDescriptionDoesNotClaimACircuit(t *testing.T) {
 // TestOrganizationSmtpConsecutiveFailuresDescriptionDoesNotClaimACircuit pins
 // the counter half. This is the one that carried the word "Drives".
 func TestOrganizationSmtpConsecutiveFailuresDescriptionDoesNotClaimACircuit(t *testing.T) {
-	description := organizationSmtpPropertyDescription(t, "consecutiveFailures")
+	description := organizationSMTPPropertyDescription(t, "consecutiveFailures")
 
 	assertNoCircuitClaim(t, "consecutiveFailures", description)
 
@@ -115,10 +115,10 @@ func assertTracksTheUnbuiltCircuit(t *testing.T, property, description string) {
 	}
 }
 
-func organizationSmtpPropertyDescription(t *testing.T, property string) string {
+func organizationSMTPPropertyDescription(t *testing.T, property string) string {
 	t.Helper()
 
-	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), organizationSmtpEntitySpec))
+	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), organizationSMTPEntitySpec))
 
 	value, err := lookupPath(doc, "properties", property, "description")
 	if err != nil {
