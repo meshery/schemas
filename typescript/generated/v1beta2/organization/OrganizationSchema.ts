@@ -428,6 +428,13 @@ const OrganizationSchema: Record<string, unknown> = {
                                             "maxLength": 2048,
                                             "description": "URL of the organization's X (formerly Twitter) profile.",
                                             "x-go-name": "X"
+                                          },
+                                          "youtube": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "maxLength": 2048,
+                                            "description": "URL of the organization's YouTube channel.",
+                                            "x-go-name": "YouTube"
                                           }
                                         }
                                       }
@@ -809,6 +816,13 @@ const OrganizationSchema: Record<string, unknown> = {
                                 "maxLength": 2048,
                                 "description": "URL of the organization's X (formerly Twitter) profile.",
                                 "x-go-name": "X"
+                              },
+                              "youtube": {
+                                "type": "string",
+                                "format": "uri",
+                                "maxLength": 2048,
+                                "description": "URL of the organization's YouTube channel.",
+                                "x-go-name": "YouTube"
                               }
                             }
                           }
@@ -1168,6 +1182,13 @@ const OrganizationSchema: Record<string, unknown> = {
                                             "maxLength": 2048,
                                             "description": "URL of the organization's X (formerly Twitter) profile.",
                                             "x-go-name": "X"
+                                          },
+                                          "youtube": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "maxLength": 2048,
+                                            "description": "URL of the organization's YouTube channel.",
+                                            "x-go-name": "YouTube"
                                           }
                                         }
                                       }
@@ -1833,6 +1854,13 @@ const OrganizationSchema: Record<string, unknown> = {
                                             "maxLength": 2048,
                                             "description": "URL of the organization's X (formerly Twitter) profile.",
                                             "x-go-name": "X"
+                                          },
+                                          "youtube": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "maxLength": 2048,
+                                            "description": "URL of the organization's YouTube channel.",
+                                            "x-go-name": "YouTube"
                                           }
                                         }
                                       }
@@ -2347,6 +2375,13 @@ const OrganizationSchema: Record<string, unknown> = {
                                 "maxLength": 2048,
                                 "description": "URL of the organization's X (formerly Twitter) profile.",
                                 "x-go-name": "X"
+                              },
+                              "youtube": {
+                                "type": "string",
+                                "format": "uri",
+                                "maxLength": 2048,
+                                "description": "URL of the organization's YouTube channel.",
+                                "x-go-name": "YouTube"
                               }
                             }
                           }
@@ -2706,6 +2741,13 @@ const OrganizationSchema: Record<string, unknown> = {
                                             "maxLength": 2048,
                                             "description": "URL of the organization's X (formerly Twitter) profile.",
                                             "x-go-name": "X"
+                                          },
+                                          "youtube": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "maxLength": 2048,
+                                            "description": "URL of the organization's YouTube channel.",
+                                            "x-go-name": "YouTube"
                                           }
                                         }
                                       }
@@ -3118,6 +3160,13 @@ const OrganizationSchema: Record<string, unknown> = {
                                   "maxLength": 2048,
                                   "description": "URL of the organization's X (formerly Twitter) profile.",
                                   "x-go-name": "X"
+                                },
+                                "youtube": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "maxLength": 2048,
+                                  "description": "URL of the organization's YouTube channel.",
+                                  "x-go-name": "YouTube"
                                 }
                               }
                             }
@@ -4371,6 +4420,13 @@ const OrganizationSchema: Record<string, unknown> = {
                               "maxLength": 2048,
                               "description": "URL of the organization's X (formerly Twitter) profile.",
                               "x-go-name": "X"
+                            },
+                            "youtube": {
+                              "type": "string",
+                              "format": "uri",
+                              "maxLength": 2048,
+                              "description": "URL of the organization's YouTube channel.",
+                              "x-go-name": "YouTube"
                             }
                           }
                         }
@@ -4724,6 +4780,13 @@ const OrganizationSchema: Record<string, unknown> = {
                 "maxLength": 2048,
                 "description": "URL of the organization's X (formerly Twitter) profile.",
                 "x-go-name": "X"
+              },
+              "youtube": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048,
+                "description": "URL of the organization's YouTube channel.",
+                "x-go-name": "YouTube"
               }
             }
           }
@@ -4749,6 +4812,13 @@ const OrganizationSchema: Record<string, unknown> = {
             "maxLength": 2048,
             "description": "URL of the organization's X (formerly Twitter) profile.",
             "x-go-name": "X"
+          },
+          "youtube": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048,
+            "description": "URL of the organization's YouTube channel.",
+            "x-go-name": "YouTube"
           }
         }
       },
@@ -5131,6 +5201,13 @@ const OrganizationSchema: Record<string, unknown> = {
                     "maxLength": 2048,
                     "description": "URL of the organization's X (formerly Twitter) profile.",
                     "x-go-name": "X"
+                  },
+                  "youtube": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's YouTube channel.",
+                    "x-go-name": "YouTube"
                   }
                 }
               }
@@ -5405,6 +5482,13 @@ const OrganizationSchema: Record<string, unknown> = {
                         "maxLength": 2048,
                         "description": "URL of the organization's X (formerly Twitter) profile.",
                         "x-go-name": "X"
+                      },
+                      "youtube": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2048,
+                        "description": "URL of the organization's YouTube channel.",
+                        "x-go-name": "YouTube"
                       }
                     }
                   }
@@ -5865,6 +5949,13 @@ const OrganizationSchema: Record<string, unknown> = {
                             "maxLength": 2048,
                             "description": "URL of the organization's X (formerly Twitter) profile.",
                             "x-go-name": "X"
+                          },
+                          "youtube": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 2048,
+                            "description": "URL of the organization's YouTube channel.",
+                            "x-go-name": "YouTube"
                           }
                         }
                       }
@@ -6248,6 +6339,13 @@ const OrganizationSchema: Record<string, unknown> = {
                                   "maxLength": 2048,
                                   "description": "URL of the organization's X (formerly Twitter) profile.",
                                   "x-go-name": "X"
+                                },
+                                "youtube": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "maxLength": 2048,
+                                  "description": "URL of the organization's YouTube channel.",
+                                  "x-go-name": "YouTube"
                                 }
                               }
                             }
@@ -6635,6 +6733,13 @@ const OrganizationSchema: Record<string, unknown> = {
                                   "maxLength": 2048,
                                   "description": "URL of the organization's X (formerly Twitter) profile.",
                                   "x-go-name": "X"
+                                },
+                                "youtube": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "maxLength": 2048,
+                                  "description": "URL of the organization's YouTube channel.",
+                                  "x-go-name": "YouTube"
                                 }
                               }
                             }
@@ -6967,6 +7072,13 @@ const OrganizationSchema: Record<string, unknown> = {
                         "maxLength": 2048,
                         "description": "URL of the organization's X (formerly Twitter) profile.",
                         "x-go-name": "X"
+                      },
+                      "youtube": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2048,
+                        "description": "URL of the organization's YouTube channel.",
+                        "x-go-name": "YouTube"
                       }
                     }
                   }

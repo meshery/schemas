@@ -3353,6 +3353,8 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
             linkedin?: string;
             /** URL of the organization's X (formerly Twitter) profile. */
             x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3485,6 +3487,8 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
             linkedin?: string;
             /** URL of the organization's X (formerly Twitter) profile. */
             x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3593,6 +3597,8 @@ export type CreateOrgApiArg = {
           linkedin?: string;
           /** URL of the organization's X (formerly Twitter) profile. */
           x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
         };
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3734,6 +3740,8 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
             linkedin?: string;
             /** URL of the organization's X (formerly Twitter) profile. */
             x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3863,6 +3871,8 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
             linkedin?: string;
             /** URL of the organization's X (formerly Twitter) profile. */
             x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3973,6 +3983,8 @@ export type UpdateOrgApiArg = {
           linkedin?: string;
           /** URL of the organization's X (formerly Twitter) profile. */
           x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
         };
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -4062,6 +4074,8 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
         linkedin?: string;
         /** URL of the organization's X (formerly Twitter) profile. */
         x?: string;
+        /** URL of the organization's YouTube channel. */
+        youtube?: string;
       };
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
