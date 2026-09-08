@@ -34,7 +34,6 @@ const yaml = require("js-yaml");
 const logger = require("./lib/logger");
 const config = require("./lib/config");
 const paths = require("./lib/paths");
-const { commandExists } = require("./lib/exec");
 const { writeGeneratedHelperFile } = require("./lib/generated-go-helpers");
 const { formatGoFile, requireGofmt } = require("./lib/gofmt");
 
@@ -1493,7 +1492,7 @@ async function generateGoModels(pkg) {
     const generatedConfig = createGeneratorConfig(pkg, inputPath, tempDir);
 
     execSync(
-      `oapi-codegen --config "${generatedConfig.tempConfigPath}" ` +
+      `go tool oapi-codegen --config "${generatedConfig.tempConfigPath}" ` +
         `--package "${pkg.name}" ` +
         `-generate types ` +
         `--include-tags all ` +
@@ -1541,12 +1540,17 @@ async function generateGoModels(pkg) {
  * Check prerequisites
  */
 function checkPrerequisites() {
-  // Check for oapi-codegen
-  if (!commandExists("oapi-codegen")) {
-    logger.error("oapi-codegen not found.");
+  // oapi-codegen is resolved through the `tool` directive in go.mod, so the
+  // version is pinned by the module and not by whatever the contributor
+  // happens to have installed. Nothing to install; just prove it resolves.
+  try {
+    execSync("go tool oapi-codegen --version", { stdio: "pipe" });
+  } catch (err) {
+    logger.error("`go tool oapi-codegen` failed.");
     logger.info(
-      "Install it with: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest",
+      "oapi-codegen is pinned by the `tool` directive in go.mod - run `go mod download` and retry.",
     );
+    logger.info(String(err.stderr || err.message).trim());
     process.exit(1);
   }
 
@@ -1563,10 +1567,6 @@ async function main() {
   try {
     // Change to project root
     process.chdir(paths.getProjectRoot());
-
-    // Add Go bin to PATH
-    const goPath = process.env.GOPATH || `${process.env.HOME}/go`;
-    process.env.PATH = `${goPath}/bin:${process.env.PATH}`;
 
     logger.header("🔧 Starting Go code generation...");
 
