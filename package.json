@@ -35,7 +35,8 @@
       "types": "./dist/constructs/*.d.ts",
       "import": "./dist/constructs/*.mjs",
       "require": "./dist/constructs/*.js"
-    }
+    },
+    "./constructs/*.json": "./dist/constructs/*.json"
   },
   "repository": {
     "url": "git+https://github.com/meshery/schemas.git",
@@ -49,7 +50,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "NODE_OPTIONS=--max-old-space-size=8192 tsup && node ./build/generate-schema-dts.js",
+    "build": "NODE_OPTIONS=--max-old-space-size=8192 tsup && node ./build/generate-schema-dts.js && node ./build/copy-forms.js",
     "build:bundle": "node ./build/bundle-openapi.js",
     "build:golang": "node ./build/generate-golang.js",
     "build:rtk": "node ./build/generate-rtk.js",
