@@ -941,3 +941,50 @@ func TestFormSchemasIndexExportsExist(t *testing.T) {
 		}
 	}
 }
+
+// TestFormsReExportedFromPackageRoot enforces that every canonical RJSF
+// form/UI-schema constant exported from typescript/forms/index.ts is also
+// re-exported from typescript/index.ts, the file tsup actually bundles into
+// the published package's root entry point (dist/index.js, dist/index.mjs).
+// A form can pass TestFormSchemasIndexExportsExist, meaning it is fully
+// wired through the barrel, and still be unreachable to an npm consumer if
+// this second, manually maintained re-export list drifts out of sync. That
+// is exactly what happened for the organization_smtp forms: see
+// https://github.com/meshery/schemas/issues/1207.
+func TestFormsReExportedFromPackageRoot(t *testing.T) {
+	repoRoot := repoRootDir(t)
+	formsIndexPath := filepath.Join(repoRoot, "typescript", "forms", "index.ts")
+	pkgIndexPath := filepath.Join(repoRoot, "typescript", "index.ts")
+
+	formsRaw, err := os.ReadFile(formsIndexPath)
+	if err != nil {
+		t.Fatalf("read %s: %v", formsIndexPath, err)
+	}
+	pkgRaw, err := os.ReadFile(pkgIndexPath)
+	if err != nil {
+		t.Fatalf("read %s: %v", pkgIndexPath, err)
+	}
+	pkgSrc := string(pkgRaw)
+
+	matches := formIndexExportPattern.FindAllStringSubmatch(string(formsRaw), -1)
+	if len(matches) == 0 {
+		t.Fatal("no `export const … as RJSFSchema/UiSchema` statements found in typescript/forms/index.ts; formIndexExportPattern may be out of sync with the file")
+	}
+
+	// Isolate the `export { ... } from "./forms";` block in
+	// typescript/index.ts so a name that merely appears elsewhere in the
+	// file (a comment, an unrelated export) doesn't count as re-exported.
+	reExportBlock := regexp.MustCompile(`(?s)export\s*\{(.*?)\}\s*from\s*"\./forms"\s*;`).FindStringSubmatch(pkgSrc)
+	if reExportBlock == nil {
+		t.Fatal(`typescript/index.ts has no export { ... } from "./forms"; block; forms are no longer re-exported from the package root at all`)
+	}
+	reExported := reExportBlock[1]
+
+	for _, m := range matches {
+		name := m[1]
+		if !regexp.MustCompile(`\b`+regexp.QuoteMeta(name)+`\b`).MatchString(reExported) {
+			t.Errorf("typescript/forms/index.ts exports %s but typescript/index.ts does not re-export it; add %s to the `export { ... } from \"./forms\";` block in typescript/index.ts so npm consumers can actually import it",
+				name, name)
+		}
+	}
+}
