@@ -974,20 +974,51 @@ func TestFormsReExportedFromPackageRoot(t *testing.T) {
 	// Isolate the `export { ... } from "./forms";` block in
 	// typescript/index.ts so a name that merely appears elsewhere in the
 	// file (a comment, an unrelated export) doesn't count as re-exported.
-	reExportBlock := regexp.MustCompile(`(?s)export\s*\{(.*?)\}\s*from\s*"\./forms"\s*;`).FindStringSubmatch(pkgSrc)
+	// The capture excludes `{`/`}` so a lazy `.*?` can't skip past an
+	// intervening block (an unrelated `export { ... }` or `export
+	// namespace X { ... }`) to reach this one; the file has both before
+	// the real forms re-export.
+	reExportBlock := regexp.MustCompile(`(?s)export\s*\{([^{}]*?)\}\s*from\s*"\./forms"\s*;`).FindStringSubmatch(pkgSrc)
 	if reExportBlock == nil {
 		t.Fatal(`typescript/index.ts has no export { ... } from "./forms"; block; forms are no longer re-exported from the package root at all`)
 	}
-	// Strip `//` line comments before matching, so a name that only
-	// appears in a commented-out export line (left behind when someone
-	// disables it instead of deleting it) is not mistaken for a real
-	// re-export.
-	reExported := regexp.MustCompile(`//.*`).ReplaceAllString(reExportBlock[1], "")
+
+	// Strip both comment styles before parsing, so a name left behind in
+	// commented-out code (line or block) is never mistaken for a real
+	// export.
+	noLineComments := regexp.MustCompile(`//.*`).ReplaceAllString(reExportBlock[1], "")
+	noComments := regexp.MustCompile(`(?s)/\*.*?\*/`).ReplaceAllString(noLineComments, "")
+
+	// Parse each comma-separated specifier into the name a consumer
+	// would actually import: itself for a bare `Name`, or the alias for
+	// `Name as Alias`. Matching on containment (even with word
+	// boundaries) would wrongly accept `OrgSmtp... as SomethingElse` as
+	// re-exporting `OrgSmtp...`, when the public name a consumer gets is
+	// `SomethingElse`.
+	exportedAs := make(map[string]struct{})
+	for _, specifier := range strings.Split(noComments, ",") {
+		specifier = strings.TrimSpace(specifier)
+		if specifier == "" {
+			continue
+		}
+		fields := strings.Fields(specifier)
+		switch len(fields) {
+		case 1:
+			exportedAs[fields[0]] = struct{}{}
+		case 3:
+			if fields[1] != "as" {
+				t.Fatalf("typescript/index.ts: could not parse export specifier %q in the \"./forms\" re-export block", specifier)
+			}
+			exportedAs[fields[2]] = struct{}{}
+		default:
+			t.Fatalf("typescript/index.ts: could not parse export specifier %q in the \"./forms\" re-export block", specifier)
+		}
+	}
 
 	for _, m := range matches {
 		name := m[1]
-		if !regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\b`).MatchString(reExported) {
-			t.Errorf("typescript/forms/index.ts exports %s but typescript/index.ts does not re-export it; add %s to the `export { ... } from \"./forms\";` block in typescript/index.ts so npm consumers can actually import it",
+		if _, ok := exportedAs[name]; !ok {
+			t.Errorf("typescript/forms/index.ts exports %s but typescript/index.ts does not re-export it under that name; add %s to the `export { ... } from \"./forms\";` block in typescript/index.ts so npm consumers can actually import it",
 				name, name)
 		}
 	}
