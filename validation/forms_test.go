@@ -978,11 +978,15 @@ func TestFormsReExportedFromPackageRoot(t *testing.T) {
 	if reExportBlock == nil {
 		t.Fatal(`typescript/index.ts has no export { ... } from "./forms"; block; forms are no longer re-exported from the package root at all`)
 	}
-	reExported := reExportBlock[1]
+	// Strip `//` line comments before matching, so a name that only
+	// appears in a commented-out export line (left behind when someone
+	// disables it instead of deleting it) is not mistaken for a real
+	// re-export.
+	reExported := regexp.MustCompile(`//.*`).ReplaceAllString(reExportBlock[1], "")
 
 	for _, m := range matches {
 		name := m[1]
-		if !regexp.MustCompile(`\b`+regexp.QuoteMeta(name)+`\b`).MatchString(reExported) {
+		if !regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\b`).MatchString(reExported) {
 			t.Errorf("typescript/forms/index.ts exports %s but typescript/index.ts does not re-export it; add %s to the `export { ... } from \"./forms\";` block in typescript/index.ts so npm consumers can actually import it",
 				name, name)
 		}
