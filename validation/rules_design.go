@@ -698,3 +698,98 @@ func checkRule47(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 	}
 	return out
 }
+
+// --- Rule 48: Operations must have a summary or description ---
+
+func checkRule48(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
+	if doc == nil || doc.Paths == nil {
+		return nil
+	}
+	var out []Violation
+	for path, item := range doc.Paths.Map() {
+		for _, method := range httpMethods {
+			op := getOperation(item, method)
+			if op == nil {
+				continue
+			}
+			label := fmt.Sprintf("%s %s", strings.ToUpper(method), path)
+			if strings.TrimSpace(op.Summary) == "" && strings.TrimSpace(op.Description) == "" {
+				out = append(out, Violation{File: filePath,
+					Message:  fmt.Sprintf("%s — operation is missing both `summary` and `description`. At least one is required for readable API documentation.", label),
+					Severity: classifyDesignIssue(opts), RuleNumber: 48})
+			}
+		}
+	}
+	return out
+}
+
+// --- Rule 49: Path, query, and header parameters must have a description ---
+
+// documentedParamLocations are the parameter locations Rule 49 checks. Cookie
+// parameters are intentionally excluded, matching the issue scope.
+var documentedParamLocations = map[string]bool{"path": true, "query": true, "header": true}
+
+func checkRule49(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
+	if doc == nil {
+		return nil
+	}
+	var out []Violation
+
+	// Shared parameters defined under components.parameters. Entries that are
+	// themselves a $ref carry their description at the referenced definition
+	// (checked when that file is audited), so only inline definitions are
+	// checked here. This mirrors Rule 37's handling of $ref'd properties.
+	if doc.Components != nil {
+		for name, ref := range doc.Components.Parameters {
+			if ref == nil || ref.Value == nil || ref.Ref != "" {
+				continue
+			}
+			p := ref.Value
+			if !documentedParamLocations[p.In] {
+				continue
+			}
+			if strings.TrimSpace(p.Description) == "" {
+				out = append(out, Violation{File: filePath,
+					Message:  fmt.Sprintf("components.parameters.%s — %s parameter %q is missing a `description`.", name, p.In, p.Name),
+					Severity: classifyDesignIssue(opts), RuleNumber: 49})
+			}
+		}
+	}
+
+	// Inline parameters declared directly on path items and operations. $ref'd
+	// usages are skipped; their definition is checked above or in the file that
+	// declares it.
+	if doc.Paths != nil {
+		for path, item := range doc.Paths.Map() {
+			out = append(out, checkInlineParamDescriptions(filePath, item.Parameters, path, opts)...)
+			for _, method := range httpMethods {
+				op := getOperation(item, method)
+				if op == nil {
+					continue
+				}
+				label := fmt.Sprintf("%s %s", strings.ToUpper(method), path)
+				out = append(out, checkInlineParamDescriptions(filePath, op.Parameters, label, opts)...)
+			}
+		}
+	}
+	return out
+}
+
+func checkInlineParamDescriptions(filePath string, params openapi3.Parameters, label string, opts AuditOptions) []Violation {
+	var out []Violation
+	for _, ref := range params {
+		if ref == nil || ref.Value == nil || ref.Ref != "" {
+			continue
+		}
+		p := ref.Value
+		if !documentedParamLocations[p.In] {
+			continue
+		}
+		if strings.TrimSpace(p.Description) == "" {
+			out = append(out, Violation{File: filePath,
+				Message:  fmt.Sprintf("%s — %s parameter %q is missing a `description`.", label, p.In, p.Name),
+				Severity: classifyDesignIssue(opts), RuleNumber: 49})
+		}
+	}
+	return out
+}
