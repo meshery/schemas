@@ -694,6 +694,67 @@ components:
         format: uuid
 
   schemas:
+    CatalogAuthor:
+      type: object
+      additionalProperties: false
+      description: >-
+        Public projection of a user as served on unauthenticated catalog
+        endpoints (e.g. GET /api/catalog/content/{type}). Carries only the
+        fields the Cloud privacy ruling permits an anonymous caller to see:
+        identity, display names, and avatar URL. Email and every other
+        personally-identifying or account-internal field are deliberately
+        absent (meshery/schemas#1106). For the full authenticated user record
+        see User in v1beta2/user/api.yml.
+      required:
+        - id
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Unique identifier for the user.
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            db: "id"
+            json: "id"
+        userId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          deprecated: true
+          description: >-
+            Deprecated duplicate of id kept for consumers that predate the
+            retirement of the legacy user_id column; always equals id.
+          x-go-name: UserID
+          x-oapi-codegen-extra-tags:
+            db: "user_id"
+            json: "userId,omitempty"
+        firstName:
+          type: string
+          maxLength: 200
+          description: >-
+            User's first name. Real names are permitted on public catalog
+            responses under the Cloud privacy ruling.
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "first_name"
+            json: "firstName,omitempty"
+        lastName:
+          type: string
+          maxLength: 300
+          description: >-
+            User's last name. Real names are permitted on public catalog
+            responses under the Cloud privacy ruling.
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "last_name"
+            json: "lastName,omitempty"
+        avatarUrl:
+          type: string
+          format: uri
+          maxLength: 500
+          description: URL to the user's avatar image.
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "avatar_url"
+            json: "avatarUrl,omitempty"
+
     DeletePatternModel:
       type: object
       description: Reference to a design for bulk deletion by ID.
@@ -731,18 +792,18 @@ components:
           x-oapi-codegen-extra-tags:
             db: owner
         user:
-          $ref: "../../v1beta2/user/api.yml#/components/schemas/User"
+          $ref: "#/components/schemas/CatalogAuthor"
           description: >
-            Owning user record, joined inline by the catalog list/get
-            handlers when shaping responses. Server-projected from the
-            users table via the design's userId; not a column on the
+            Public projection of the owning user joined inline by the catalog
+            list/get handlers when shaping responses. Uses CatalogAuthor
+            instead of the full User schema because catalog endpoints are
+            served to unauthenticated callers and may not expose email
+            addresses (meshery/schemas#1106). Server-projected from the users
+            table via the design's userId; not a column on the
             meshery_patterns table itself, so the generated Go field is
             tagged `db:"-"` to keep it out of ORM column scans.
           nullable: true
-          x-go-type: "*userV1beta.User"
-          x-go-type-import:
-            path: github.com/meshery/schemas/models/v1beta2/user
-            name: userV1beta
+          x-go-type: "*CatalogAuthor"
           x-oapi-codegen-extra-tags:
             db: "-"
         location:

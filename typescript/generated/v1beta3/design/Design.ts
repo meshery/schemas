@@ -317,6 +317,29 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description Public projection of a user as served on unauthenticated catalog endpoints (e.g. GET /api/catalog/content/{type}). Carries only the fields the Cloud privacy ruling permits an anonymous caller to see: identity, display names, and avatar URL. Email and every other personally-identifying or account-internal field are deliberately absent (meshery/schemas#1106). For the full authenticated user record see User in v1beta2/user/api.yml. */
+        CatalogAuthor: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the user.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @deprecated
+             * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
+             */
+            userId?: string;
+            /** @description User's first name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+            firstName?: string;
+            /** @description User's last name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+            lastName?: string;
+            /**
+             * Format: uri
+             * @description URL to the user's avatar image.
+             */
+            avatarUrl?: string;
+        };
         /** @description Reference to a design for bulk deletion by ID. */
         DeletePatternModel: {
             /**
@@ -1796,267 +1819,28 @@ export interface components {
              * @description Owning user ID.
              */
             userId?: string;
-            /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+            /** @description Public projection of the owning user joined inline by the catalog list/get handlers when shaping responses. Uses CatalogAuthor instead of the full User schema because catalog endpoints are served to unauthenticated callers and may not expose email addresses (meshery/schemas#1106). Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
             user?: {
                 /**
                  * Format: uuid
-                 * @description Unique identifier for the user
+                 * @description Unique identifier for the user.
                  */
                 id: string;
                 /**
+                 * Format: uuid
                  * @deprecated
-                 * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                 * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
                  */
-                userId: string;
-                /**
-                 * @description Authentication provider (e.g., Google, Github)
-                 * @example [
-                 *       "local",
-                 *       "github",
-                 *       "google",
-                 *       "twitter"
-                 *     ]
-                 */
-                provider: string;
-                /**
-                 * Format: email
-                 * @description User's email address
-                 */
-                email: string;
-                /** @description User's first name */
-                firstName: string;
-                /** @description User's last name */
-                lastName: string;
+                userId?: string;
+                /** @description User's first name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                firstName?: string;
+                /** @description User's last name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                lastName?: string;
                 /**
                  * Format: uri
-                 * @description URL to user's avatar image
+                 * @description URL to the user's avatar image.
                  */
                 avatarUrl?: string;
-                /**
-                 * @description User account status
-                 * @enum {string}
-                 */
-                status: "active" | "inactive" | "pending" | "anonymous";
-                /**
-                 * @description User's biography or description
-                 * @default
-                 */
-                bio: string;
-                /** @description User's country information stored as JSONB */
-                country?: {
-                    [key: string]: unknown;
-                };
-                /** @description User's region information stored as JSONB */
-                region?: {
-                    [key: string]: unknown;
-                };
-                /** @description User preferences stored as JSONB */
-                preferences?: {
-                    /** @description The mesh adapters of the preference. */
-                    meshAdapters?: Record<string, never>[];
-                    grafana?: {
-                        /** @description Grafana URL for the user configuration. */
-                        grafanaUrl?: string;
-                        /** @description Grafana API key for the user configuration. */
-                        grafanaApiKey?: string;
-                        /** @description Selected Grafana board configurations for the user. */
-                        selectedBoardsConfigs?: {
-                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                            board?: Record<string, never>;
-                            /** @description Panels selected for the Grafana board configuration. */
-                            panels?: Record<string, never>[];
-                            /** @description Template variables applied to the selected Grafana board configuration. */
-                            templateVars?: string[];
-                        }[];
-                    };
-                    prometheus?: {
-                        /** @description The prometheus URL of the prometheus. */
-                        prometheusUrl?: string;
-                        /** @description The selected prometheus boards configs of the prometheus. */
-                        selectedPrometheusBoardsConfigs?: {
-                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                            board?: Record<string, never>;
-                            /** @description Panels selected for the Grafana board configuration. */
-                            panels?: Record<string, never>[];
-                            /** @description Template variables applied to the selected Grafana board configuration. */
-                            templateVars?: string[];
-                        }[];
-                    };
-                    loadTestPrefs?: {
-                        /** @description Concurrent requests */
-                        c?: number;
-                        /** @description Queries per second */
-                        qps?: number;
-                        /** @description Duration */
-                        t?: string;
-                        /** @description Load generator */
-                        gen?: string;
-                    };
-                    /** @description The anonymous usage stats of the preference. */
-                    anonymousUsageStats: boolean;
-                    /** @description The anonymous perf results of the preference. */
-                    anonymousPerfResults: boolean;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp of when the resource was last updated.
-                     */
-                    updatedAt: string;
-                    /** @description The dashboard preferences of the preference. */
-                    dashboardPreferences: {
-                        [key: string]: unknown;
-                    };
-                    /**
-                     * Format: uuid
-                     * @description ID of the associated selectedOrganization.
-                     */
-                    selectedOrganizationId: string;
-                    /** @description The selected workspace for organizations of the preference. */
-                    selectedWorkspaceForOrganizations: {
-                        [key: string]: string;
-                    };
-                    /** @description The users extension preferences of the preference. */
-                    usersExtensionPreferences: {
-                        [key: string]: unknown;
-                    };
-                    /** @description The remote provider preferences of the preference. */
-                    remoteProviderPreferences: {
-                        [key: string]: unknown;
-                    };
-                };
-                /**
-                 * Format: date-time
-                 * @description Timestamp when user accepted terms and conditions
-                 */
-                acceptedTermsAt?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of user's first login
-                 */
-                firstLoginTime?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of user's most recent login
-                 */
-                lastLoginTime: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the user record was created
-                 */
-                createdAt: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the user record was last updated
-                 */
-                updatedAt: string;
-                /** @description Various online profiles associated with the user account */
-                socials?: {
-                    /** @description The site of the social. */
-                    site: string;
-                    /**
-                     * Format: uri
-                     * @description The link of the social.
-                     */
-                    link: string;
-                }[];
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                 */
-                deletedAt: string | null;
-                /**
-                 * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
-                 * @example [
-                 *       "organization admin",
-                 *       "user"
-                 *     ]
-                 */
-                roleNames?: string[];
-                /** @description Teams the user belongs to with role information */
-                teams?: {
-                    /** @description Team memberships for the user with their assigned roles. */
-                    teamsWithRoles?: {
-                        /**
-                         * Format: uuid
-                         * @description Unique identifier of the team.
-                         */
-                        id: string;
-                        /** @description Name of the team. */
-                        name: string;
-                        /** @description Human readable description of the team. */
-                        description?: string;
-                        /**
-                         * Format: uuid
-                         * @description Identifier of the team owner.
-                         */
-                        owner?: string;
-                        /** @description Free-form metadata associated with the team. */
-                        metadata?: {
-                            [key: string]: unknown;
-                        };
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the team was created.
-                         */
-                        createdAt?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the team was last updated.
-                         */
-                        updatedAt?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the team was soft-deleted (null if not deleted).
-                         */
-                        deletedAt?: string | null;
-                        /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-                        roleNames: string[];
-                    }[];
-                    /** @description Total number of team memberships returned for the user. */
-                    totalCount?: number;
-                };
-                /** @description Organizations the user belongs to with role information */
-                organizations?: {
-                    /** @description Organization memberships for the user with their assigned roles. */
-                    organizationsWithRoles?: {
-                        /**
-                         * Format: uuid
-                         * @description Unique identifier of the organization.
-                         */
-                        id: string;
-                        /** @description Name of the organization. */
-                        name: string;
-                        /** @description Human readable description of the organization. */
-                        description?: string;
-                        /** @description Country associated with the organization. */
-                        country?: string;
-                        /** @description Region associated with the organization. */
-                        region?: string;
-                        /**
-                         * Format: uuid
-                         * @description Identifier of the organization owner.
-                         */
-                        owner?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the organization was created.
-                         */
-                        createdAt?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the organization was last updated.
-                         */
-                        updatedAt?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the organization was soft-deleted (null if not deleted).
-                         */
-                        deletedAt?: string | null;
-                        /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-                        roleNames: string[];
-                    }[];
-                    /** @description Total number of organization memberships returned for the user. */
-                    totalCount?: number;
-                };
             } | null;
             /** @description Optional structured location metadata (branch, host, path, ...). */
             location?: {
@@ -2168,267 +1952,28 @@ export interface components {
                  * @description Owning user ID.
                  */
                 userId?: string;
-                /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                /** @description Public projection of the owning user joined inline by the catalog list/get handlers when shaping responses. Uses CatalogAuthor instead of the full User schema because catalog endpoints are served to unauthenticated callers and may not expose email addresses (meshery/schemas#1106). Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                 user?: {
                     /**
                      * Format: uuid
-                     * @description Unique identifier for the user
+                     * @description Unique identifier for the user.
                      */
                     id: string;
                     /**
+                     * Format: uuid
                      * @deprecated
-                     * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                     * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
                      */
-                    userId: string;
-                    /**
-                     * @description Authentication provider (e.g., Google, Github)
-                     * @example [
-                     *       "local",
-                     *       "github",
-                     *       "google",
-                     *       "twitter"
-                     *     ]
-                     */
-                    provider: string;
-                    /**
-                     * Format: email
-                     * @description User's email address
-                     */
-                    email: string;
-                    /** @description User's first name */
-                    firstName: string;
-                    /** @description User's last name */
-                    lastName: string;
+                    userId?: string;
+                    /** @description User's first name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                    firstName?: string;
+                    /** @description User's last name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                    lastName?: string;
                     /**
                      * Format: uri
-                     * @description URL to user's avatar image
+                     * @description URL to the user's avatar image.
                      */
                     avatarUrl?: string;
-                    /**
-                     * @description User account status
-                     * @enum {string}
-                     */
-                    status: "active" | "inactive" | "pending" | "anonymous";
-                    /**
-                     * @description User's biography or description
-                     * @default
-                     */
-                    bio: string;
-                    /** @description User's country information stored as JSONB */
-                    country?: {
-                        [key: string]: unknown;
-                    };
-                    /** @description User's region information stored as JSONB */
-                    region?: {
-                        [key: string]: unknown;
-                    };
-                    /** @description User preferences stored as JSONB */
-                    preferences?: {
-                        /** @description The mesh adapters of the preference. */
-                        meshAdapters?: Record<string, never>[];
-                        grafana?: {
-                            /** @description Grafana URL for the user configuration. */
-                            grafanaUrl?: string;
-                            /** @description Grafana API key for the user configuration. */
-                            grafanaApiKey?: string;
-                            /** @description Selected Grafana board configurations for the user. */
-                            selectedBoardsConfigs?: {
-                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                board?: Record<string, never>;
-                                /** @description Panels selected for the Grafana board configuration. */
-                                panels?: Record<string, never>[];
-                                /** @description Template variables applied to the selected Grafana board configuration. */
-                                templateVars?: string[];
-                            }[];
-                        };
-                        prometheus?: {
-                            /** @description The prometheus URL of the prometheus. */
-                            prometheusUrl?: string;
-                            /** @description The selected prometheus boards configs of the prometheus. */
-                            selectedPrometheusBoardsConfigs?: {
-                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                board?: Record<string, never>;
-                                /** @description Panels selected for the Grafana board configuration. */
-                                panels?: Record<string, never>[];
-                                /** @description Template variables applied to the selected Grafana board configuration. */
-                                templateVars?: string[];
-                            }[];
-                        };
-                        loadTestPrefs?: {
-                            /** @description Concurrent requests */
-                            c?: number;
-                            /** @description Queries per second */
-                            qps?: number;
-                            /** @description Duration */
-                            t?: string;
-                            /** @description Load generator */
-                            gen?: string;
-                        };
-                        /** @description The anonymous usage stats of the preference. */
-                        anonymousUsageStats: boolean;
-                        /** @description The anonymous perf results of the preference. */
-                        anonymousPerfResults: boolean;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of when the resource was last updated.
-                         */
-                        updatedAt: string;
-                        /** @description The dashboard preferences of the preference. */
-                        dashboardPreferences: {
-                            [key: string]: unknown;
-                        };
-                        /**
-                         * Format: uuid
-                         * @description ID of the associated selectedOrganization.
-                         */
-                        selectedOrganizationId: string;
-                        /** @description The selected workspace for organizations of the preference. */
-                        selectedWorkspaceForOrganizations: {
-                            [key: string]: string;
-                        };
-                        /** @description The users extension preferences of the preference. */
-                        usersExtensionPreferences: {
-                            [key: string]: unknown;
-                        };
-                        /** @description The remote provider preferences of the preference. */
-                        remoteProviderPreferences: {
-                            [key: string]: unknown;
-                        };
-                    };
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when user accepted terms and conditions
-                     */
-                    acceptedTermsAt?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp of user's first login
-                     */
-                    firstLoginTime?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp of user's most recent login
-                     */
-                    lastLoginTime: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the user record was created
-                     */
-                    createdAt: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the user record was last updated
-                     */
-                    updatedAt: string;
-                    /** @description Various online profiles associated with the user account */
-                    socials?: {
-                        /** @description The site of the social. */
-                        site: string;
-                        /**
-                         * Format: uri
-                         * @description The link of the social.
-                         */
-                        link: string;
-                    }[];
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                     */
-                    deletedAt: string | null;
-                    /**
-                     * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
-                     * @example [
-                     *       "organization admin",
-                     *       "user"
-                     *     ]
-                     */
-                    roleNames?: string[];
-                    /** @description Teams the user belongs to with role information */
-                    teams?: {
-                        /** @description Team memberships for the user with their assigned roles. */
-                        teamsWithRoles?: {
-                            /**
-                             * Format: uuid
-                             * @description Unique identifier of the team.
-                             */
-                            id: string;
-                            /** @description Name of the team. */
-                            name: string;
-                            /** @description Human readable description of the team. */
-                            description?: string;
-                            /**
-                             * Format: uuid
-                             * @description Identifier of the team owner.
-                             */
-                            owner?: string;
-                            /** @description Free-form metadata associated with the team. */
-                            metadata?: {
-                                [key: string]: unknown;
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the team was created.
-                             */
-                            createdAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the team was last updated.
-                             */
-                            updatedAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the team was soft-deleted (null if not deleted).
-                             */
-                            deletedAt?: string | null;
-                            /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-                            roleNames: string[];
-                        }[];
-                        /** @description Total number of team memberships returned for the user. */
-                        totalCount?: number;
-                    };
-                    /** @description Organizations the user belongs to with role information */
-                    organizations?: {
-                        /** @description Organization memberships for the user with their assigned roles. */
-                        organizationsWithRoles?: {
-                            /**
-                             * Format: uuid
-                             * @description Unique identifier of the organization.
-                             */
-                            id: string;
-                            /** @description Name of the organization. */
-                            name: string;
-                            /** @description Human readable description of the organization. */
-                            description?: string;
-                            /** @description Country associated with the organization. */
-                            country?: string;
-                            /** @description Region associated with the organization. */
-                            region?: string;
-                            /**
-                             * Format: uuid
-                             * @description Identifier of the organization owner.
-                             */
-                            owner?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was created.
-                             */
-                            createdAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was last updated.
-                             */
-                            updatedAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was soft-deleted (null if not deleted).
-                             */
-                            deletedAt?: string | null;
-                            /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-                            roleNames: string[];
-                        }[];
-                        /** @description Total number of organization memberships returned for the user. */
-                        totalCount?: number;
-                    };
                 } | null;
                 /** @description Optional structured location metadata (branch, host, path, ...). */
                 location?: {
@@ -2786,267 +2331,28 @@ export interface components {
                  * @description Owning user ID.
                  */
                 userId?: string;
-                /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                /** @description Public projection of the owning user joined inline by the catalog list/get handlers when shaping responses. Uses CatalogAuthor instead of the full User schema because catalog endpoints are served to unauthenticated callers and may not expose email addresses (meshery/schemas#1106). Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                 user?: {
                     /**
                      * Format: uuid
-                     * @description Unique identifier for the user
+                     * @description Unique identifier for the user.
                      */
                     id: string;
                     /**
+                     * Format: uuid
                      * @deprecated
-                     * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                     * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
                      */
-                    userId: string;
-                    /**
-                     * @description Authentication provider (e.g., Google, Github)
-                     * @example [
-                     *       "local",
-                     *       "github",
-                     *       "google",
-                     *       "twitter"
-                     *     ]
-                     */
-                    provider: string;
-                    /**
-                     * Format: email
-                     * @description User's email address
-                     */
-                    email: string;
-                    /** @description User's first name */
-                    firstName: string;
-                    /** @description User's last name */
-                    lastName: string;
+                    userId?: string;
+                    /** @description User's first name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                    firstName?: string;
+                    /** @description User's last name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                    lastName?: string;
                     /**
                      * Format: uri
-                     * @description URL to user's avatar image
+                     * @description URL to the user's avatar image.
                      */
                     avatarUrl?: string;
-                    /**
-                     * @description User account status
-                     * @enum {string}
-                     */
-                    status: "active" | "inactive" | "pending" | "anonymous";
-                    /**
-                     * @description User's biography or description
-                     * @default
-                     */
-                    bio: string;
-                    /** @description User's country information stored as JSONB */
-                    country?: {
-                        [key: string]: unknown;
-                    };
-                    /** @description User's region information stored as JSONB */
-                    region?: {
-                        [key: string]: unknown;
-                    };
-                    /** @description User preferences stored as JSONB */
-                    preferences?: {
-                        /** @description The mesh adapters of the preference. */
-                        meshAdapters?: Record<string, never>[];
-                        grafana?: {
-                            /** @description Grafana URL for the user configuration. */
-                            grafanaUrl?: string;
-                            /** @description Grafana API key for the user configuration. */
-                            grafanaApiKey?: string;
-                            /** @description Selected Grafana board configurations for the user. */
-                            selectedBoardsConfigs?: {
-                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                board?: Record<string, never>;
-                                /** @description Panels selected for the Grafana board configuration. */
-                                panels?: Record<string, never>[];
-                                /** @description Template variables applied to the selected Grafana board configuration. */
-                                templateVars?: string[];
-                            }[];
-                        };
-                        prometheus?: {
-                            /** @description The prometheus URL of the prometheus. */
-                            prometheusUrl?: string;
-                            /** @description The selected prometheus boards configs of the prometheus. */
-                            selectedPrometheusBoardsConfigs?: {
-                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                board?: Record<string, never>;
-                                /** @description Panels selected for the Grafana board configuration. */
-                                panels?: Record<string, never>[];
-                                /** @description Template variables applied to the selected Grafana board configuration. */
-                                templateVars?: string[];
-                            }[];
-                        };
-                        loadTestPrefs?: {
-                            /** @description Concurrent requests */
-                            c?: number;
-                            /** @description Queries per second */
-                            qps?: number;
-                            /** @description Duration */
-                            t?: string;
-                            /** @description Load generator */
-                            gen?: string;
-                        };
-                        /** @description The anonymous usage stats of the preference. */
-                        anonymousUsageStats: boolean;
-                        /** @description The anonymous perf results of the preference. */
-                        anonymousPerfResults: boolean;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of when the resource was last updated.
-                         */
-                        updatedAt: string;
-                        /** @description The dashboard preferences of the preference. */
-                        dashboardPreferences: {
-                            [key: string]: unknown;
-                        };
-                        /**
-                         * Format: uuid
-                         * @description ID of the associated selectedOrganization.
-                         */
-                        selectedOrganizationId: string;
-                        /** @description The selected workspace for organizations of the preference. */
-                        selectedWorkspaceForOrganizations: {
-                            [key: string]: string;
-                        };
-                        /** @description The users extension preferences of the preference. */
-                        usersExtensionPreferences: {
-                            [key: string]: unknown;
-                        };
-                        /** @description The remote provider preferences of the preference. */
-                        remoteProviderPreferences: {
-                            [key: string]: unknown;
-                        };
-                    };
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when user accepted terms and conditions
-                     */
-                    acceptedTermsAt?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp of user's first login
-                     */
-                    firstLoginTime?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp of user's most recent login
-                     */
-                    lastLoginTime: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the user record was created
-                     */
-                    createdAt: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the user record was last updated
-                     */
-                    updatedAt: string;
-                    /** @description Various online profiles associated with the user account */
-                    socials?: {
-                        /** @description The site of the social. */
-                        site: string;
-                        /**
-                         * Format: uri
-                         * @description The link of the social.
-                         */
-                        link: string;
-                    }[];
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                     */
-                    deletedAt: string | null;
-                    /**
-                     * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
-                     * @example [
-                     *       "organization admin",
-                     *       "user"
-                     *     ]
-                     */
-                    roleNames?: string[];
-                    /** @description Teams the user belongs to with role information */
-                    teams?: {
-                        /** @description Team memberships for the user with their assigned roles. */
-                        teamsWithRoles?: {
-                            /**
-                             * Format: uuid
-                             * @description Unique identifier of the team.
-                             */
-                            id: string;
-                            /** @description Name of the team. */
-                            name: string;
-                            /** @description Human readable description of the team. */
-                            description?: string;
-                            /**
-                             * Format: uuid
-                             * @description Identifier of the team owner.
-                             */
-                            owner?: string;
-                            /** @description Free-form metadata associated with the team. */
-                            metadata?: {
-                                [key: string]: unknown;
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the team was created.
-                             */
-                            createdAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the team was last updated.
-                             */
-                            updatedAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the team was soft-deleted (null if not deleted).
-                             */
-                            deletedAt?: string | null;
-                            /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-                            roleNames: string[];
-                        }[];
-                        /** @description Total number of team memberships returned for the user. */
-                        totalCount?: number;
-                    };
-                    /** @description Organizations the user belongs to with role information */
-                    organizations?: {
-                        /** @description Organization memberships for the user with their assigned roles. */
-                        organizationsWithRoles?: {
-                            /**
-                             * Format: uuid
-                             * @description Unique identifier of the organization.
-                             */
-                            id: string;
-                            /** @description Name of the organization. */
-                            name: string;
-                            /** @description Human readable description of the organization. */
-                            description?: string;
-                            /** @description Country associated with the organization. */
-                            country?: string;
-                            /** @description Region associated with the organization. */
-                            region?: string;
-                            /**
-                             * Format: uuid
-                             * @description Identifier of the organization owner.
-                             */
-                            owner?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was created.
-                             */
-                            createdAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was last updated.
-                             */
-                            updatedAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was soft-deleted (null if not deleted).
-                             */
-                            deletedAt?: string | null;
-                            /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-                            roleNames: string[];
-                        }[];
-                        /** @description Total number of organization memberships returned for the user. */
-                        totalCount?: number;
-                    };
                 } | null;
                 /** @description Optional structured location metadata (branch, host, path, ...). */
                 location?: {
@@ -3251,7 +2557,7 @@ export interface components {
             user?: {
                 /**
                  * Format: uuid
-                 * @description Unique identifier for the user
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 id: string;
                 /**
@@ -3428,7 +2734,7 @@ export interface components {
                     teamsWithRoles?: {
                         /**
                          * Format: uuid
-                         * @description Unique identifier of the team.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
                         /** @description Name of the team. */
@@ -3437,7 +2743,7 @@ export interface components {
                         description?: string;
                         /**
                          * Format: uuid
-                         * @description Identifier of the team owner.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         owner?: string;
                         /** @description Free-form metadata associated with the team. */
@@ -3471,7 +2777,7 @@ export interface components {
                     organizationsWithRoles?: {
                         /**
                          * Format: uuid
-                         * @description Unique identifier of the organization.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
                         /** @description Name of the organization. */
@@ -3484,7 +2790,7 @@ export interface components {
                         region?: string;
                         /**
                          * Format: uuid
-                         * @description Identifier of the organization owner.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         owner?: string;
                         /**
@@ -3572,7 +2878,7 @@ export interface components {
                 user?: {
                     /**
                      * Format: uuid
-                     * @description Unique identifier for the user
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                      */
                     id: string;
                     /**
@@ -3749,7 +3055,7 @@ export interface components {
                         teamsWithRoles?: {
                             /**
                              * Format: uuid
-                             * @description Unique identifier of the team.
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             id: string;
                             /** @description Name of the team. */
@@ -3758,7 +3064,7 @@ export interface components {
                             description?: string;
                             /**
                              * Format: uuid
-                             * @description Identifier of the team owner.
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             owner?: string;
                             /** @description Free-form metadata associated with the team. */
@@ -3792,7 +3098,7 @@ export interface components {
                         organizationsWithRoles?: {
                             /**
                              * Format: uuid
-                             * @description Unique identifier of the organization.
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             id: string;
                             /** @description Name of the organization. */
@@ -3805,7 +3111,7 @@ export interface components {
                             region?: string;
                             /**
                              * Format: uuid
-                             * @description Identifier of the organization owner.
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             owner?: string;
                             /**
@@ -4081,267 +3387,28 @@ export interface operations {
                              * @description Owning user ID.
                              */
                             userId?: string;
-                            /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                            /** @description Public projection of the owning user joined inline by the catalog list/get handlers when shaping responses. Uses CatalogAuthor instead of the full User schema because catalog endpoints are served to unauthenticated callers and may not expose email addresses (meshery/schemas#1106). Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                             user?: {
                                 /**
                                  * Format: uuid
-                                 * @description Unique identifier for the user
+                                 * @description Unique identifier for the user.
                                  */
                                 id: string;
                                 /**
+                                 * Format: uuid
                                  * @deprecated
-                                 * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                                 * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
                                  */
-                                userId: string;
-                                /**
-                                 * @description Authentication provider (e.g., Google, Github)
-                                 * @example [
-                                 *       "local",
-                                 *       "github",
-                                 *       "google",
-                                 *       "twitter"
-                                 *     ]
-                                 */
-                                provider: string;
-                                /**
-                                 * Format: email
-                                 * @description User's email address
-                                 */
-                                email: string;
-                                /** @description User's first name */
-                                firstName: string;
-                                /** @description User's last name */
-                                lastName: string;
+                                userId?: string;
+                                /** @description User's first name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                                firstName?: string;
+                                /** @description User's last name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                                lastName?: string;
                                 /**
                                  * Format: uri
-                                 * @description URL to user's avatar image
+                                 * @description URL to the user's avatar image.
                                  */
                                 avatarUrl?: string;
-                                /**
-                                 * @description User account status
-                                 * @enum {string}
-                                 */
-                                status: "active" | "inactive" | "pending" | "anonymous";
-                                /**
-                                 * @description User's biography or description
-                                 * @default
-                                 */
-                                bio: string;
-                                /** @description User's country information stored as JSONB */
-                                country?: {
-                                    [key: string]: unknown;
-                                };
-                                /** @description User's region information stored as JSONB */
-                                region?: {
-                                    [key: string]: unknown;
-                                };
-                                /** @description User preferences stored as JSONB */
-                                preferences?: {
-                                    /** @description The mesh adapters of the preference. */
-                                    meshAdapters?: Record<string, never>[];
-                                    grafana?: {
-                                        /** @description Grafana URL for the user configuration. */
-                                        grafanaUrl?: string;
-                                        /** @description Grafana API key for the user configuration. */
-                                        grafanaApiKey?: string;
-                                        /** @description Selected Grafana board configurations for the user. */
-                                        selectedBoardsConfigs?: {
-                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                            board?: Record<string, never>;
-                                            /** @description Panels selected for the Grafana board configuration. */
-                                            panels?: Record<string, never>[];
-                                            /** @description Template variables applied to the selected Grafana board configuration. */
-                                            templateVars?: string[];
-                                        }[];
-                                    };
-                                    prometheus?: {
-                                        /** @description The prometheus URL of the prometheus. */
-                                        prometheusUrl?: string;
-                                        /** @description The selected prometheus boards configs of the prometheus. */
-                                        selectedPrometheusBoardsConfigs?: {
-                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                            board?: Record<string, never>;
-                                            /** @description Panels selected for the Grafana board configuration. */
-                                            panels?: Record<string, never>[];
-                                            /** @description Template variables applied to the selected Grafana board configuration. */
-                                            templateVars?: string[];
-                                        }[];
-                                    };
-                                    loadTestPrefs?: {
-                                        /** @description Concurrent requests */
-                                        c?: number;
-                                        /** @description Queries per second */
-                                        qps?: number;
-                                        /** @description Duration */
-                                        t?: string;
-                                        /** @description Load generator */
-                                        gen?: string;
-                                    };
-                                    /** @description The anonymous usage stats of the preference. */
-                                    anonymousUsageStats: boolean;
-                                    /** @description The anonymous perf results of the preference. */
-                                    anonymousPerfResults: boolean;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp of when the resource was last updated.
-                                     */
-                                    updatedAt: string;
-                                    /** @description The dashboard preferences of the preference. */
-                                    dashboardPreferences: {
-                                        [key: string]: unknown;
-                                    };
-                                    /**
-                                     * Format: uuid
-                                     * @description ID of the associated selectedOrganization.
-                                     */
-                                    selectedOrganizationId: string;
-                                    /** @description The selected workspace for organizations of the preference. */
-                                    selectedWorkspaceForOrganizations: {
-                                        [key: string]: string;
-                                    };
-                                    /** @description The users extension preferences of the preference. */
-                                    usersExtensionPreferences: {
-                                        [key: string]: unknown;
-                                    };
-                                    /** @description The remote provider preferences of the preference. */
-                                    remoteProviderPreferences: {
-                                        [key: string]: unknown;
-                                    };
-                                };
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp when user accepted terms and conditions
-                                 */
-                                acceptedTermsAt?: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp of user's first login
-                                 */
-                                firstLoginTime?: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp of user's most recent login
-                                 */
-                                lastLoginTime: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp when the user record was created
-                                 */
-                                createdAt: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp when the user record was last updated
-                                 */
-                                updatedAt: string;
-                                /** @description Various online profiles associated with the user account */
-                                socials?: {
-                                    /** @description The site of the social. */
-                                    site: string;
-                                    /**
-                                     * Format: uri
-                                     * @description The link of the social.
-                                     */
-                                    link: string;
-                                }[];
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                                 */
-                                deletedAt: string | null;
-                                /**
-                                 * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
-                                 * @example [
-                                 *       "organization admin",
-                                 *       "user"
-                                 *     ]
-                                 */
-                                roleNames?: string[];
-                                /** @description Teams the user belongs to with role information */
-                                teams?: {
-                                    /** @description Team memberships for the user with their assigned roles. */
-                                    teamsWithRoles?: {
-                                        /**
-                                         * Format: uuid
-                                         * @description Unique identifier of the team.
-                                         */
-                                        id: string;
-                                        /** @description Name of the team. */
-                                        name: string;
-                                        /** @description Human readable description of the team. */
-                                        description?: string;
-                                        /**
-                                         * Format: uuid
-                                         * @description Identifier of the team owner.
-                                         */
-                                        owner?: string;
-                                        /** @description Free-form metadata associated with the team. */
-                                        metadata?: {
-                                            [key: string]: unknown;
-                                        };
-                                        /**
-                                         * Format: date-time
-                                         * @description Timestamp when the team was created.
-                                         */
-                                        createdAt?: string;
-                                        /**
-                                         * Format: date-time
-                                         * @description Timestamp when the team was last updated.
-                                         */
-                                        updatedAt?: string;
-                                        /**
-                                         * Format: date-time
-                                         * @description Timestamp when the team was soft-deleted (null if not deleted).
-                                         */
-                                        deletedAt?: string | null;
-                                        /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-                                        roleNames: string[];
-                                    }[];
-                                    /** @description Total number of team memberships returned for the user. */
-                                    totalCount?: number;
-                                };
-                                /** @description Organizations the user belongs to with role information */
-                                organizations?: {
-                                    /** @description Organization memberships for the user with their assigned roles. */
-                                    organizationsWithRoles?: {
-                                        /**
-                                         * Format: uuid
-                                         * @description Unique identifier of the organization.
-                                         */
-                                        id: string;
-                                        /** @description Name of the organization. */
-                                        name: string;
-                                        /** @description Human readable description of the organization. */
-                                        description?: string;
-                                        /** @description Country associated with the organization. */
-                                        country?: string;
-                                        /** @description Region associated with the organization. */
-                                        region?: string;
-                                        /**
-                                         * Format: uuid
-                                         * @description Identifier of the organization owner.
-                                         */
-                                        owner?: string;
-                                        /**
-                                         * Format: date-time
-                                         * @description Timestamp when the organization was created.
-                                         */
-                                        createdAt?: string;
-                                        /**
-                                         * Format: date-time
-                                         * @description Timestamp when the organization was last updated.
-                                         */
-                                        updatedAt?: string;
-                                        /**
-                                         * Format: date-time
-                                         * @description Timestamp when the organization was soft-deleted (null if not deleted).
-                                         */
-                                        deletedAt?: string | null;
-                                        /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-                                        roleNames: string[];
-                                    }[];
-                                    /** @description Total number of organization memberships returned for the user. */
-                                    totalCount?: number;
-                                };
                             } | null;
                             /** @description Optional structured location metadata (branch, host, path, ...). */
                             location?: {
@@ -4562,267 +3629,28 @@ export interface operations {
                          * @description Owning user ID.
                          */
                         userId?: string;
-                        /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                        /** @description Public projection of the owning user joined inline by the catalog list/get handlers when shaping responses. Uses CatalogAuthor instead of the full User schema because catalog endpoints are served to unauthenticated callers and may not expose email addresses (meshery/schemas#1106). Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
                              * Format: uuid
-                             * @description Unique identifier for the user
+                             * @description Unique identifier for the user.
                              */
                             id: string;
                             /**
+                             * Format: uuid
                              * @deprecated
-                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
                              */
-                            userId: string;
-                            /**
-                             * @description Authentication provider (e.g., Google, Github)
-                             * @example [
-                             *       "local",
-                             *       "github",
-                             *       "google",
-                             *       "twitter"
-                             *     ]
-                             */
-                            provider: string;
-                            /**
-                             * Format: email
-                             * @description User's email address
-                             */
-                            email: string;
-                            /** @description User's first name */
-                            firstName: string;
-                            /** @description User's last name */
-                            lastName: string;
+                            userId?: string;
+                            /** @description User's first name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                            firstName?: string;
+                            /** @description User's last name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                            lastName?: string;
                             /**
                              * Format: uri
-                             * @description URL to user's avatar image
+                             * @description URL to the user's avatar image.
                              */
                             avatarUrl?: string;
-                            /**
-                             * @description User account status
-                             * @enum {string}
-                             */
-                            status: "active" | "inactive" | "pending" | "anonymous";
-                            /**
-                             * @description User's biography or description
-                             * @default
-                             */
-                            bio: string;
-                            /** @description User's country information stored as JSONB */
-                            country?: {
-                                [key: string]: unknown;
-                            };
-                            /** @description User's region information stored as JSONB */
-                            region?: {
-                                [key: string]: unknown;
-                            };
-                            /** @description User preferences stored as JSONB */
-                            preferences?: {
-                                /** @description The mesh adapters of the preference. */
-                                meshAdapters?: Record<string, never>[];
-                                grafana?: {
-                                    /** @description Grafana URL for the user configuration. */
-                                    grafanaUrl?: string;
-                                    /** @description Grafana API key for the user configuration. */
-                                    grafanaApiKey?: string;
-                                    /** @description Selected Grafana board configurations for the user. */
-                                    selectedBoardsConfigs?: {
-                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                        board?: Record<string, never>;
-                                        /** @description Panels selected for the Grafana board configuration. */
-                                        panels?: Record<string, never>[];
-                                        /** @description Template variables applied to the selected Grafana board configuration. */
-                                        templateVars?: string[];
-                                    }[];
-                                };
-                                prometheus?: {
-                                    /** @description The prometheus URL of the prometheus. */
-                                    prometheusUrl?: string;
-                                    /** @description The selected prometheus boards configs of the prometheus. */
-                                    selectedPrometheusBoardsConfigs?: {
-                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                        board?: Record<string, never>;
-                                        /** @description Panels selected for the Grafana board configuration. */
-                                        panels?: Record<string, never>[];
-                                        /** @description Template variables applied to the selected Grafana board configuration. */
-                                        templateVars?: string[];
-                                    }[];
-                                };
-                                loadTestPrefs?: {
-                                    /** @description Concurrent requests */
-                                    c?: number;
-                                    /** @description Queries per second */
-                                    qps?: number;
-                                    /** @description Duration */
-                                    t?: string;
-                                    /** @description Load generator */
-                                    gen?: string;
-                                };
-                                /** @description The anonymous usage stats of the preference. */
-                                anonymousUsageStats: boolean;
-                                /** @description The anonymous perf results of the preference. */
-                                anonymousPerfResults: boolean;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp of when the resource was last updated.
-                                 */
-                                updatedAt: string;
-                                /** @description The dashboard preferences of the preference. */
-                                dashboardPreferences: {
-                                    [key: string]: unknown;
-                                };
-                                /**
-                                 * Format: uuid
-                                 * @description ID of the associated selectedOrganization.
-                                 */
-                                selectedOrganizationId: string;
-                                /** @description The selected workspace for organizations of the preference. */
-                                selectedWorkspaceForOrganizations: {
-                                    [key: string]: string;
-                                };
-                                /** @description The users extension preferences of the preference. */
-                                usersExtensionPreferences: {
-                                    [key: string]: unknown;
-                                };
-                                /** @description The remote provider preferences of the preference. */
-                                remoteProviderPreferences: {
-                                    [key: string]: unknown;
-                                };
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when user accepted terms and conditions
-                             */
-                            acceptedTermsAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of user's first login
-                             */
-                            firstLoginTime?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of user's most recent login
-                             */
-                            lastLoginTime: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was created
-                             */
-                            createdAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was last updated
-                             */
-                            updatedAt: string;
-                            /** @description Various online profiles associated with the user account */
-                            socials?: {
-                                /** @description The site of the social. */
-                                site: string;
-                                /**
-                                 * Format: uri
-                                 * @description The link of the social.
-                                 */
-                                link: string;
-                            }[];
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                             */
-                            deletedAt: string | null;
-                            /**
-                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
-                             * @example [
-                             *       "organization admin",
-                             *       "user"
-                             *     ]
-                             */
-                            roleNames?: string[];
-                            /** @description Teams the user belongs to with role information */
-                            teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: {
-                                    /**
-                                     * Format: uuid
-                                     * @description Unique identifier of the team.
-                                     */
-                                    id: string;
-                                    /** @description Name of the team. */
-                                    name: string;
-                                    /** @description Human readable description of the team. */
-                                    description?: string;
-                                    /**
-                                     * Format: uuid
-                                     * @description Identifier of the team owner.
-                                     */
-                                    owner?: string;
-                                    /** @description Free-form metadata associated with the team. */
-                                    metadata?: {
-                                        [key: string]: unknown;
-                                    };
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the team was created.
-                                     */
-                                    createdAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the team was last updated.
-                                     */
-                                    updatedAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
-                                     */
-                                    deletedAt?: string | null;
-                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-                                    roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
-                            };
-                            /** @description Organizations the user belongs to with role information */
-                            organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: {
-                                    /**
-                                     * Format: uuid
-                                     * @description Unique identifier of the organization.
-                                     */
-                                    id: string;
-                                    /** @description Name of the organization. */
-                                    name: string;
-                                    /** @description Human readable description of the organization. */
-                                    description?: string;
-                                    /** @description Country associated with the organization. */
-                                    country?: string;
-                                    /** @description Region associated with the organization. */
-                                    region?: string;
-                                    /**
-                                     * Format: uuid
-                                     * @description Identifier of the organization owner.
-                                     */
-                                    owner?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the organization was created.
-                                     */
-                                    createdAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the organization was last updated.
-                                     */
-                                    updatedAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
-                                     */
-                                    deletedAt?: string | null;
-                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-                                    roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
-                            };
                         } | null;
                         /** @description Optional structured location metadata (branch, host, path, ...). */
                         location?: {
@@ -5037,267 +3865,28 @@ export interface operations {
                          * @description Owning user ID.
                          */
                         userId?: string;
-                        /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                        /** @description Public projection of the owning user joined inline by the catalog list/get handlers when shaping responses. Uses CatalogAuthor instead of the full User schema because catalog endpoints are served to unauthenticated callers and may not expose email addresses (meshery/schemas#1106). Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
                              * Format: uuid
-                             * @description Unique identifier for the user
+                             * @description Unique identifier for the user.
                              */
                             id: string;
                             /**
+                             * Format: uuid
                              * @deprecated
-                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
                              */
-                            userId: string;
-                            /**
-                             * @description Authentication provider (e.g., Google, Github)
-                             * @example [
-                             *       "local",
-                             *       "github",
-                             *       "google",
-                             *       "twitter"
-                             *     ]
-                             */
-                            provider: string;
-                            /**
-                             * Format: email
-                             * @description User's email address
-                             */
-                            email: string;
-                            /** @description User's first name */
-                            firstName: string;
-                            /** @description User's last name */
-                            lastName: string;
+                            userId?: string;
+                            /** @description User's first name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                            firstName?: string;
+                            /** @description User's last name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                            lastName?: string;
                             /**
                              * Format: uri
-                             * @description URL to user's avatar image
+                             * @description URL to the user's avatar image.
                              */
                             avatarUrl?: string;
-                            /**
-                             * @description User account status
-                             * @enum {string}
-                             */
-                            status: "active" | "inactive" | "pending" | "anonymous";
-                            /**
-                             * @description User's biography or description
-                             * @default
-                             */
-                            bio: string;
-                            /** @description User's country information stored as JSONB */
-                            country?: {
-                                [key: string]: unknown;
-                            };
-                            /** @description User's region information stored as JSONB */
-                            region?: {
-                                [key: string]: unknown;
-                            };
-                            /** @description User preferences stored as JSONB */
-                            preferences?: {
-                                /** @description The mesh adapters of the preference. */
-                                meshAdapters?: Record<string, never>[];
-                                grafana?: {
-                                    /** @description Grafana URL for the user configuration. */
-                                    grafanaUrl?: string;
-                                    /** @description Grafana API key for the user configuration. */
-                                    grafanaApiKey?: string;
-                                    /** @description Selected Grafana board configurations for the user. */
-                                    selectedBoardsConfigs?: {
-                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                        board?: Record<string, never>;
-                                        /** @description Panels selected for the Grafana board configuration. */
-                                        panels?: Record<string, never>[];
-                                        /** @description Template variables applied to the selected Grafana board configuration. */
-                                        templateVars?: string[];
-                                    }[];
-                                };
-                                prometheus?: {
-                                    /** @description The prometheus URL of the prometheus. */
-                                    prometheusUrl?: string;
-                                    /** @description The selected prometheus boards configs of the prometheus. */
-                                    selectedPrometheusBoardsConfigs?: {
-                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                        board?: Record<string, never>;
-                                        /** @description Panels selected for the Grafana board configuration. */
-                                        panels?: Record<string, never>[];
-                                        /** @description Template variables applied to the selected Grafana board configuration. */
-                                        templateVars?: string[];
-                                    }[];
-                                };
-                                loadTestPrefs?: {
-                                    /** @description Concurrent requests */
-                                    c?: number;
-                                    /** @description Queries per second */
-                                    qps?: number;
-                                    /** @description Duration */
-                                    t?: string;
-                                    /** @description Load generator */
-                                    gen?: string;
-                                };
-                                /** @description The anonymous usage stats of the preference. */
-                                anonymousUsageStats: boolean;
-                                /** @description The anonymous perf results of the preference. */
-                                anonymousPerfResults: boolean;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp of when the resource was last updated.
-                                 */
-                                updatedAt: string;
-                                /** @description The dashboard preferences of the preference. */
-                                dashboardPreferences: {
-                                    [key: string]: unknown;
-                                };
-                                /**
-                                 * Format: uuid
-                                 * @description ID of the associated selectedOrganization.
-                                 */
-                                selectedOrganizationId: string;
-                                /** @description The selected workspace for organizations of the preference. */
-                                selectedWorkspaceForOrganizations: {
-                                    [key: string]: string;
-                                };
-                                /** @description The users extension preferences of the preference. */
-                                usersExtensionPreferences: {
-                                    [key: string]: unknown;
-                                };
-                                /** @description The remote provider preferences of the preference. */
-                                remoteProviderPreferences: {
-                                    [key: string]: unknown;
-                                };
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when user accepted terms and conditions
-                             */
-                            acceptedTermsAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of user's first login
-                             */
-                            firstLoginTime?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of user's most recent login
-                             */
-                            lastLoginTime: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was created
-                             */
-                            createdAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was last updated
-                             */
-                            updatedAt: string;
-                            /** @description Various online profiles associated with the user account */
-                            socials?: {
-                                /** @description The site of the social. */
-                                site: string;
-                                /**
-                                 * Format: uri
-                                 * @description The link of the social.
-                                 */
-                                link: string;
-                            }[];
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                             */
-                            deletedAt: string | null;
-                            /**
-                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
-                             * @example [
-                             *       "organization admin",
-                             *       "user"
-                             *     ]
-                             */
-                            roleNames?: string[];
-                            /** @description Teams the user belongs to with role information */
-                            teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: {
-                                    /**
-                                     * Format: uuid
-                                     * @description Unique identifier of the team.
-                                     */
-                                    id: string;
-                                    /** @description Name of the team. */
-                                    name: string;
-                                    /** @description Human readable description of the team. */
-                                    description?: string;
-                                    /**
-                                     * Format: uuid
-                                     * @description Identifier of the team owner.
-                                     */
-                                    owner?: string;
-                                    /** @description Free-form metadata associated with the team. */
-                                    metadata?: {
-                                        [key: string]: unknown;
-                                    };
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the team was created.
-                                     */
-                                    createdAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the team was last updated.
-                                     */
-                                    updatedAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
-                                     */
-                                    deletedAt?: string | null;
-                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-                                    roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
-                            };
-                            /** @description Organizations the user belongs to with role information */
-                            organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: {
-                                    /**
-                                     * Format: uuid
-                                     * @description Unique identifier of the organization.
-                                     */
-                                    id: string;
-                                    /** @description Name of the organization. */
-                                    name: string;
-                                    /** @description Human readable description of the organization. */
-                                    description?: string;
-                                    /** @description Country associated with the organization. */
-                                    country?: string;
-                                    /** @description Region associated with the organization. */
-                                    region?: string;
-                                    /**
-                                     * Format: uuid
-                                     * @description Identifier of the organization owner.
-                                     */
-                                    owner?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the organization was created.
-                                     */
-                                    createdAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the organization was last updated.
-                                     */
-                                    updatedAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
-                                     */
-                                    deletedAt?: string | null;
-                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-                                    roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
-                            };
                         } | null;
                         /** @description Optional structured location metadata (branch, host, path, ...). */
                         location?: {
@@ -5497,267 +4086,28 @@ export interface operations {
                          * @description Owning user ID.
                          */
                         userId?: string;
-                        /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                        /** @description Public projection of the owning user joined inline by the catalog list/get handlers when shaping responses. Uses CatalogAuthor instead of the full User schema because catalog endpoints are served to unauthenticated callers and may not expose email addresses (meshery/schemas#1106). Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
                              * Format: uuid
-                             * @description Unique identifier for the user
+                             * @description Unique identifier for the user.
                              */
                             id: string;
                             /**
+                             * Format: uuid
                              * @deprecated
-                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
                              */
-                            userId: string;
-                            /**
-                             * @description Authentication provider (e.g., Google, Github)
-                             * @example [
-                             *       "local",
-                             *       "github",
-                             *       "google",
-                             *       "twitter"
-                             *     ]
-                             */
-                            provider: string;
-                            /**
-                             * Format: email
-                             * @description User's email address
-                             */
-                            email: string;
-                            /** @description User's first name */
-                            firstName: string;
-                            /** @description User's last name */
-                            lastName: string;
+                            userId?: string;
+                            /** @description User's first name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                            firstName?: string;
+                            /** @description User's last name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                            lastName?: string;
                             /**
                              * Format: uri
-                             * @description URL to user's avatar image
+                             * @description URL to the user's avatar image.
                              */
                             avatarUrl?: string;
-                            /**
-                             * @description User account status
-                             * @enum {string}
-                             */
-                            status: "active" | "inactive" | "pending" | "anonymous";
-                            /**
-                             * @description User's biography or description
-                             * @default
-                             */
-                            bio: string;
-                            /** @description User's country information stored as JSONB */
-                            country?: {
-                                [key: string]: unknown;
-                            };
-                            /** @description User's region information stored as JSONB */
-                            region?: {
-                                [key: string]: unknown;
-                            };
-                            /** @description User preferences stored as JSONB */
-                            preferences?: {
-                                /** @description The mesh adapters of the preference. */
-                                meshAdapters?: Record<string, never>[];
-                                grafana?: {
-                                    /** @description Grafana URL for the user configuration. */
-                                    grafanaUrl?: string;
-                                    /** @description Grafana API key for the user configuration. */
-                                    grafanaApiKey?: string;
-                                    /** @description Selected Grafana board configurations for the user. */
-                                    selectedBoardsConfigs?: {
-                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                        board?: Record<string, never>;
-                                        /** @description Panels selected for the Grafana board configuration. */
-                                        panels?: Record<string, never>[];
-                                        /** @description Template variables applied to the selected Grafana board configuration. */
-                                        templateVars?: string[];
-                                    }[];
-                                };
-                                prometheus?: {
-                                    /** @description The prometheus URL of the prometheus. */
-                                    prometheusUrl?: string;
-                                    /** @description The selected prometheus boards configs of the prometheus. */
-                                    selectedPrometheusBoardsConfigs?: {
-                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                        board?: Record<string, never>;
-                                        /** @description Panels selected for the Grafana board configuration. */
-                                        panels?: Record<string, never>[];
-                                        /** @description Template variables applied to the selected Grafana board configuration. */
-                                        templateVars?: string[];
-                                    }[];
-                                };
-                                loadTestPrefs?: {
-                                    /** @description Concurrent requests */
-                                    c?: number;
-                                    /** @description Queries per second */
-                                    qps?: number;
-                                    /** @description Duration */
-                                    t?: string;
-                                    /** @description Load generator */
-                                    gen?: string;
-                                };
-                                /** @description The anonymous usage stats of the preference. */
-                                anonymousUsageStats: boolean;
-                                /** @description The anonymous perf results of the preference. */
-                                anonymousPerfResults: boolean;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp of when the resource was last updated.
-                                 */
-                                updatedAt: string;
-                                /** @description The dashboard preferences of the preference. */
-                                dashboardPreferences: {
-                                    [key: string]: unknown;
-                                };
-                                /**
-                                 * Format: uuid
-                                 * @description ID of the associated selectedOrganization.
-                                 */
-                                selectedOrganizationId: string;
-                                /** @description The selected workspace for organizations of the preference. */
-                                selectedWorkspaceForOrganizations: {
-                                    [key: string]: string;
-                                };
-                                /** @description The users extension preferences of the preference. */
-                                usersExtensionPreferences: {
-                                    [key: string]: unknown;
-                                };
-                                /** @description The remote provider preferences of the preference. */
-                                remoteProviderPreferences: {
-                                    [key: string]: unknown;
-                                };
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when user accepted terms and conditions
-                             */
-                            acceptedTermsAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of user's first login
-                             */
-                            firstLoginTime?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of user's most recent login
-                             */
-                            lastLoginTime: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was created
-                             */
-                            createdAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was last updated
-                             */
-                            updatedAt: string;
-                            /** @description Various online profiles associated with the user account */
-                            socials?: {
-                                /** @description The site of the social. */
-                                site: string;
-                                /**
-                                 * Format: uri
-                                 * @description The link of the social.
-                                 */
-                                link: string;
-                            }[];
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                             */
-                            deletedAt: string | null;
-                            /**
-                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
-                             * @example [
-                             *       "organization admin",
-                             *       "user"
-                             *     ]
-                             */
-                            roleNames?: string[];
-                            /** @description Teams the user belongs to with role information */
-                            teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: {
-                                    /**
-                                     * Format: uuid
-                                     * @description Unique identifier of the team.
-                                     */
-                                    id: string;
-                                    /** @description Name of the team. */
-                                    name: string;
-                                    /** @description Human readable description of the team. */
-                                    description?: string;
-                                    /**
-                                     * Format: uuid
-                                     * @description Identifier of the team owner.
-                                     */
-                                    owner?: string;
-                                    /** @description Free-form metadata associated with the team. */
-                                    metadata?: {
-                                        [key: string]: unknown;
-                                    };
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the team was created.
-                                     */
-                                    createdAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the team was last updated.
-                                     */
-                                    updatedAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
-                                     */
-                                    deletedAt?: string | null;
-                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-                                    roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
-                            };
-                            /** @description Organizations the user belongs to with role information */
-                            organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: {
-                                    /**
-                                     * Format: uuid
-                                     * @description Unique identifier of the organization.
-                                     */
-                                    id: string;
-                                    /** @description Name of the organization. */
-                                    name: string;
-                                    /** @description Human readable description of the organization. */
-                                    description?: string;
-                                    /** @description Country associated with the organization. */
-                                    country?: string;
-                                    /** @description Region associated with the organization. */
-                                    region?: string;
-                                    /**
-                                     * Format: uuid
-                                     * @description Identifier of the organization owner.
-                                     */
-                                    owner?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the organization was created.
-                                     */
-                                    createdAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the organization was last updated.
-                                     */
-                                    updatedAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
-                                     */
-                                    deletedAt?: string | null;
-                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-                                    roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
-                            };
                         } | null;
                         /** @description Optional structured location metadata (branch, host, path, ...). */
                         location?: {
@@ -6054,267 +4404,28 @@ export interface operations {
                          * @description Owning user ID.
                          */
                         userId?: string;
-                        /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                        /** @description Public projection of the owning user joined inline by the catalog list/get handlers when shaping responses. Uses CatalogAuthor instead of the full User schema because catalog endpoints are served to unauthenticated callers and may not expose email addresses (meshery/schemas#1106). Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
                              * Format: uuid
-                             * @description Unique identifier for the user
+                             * @description Unique identifier for the user.
                              */
                             id: string;
                             /**
+                             * Format: uuid
                              * @deprecated
-                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
                              */
-                            userId: string;
-                            /**
-                             * @description Authentication provider (e.g., Google, Github)
-                             * @example [
-                             *       "local",
-                             *       "github",
-                             *       "google",
-                             *       "twitter"
-                             *     ]
-                             */
-                            provider: string;
-                            /**
-                             * Format: email
-                             * @description User's email address
-                             */
-                            email: string;
-                            /** @description User's first name */
-                            firstName: string;
-                            /** @description User's last name */
-                            lastName: string;
+                            userId?: string;
+                            /** @description User's first name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                            firstName?: string;
+                            /** @description User's last name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                            lastName?: string;
                             /**
                              * Format: uri
-                             * @description URL to user's avatar image
+                             * @description URL to the user's avatar image.
                              */
                             avatarUrl?: string;
-                            /**
-                             * @description User account status
-                             * @enum {string}
-                             */
-                            status: "active" | "inactive" | "pending" | "anonymous";
-                            /**
-                             * @description User's biography or description
-                             * @default
-                             */
-                            bio: string;
-                            /** @description User's country information stored as JSONB */
-                            country?: {
-                                [key: string]: unknown;
-                            };
-                            /** @description User's region information stored as JSONB */
-                            region?: {
-                                [key: string]: unknown;
-                            };
-                            /** @description User preferences stored as JSONB */
-                            preferences?: {
-                                /** @description The mesh adapters of the preference. */
-                                meshAdapters?: Record<string, never>[];
-                                grafana?: {
-                                    /** @description Grafana URL for the user configuration. */
-                                    grafanaUrl?: string;
-                                    /** @description Grafana API key for the user configuration. */
-                                    grafanaApiKey?: string;
-                                    /** @description Selected Grafana board configurations for the user. */
-                                    selectedBoardsConfigs?: {
-                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                        board?: Record<string, never>;
-                                        /** @description Panels selected for the Grafana board configuration. */
-                                        panels?: Record<string, never>[];
-                                        /** @description Template variables applied to the selected Grafana board configuration. */
-                                        templateVars?: string[];
-                                    }[];
-                                };
-                                prometheus?: {
-                                    /** @description The prometheus URL of the prometheus. */
-                                    prometheusUrl?: string;
-                                    /** @description The selected prometheus boards configs of the prometheus. */
-                                    selectedPrometheusBoardsConfigs?: {
-                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                        board?: Record<string, never>;
-                                        /** @description Panels selected for the Grafana board configuration. */
-                                        panels?: Record<string, never>[];
-                                        /** @description Template variables applied to the selected Grafana board configuration. */
-                                        templateVars?: string[];
-                                    }[];
-                                };
-                                loadTestPrefs?: {
-                                    /** @description Concurrent requests */
-                                    c?: number;
-                                    /** @description Queries per second */
-                                    qps?: number;
-                                    /** @description Duration */
-                                    t?: string;
-                                    /** @description Load generator */
-                                    gen?: string;
-                                };
-                                /** @description The anonymous usage stats of the preference. */
-                                anonymousUsageStats: boolean;
-                                /** @description The anonymous perf results of the preference. */
-                                anonymousPerfResults: boolean;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp of when the resource was last updated.
-                                 */
-                                updatedAt: string;
-                                /** @description The dashboard preferences of the preference. */
-                                dashboardPreferences: {
-                                    [key: string]: unknown;
-                                };
-                                /**
-                                 * Format: uuid
-                                 * @description ID of the associated selectedOrganization.
-                                 */
-                                selectedOrganizationId: string;
-                                /** @description The selected workspace for organizations of the preference. */
-                                selectedWorkspaceForOrganizations: {
-                                    [key: string]: string;
-                                };
-                                /** @description The users extension preferences of the preference. */
-                                usersExtensionPreferences: {
-                                    [key: string]: unknown;
-                                };
-                                /** @description The remote provider preferences of the preference. */
-                                remoteProviderPreferences: {
-                                    [key: string]: unknown;
-                                };
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when user accepted terms and conditions
-                             */
-                            acceptedTermsAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of user's first login
-                             */
-                            firstLoginTime?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of user's most recent login
-                             */
-                            lastLoginTime: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was created
-                             */
-                            createdAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was last updated
-                             */
-                            updatedAt: string;
-                            /** @description Various online profiles associated with the user account */
-                            socials?: {
-                                /** @description The site of the social. */
-                                site: string;
-                                /**
-                                 * Format: uri
-                                 * @description The link of the social.
-                                 */
-                                link: string;
-                            }[];
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                             */
-                            deletedAt: string | null;
-                            /**
-                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
-                             * @example [
-                             *       "organization admin",
-                             *       "user"
-                             *     ]
-                             */
-                            roleNames?: string[];
-                            /** @description Teams the user belongs to with role information */
-                            teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: {
-                                    /**
-                                     * Format: uuid
-                                     * @description Unique identifier of the team.
-                                     */
-                                    id: string;
-                                    /** @description Name of the team. */
-                                    name: string;
-                                    /** @description Human readable description of the team. */
-                                    description?: string;
-                                    /**
-                                     * Format: uuid
-                                     * @description Identifier of the team owner.
-                                     */
-                                    owner?: string;
-                                    /** @description Free-form metadata associated with the team. */
-                                    metadata?: {
-                                        [key: string]: unknown;
-                                    };
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the team was created.
-                                     */
-                                    createdAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the team was last updated.
-                                     */
-                                    updatedAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
-                                     */
-                                    deletedAt?: string | null;
-                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-                                    roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
-                            };
-                            /** @description Organizations the user belongs to with role information */
-                            organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: {
-                                    /**
-                                     * Format: uuid
-                                     * @description Unique identifier of the organization.
-                                     */
-                                    id: string;
-                                    /** @description Name of the organization. */
-                                    name: string;
-                                    /** @description Human readable description of the organization. */
-                                    description?: string;
-                                    /** @description Country associated with the organization. */
-                                    country?: string;
-                                    /** @description Region associated with the organization. */
-                                    region?: string;
-                                    /**
-                                     * Format: uuid
-                                     * @description Identifier of the organization owner.
-                                     */
-                                    owner?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the organization was created.
-                                     */
-                                    createdAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the organization was last updated.
-                                     */
-                                    updatedAt?: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
-                                     */
-                                    deletedAt?: string | null;
-                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-                                    roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
-                            };
                         } | null;
                         /** @description Optional structured location metadata (branch, host, path, ...). */
                         location?: {
@@ -6487,267 +4598,28 @@ export interface operations {
                              * @description Owning user ID.
                              */
                             userId?: string;
-                            /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                            /** @description Public projection of the owning user joined inline by the catalog list/get handlers when shaping responses. Uses CatalogAuthor instead of the full User schema because catalog endpoints are served to unauthenticated callers and may not expose email addresses (meshery/schemas#1106). Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                             user?: {
                                 /**
                                  * Format: uuid
-                                 * @description Unique identifier for the user
+                                 * @description Unique identifier for the user.
                                  */
                                 id: string;
                                 /**
+                                 * Format: uuid
                                  * @deprecated
-                                 * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                                 * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
                                  */
-                                userId: string;
-                                /**
-                                 * @description Authentication provider (e.g., Google, Github)
-                                 * @example [
-                                 *       "local",
-                                 *       "github",
-                                 *       "google",
-                                 *       "twitter"
-                                 *     ]
-                                 */
-                                provider: string;
-                                /**
-                                 * Format: email
-                                 * @description User's email address
-                                 */
-                                email: string;
-                                /** @description User's first name */
-                                firstName: string;
-                                /** @description User's last name */
-                                lastName: string;
+                                userId?: string;
+                                /** @description User's first name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                                firstName?: string;
+                                /** @description User's last name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+                                lastName?: string;
                                 /**
                                  * Format: uri
-                                 * @description URL to user's avatar image
+                                 * @description URL to the user's avatar image.
                                  */
                                 avatarUrl?: string;
-                                /**
-                                 * @description User account status
-                                 * @enum {string}
-                                 */
-                                status: "active" | "inactive" | "pending" | "anonymous";
-                                /**
-                                 * @description User's biography or description
-                                 * @default
-                                 */
-                                bio: string;
-                                /** @description User's country information stored as JSONB */
-                                country?: {
-                                    [key: string]: unknown;
-                                };
-                                /** @description User's region information stored as JSONB */
-                                region?: {
-                                    [key: string]: unknown;
-                                };
-                                /** @description User preferences stored as JSONB */
-                                preferences?: {
-                                    /** @description The mesh adapters of the preference. */
-                                    meshAdapters?: Record<string, never>[];
-                                    grafana?: {
-                                        /** @description Grafana URL for the user configuration. */
-                                        grafanaUrl?: string;
-                                        /** @description Grafana API key for the user configuration. */
-                                        grafanaApiKey?: string;
-                                        /** @description Selected Grafana board configurations for the user. */
-                                        selectedBoardsConfigs?: {
-                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                            board?: Record<string, never>;
-                                            /** @description Panels selected for the Grafana board configuration. */
-                                            panels?: Record<string, never>[];
-                                            /** @description Template variables applied to the selected Grafana board configuration. */
-                                            templateVars?: string[];
-                                        }[];
-                                    };
-                                    prometheus?: {
-                                        /** @description The prometheus URL of the prometheus. */
-                                        prometheusUrl?: string;
-                                        /** @description The selected prometheus boards configs of the prometheus. */
-                                        selectedPrometheusBoardsConfigs?: {
-                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                            board?: Record<string, never>;
-                                            /** @description Panels selected for the Grafana board configuration. */
-                                            panels?: Record<string, never>[];
-                                            /** @description Template variables applied to the selected Grafana board configuration. */
-                                            templateVars?: string[];
-                                        }[];
-                                    };
-                                    loadTestPrefs?: {
-                                        /** @description Concurrent requests */
-                                        c?: number;
-                                        /** @description Queries per second */
-                                        qps?: number;
-                                        /** @description Duration */
-                                        t?: string;
-                                        /** @description Load generator */
-                                        gen?: string;
-                                    };
-                                    /** @description The anonymous usage stats of the preference. */
-                                    anonymousUsageStats: boolean;
-                                    /** @description The anonymous perf results of the preference. */
-                                    anonymousPerfResults: boolean;
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp of when the resource was last updated.
-                                     */
-                                    updatedAt: string;
-                                    /** @description The dashboard preferences of the preference. */
-                                    dashboardPreferences: {
-                                        [key: string]: unknown;
-                                    };
-                                    /**
-                                     * Format: uuid
-                                     * @description ID of the associated selectedOrganization.
-                                     */
-                                    selectedOrganizationId: string;
-                                    /** @description The selected workspace for organizations of the preference. */
-                                    selectedWorkspaceForOrganizations: {
-                                        [key: string]: string;
-                                    };
-                                    /** @description The users extension preferences of the preference. */
-                                    usersExtensionPreferences: {
-                                        [key: string]: unknown;
-                                    };
-                                    /** @description The remote provider preferences of the preference. */
-                                    remoteProviderPreferences: {
-                                        [key: string]: unknown;
-                                    };
-                                };
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp when user accepted terms and conditions
-                                 */
-                                acceptedTermsAt?: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp of user's first login
-                                 */
-                                firstLoginTime?: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp of user's most recent login
-                                 */
-                                lastLoginTime: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp when the user record was created
-                                 */
-                                createdAt: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp when the user record was last updated
-                                 */
-                                updatedAt: string;
-                                /** @description Various online profiles associated with the user account */
-                                socials?: {
-                                    /** @description The site of the social. */
-                                    site: string;
-                                    /**
-                                     * Format: uri
-                                     * @description The link of the social.
-                                     */
-                                    link: string;
-                                }[];
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                                 */
-                                deletedAt: string | null;
-                                /**
-                                 * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
-                                 * @example [
-                                 *       "organization admin",
-                                 *       "user"
-                                 *     ]
-                                 */
-                                roleNames?: string[];
-                                /** @description Teams the user belongs to with role information */
-                                teams?: {
-                                    /** @description Team memberships for the user with their assigned roles. */
-                                    teamsWithRoles?: {
-                                        /**
-                                         * Format: uuid
-                                         * @description Unique identifier of the team.
-                                         */
-                                        id: string;
-                                        /** @description Name of the team. */
-                                        name: string;
-                                        /** @description Human readable description of the team. */
-                                        description?: string;
-                                        /**
-                                         * Format: uuid
-                                         * @description Identifier of the team owner.
-                                         */
-                                        owner?: string;
-                                        /** @description Free-form metadata associated with the team. */
-                                        metadata?: {
-                                            [key: string]: unknown;
-                                        };
-                                        /**
-                                         * Format: date-time
-                                         * @description Timestamp when the team was created.
-                                         */
-                                        createdAt?: string;
-                                        /**
-                                         * Format: date-time
-                                         * @description Timestamp when the team was last updated.
-                                         */
-                                        updatedAt?: string;
-                                        /**
-                                         * Format: date-time
-                                         * @description Timestamp when the team was soft-deleted (null if not deleted).
-                                         */
-                                        deletedAt?: string | null;
-                                        /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-                                        roleNames: string[];
-                                    }[];
-                                    /** @description Total number of team memberships returned for the user. */
-                                    totalCount?: number;
-                                };
-                                /** @description Organizations the user belongs to with role information */
-                                organizations?: {
-                                    /** @description Organization memberships for the user with their assigned roles. */
-                                    organizationsWithRoles?: {
-                                        /**
-                                         * Format: uuid
-                                         * @description Unique identifier of the organization.
-                                         */
-                                        id: string;
-                                        /** @description Name of the organization. */
-                                        name: string;
-                                        /** @description Human readable description of the organization. */
-                                        description?: string;
-                                        /** @description Country associated with the organization. */
-                                        country?: string;
-                                        /** @description Region associated with the organization. */
-                                        region?: string;
-                                        /**
-                                         * Format: uuid
-                                         * @description Identifier of the organization owner.
-                                         */
-                                        owner?: string;
-                                        /**
-                                         * Format: date-time
-                                         * @description Timestamp when the organization was created.
-                                         */
-                                        createdAt?: string;
-                                        /**
-                                         * Format: date-time
-                                         * @description Timestamp when the organization was last updated.
-                                         */
-                                        updatedAt?: string;
-                                        /**
-                                         * Format: date-time
-                                         * @description Timestamp when the organization was soft-deleted (null if not deleted).
-                                         */
-                                        deletedAt?: string | null;
-                                        /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-                                        roleNames: string[];
-                                    }[];
-                                    /** @description Total number of organization memberships returned for the user. */
-                                    totalCount?: number;
-                                };
                             } | null;
                             /** @description Optional structured location metadata (branch, host, path, ...). */
                             location?: {
@@ -6975,7 +4847,7 @@ export interface operations {
                         user?: {
                             /**
                              * Format: uuid
-                             * @description Unique identifier for the user
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             id: string;
                             /**
@@ -7152,7 +5024,7 @@ export interface operations {
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
-                                     * @description Unique identifier of the team.
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                      */
                                     id: string;
                                     /** @description Name of the team. */
@@ -7161,7 +5033,7 @@ export interface operations {
                                     description?: string;
                                     /**
                                      * Format: uuid
-                                     * @description Identifier of the team owner.
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                      */
                                     owner?: string;
                                     /** @description Free-form metadata associated with the team. */
@@ -7195,7 +5067,7 @@ export interface operations {
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
-                                     * @description Unique identifier of the organization.
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                      */
                                     id: string;
                                     /** @description Name of the organization. */
@@ -7208,7 +5080,7 @@ export interface operations {
                                     region?: string;
                                     /**
                                      * Format: uuid
-                                     * @description Identifier of the organization owner.
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                      */
                                     owner?: string;
                                     /**
@@ -7357,7 +5229,7 @@ export interface operations {
                         user?: {
                             /**
                              * Format: uuid
-                             * @description Unique identifier for the user
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             id: string;
                             /**
@@ -7534,7 +5406,7 @@ export interface operations {
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
-                                     * @description Unique identifier of the team.
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                      */
                                     id: string;
                                     /** @description Name of the team. */
@@ -7543,7 +5415,7 @@ export interface operations {
                                     description?: string;
                                     /**
                                      * Format: uuid
-                                     * @description Identifier of the team owner.
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                      */
                                     owner?: string;
                                     /** @description Free-form metadata associated with the team. */
@@ -7577,7 +5449,7 @@ export interface operations {
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
-                                     * @description Unique identifier of the organization.
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                      */
                                     id: string;
                                     /** @description Name of the organization. */
@@ -7590,7 +5462,7 @@ export interface operations {
                                     region?: string;
                                     /**
                                      * Format: uuid
-                                     * @description Identifier of the organization owner.
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                      */
                                     owner?: string;
                                     /**
@@ -8132,7 +6004,7 @@ export interface operations {
                             user?: {
                                 /**
                                  * Format: uuid
-                                 * @description Unique identifier for the user
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                  */
                                 id: string;
                                 /**
@@ -8309,7 +6181,7 @@ export interface operations {
                                     teamsWithRoles?: {
                                         /**
                                          * Format: uuid
-                                         * @description Unique identifier of the team.
+                                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                          */
                                         id: string;
                                         /** @description Name of the team. */
@@ -8318,7 +6190,7 @@ export interface operations {
                                         description?: string;
                                         /**
                                          * Format: uuid
-                                         * @description Identifier of the team owner.
+                                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                          */
                                         owner?: string;
                                         /** @description Free-form metadata associated with the team. */
@@ -8352,7 +6224,7 @@ export interface operations {
                                     organizationsWithRoles?: {
                                         /**
                                          * Format: uuid
-                                         * @description Unique identifier of the organization.
+                                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                          */
                                         id: string;
                                         /** @description Name of the organization. */
@@ -8365,7 +6237,7 @@ export interface operations {
                                         region?: string;
                                         /**
                                          * Format: uuid
-                                         * @description Identifier of the organization owner.
+                                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                          */
                                         owner?: string;
                                         /**

@@ -15459,179 +15459,19 @@ export type ImportDesignApiResponse =
     };
     /** Owning user ID. */
     userId?: string;
-    /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
+    /** Public projection of the owning user joined inline by the catalog list/get handlers when shaping responses. Uses CatalogAuthor instead of the full User schema because catalog endpoints are served to unauthenticated callers and may not expose email addresses (meshery/schemas#1106). Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
-      /** Unique identifier for the user */
+      /** Unique identifier for the user. */
       id: string;
-      /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
-      userId: string;
-      /** Authentication provider (e.g., Google, Github) */
-      provider: string;
-      /** User's email address */
-      email: string;
-      /** User's first name */
-      firstName: string;
-      /** User's last name */
-      lastName: string;
-      /** URL to user's avatar image */
+      /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
+      userId?: string;
+      /** User's first name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+      firstName?: string;
+      /** User's last name. Real names are permitted on public catalog responses under the Cloud privacy ruling. */
+      lastName?: string;
+      /** URL to the user's avatar image. */
       avatarUrl?: string;
-      /** User account status */
-      status: "active" | "inactive" | "pending" | "anonymous";
-      /** User's biography or description */
-      bio?: string;
-      /** User's country information stored as JSONB */
-      country?: {
-        [key: string]: any;
-      };
-      /** User's region information stored as JSONB */
-      region?: {
-        [key: string]: any;
-      };
-      /** User preferences stored as JSONB */
-      preferences?: {
-        /** The mesh adapters of the preference. */
-        meshAdapters?: object[];
-        grafana?: {
-          /** Grafana URL for the user configuration. */
-          grafanaUrl?: string;
-          /** Grafana API key for the user configuration. */
-          grafanaApiKey?: string;
-          /** Selected Grafana board configurations for the user. */
-          selectedBoardsConfigs?: {
-            /** Placeholder for GrafanaBoard definition (define fields as needed) */
-            board?: object;
-            /** Panels selected for the Grafana board configuration. */
-            panels?: object[];
-            /** Template variables applied to the selected Grafana board configuration. */
-            templateVars?: string[];
-          }[];
-        };
-        prometheus?: {
-          /** The prometheus URL of the prometheus. */
-          prometheusUrl?: string;
-          /** The selected prometheus boards configs of the prometheus. */
-          selectedPrometheusBoardsConfigs?: {
-            /** Placeholder for GrafanaBoard definition (define fields as needed) */
-            board?: object;
-            /** Panels selected for the Grafana board configuration. */
-            panels?: object[];
-            /** Template variables applied to the selected Grafana board configuration. */
-            templateVars?: string[];
-          }[];
-        };
-        loadTestPrefs?: {
-          /** Concurrent requests */
-          c?: number;
-          /** Queries per second */
-          qps?: number;
-          /** Duration */
-          t?: string;
-          /** Load generator */
-          gen?: string;
-        };
-        /** The anonymous usage stats of the preference. */
-        anonymousUsageStats: boolean;
-        /** The anonymous perf results of the preference. */
-        anonymousPerfResults: boolean;
-        /** Timestamp of when the resource was last updated. */
-        updatedAt: string;
-        /** The dashboard preferences of the preference. */
-        dashboardPreferences: {
-          [key: string]: any;
-        };
-        /** ID of the associated selectedOrganization. */
-        selectedOrganizationId: string;
-        /** The selected workspace for organizations of the preference. */
-        selectedWorkspaceForOrganizations: {
-          [key: string]: string;
-        };
-        /** The users extension preferences of the preference. */
-        usersExtensionPreferences: {
-          [key: string]: any;
-        };
-        /** The remote provider preferences of the preference. */
-        remoteProviderPreferences: {
-          [key: string]: any;
-        };
-      };
-      /** Timestamp when user accepted terms and conditions */
-      acceptedTermsAt?: string;
-      /** Timestamp of user's first login */
-      firstLoginTime?: string;
-      /** Timestamp of user's most recent login */
-      lastLoginTime: string;
-      /** Timestamp when the user record was created */
-      createdAt: string;
-      /** Timestamp when the user record was last updated */
-      updatedAt: string;
-      /** Various online profiles associated with the user account */
-      socials?: {
-        /** The site of the social. */
-        site: string;
-        /** The link of the social. */
-        link: string;
-      }[];
-      /** Timestamp when the user record was soft-deleted (null if not deleted) */
-      deletedAt: string | null;
-      /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
-      roleNames?: string[];
-      /** Teams the user belongs to with role information */
-      teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
-      };
-      /** Organizations the user belongs to with role information */
-      organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
-      };
     } | null;
     /** Optional structured location metadata (branch, host, path, ...). */
     location?: {
