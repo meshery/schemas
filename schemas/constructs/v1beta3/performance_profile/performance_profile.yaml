@@ -8,6 +8,8 @@ description: >-
   Learn more at https://docs.meshery.io/tasks/performance-management
 additionalProperties: false
 type: object
+example:
+  $ref: "./templates/performance_profile_template.json"
 required:
   - id
   - name

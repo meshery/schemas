@@ -6,6 +6,8 @@ description: >-
   Learn more at https://docs.meshery.io/concepts/logical/organizations
 type: object
 additionalProperties: false
+example:
+  $ref: "./templates/organization_template.json"
 required:
   - id
   - name

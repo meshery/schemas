@@ -3,6 +3,8 @@ additionalProperties: false
 description: >-
   A feature is a quantified entitlement granted to an organization through its
   subscription plan, such as the number of components allowed in a design.
+example:
+  $ref: "./templates/feature_template.json"
 required:
   - id
   - plan_id

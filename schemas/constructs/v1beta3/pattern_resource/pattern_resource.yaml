@@ -10,6 +10,8 @@ description: |
   to `namespace`.
 type: object
 additionalProperties: false
+example:
+  $ref: "./templates/pattern_resource_template.json"
 required:
   - id
   - userId

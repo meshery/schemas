@@ -1,6 +1,8 @@
 type: object
 additionalProperties: false
 description: Represents a user-owned API token or OAuth session.
+example:
+  $ref: "./templates/token_template.json"
 properties:
   id:
     $ref: ../core/api.yml#/components/schemas/Uuid

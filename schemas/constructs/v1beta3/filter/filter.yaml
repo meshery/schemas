@@ -9,6 +9,8 @@ description: |
   `meshery_filters` table has no `view_count` / `download_count` columns).
 type: object
 additionalProperties: false
+example:
+  $ref: "./templates/filter_template.json"
 required:
   - id
   - name
