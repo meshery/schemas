@@ -208,6 +208,33 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/identity/users/notify/feedback:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: notifyUserFeedback
+      summary: Submit user feedback
+      description: >-
+        Accepts a user feedback submission (message, scope, and page location)
+        and records it for product follow-up. Required fields that are empty
+        are rejected with 400.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedbackRequestBody"
+      responses:
+        "200":
+          description: Feedback received
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/identity/users/anonymous:
     post:
       x-internal: ["cloud"]
@@ -1335,6 +1362,37 @@ components:
           items:
             $ref: "#/components/schemas/MentionMessage"
           description: The comment messages to include in the notification email.
+
+    FeedbackRequestBody:
+      type: object
+      additionalProperties: false
+      description: >-
+        Request body for submitting user feedback from a Meshery UI surface.
+        message, scope, and pageLocation are required and must be non-empty.
+      required:
+        - message
+        - scope
+        - pageLocation
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 10000
+          description: Feedback message text from the user.
+        scope:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Product or feature area the feedback concerns.
+        pageLocation:
+          type: string
+          minLength: 1
+          maxLength: 2048
+          description: Page or route where the feedback was submitted.
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Optional unstructured context attached to the feedback.
 
     AnonymousFlowResponse:
       type: object
