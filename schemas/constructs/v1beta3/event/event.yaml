@@ -42,6 +42,11 @@ properties:
     type: string
     description: The last name of the user associated with the event.
     maxLength: 500
+  avatarUrl:
+    type: string
+    format: uri
+    maxLength: 500
+    description: URL to the avatar image of the user associated with the event.
   email:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Email
     description: Email address of the user associated with the event.

@@ -246,6 +246,11 @@ export interface components {
             /** @description The last name of the user associated with the event. */
             lastName?: string;
             /**
+             * Format: uri
+             * @description URL to the avatar image of the user associated with the event.
+             */
+            avatarUrl?: string;
+            /**
              * Format: email
              * @description Email address of the user associated with the event.
              */
@@ -285,6 +290,11 @@ export interface components {
                 firstName?: string;
                 /** @description The last name of the user associated with the event. */
                 lastName?: string;
+                /**
+                 * Format: uri
+                 * @description URL to the avatar image of the user associated with the event.
+                 */
+                avatarUrl?: string;
                 /**
                  * Format: email
                  * @description Email address of the user associated with the event.
@@ -721,6 +731,11 @@ export interface operations {
                             /** @description The last name of the user associated with the event. */
                             lastName?: string;
                             /**
+                             * Format: uri
+                             * @description URL to the avatar image of the user associated with the event.
+                             */
+                            avatarUrl?: string;
+                            /**
                              * Format: email
                              * @description Email address of the user associated with the event.
                              */
@@ -935,6 +950,11 @@ export interface operations {
                             firstName?: string;
                             /** @description The last name of the user associated with the event. */
                             lastName?: string;
+                            /**
+                             * Format: uri
+                             * @description URL to the avatar image of the user associated with the event.
+                             */
+                            avatarUrl?: string;
                             /**
                              * Format: email
                              * @description Email address of the user associated with the event.
