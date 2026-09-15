@@ -1,0 +1,61 @@
+openapi: 3.0.0
+info:
+  title: provider_capabilities
+  description: >-
+    Meshery Server REST API for retrieving the capabilities and metadata of the
+    provider currently in use.
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: v1beta3
+servers:
+  - url: http://localhost:9081
+    description: Meshery Server URL (controlled via PORT environment variable)
+security:
+  - jwt: []
+tags:
+  - name: provider
+    description: Operations related to the Meshery provider.
+paths:
+  /api/provider/capabilities:
+    get:
+      x-internal:
+        - meshery
+      tags:
+        - provider
+      summary: Get provider capabilities
+      operationId: getProviderCapabilities
+      description: >-
+        Retrieves the capabilities and metadata of the Meshery provider
+        currently in use (local or remote): the provider type, the features it
+        supports and their backing endpoints, its UI extension points, and any
+        access restrictions.
+      responses:
+        '200':
+          description: Provider capabilities response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderCapabilities'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    401:
+      $ref: ../../v1beta2/core/api.yml#/components/responses/401
+    500:
+      $ref: ../../v1beta2/core/api.yml#/components/responses/500
+  schemas:
+    ProviderCapabilities:
+      $ref: ./provider_capabilities.yaml
