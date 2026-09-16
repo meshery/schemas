@@ -1951,9 +1951,9 @@ export type GetOrganizationSmtpConfigurationApiResponse = /** status 200 The org
   fromDisplayName?: string;
   /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
   replyToAddress?: string;
-  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in meshery-cloud#6057. `ignored` means an administrator turned it off.
     
-    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
   status: "registered" | "connected" | "disconnected" | "ignored";
   /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
   fallbackToProvider: boolean;
@@ -1979,7 +1979,7 @@ export type GetOrganizationSmtpConfigurationApiResponse = /** status 200 The org
     | "relay_rejected_recipient"
     | "delivery_failed"
     | "credential_unreadable";
-  /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+  /** Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057. */
   consecutiveFailures: number;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string | null;
@@ -2018,9 +2018,9 @@ export type CreateOrganizationSmtpConfigurationApiResponse = /** status 201 The 
   fromDisplayName?: string;
   /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
   replyToAddress?: string;
-  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in meshery-cloud#6057. `ignored` means an administrator turned it off.
     
-    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
   status: "registered" | "connected" | "disconnected" | "ignored";
   /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
   fallbackToProvider: boolean;
@@ -2046,7 +2046,7 @@ export type CreateOrganizationSmtpConfigurationApiResponse = /** status 201 The 
     | "relay_rejected_recipient"
     | "delivery_failed"
     | "credential_unreadable";
-  /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+  /** Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057. */
   consecutiveFailures: number;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string | null;
@@ -2110,9 +2110,9 @@ export type UpdateOrganizationSmtpConfigurationApiResponse = /** status 200 The 
   fromDisplayName?: string;
   /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
   replyToAddress?: string;
-  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in meshery-cloud#6057. `ignored` means an administrator turned it off.
     
-    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
   status: "registered" | "connected" | "disconnected" | "ignored";
   /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
   fallbackToProvider: boolean;
@@ -2138,7 +2138,7 @@ export type UpdateOrganizationSmtpConfigurationApiResponse = /** status 200 The 
     | "relay_rejected_recipient"
     | "delivery_failed"
     | "credential_unreadable";
-  /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+  /** Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057. */
   consecutiveFailures: number;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string | null;
@@ -2198,9 +2198,9 @@ export type RotateOrganizationSmtpCredentialApiResponse =
     fromDisplayName?: string;
     /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
     replyToAddress?: string;
-    /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+    /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in meshery-cloud#6057. `ignored` means an administrator turned it off.
     
-    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
     status: "registered" | "connected" | "disconnected" | "ignored";
     /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
     fallbackToProvider: boolean;
@@ -2226,7 +2226,7 @@ export type RotateOrganizationSmtpCredentialApiResponse =
       | "relay_rejected_recipient"
       | "delivery_failed"
       | "credential_unreadable";
-    /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+    /** Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057. */
     consecutiveFailures: number;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     createdBy?: string | null;
@@ -2269,9 +2269,9 @@ export type SetOrganizationSmtpEnablementApiResponse = /** status 200 The stored
   fromDisplayName?: string;
   /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
   replyToAddress?: string;
-  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means consecutive failures opened the circuit, so the server is no longer dialled and the fallback setting decides what happens. `ignored` means an administrator turned it off.
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in meshery-cloud#6057. `ignored` means an administrator turned it off.
     
-    The writers are disjoint on purpose: only an administrator writes `ignored`, and only the delivery circuit writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
   status: "registered" | "connected" | "disconnected" | "ignored";
   /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
   fallbackToProvider: boolean;
@@ -2297,7 +2297,7 @@ export type SetOrganizationSmtpEnablementApiResponse = /** status 200 The stored
     | "relay_rejected_recipient"
     | "delivery_failed"
     | "credential_unreadable";
-  /** Delivery failures since the last success. Drives the circuit that stops dialling a persistently unreachable server. */
+  /** Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057. */
   consecutiveFailures: number;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string | null;
@@ -3353,6 +3353,8 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
             linkedin?: string;
             /** URL of the organization's X (formerly Twitter) profile. */
             x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3485,6 +3487,8 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
             linkedin?: string;
             /** URL of the organization's X (formerly Twitter) profile. */
             x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3593,6 +3597,8 @@ export type CreateOrgApiArg = {
           linkedin?: string;
           /** URL of the organization's X (formerly Twitter) profile. */
           x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
         };
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3734,6 +3740,8 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
             linkedin?: string;
             /** URL of the organization's X (formerly Twitter) profile. */
             x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3863,6 +3871,8 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
             linkedin?: string;
             /** URL of the organization's X (formerly Twitter) profile. */
             x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3973,6 +3983,8 @@ export type UpdateOrgApiArg = {
           linkedin?: string;
           /** URL of the organization's X (formerly Twitter) profile. */
           x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
         };
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -4062,6 +4074,8 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
         linkedin?: string;
         /** URL of the organization's X (formerly Twitter) profile. */
         x?: string;
+        /** URL of the organization's YouTube channel. */
+        youtube?: string;
       };
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
