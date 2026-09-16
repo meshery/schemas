@@ -483,3 +483,121 @@ func TestCheckRule48_RefTargetInArrayItems_NoBlockingViolation(t *testing.T) {
 		t.Errorf("expected SeverityAdvisory for component schema, got %v", vs[0].Severity)
 	}
 }
+
+func TestCheckRule48_AllOfWrapper_NoViolation(t *testing.T) {
+	trueVal := true
+	wrapperSchema := &openapi3.Schema{
+		Type: &openapi3.Types{"object"},
+		AdditionalProperties: openapi3.AdditionalProperties{
+			Has: &trueVal,
+		},
+		AllOf: openapi3.SchemaRefs{
+			{
+				Value: &openapi3.Schema{
+					Type: &openapi3.Types{"object"},
+					Properties: openapi3.Schemas{
+						"id": &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+					},
+				},
+			},
+		},
+	}
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"Wrapper": &openapi3.SchemaRef{Value: wrapperSchema},
+			},
+		},
+	}
+
+	vs := checkRule48("api.yml", doc, AuditOptions{})
+	if len(vs) != 0 {
+		t.Errorf("expected 0 violations for allOf wrapper schema, got %d: %v", len(vs), vs)
+	}
+}
+
+func TestCheckRule48_GenericJSONDescription_Violation(t *testing.T) {
+	trueVal := true
+	placeholderSchema := &openapi3.Schema{
+		Type:        &openapi3.Types{"object"},
+		Description: "JSON object returned by the service.",
+		AdditionalProperties: openapi3.AdditionalProperties{
+			Has: &trueVal,
+		},
+	}
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"ServicePayload": &openapi3.SchemaRef{Value: placeholderSchema},
+			},
+		},
+	}
+
+	vs := checkRule48("api.yml", doc, AuditOptions{})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation for generic JSON description, got %d", len(vs))
+	}
+	if vs[0].RuleNumber != 48 {
+		t.Errorf("expected Rule 48, got %d", vs[0].RuleNumber)
+	}
+}
+
+func TestCheckRule48_AllHTTPMethods_Covered(t *testing.T) {
+	trueVal := true
+	placeholderSchema := &openapi3.Schema{
+		Type: &openapi3.Types{"object"},
+		AdditionalProperties: openapi3.AdditionalProperties{
+			Has: &trueVal,
+		},
+	}
+	arraySchema := &openapi3.Schema{
+		Type:  &openapi3.Types{"array"},
+		Items: &openapi3.SchemaRef{Value: placeholderSchema},
+	}
+
+	for _, method := range []string{"options", "head", "trace", "patch", "delete"} {
+		resp := &openapi3.Response{
+			Content: openapi3.Content{
+				"application/json": &openapi3.MediaType{
+					Schema: &openapi3.SchemaRef{Value: arraySchema},
+				},
+			},
+		}
+		responses := openapi3.NewResponses()
+		responses.Set("200", &openapi3.ResponseRef{Value: resp})
+		op := &openapi3.Operation{Responses: responses}
+
+		pathItem := &openapi3.PathItem{}
+		switch method {
+		case "options":
+			pathItem.Options = op
+		case "head":
+			pathItem.Head = op
+		case "trace":
+			pathItem.Trace = op
+		case "patch":
+			pathItem.Patch = op
+		case "delete":
+			pathItem.Delete = op
+		}
+
+		doc := &openapi3.T{
+			OpenAPI: "3.0.0",
+			Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+			Paths:   openapi3.NewPaths(),
+		}
+		doc.Paths.Set("/api/test", pathItem)
+
+		vs := checkRule48("api.yml", doc, AuditOptions{})
+		if len(vs) != 1 {
+			t.Errorf("method %s: expected 1 violation, got %d", method, len(vs))
+		}
+		if len(vs) > 0 && vs[0].Severity != SeverityBlocking {
+			t.Errorf("method %s: expected SeverityBlocking, got %v", method, vs[0].Severity)
+		}
+	}
+}

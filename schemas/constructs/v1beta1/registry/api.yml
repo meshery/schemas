@@ -1172,10 +1172,13 @@ components:
             policies:
               type: array
               items:
-                type: object
-                description: A registered policy definition.
-                additionalProperties: true
+                $ref: "#/components/schemas/RegistryPolicy"
               description: The policies matching the query.
+
+    RegistryPolicy:
+      type: object
+      description: A registered policy definition.
+      additionalProperties: true
 
     RegistryRegistrant:
       description: >-

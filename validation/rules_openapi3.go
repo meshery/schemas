@@ -223,7 +223,34 @@ const (
 
 var freeFormKeywords = []string{
 	"free-form", "freeform", "arbitrary", "opaque", "key-value",
-	"metadata", "dictionary", "map", "json", "jsonb", "serializer",
+	"metadata", "dictionary", "map",
+}
+
+var allHTTPMethods = []string{"get", "post", "put", "delete", "options", "head", "patch", "trace"}
+
+func getPathItemOperation(item *openapi3.PathItem, method string) *openapi3.Operation {
+	if item == nil {
+		return nil
+	}
+	switch strings.ToLower(method) {
+	case "get":
+		return item.Get
+	case "post":
+		return item.Post
+	case "put":
+		return item.Put
+	case "delete":
+		return item.Delete
+	case "options":
+		return item.Options
+	case "head":
+		return item.Head
+	case "patch":
+		return item.Patch
+	case "trace":
+		return item.Trace
+	}
+	return nil
 }
 
 var reservedMapPropNames = map[string]bool{
@@ -293,8 +320,8 @@ func checkRule48(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 			if item == nil {
 				continue
 			}
-			for _, method := range httpMethods {
-				op := getOperation(item, method)
+			for _, method := range allHTTPMethods {
+				op := getPathItemOperation(item, method)
 				if op == nil {
 					continue
 				}
@@ -302,7 +329,13 @@ func checkRule48(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 
 				// Walk RequestBody
 				if op.RequestBody != nil && op.RequestBody.Value != nil {
-					for contentType, media := range op.RequestBody.Value.Content {
+					contentTypes := make([]string, 0, len(op.RequestBody.Value.Content))
+					for ct := range op.RequestBody.Value.Content {
+						contentTypes = append(contentTypes, ct)
+					}
+					sort.Strings(contentTypes)
+					for _, contentType := range contentTypes {
+						media := op.RequestBody.Value.Content[contentType]
 						if media != nil && media.Schema != nil && media.Schema.Value != nil {
 							label := fmt.Sprintf("%s requestBody (%s)", opLabel, contentType)
 							walkPlaceholderSchemas(filePath, label, "", media.Schema, contextRequestBody, opts, &out, onPath, visited)
@@ -323,7 +356,13 @@ func checkRule48(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 						if respRef == nil || respRef.Value == nil {
 							continue
 						}
-						for contentType, media := range respRef.Value.Content {
+						contentTypes := make([]string, 0, len(respRef.Value.Content))
+						for ct := range respRef.Value.Content {
+							contentTypes = append(contentTypes, ct)
+						}
+						sort.Strings(contentTypes)
+						for _, contentType := range contentTypes {
+							media := respRef.Value.Content[contentType]
 							if media != nil && media.Schema != nil && media.Schema.Value != nil {
 								label := fmt.Sprintf("%s response %s (%s)", opLabel, code, contentType)
 								walkPlaceholderSchemas(filePath, label, "", media.Schema, contextResponse, opts, &out, onPath, visited)
@@ -362,6 +401,9 @@ func walkPlaceholderSchemas(
 		schema.AdditionalProperties.Has != nil && *schema.AdditionalProperties.Has &&
 		schema.AdditionalProperties.Schema == nil &&
 		len(schema.Properties) == 0 &&
+		len(schema.AllOf) == 0 &&
+		len(schema.OneOf) == 0 &&
+		len(schema.AnyOf) == 0 &&
 		!hasFreeFormIntentDescription(schema.Description) &&
 		!isReservedMapPropertyName(propName)
 
