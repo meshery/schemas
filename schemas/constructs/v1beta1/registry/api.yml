@@ -138,6 +138,54 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/registry/registrants/{connectionId}/models:
+    delete:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: deleteRegistryModelsByRegistrant
+      summary: Delete all registered models for a registrant
+      description: >-
+        Deletes all model definitions, components, relationships, and policies
+        belonging to a specific registrant connection ID.
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          description: Connection ID of the registrant
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Models deleted for registrant.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                  - count
+                  - connectionName
+                properties:
+                  message:
+                    type: string
+                    example: Deleted 9 models for registrant "meshery"
+                  count:
+                    type: integer
+                    example: 9
+                  connectionName:
+                    type: string
+                    example: meshery
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/registry/models/{model}/components:
     get:
       x-internal: ["meshery"]
