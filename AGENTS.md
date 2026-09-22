@@ -173,7 +173,7 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 
 - **[`docs/casing-rules.md`](docs/casing-rules.md)** - the authoritative per-layer casing table (DB / Go / wire / URL / operationId / TS) and its compatibility caveats.
 - **[`docs/identifier-naming-contributor-guide.md`](docs/identifier-naming-contributor-guide.md)** - reader-friendly cross-repo naming directory with before/after examples.
-- **[`docs/http-api-design.md`](docs/http-api-design.md)** - HTTP method semantics, response codes, bulk-delete-via-POST, resource grouping, path structure.
+- **[`docs/http-api-design.md`](docs/http-api-design.md)** - HTTP method semantics, response codes, bulk-delete-via-POST, resource grouping, path structure, array query parameters (repeated keys).
 - **[`docs/schema-authoring-reference.md`](docs/schema-authoring-reference.md)** - dual-schema worked examples, per-property validation rules (37-42), `x-id-format: external`, RJSF form schemas + enforcement tests, Go helper files, `x-internal`, SQL driver (`Scan`/`Value`) rules.
 - **[`docs/schema-review-checklist.md`](docs/schema-review-checklist.md)** - intentional design decisions (do not flag), the common mistakes to avoid, and the full pre-PR schema-change checklist.
 - **[`docs/schema-tooling.md`](docs/schema-tooling.md)** - identifier-naming migration status, advisory baseline, consumer audit tooling and CI behavior.
