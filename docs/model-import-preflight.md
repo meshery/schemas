@@ -2,8 +2,9 @@
 
 `POST /api/registry/models/preflight` is a non-mutating Meshery-only action,
 authenticated through the same provider and session middleware as registration.
-Its contract lives in `schemas/constructs/v1beta2/registry/api.yml`; existing
-registry endpoints remain in v1beta1 without a wire-format migration.
+Its contract lives in the existing model construct at
+`schemas/constructs/v1beta2/model/api.yml`; existing registry endpoints remain
+in v1beta1 without a wire-format migration.
 
 The payload contains `source` (`github` or `artifacthub`), `url`, and `modelName`.
 The response always includes `valid`, `source`, `name`, `version`, `errors`, and
