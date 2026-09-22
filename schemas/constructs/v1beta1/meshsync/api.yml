@@ -76,7 +76,9 @@ paths:
         - name: clusterId
           in: query
           description: >-
-            Cluster IDs to scope the query. Accepts multiple values (repeated query param).
+            Cluster IDs to scope the query. Accepts multiple values (repeated
+            query param). Resources are only returned for the listed clusters,
+            so a request without `clusterId` returns an empty page.
           required: false
           schema:
             type: array
@@ -371,37 +373,30 @@ components:
           description: Number of discovered resources of this kind.
           minimum: 0
 
-    MeshSyncKeyValue:
-      description: A discovered Kubernetes key-value pair (e.g. a label).
+    MeshSyncLabel:
+      description: >-
+        A distinct Kubernetes label (key and value) found on the discovered
+        resources in scope.
       type: object
       additionalProperties: false
       required:
-        - id
-        - uniqueId
-        - kind
         - key
         - value
       properties:
-        id:
-          type: string
-          description: MeshSync resource ID associated with this key-value pair.
-          maxLength: 255
-        uniqueId:
-          type: string
-          description: Internal unique identifier for this key-value pair.
-          maxLength: 255
-        kind:
-          type: string
-          description: Key-value kind, such as `label` or `annotation`.
-          maxLength: 255
         key:
           type: string
-          description: The key of the key-value pair.
-          maxLength: 255
+          description: >-
+            The label key. Kubernetes allows an optional DNS-subdomain prefix
+            (up to 253 characters) and a `/` before a name of up to 63
+            characters.
+          minLength: 1
+          maxLength: 317
         value:
           type: string
-          description: The value of the key-value pair.
-          maxLength: 255
+          description: >-
+            The label value. Always present; empty for labels that carry no
+            value, such as `node-role.kubernetes.io/control-plane`.
+          maxLength: 63
 
     MeshSyncResourcesSummary:
       description: Summary of discovered MeshSync resources for the requested clusters.
@@ -425,9 +420,9 @@ components:
             maxLength: 255
         labels:
           type: array
-          description: Distinct label key-value pairs found on discovered resources.
+          description: Distinct labels found on discovered resources.
           items:
-            $ref: "#/components/schemas/MeshSyncKeyValue"
+            $ref: "#/components/schemas/MeshSyncLabel"
 
     MeshSyncDeleteResponse:
       description: Response returned after deleting a MeshSync resource.

@@ -4938,7 +4938,7 @@ export type GetMeshSyncResourcesApiArg = {
   model?: string[];
   /** Filter by namespace. Accepts multiple values (repeated query param). */
   namespace?: string[];
-  /** Cluster IDs to scope the query. Accepts multiple values (repeated query param). */
+  /** Cluster IDs to scope the query. Accepts multiple values (repeated query param). Resources are only returned for the listed clusters, so a request without `clusterId` returns an empty page. */
   clusterId?: string[];
   /** Filter by label key-value pair. Accepts multiple values (repeated query param). */
   label?: string[];
@@ -4969,17 +4969,11 @@ export type GetMeshSyncResourceKindsApiResponse = /** status 200 MeshSync resour
   }[];
   /** Distinct namespaces containing discovered resources. */
   namespaces: string[];
-  /** Distinct label key-value pairs found on discovered resources. */
+  /** Distinct labels found on discovered resources. */
   labels: {
-    /** MeshSync resource ID associated with this key-value pair. */
-    id: string;
-    /** Internal unique identifier for this key-value pair. */
-    uniqueId: string;
-    /** Key-value kind, such as `label` or `annotation`. */
-    kind: string;
-    /** The key of the key-value pair. */
+    /** The label key. Kubernetes allows an optional DNS-subdomain prefix (up to 253 characters) and a `/` before a name of up to 63 characters. */
     key: string;
-    /** The value of the key-value pair. */
+    /** The label value. Always present; empty for labels that carry no value, such as `node-role.kubernetes.io/control-plane`. */
     value: string;
   }[];
 };
