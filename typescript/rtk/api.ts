@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { withMeshkitErrorTransform } from "./meshkitError";
+import { paramsSerializer } from "./paramsSerializer";
 
 // The MeshKit error surface lives in ./meshkitError so it can be unit-tested
 // without loading the React-coupled RTK runtime this module pulls in (see the
@@ -30,9 +31,12 @@ export const MESHERY_PROD_URL = "https://playground.meshery.io/";
 const CLOUD_BASE_URL = process.env.RTK_CLOUD_ENDPOINT_PREFIX ?? "";
 const MESHERY_BASE_URL = process.env.RTK_MESHERY_ENDPOINT_PREFIX ?? "";
 
+// Both base queries send array query params as repeated keys, the OpenAPI
+// default the specs declare; see ./paramsSerializer.
 const baseQueryCloud = fetchBaseQuery({
   baseUrl: CLOUD_BASE_URL,
   credentials: "include",
+  paramsSerializer,
   prepareHeaders: (headers: Headers, { getState }: { getState: () => unknown }) => {
     const state = getState() as RootState;
     const currentOrg = state.organization?.value;
@@ -48,7 +52,7 @@ const baseQueryCloud = fetchBaseQuery({
 // error?.meshkit.suggestedRemediation etc.
 const baseQueryCloudWithMeshkit = withMeshkitErrorTransform(baseQueryCloud);
 const baseQueryMesheryWithMeshkit = withMeshkitErrorTransform(
-  fetchBaseQuery({ baseUrl: MESHERY_BASE_URL, credentials: "include" }),
+  fetchBaseQuery({ baseUrl: MESHERY_BASE_URL, credentials: "include", paramsSerializer }),
 );
 
 // API 1: Cloud Provider API
