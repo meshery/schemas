@@ -1217,22 +1217,17 @@ components:
           x-oapi-codegen-extra-tags:
             db: content_type
         contentClass:
-          type: string
+          allOf:
+            - $ref: "../../v1alpha2/catalog/api.yml#/components/schemas/CatalogDataContentClass"
           description: |
             Support-level classification of the content, stored in the
             `content_class` column (a Postgres enum). Nullable — legacy
             requests predate the column.
           nullable: true
-          enum:
-            - official
-            - verified
-            - project
-            - community
-          x-enum-varnames:
-            - CatalogContentClassOfficial
-            - CatalogContentClassVerified
-            - CatalogContentClassProject
-            - CatalogContentClassCommunity
+          x-go-type: catalogv1alpha2.CatalogDataContentClass
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1alpha2/catalog
+            name: catalogv1alpha2
           x-oapi-codegen-extra-tags:
             db: content_class
         firstName:
