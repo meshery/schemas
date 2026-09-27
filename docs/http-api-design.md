@@ -103,3 +103,36 @@ genuinely registers them on the bare router outside the `/api` group. Match the 
 add `/api` reflexively.
 
 Most `/api/system/` operations are Meshery-only (`x-internal: ["meshery"]`); they act on the running Meshery server instance itself rather than on a user-facing logical construct. Existing shared exceptions must be annotated truthfully, such as public version metadata exposed by both Meshery and Meshery Cloud. Some pre-existing `/api/system/*` paths use singular nouns (e.g. `/api/system/database`) and embed verbs (e.g. `/api/system/database/reset`); these predate the canonical kebab-case-plural convention and are documented as-implemented. New `/api/system/*` paths should still follow the canonical conventions.
+
+### One domain, two servers - declare separate operations
+
+Meshery Server and Meshery Cloud both serve events, designs and connections, but not always at
+the same path or with the same envelope. When they differ, declare **separate operations**, one
+per server, each `x-internal`-scoped to the consumer that serves it. Do not widen an existing
+operation's `x-internal` to cover the other consumer.
+
+Widening is tempting because it makes a generated hook appear in the other client, which looks
+like the migration is done. It is not: `x-internal: ["meshery"]` asserts that **Meshery Server
+serves this path with this response**, and the generated hook requests exactly that path. If the
+server does not serve it, the hook 404s, and nothing in the build, `make validate-schemas`, or
+the RTK generator notices.
+
+The events construct is the worked example. Meshery Server and Cloud disagree on both halves:
+
+| | Cloud | Meshery Server |
+|---|---|---|
+| List | `GET /api/events/list`, page under `data` | `GET /api/system/events`, page under `events` |
+| Types | `GET /api/events/types`, array of category/action pairs | `GET /api/system/events/types`, one object of two string arrays |
+
+So `v1beta3/event` declares `getEvents`/`getEventTypes` for Cloud and `getSystemEvents`/
+`getSystemEventTypes` for Meshery, with their own response schemas. Meshery Server *calls* the
+Cloud paths as a client of the remote provider (`server/models/remote_provider.go`), which is not
+the same thing as serving them.
+
+`make consumer-audit` is the check. Run it with `MESHERY_REPO` and `CLOUD_REPO` pointed at local
+checkouts and read the per-consumer **Spec without consumer handler** count: an operation
+declared for a consumer that does not serve it lands there. The count is advisory and the CI
+Schema Audit passes regardless, so read the number rather than the badge.
+
+See meshery/schemas#1134 for the standing list of events operations declared for Meshery at
+paths Meshery Server does not serve.

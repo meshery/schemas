@@ -124,6 +124,12 @@ paths:
       - cloud
       tags:
       - events
+      # Declared per-operation as well as at the document level: the bundler
+      # does not yet merge document-level `security` into the published
+      # bundles, so dropping this line would silently remove the only JWT
+      # requirement that reaches them.
+      security:
+      - jwt: []
       operationId: getEventsOfWorkspace
       summary: Get workspace events
       description: Gets events for a workspace.
@@ -197,9 +203,13 @@ paths:
           $ref: '#/components/responses/401'
         '500':
           $ref: '#/components/responses/500'
+  # Cloud-only. Meshery Server serves its own events list at
+  # GET /api/system/events (getSystemEvents below) with a different envelope;
+  # it only *calls* this path as a client of the remote provider.
   /api/events/list:
     get:
-      x-internal: ["cloud", "meshery"]
+      x-internal:
+      - cloud
       tags:
       - events
       operationId: getEvents
@@ -207,8 +217,8 @@ paths:
       parameters:
       - $ref: '#/components/parameters/page'
       - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/pagesizeLegacy'
       - $ref: '#/components/parameters/search'
-      - $ref: '#/components/parameters/sort'
       - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/eventsFilter'
       responses:
@@ -235,6 +245,7 @@ paths:
       parameters:
       - $ref: '#/components/parameters/page'
       - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/pagesizeLegacy'
       - $ref: '#/components/parameters/search'
       - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/filter'
@@ -251,9 +262,12 @@ paths:
           description: Not found
         '500':
           description: Server error
+  # Cloud-only. Meshery Server serves GET /api/system/events/types
+  # (getSystemEventTypes below), which returns a different shape.
   /api/events/types:
     get:
-      x-internal: ["cloud", "meshery"]
+      x-internal:
+      - cloud
       tags:
       - events
       operationId: getEventTypes
@@ -277,16 +291,87 @@ paths:
           description: Not found
         '500':
           description: Server error
-  # Meshery-server-only: event log level configuration.
-  # TODO: Migrate to /api/events/config once Meshery Server drops /api/system/ prefix.
+  # Meshery-server-only. These are the paths Meshery Server serves for its
+  # notification centre. They are declared separately from the /api/events/*
+  # operations above because Cloud and Meshery Server serve this domain at
+  # different paths and with different envelopes - Meshery Server returns the
+  # page under `events` and the types as one object of two arrays, where Cloud
+  # returns `data` and an array of category/action pairs. Widening the Cloud
+  # operations with x-internal: ["meshery"] would emit hooks that 404 against
+  # Meshery Server (meshery/schemas#1134).
+  /api/system/events:
+    get:
+      x-internal:
+      - meshery
+      tags:
+      - events
+      operationId: getSystemEvents
+      summary: Get Meshery Server events
+      description: >-
+        Returns a page of events this Meshery Server recorded for the
+        authenticated user, with the unread and per-severity counts the
+        notification center renders.
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/pagesizeLegacy'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/sort'
+      - $ref: '#/components/parameters/order'
+      - $ref: '#/components/parameters/eventStatus'
+      - $ref: '#/components/parameters/eventCategoryFilter'
+      - $ref: '#/components/parameters/eventActionFilter'
+      - $ref: '#/components/parameters/eventSeverityFilter'
+      - $ref: '#/components/parameters/eventActedUponFilter'
+      responses:
+        '200':
+          description: Events page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemEventsPage'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  /api/system/events/types:
+    get:
+      x-internal:
+      - meshery
+      tags:
+      - events
+      operationId: getSystemEventTypes
+      summary: Get Meshery Server event categories and actions
+      description: >-
+        Returns the distinct categories and actions present in this Meshery
+        Server's events, used to populate the notification center filters.
+      responses:
+        '200':
+          description: Event categories and actions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemEventTypes'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  # Meshery-server-only: event log level configuration. Declared at the path
+  # Meshery Server serves today; if the server ever moves its event routes off
+  # the /api/system prefix, that is a new operation, not an edit to this one
+  # (meshery/schemas#1134).
   /api/system/events/config:
     get:
-      x-internal: ["meshery"]
+      x-internal:
+      - meshery
       tags:
       - events
       operationId: getEventConfig
       summary: Get server event log level configuration
-      description: Returns the current server event log level and the list of available levels.
+      description: >-
+        Returns the current server event log level and the levels this server
+        supports. The `status` field is not sent on this response; it is only
+        set by the update operation.
       responses:
         '200':
           description: Event configuration
@@ -299,12 +384,18 @@ paths:
         '500':
           $ref: '#/components/responses/500'
     put:
-      x-internal: ["meshery"]
+      x-internal:
+      - meshery
       tags:
       - events
       operationId: updateEventConfig
       summary: Update server event log level configuration
-      description: Sets the server event log level to the requested value.
+      description: >-
+        Sets the server event log level to the requested value. Meshery Server
+        also accepts `warn` as an alias for `warning`, and the legacy
+        `event_log_level` body key alongside the canonical `eventLogLevel`;
+        neither is declared here because new clients must use the canonical
+        spellings.
       requestBody:
         required: true
         content:
@@ -319,7 +410,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/EventConfig'
         '400':
-          $ref: '#/components/responses/400'
+          description: >-
+            The body could not be decoded or names a level this server does not
+            support. The server answers with the unchanged configuration and
+            `status: error`, not the generic error envelope.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventConfig'
         '401':
           $ref: '#/components/responses/401'
         '500':
@@ -354,7 +452,6 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/page
     pageSize:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/pageSize
-
     pagesizeLegacy:
       name: pagesize
       in: query
@@ -367,11 +464,62 @@ components:
     sort:
       name: sort
       in: query
-      description: Field name to sort responses by.
+      description: >-
+        Column to sort the events by. Meshery Server passes this value to its
+        ORDER BY allow-list, so only these three are honoured; anything else
+        falls back to the default. The values are database column names rather
+        than wire identifiers because that is what the allow-list matches.
       required: false
       schema:
         type: string
-        maxLength: 255
+        enum: [created_at, updated_at, name]
+    eventStatus:
+      name: status
+      in: query
+      description: Only return events with this read status.
+      required: false
+      schema:
+        $ref: '#/components/schemas/EventStatus'
+    eventCategoryFilter:
+      name: category
+      in: query
+      description: >-
+        JSON-encoded array of event categories to filter by, for example
+        `["pattern","connection"]`. Meshery Server parses this value as JSON.
+      required: false
+      schema:
+        type: string
+        maxLength: 2048
+    eventActionFilter:
+      name: action
+      in: query
+      description: >-
+        JSON-encoded array of event actions to filter by, for example
+        `["update","delete"]`. Meshery Server parses this value as JSON.
+      required: false
+      schema:
+        type: string
+        maxLength: 2048
+    eventSeverityFilter:
+      name: severity
+      in: query
+      description: >-
+        JSON-encoded array of event severities to filter by, for example
+        `["error","warning"]`. Meshery Server parses this value as JSON.
+      required: false
+      schema:
+        type: string
+        maxLength: 2048
+    eventActedUponFilter:
+      name: actedUpon
+      in: query
+      description: >-
+        JSON-encoded array of entity UUIDs to filter by. Meshery Server parses
+        this value as JSON and also accepts the legacy `acted_upon` spelling.
+      required: false
+      schema:
+        type: string
+        maxLength: 2048
     order:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/order
     cumulative:
@@ -597,6 +745,151 @@ components:
           type: integer
           description: Number of events at this severity level.
           minimum: 0
+    EventSeverity:
+      type: string
+      description: One of the standard event severity levels.
+      enum: [emergency, alert, critical, error, warning, informational, debug, success]
+      maxLength: 20
+    EventStatus:
+      type: string
+      description: Whether the user has read the event.
+      enum: [read, unread]
+      maxLength: 10
+    SystemEvent:
+      type: object
+      description: >-
+        One event recorded by Meshery Server. Mirrors the Event model in
+        meshkit (`models/events.Event`), which is what the server encodes.
+      required:
+      - id
+      - actedUpon
+      - systemId
+      - operationId
+      - category
+      - action
+      - description
+      - severity
+      - status
+      - createdAt
+      - updatedAt
+      properties:
+        id:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: UUID of the event.
+        actedUpon:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: UUID of the entity the event was performed on.
+        systemId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: UUID of the Meshery Server that recorded the event.
+        operationId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: UUID correlating the events of a single operation.
+        owner:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: UUID of the user the event belongs to.
+        category:
+          type: string
+          description: Resource the operation was invoked on, such as `pattern`.
+          maxLength: 500
+        action:
+          type: string
+          description: Action taken on the resource, such as `update`.
+          maxLength: 500
+        description:
+          type: string
+          description: A summary of the event that occurred.
+          maxLength: 4096
+        severity:
+          $ref: '#/components/schemas/EventSeverity'
+        status:
+          $ref: '#/components/schemas/EventStatus'
+        metadata:
+          type: object
+          description: >-
+            Information specific to this kind of event. The structure differs
+            per event, and the server emits `null` when there is none.
+          additionalProperties: true
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the event was recorded.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the event was last updated.
+        deletedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the event was deleted, absent while it lives.
+    SystemEventsPage:
+      type: object
+      description: >-
+        A page of Meshery Server events. Note the events are returned under
+        `events`, not `data` - Cloud's EventsPage uses `data`.
+      required:
+      - events
+      - page
+      - pageSize
+      - totalCount
+      - readCount
+      - countBySeverityLevel
+      properties:
+        events:
+          type: array
+          description: The events on this page.
+          items:
+            $ref: '#/components/schemas/SystemEvent'
+          nullable: true
+        page:
+          type: integer
+          description: Zero-based index of the page returned.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Maximum number of events returned on each page.
+          minimum: 0
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of matching events across all pages.
+          minimum: 0
+        readCount:
+          type: integer
+          format: int64
+          description: Number of matching events the user has already read.
+          minimum: 0
+        countBySeverityLevel:
+          type: array
+          description: Matching event count grouped by severity level.
+          items:
+            $ref: '#/components/schemas/SeverityCount'
+          nullable: true
+    SystemEventTypes:
+      type: object
+      description: >-
+        The distinct categories and actions present in this Meshery Server's
+        events. Two parallel string arrays, unlike Cloud's array of
+        category/action pairs.
+      required:
+      - category
+      - action
+      properties:
+        category:
+          type: array
+          description: Distinct event categories.
+          items:
+            type: string
+            maxLength: 500
+          nullable: true
+        action:
+          type: array
+          description: Distinct event actions.
+          items:
+            type: string
+            maxLength: 500
+          nullable: true
     LogLevel:
       type: string
       description: Valid server event log levels.
@@ -611,8 +904,11 @@ components:
       properties:
         status:
           type: string
-          description: Operation result status.
-          maxLength: 50
+          description: >-
+            Result of an update: `success` on a 200, `error` on a 400. Absent
+            from the read operation's response.
+          enum: [success, error]
+          maxLength: 10
           x-oapi-codegen-extra-tags:
             json: "status,omitempty"
         eventLogLevel:
