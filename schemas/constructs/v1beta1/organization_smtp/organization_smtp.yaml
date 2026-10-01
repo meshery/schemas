@@ -196,8 +196,8 @@ properties:
       being dialled for the next message. Read it as "the last attempt failed",
       not as "this server has been taken out of rotation" - the circuit breaker
       that would do the latter is planned, not built, and is tracked in
-      meshery-cloud#6057. `ignored` means an administrator turned it
-      off.
+      meshery-cloud#6057. `ignored` means the administrative switch is off,
+      whether an administrator turned it off or it was never turned on.
 
 
       The writers are disjoint on purpose: only an administrator writes
