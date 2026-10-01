@@ -16588,9 +16588,12 @@ export type DeleteWorkspaceApiArg = {
   workspaceId: string;
 };
 export type GetTeamsOfWorkspaceApiResponse = /** status 200 Teams */ {
+  /** Current page number of the result set. */
   page?: number;
-  page_size?: number;
-  total_count?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
   /** The teams of the teampage. */
   teams?: {
     /** Team ID */
@@ -16603,10 +16606,12 @@ export type GetTeamsOfWorkspaceApiResponse = /** status 200 Teams */ {
     owner?: string;
     /** Additional metadata for the team */
     metadata?: object;
-    created_at?: string;
-    updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
+    /** Timestamp when the team was created. */
+    createdAt: string;
+    /** Timestamp when the team was last updated. */
+    updatedAt: string;
+    /** Timestamp when the team was soft-deleted, if applicable. */
+    deletedAt?: string;
   }[];
 };
 export type GetTeamsOfWorkspaceApiArg = {
