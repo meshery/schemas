@@ -9863,8 +9863,8 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -9882,7 +9882,7 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
@@ -10136,8 +10136,8 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -10155,7 +10155,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Owning user ID. */
   userId?: string;
@@ -10389,8 +10389,8 @@ export type UpsertPatternApiArg = {
       catalogData?: {
         /** Tracks the specific content version that has been made available in the Catalog. */
         publishedVersion?: string;
-        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-        class?: "official" | "verified" | "reference architecture";
+        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+        contentClass?: "official" | "verified" | "community";
         /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
         compatibility: "kubernetes"[];
         /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -10408,7 +10408,7 @@ export type UpsertPatternApiArg = {
           | "Troubleshooting"
           | "Workloads";
         /** Contains reference to the dark and light mode snapshots of the design. */
-        snapshotURL?: string[];
+        imageURL?: string[];
       };
       /** Optional structured location metadata (branch, host, path, ...). */
       location?: {
@@ -10452,8 +10452,8 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -10471,7 +10471,7 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Owning user ID. */
   userId?: string;
@@ -10709,8 +10709,8 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -10728,7 +10728,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Owning user ID. */
   userId?: string;
@@ -10971,8 +10971,8 @@ export type ImportDesignApiResponse =
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -10990,7 +10990,7 @@ export type ImportDesignApiResponse =
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
@@ -11242,8 +11242,8 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -11261,7 +11261,7 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
@@ -11506,8 +11506,8 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -11525,7 +11525,7 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Timestamp of filter creation. */
     createdAt: string;
@@ -12735,8 +12735,8 @@ export type GetFiltersApiResponse = /** status 200 Filters response */ {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12754,7 +12754,7 @@ export type GetFiltersApiResponse = /** status 200 Filters response */ {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Timestamp of filter creation. */
     createdAt: string;
@@ -12806,8 +12806,8 @@ export type UpsertFilterApiResponse = /** status 200 Filter saved */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12825,7 +12825,7 @@ export type UpsertFilterApiResponse = /** status 200 Filter saved */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Timestamp of filter creation. */
   createdAt: string;
@@ -12876,8 +12876,8 @@ export type UpsertFilterApiArg = {
       catalogData?: {
         /** Tracks the specific content version that has been made available in the Catalog. */
         publishedVersion?: string;
-        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-        class?: "official" | "verified" | "reference architecture";
+        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+        contentClass?: "official" | "verified" | "community";
         /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
         compatibility: "kubernetes"[];
         /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12895,7 +12895,7 @@ export type UpsertFilterApiArg = {
           | "Troubleshooting"
           | "Workloads";
         /** Contains reference to the dark and light mode snapshots of the design. */
-        snapshotURL?: string[];
+        imageURL?: string[];
       };
     };
     /** Optional opaque configuration string passed through to the
@@ -12947,8 +12947,8 @@ export type GetFilterApiResponse = /** status 200 Filter response */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12966,7 +12966,7 @@ export type GetFilterApiResponse = /** status 200 Filter response */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Timestamp of filter creation. */
   createdAt: string;
@@ -13003,8 +13003,8 @@ export type UpdateFilterApiResponse = /** status 200 Filter updated */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -13022,7 +13022,7 @@ export type UpdateFilterApiResponse = /** status 200 Filter updated */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Timestamp of filter creation. */
   createdAt: string;
@@ -13064,8 +13064,8 @@ export type UpdateFilterApiArg = {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -13083,7 +13083,7 @@ export type UpdateFilterApiArg = {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
   };
 };
@@ -13118,8 +13118,8 @@ export type CloneFilterApiResponse = /** status 200 Filter cloned */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -13137,7 +13137,7 @@ export type CloneFilterApiResponse = /** status 200 Filter cloned */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Timestamp of filter creation. */
   createdAt: string;
@@ -15107,14 +15107,14 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
-      pattern_caveats: string;
+      patternCaveats: string;
       /** Purpose of the design along with its intended and unintended uses. */
-      pattern_info: string;
+      patternInfo: string;
       /** Categorization of the type of design or operational flow depicted in this design. */
       type:
         | "Deployment"
@@ -15126,7 +15126,7 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     created_at?: string;
     user_id?: string;

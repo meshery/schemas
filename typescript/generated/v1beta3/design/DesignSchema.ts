@@ -203,8 +203,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "maxLength": 500
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -216,8 +216,8 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ],
                                 "maxLength": 500
@@ -264,7 +264,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -1281,8 +1281,8 @@ const DesignSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 500
                           },
-                          "class": {
-                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                          "contentClass": {
+                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                             "type": "string",
                             "oneOf": [
                               {
@@ -1294,8 +1294,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                               },
                               {
-                                "const": "reference architecture",
-                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                "const": "community",
+                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                               }
                             ],
                             "maxLength": 500
@@ -1342,7 +1342,7 @@ const DesignSchema: Record<string, unknown> = {
                             "default": "Deployment",
                             "description": "Categorization of the type of design or operational flow depicted in this design."
                           },
-                          "snapshotURL": {
+                          "imageURL": {
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -1459,8 +1459,8 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "maxLength": 500
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -1472,8 +1472,8 @@ const DesignSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ],
                           "maxLength": 500
@@ -1520,7 +1520,7 @@ const DesignSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -2626,8 +2626,8 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "maxLength": 500
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -2639,8 +2639,8 @@ const DesignSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ],
                           "maxLength": 500
@@ -2687,7 +2687,7 @@ const DesignSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -3760,8 +3760,8 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "maxLength": 500
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -3773,8 +3773,8 @@ const DesignSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ],
                           "maxLength": 500
@@ -3821,7 +3821,7 @@ const DesignSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -5050,8 +5050,8 @@ const DesignSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 500
                           },
-                          "class": {
-                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                          "contentClass": {
+                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                             "type": "string",
                             "oneOf": [
                               {
@@ -5063,8 +5063,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                               },
                               {
-                                "const": "reference architecture",
-                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                "const": "community",
+                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                               }
                             ],
                             "maxLength": 500
@@ -5111,7 +5111,7 @@ const DesignSchema: Record<string, unknown> = {
                             "default": "Deployment",
                             "description": "Categorization of the type of design or operational flow depicted in this design."
                           },
-                          "snapshotURL": {
+                          "imageURL": {
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -6229,8 +6229,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "maxLength": 500
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -6242,8 +6242,8 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ],
                                 "maxLength": 500
@@ -6290,7 +6290,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -7310,8 +7310,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "maxLength": 500
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -7323,8 +7323,8 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ],
                                 "maxLength": 500
@@ -7371,7 +7371,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -15758,8 +15758,8 @@ const DesignSchema: Record<string, unknown> = {
                 "type": "string",
                 "maxLength": 500
               },
-              "class": {
-                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+              "contentClass": {
+                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                 "type": "string",
                 "oneOf": [
                   {
@@ -15771,8 +15771,8 @@ const DesignSchema: Record<string, unknown> = {
                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                   },
                   {
-                    "const": "reference architecture",
-                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                    "const": "community",
+                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                   }
                 ],
                 "maxLength": 500
@@ -15819,7 +15819,7 @@ const DesignSchema: Record<string, unknown> = {
                 "default": "Deployment",
                 "description": "Categorization of the type of design or operational flow depicted in this design."
               },
-              "snapshotURL": {
+              "imageURL": {
                 "type": "array",
                 "items": {
                   "type": "string",
@@ -16783,8 +16783,8 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "maxLength": 500
                     },
-                    "class": {
-                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                    "contentClass": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                       "type": "string",
                       "oneOf": [
                         {
@@ -16796,8 +16796,8 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                         },
                         {
-                          "const": "reference architecture",
-                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                          "const": "community",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                         }
                       ],
                       "maxLength": 500
@@ -16844,7 +16844,7 @@ const DesignSchema: Record<string, unknown> = {
                       "default": "Deployment",
                       "description": "Categorization of the type of design or operational flow depicted in this design."
                     },
-                    "snapshotURL": {
+                    "imageURL": {
                       "type": "array",
                       "items": {
                         "type": "string",
@@ -17844,8 +17844,8 @@ const DesignSchema: Record<string, unknown> = {
                 "type": "string",
                 "maxLength": 500
               },
-              "class": {
-                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+              "contentClass": {
+                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                 "type": "string",
                 "oneOf": [
                   {
@@ -17857,8 +17857,8 @@ const DesignSchema: Record<string, unknown> = {
                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                   },
                   {
-                    "const": "reference architecture",
-                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                    "const": "community",
+                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                   }
                 ],
                 "maxLength": 500
@@ -17905,7 +17905,7 @@ const DesignSchema: Record<string, unknown> = {
                 "default": "Deployment",
                 "description": "Categorization of the type of design or operational flow depicted in this design."
               },
-              "snapshotURL": {
+              "imageURL": {
                 "type": "array",
                 "items": {
                   "type": "string",
@@ -18022,8 +18022,8 @@ const DesignSchema: Record<string, unknown> = {
                     "type": "string",
                     "maxLength": 500
                   },
-                  "class": {
-                    "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                  "contentClass": {
+                    "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                     "type": "string",
                     "oneOf": [
                       {
@@ -18035,8 +18035,8 @@ const DesignSchema: Record<string, unknown> = {
                         "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                       },
                       {
-                        "const": "reference architecture",
-                        "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                        "const": "community",
+                        "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                       }
                     ],
                     "maxLength": 500
@@ -18083,7 +18083,7 @@ const DesignSchema: Record<string, unknown> = {
                     "default": "Deployment",
                     "description": "Categorization of the type of design or operational flow depicted in this design."
                   },
-                  "snapshotURL": {
+                  "imageURL": {
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -18369,8 +18369,8 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "maxLength": 500
                     },
-                    "class": {
-                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                    "contentClass": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                       "type": "string",
                       "oneOf": [
                         {
@@ -18382,8 +18382,8 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                         },
                         {
-                          "const": "reference architecture",
-                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                          "const": "community",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                         }
                       ],
                       "maxLength": 500
@@ -18430,7 +18430,7 @@ const DesignSchema: Record<string, unknown> = {
                       "default": "Deployment",
                       "description": "Categorization of the type of design or operational flow depicted in this design."
                     },
-                    "snapshotURL": {
+                    "imageURL": {
                       "type": "array",
                       "items": {
                         "type": "string",
@@ -19450,8 +19450,8 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "maxLength": 500
                     },
-                    "class": {
-                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                    "contentClass": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                       "type": "string",
                       "oneOf": [
                         {
@@ -19463,8 +19463,8 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                         },
                         {
-                          "const": "reference architecture",
-                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                          "const": "community",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                         }
                       ],
                       "maxLength": 500
@@ -19511,7 +19511,7 @@ const DesignSchema: Record<string, unknown> = {
                       "default": "Deployment",
                       "description": "Categorization of the type of design or operational flow depicted in this design."
                     },
-                    "snapshotURL": {
+                    "imageURL": {
                       "type": "array",
                       "items": {
                         "type": "string",
