@@ -190,6 +190,8 @@ export {
   KubernetesCredentialRjsfUiSchemaV1Beta1,
   ModelImportRjsfSchemaV1Beta2,
   ModelImportRjsfUiSchemaV1Beta2,
+  OrganizationSmtpConfigureRjsfSchemaV1Beta1,
+  OrganizationSmtpConfigureRjsfUiSchemaV1Beta1,
   PrometheusCredentialRjsfSchemaV1Beta1,
   PrometheusCredentialRjsfUiSchemaV1Beta1,
   SupportRequestRjsfSchemaV1Beta1,
