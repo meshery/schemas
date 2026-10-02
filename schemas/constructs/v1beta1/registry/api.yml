@@ -1172,10 +1172,13 @@ components:
             policies:
               type: array
               items:
-                type: object
-                description: A registered policy definition.
-                additionalProperties: true
+                $ref: "#/components/schemas/RegistryPolicy"
               description: The policies matching the query.
+
+    RegistryPolicy:
+      type: object
+      description: A registered policy definition.
+      additionalProperties: true
 
     RegistryRegistrant:
       description: >-
@@ -1302,21 +1305,19 @@ components:
         successfulComponents:
           type: array
           items:
-            type: object
-            additionalProperties: true
+            $ref: "#/components/schemas/RegistryComponent"
           description: Components successfully imported.
         successfulRelationships:
           type: array
           items:
-            type: object
-            additionalProperties: true
+            $ref: "../../v1beta3/relationship/relationship.yaml"
           description: Relationships successfully imported.
         successfulModels:
           type: array
           items:
-            type: object
-            additionalProperties: true
+            $ref: "#/components/schemas/RegistryModel"
           description: Models successfully imported.
+
         unsuccessfulComponentNames:
           type: array
           items: {}
