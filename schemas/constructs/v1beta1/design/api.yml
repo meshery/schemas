@@ -799,9 +799,9 @@ components:
             path: github.com/meshery/schemas/models/v1beta1/catalog
             name: catalogv1beta1
 
-        created_at:
+        createdAt:
           $ref: "../core/api.yml#/components/schemas/Time"
-        user_id:
+        userId:
           $ref: "../core/api.yml#/components/schemas/Id"
         location:
           $ref: "../core/api.yml#/components/schemas/MapObject"
