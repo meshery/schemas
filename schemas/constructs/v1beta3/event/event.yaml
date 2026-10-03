@@ -1,6 +1,8 @@
 type: object
 additionalProperties: false
 description: EventResult entity schema.
+example:
+  $ref: "./templates/event_template.json"
 properties:
   owner:
     type: string

@@ -1,6 +1,8 @@
 type: object
 additionalProperties: false
 description: Invitation entity schema.
+example:
+  $ref: "./templates/invitation_template.json"
 required:
 - id
 - owner_id

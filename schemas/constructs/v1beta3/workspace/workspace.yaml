@@ -6,6 +6,8 @@ description: >-
   Learn more at https://docs.meshery.io/concepts/logical/workspaces
 additionalProperties: false
 type: object
+example:
+  $ref: "./templates/workspace_template.json"
 required:
   - id
   - name

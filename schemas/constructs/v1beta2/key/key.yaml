@@ -1,6 +1,8 @@
 type: object
 additionalProperties: false
 description: Represents an authorization key used for access control.
+example:
+  $ref: "./templates/key_template.json"
 required:
   - id
   - owner
