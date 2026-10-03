@@ -583,6 +583,12 @@ const EventSchema: Record<string, unknown> = {
                             "description": "The last name of the user associated with the event.",
                             "maxLength": 500
                           },
+                          "avatarUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 500,
+                            "description": "URL to the avatar image of the user associated with the event."
+                          },
                           "email": {
                             "description": "Email address of the user associated with the event.",
                             "type": "string",
@@ -932,6 +938,12 @@ const EventSchema: Record<string, unknown> = {
                             "type": "string",
                             "description": "The last name of the user associated with the event.",
                             "maxLength": 500
+                          },
+                          "avatarUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 500,
+                            "description": "URL to the avatar image of the user associated with the event."
                           },
                           "email": {
                             "description": "Email address of the user associated with the event.",
@@ -1537,6 +1549,12 @@ const EventSchema: Record<string, unknown> = {
             "description": "The last name of the user associated with the event.",
             "maxLength": 500
           },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 500,
+            "description": "URL to the avatar image of the user associated with the event."
+          },
           "email": {
             "description": "Email address of the user associated with the event.",
             "type": "string",
@@ -1649,6 +1667,12 @@ const EventSchema: Record<string, unknown> = {
                   "type": "string",
                   "description": "The last name of the user associated with the event.",
                   "maxLength": 500
+                },
+                "avatarUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 500,
+                  "description": "URL to the avatar image of the user associated with the event."
                 },
                 "email": {
                   "description": "Email address of the user associated with the event.",
