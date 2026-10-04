@@ -1043,6 +1043,48 @@ components:
         text/plain:
           schema:
             type: string
+    MeshKitError403:
+      description: MeshKit structured JSON error response for forbidden requests.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - Code
+              - Severity
+              - ShortDescription
+              - LongDescription
+              - ProbableCause
+              - SuggestedRemediation
+            properties:
+              Code:
+                type: string
+                description: MeshKit error code.
+              Severity:
+                type: integer
+                description: MeshKit error severity.
+              ShortDescription:
+                type: array
+                nullable: true
+                items:
+                  type: string
+              LongDescription:
+                type: array
+                nullable: true
+                items:
+                  type: string
+              ProbableCause:
+                type: array
+                nullable: true
+                items:
+                  type: string
+              SuggestedRemediation:
+                type: array
+                nullable: true
+                items:
+                  type: string
+              AdditionalInfo:
+                description: Unstructured additional information from MeshKit ErrorV2, when present.
     "404":
       description: Result not found
       content:
