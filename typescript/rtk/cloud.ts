@@ -4816,59 +4816,63 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   }[];
 };
@@ -5005,59 +5009,63 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   roleNames?: string[];
   /** Teams the user belongs to with role information */
   teams?: {
-    /** Team memberships for the user with their assigned roles. */
-    teamsWithRoles?: {
-      /** Unique identifier of the team. */
-      id: string;
-      /** Name of the team. */
-      name: string;
-      /** Human readable description of the team. */
-      description?: string;
-      /** Identifier of the team owner. */
-      owner?: string;
-      /** Free-form metadata associated with the team. */
-      metadata?: {
-        [key: string]: any;
-      };
-      /** Timestamp when the team was created. */
-      createdAt?: string;
-      /** Timestamp when the team was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the team was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of team memberships returned for the user. */
-    totalCount?: number;
+    /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    teamsWithRoles?:
+      | {
+          /** Unique identifier of the team. */
+          id: string;
+          /** Name of the team. */
+          name: string;
+          /** Human readable description of the team. */
+          description?: string;
+          /** Identifier of the team owner. */
+          owner?: string;
+          /** Free-form metadata associated with the team. */
+          metadata?: {
+            [key: string]: any;
+          };
+          /** Timestamp when the team was created. */
+          createdAt?: string;
+          /** Timestamp when the team was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the team was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
   /** Organizations the user belongs to with role information */
   organizations?: {
-    /** Organization memberships for the user with their assigned roles. */
-    organizationsWithRoles?: {
-      /** Unique identifier of the organization. */
-      id: string;
-      /** Name of the organization. */
-      name: string;
-      /** Human readable description of the organization. */
-      description?: string;
-      /** Country associated with the organization. */
-      country?: string;
-      /** Region associated with the organization. */
-      region?: string;
-      /** Identifier of the organization owner. */
-      owner?: string;
-      /** Timestamp when the organization was created. */
-      createdAt?: string;
-      /** Timestamp when the organization was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the organization was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of organization memberships returned for the user. */
-    totalCount?: number;
+    /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    organizationsWithRoles?:
+      | {
+          /** Unique identifier of the organization. */
+          id: string;
+          /** Name of the organization. */
+          name: string;
+          /** Human readable description of the organization. */
+          description?: string;
+          /** Country associated with the organization. */
+          country?: string;
+          /** Region associated with the organization. */
+          region?: string;
+          /** Identifier of the organization owner. */
+          owner?: string;
+          /** Timestamp when the organization was created. */
+          createdAt?: string;
+          /** Timestamp when the organization was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the organization was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
 };
 export type GetUserProfileByIdApiArg = {
@@ -5181,59 +5189,63 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   roleNames?: string[];
   /** Teams the user belongs to with role information */
   teams?: {
-    /** Team memberships for the user with their assigned roles. */
-    teamsWithRoles?: {
-      /** Unique identifier of the team. */
-      id: string;
-      /** Name of the team. */
-      name: string;
-      /** Human readable description of the team. */
-      description?: string;
-      /** Identifier of the team owner. */
-      owner?: string;
-      /** Free-form metadata associated with the team. */
-      metadata?: {
-        [key: string]: any;
-      };
-      /** Timestamp when the team was created. */
-      createdAt?: string;
-      /** Timestamp when the team was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the team was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of team memberships returned for the user. */
-    totalCount?: number;
+    /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    teamsWithRoles?:
+      | {
+          /** Unique identifier of the team. */
+          id: string;
+          /** Name of the team. */
+          name: string;
+          /** Human readable description of the team. */
+          description?: string;
+          /** Identifier of the team owner. */
+          owner?: string;
+          /** Free-form metadata associated with the team. */
+          metadata?: {
+            [key: string]: any;
+          };
+          /** Timestamp when the team was created. */
+          createdAt?: string;
+          /** Timestamp when the team was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the team was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
   /** Organizations the user belongs to with role information */
   organizations?: {
-    /** Organization memberships for the user with their assigned roles. */
-    organizationsWithRoles?: {
-      /** Unique identifier of the organization. */
-      id: string;
-      /** Name of the organization. */
-      name: string;
-      /** Human readable description of the organization. */
-      description?: string;
-      /** Country associated with the organization. */
-      country?: string;
-      /** Region associated with the organization. */
-      region?: string;
-      /** Identifier of the organization owner. */
-      owner?: string;
-      /** Timestamp when the organization was created. */
-      createdAt?: string;
-      /** Timestamp when the organization was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the organization was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of organization memberships returned for the user. */
-    totalCount?: number;
+    /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    organizationsWithRoles?:
+      | {
+          /** Unique identifier of the organization. */
+          id: string;
+          /** Name of the organization. */
+          name: string;
+          /** Human readable description of the organization. */
+          description?: string;
+          /** Country associated with the organization. */
+          country?: string;
+          /** Region associated with the organization. */
+          region?: string;
+          /** Identifier of the organization owner. */
+          owner?: string;
+          /** Timestamp when the organization was created. */
+          createdAt?: string;
+          /** Timestamp when the organization was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the organization was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
 };
 export type GetUserApiArg = void;
@@ -9993,59 +10005,63 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
     /** Optional structured location metadata (branch, host, path, ...). */
@@ -10262,59 +10278,63 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
   /** Optional structured location metadata (branch, host, path, ...). */
@@ -10574,59 +10594,63 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
   /** Optional structured location metadata (branch, host, path, ...). */
@@ -10827,59 +10851,63 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
   /** Optional structured location metadata (branch, host, path, ...). */
@@ -11085,59 +11113,63 @@ export type ImportDesignApiResponse =
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
     /** Optional structured location metadata (branch, host, path, ...). */
@@ -11352,59 +11384,63 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
     /** Optional structured location metadata (branch, host, path, ...). */
@@ -11664,59 +11700,63 @@ export type PublishCatalogContentApiResponse = /** status 200 Catalog request re
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
   /** Approval status of the request. */
@@ -11871,59 +11911,63 @@ export type UnPublishCatalogContentApiResponse = /** status 200 Catalog request 
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
   /** Approval status of the request. */
@@ -12155,59 +12199,63 @@ export type GetCatalogRequestApiResponse = /** status 200 Catalog requests page 
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
     /** Approval status of the request. */
@@ -14883,9 +14931,12 @@ export type DeleteWorkspaceApiArg = {
   workspaceId: string;
 };
 export type GetTeamsOfWorkspaceApiResponse = /** status 200 Teams */ {
+  /** Current page number of the result set. */
   page?: number;
-  page_size?: number;
-  total_count?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
   /** The teams of the teampage. */
   teams?: {
     /** Team ID */
@@ -14898,10 +14949,12 @@ export type GetTeamsOfWorkspaceApiResponse = /** status 200 Teams */ {
     owner?: string;
     /** Additional metadata for the team */
     metadata?: object;
-    created_at?: string;
-    updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
+    /** Timestamp when the team was created. */
+    createdAt: string;
+    /** Timestamp when the team was last updated. */
+    updatedAt: string;
+    /** Timestamp when the team was soft-deleted, if applicable. */
+    deletedAt?: string;
   }[];
 };
 export type GetTeamsOfWorkspaceApiArg = {

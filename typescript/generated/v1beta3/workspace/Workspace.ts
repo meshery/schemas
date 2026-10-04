@@ -2854,9 +2854,12 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
+                        /** @description Current page number of the result set. */
                         page?: number;
-                        page_size?: number;
-                        total_count?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
                         /** @description The teams of the teampage. */
                         teams?: {
                             /**
@@ -2875,15 +2878,21 @@ export interface operations {
                             owner?: string;
                             /** @description Additional metadata for the team */
                             metadata?: Record<string, never>;
-                            /** Format: date-time */
-                            created_at?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
                             /**
                              * Format: date-time
-                             * @description SQL null Timestamp to handle null values of time.
+                             * @description Timestamp when the team was created.
                              */
-                            deleted_at?: string;
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was last updated.
+                             */
+                            updatedAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was soft-deleted, if applicable.
+                             */
+                            deletedAt?: string;
                         }[];
                     };
                 };
