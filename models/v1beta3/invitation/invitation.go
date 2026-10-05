@@ -179,14 +179,14 @@ type SignupRequestNotification struct {
 
 // SignupRequestsPage Paginated list of signup requests.
 type SignupRequestsPage struct {
-	// Data Signup requests returned on the current page.
-	Data *[]SignupRequest `json:"data,omitempty" yaml:"data,omitempty"`
-
 	// Page Current page number of the result set.
 	Page int `json:"page,omitempty" yaml:"page,omitempty"`
 
 	// PageSize Number of items per page.
 	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// SignupData Signup requests returned on the current page.
+	SignupData *[]SignupData `json:"signupData,omitempty" yaml:"signupData,omitempty"`
 
 	// TotalCount Total number of items available.
 	TotalCount int `json:"totalCount" yaml:"totalCount"`
