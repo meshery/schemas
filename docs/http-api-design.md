@@ -103,3 +103,43 @@ genuinely registers them on the bare router outside the `/api` group. Match the 
 add `/api` reflexively.
 
 Most `/api/system/` operations are Meshery-only (`x-internal: ["meshery"]`); they act on the running Meshery server instance itself rather than on a user-facing logical construct. Existing shared exceptions must be annotated truthfully, such as public version metadata exposed by both Meshery and Meshery Cloud. Some pre-existing `/api/system/*` paths use singular nouns (e.g. `/api/system/database`) and embed verbs (e.g. `/api/system/database/reset`); these predate the canonical kebab-case-plural convention and are documented as-implemented. New `/api/system/*` paths should still follow the canonical conventions.
+
+## Array query parameters
+
+An array query parameter goes on the wire as **one repeated key per element**:
+`?kind=Pod&kind=Service`. That is OpenAPI's default for `in: query` arrays
+(`style: form`, `explode: true`), so a parameter declared as below needs no `style` or `explode`:
+
+```yaml
+- name: kind
+  in: query
+  schema:
+    type: array
+    items:
+      type: string
+```
+
+The generated RTK clients send exactly this form. Both base queries in `typescript/rtk/api.ts`
+use `paramsSerializer` (`typescript/rtk/paramsSerializer.ts`), which also omits `undefined` and
+`null` and sends nothing for an empty array. RTK's built-in serializer, used before, comma-joined
+arrays into one value (`?kind=Pod%2CService`) and sent `null` as the string `"null"`. Because the
+serializer lives in the shared base query, it also applies to any hand-written endpoint a consumer
+injects into `cloudApi` / `mesheryApi`.
+
+The server must read **every** value of the key:
+
+| Server | Reads all values | Reads only the first (wrong for arrays) |
+|---|---|---|
+| Go `net/http` / gorilla | `r.URL.Query()["kind"]` | `r.URL.Query().Get("kind")` |
+| Echo | `c.QueryParams()["kind"]` | `c.QueryParam("kind")` |
+
+A handler that reads the first value and splits it on commas silently applies only the first
+filter once clients send repeated keys. Before changing such a handler's contract, make it accept
+both forms: read all values and split each on commas. Do this before any client that sends
+repeated keys ships. The meshery-cloud Academy filters (`contentType`, `level`, `orgId`,
+`status`) were in exactly this state when the shared serializer was introduced.
+
+Do not declare a comma-separated or JSON-encoded list as `type: array`. If a server genuinely
+expects a single encoded string, such as a JSON array in one parameter, declare it as
+`type: string` and describe the encoding, because the generated client will not produce that
+form from an array.
