@@ -770,6 +770,7 @@ components:
             - tls_failed
             - starttls_unsupported
             - auth_rejected
+            - auth_mechanism_unsupported
             - relay_rejected_sender
             - relay_rejected_recipient
             - delivery_failed
