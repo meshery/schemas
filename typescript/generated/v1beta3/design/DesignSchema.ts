@@ -747,7 +747,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "properties": {
                                   "teamsWithRoles": {
                                     "type": "array",
-                                    "description": "Team memberships for the user with their assigned roles.",
+                                    "nullable": true,
+                                    "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                                     "items": {
                                       "type": "object",
                                       "additionalProperties": false,
@@ -876,7 +877,8 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "totalCount": {
                                     "type": "integer",
-                                    "description": "Total number of team memberships returned for the user.",
+                                    "nullable": true,
+                                    "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                                     "minimum": 0,
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "total_count",
@@ -895,7 +897,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "properties": {
                                   "organizationsWithRoles": {
                                     "type": "array",
-                                    "description": "Organization memberships for the user with their assigned roles.",
+                                    "nullable": true,
+                                    "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                                     "items": {
                                       "type": "object",
                                       "additionalProperties": false,
@@ -1030,7 +1033,8 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "totalCount": {
                                     "type": "integer",
-                                    "description": "Total number of organization memberships returned for the user.",
+                                    "nullable": true,
+                                    "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                                     "minimum": 0,
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "total_count",
@@ -1999,7 +2003,8 @@ const DesignSchema: Record<string, unknown> = {
                           "properties": {
                             "teamsWithRoles": {
                               "type": "array",
-                              "description": "Team memberships for the user with their assigned roles.",
+                              "nullable": true,
+                              "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                               "items": {
                                 "type": "object",
                                 "additionalProperties": false,
@@ -2128,7 +2133,8 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "totalCount": {
                               "type": "integer",
-                              "description": "Total number of team memberships returned for the user.",
+                              "nullable": true,
+                              "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                               "minimum": 0,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "total_count",
@@ -2147,7 +2153,8 @@ const DesignSchema: Record<string, unknown> = {
                           "properties": {
                             "organizationsWithRoles": {
                               "type": "array",
-                              "description": "Organization memberships for the user with their assigned roles.",
+                              "nullable": true,
+                              "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                               "items": {
                                 "type": "object",
                                 "additionalProperties": false,
@@ -2282,7 +2289,8 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "totalCount": {
                               "type": "integer",
-                              "description": "Total number of organization memberships returned for the user.",
+                              "nullable": true,
+                              "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                               "minimum": 0,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "total_count",
@@ -3162,7 +3170,8 @@ const DesignSchema: Record<string, unknown> = {
                           "properties": {
                             "teamsWithRoles": {
                               "type": "array",
-                              "description": "Team memberships for the user with their assigned roles.",
+                              "nullable": true,
+                              "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                               "items": {
                                 "type": "object",
                                 "additionalProperties": false,
@@ -3291,7 +3300,8 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "totalCount": {
                               "type": "integer",
-                              "description": "Total number of team memberships returned for the user.",
+                              "nullable": true,
+                              "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                               "minimum": 0,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "total_count",
@@ -3310,7 +3320,8 @@ const DesignSchema: Record<string, unknown> = {
                           "properties": {
                             "organizationsWithRoles": {
                               "type": "array",
-                              "description": "Organization memberships for the user with their assigned roles.",
+                              "nullable": true,
+                              "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                               "items": {
                                 "type": "object",
                                 "additionalProperties": false,
@@ -3445,7 +3456,8 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "totalCount": {
                               "type": "integer",
-                              "description": "Total number of organization memberships returned for the user.",
+                              "nullable": true,
+                              "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                               "minimum": 0,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "total_count",
@@ -4292,7 +4304,8 @@ const DesignSchema: Record<string, unknown> = {
                           "properties": {
                             "teamsWithRoles": {
                               "type": "array",
-                              "description": "Team memberships for the user with their assigned roles.",
+                              "nullable": true,
+                              "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                               "items": {
                                 "type": "object",
                                 "additionalProperties": false,
@@ -4421,7 +4434,8 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "totalCount": {
                               "type": "integer",
-                              "description": "Total number of team memberships returned for the user.",
+                              "nullable": true,
+                              "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                               "minimum": 0,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "total_count",
@@ -4440,7 +4454,8 @@ const DesignSchema: Record<string, unknown> = {
                           "properties": {
                             "organizationsWithRoles": {
                               "type": "array",
-                              "description": "Organization memberships for the user with their assigned roles.",
+                              "nullable": true,
+                              "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                               "items": {
                                 "type": "object",
                                 "additionalProperties": false,
@@ -4575,7 +4590,8 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "totalCount": {
                               "type": "integer",
-                              "description": "Total number of organization memberships returned for the user.",
+                              "nullable": true,
+                              "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                               "minimum": 0,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "total_count",
@@ -5578,7 +5594,8 @@ const DesignSchema: Record<string, unknown> = {
                             "properties": {
                               "teamsWithRoles": {
                                 "type": "array",
-                                "description": "Team memberships for the user with their assigned roles.",
+                                "nullable": true,
+                                "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                                 "items": {
                                   "type": "object",
                                   "additionalProperties": false,
@@ -5707,7 +5724,8 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "totalCount": {
                                 "type": "integer",
-                                "description": "Total number of team memberships returned for the user.",
+                                "nullable": true,
+                                "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                                 "minimum": 0,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "total_count",
@@ -5726,7 +5744,8 @@ const DesignSchema: Record<string, unknown> = {
                             "properties": {
                               "organizationsWithRoles": {
                                 "type": "array",
-                                "description": "Organization memberships for the user with their assigned roles.",
+                                "nullable": true,
+                                "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                                 "items": {
                                   "type": "object",
                                   "additionalProperties": false,
@@ -5861,7 +5880,8 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "totalCount": {
                                 "type": "integer",
-                                "description": "Total number of organization memberships returned for the user.",
+                                "nullable": true,
+                                "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                                 "minimum": 0,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "total_count",
@@ -6753,7 +6773,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "properties": {
                                   "teamsWithRoles": {
                                     "type": "array",
-                                    "description": "Team memberships for the user with their assigned roles.",
+                                    "nullable": true,
+                                    "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                                     "items": {
                                       "type": "object",
                                       "additionalProperties": false,
@@ -6882,7 +6903,8 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "totalCount": {
                                     "type": "integer",
-                                    "description": "Total number of team memberships returned for the user.",
+                                    "nullable": true,
+                                    "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                                     "minimum": 0,
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "total_count",
@@ -6901,7 +6923,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "properties": {
                                   "organizationsWithRoles": {
                                     "type": "array",
-                                    "description": "Organization memberships for the user with their assigned roles.",
+                                    "nullable": true,
+                                    "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                                     "items": {
                                       "type": "object",
                                       "additionalProperties": false,
@@ -7036,7 +7059,8 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "totalCount": {
                                     "type": "integer",
-                                    "description": "Total number of organization memberships returned for the user.",
+                                    "nullable": true,
+                                    "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                                     "minimum": 0,
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "total_count",
@@ -8025,7 +8049,8 @@ const DesignSchema: Record<string, unknown> = {
                           "properties": {
                             "teamsWithRoles": {
                               "type": "array",
-                              "description": "Team memberships for the user with their assigned roles.",
+                              "nullable": true,
+                              "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                               "items": {
                                 "type": "object",
                                 "additionalProperties": false,
@@ -8154,7 +8179,8 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "totalCount": {
                               "type": "integer",
-                              "description": "Total number of team memberships returned for the user.",
+                              "nullable": true,
+                              "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                               "minimum": 0,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "total_count",
@@ -8173,7 +8199,8 @@ const DesignSchema: Record<string, unknown> = {
                           "properties": {
                             "organizationsWithRoles": {
                               "type": "array",
-                              "description": "Organization memberships for the user with their assigned roles.",
+                              "nullable": true,
+                              "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                               "items": {
                                 "type": "object",
                                 "additionalProperties": false,
@@ -8308,7 +8335,8 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "totalCount": {
                               "type": "integer",
-                              "description": "Total number of organization memberships returned for the user.",
+                              "nullable": true,
+                              "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                               "minimum": 0,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "total_count",
@@ -8999,7 +9027,8 @@ const DesignSchema: Record<string, unknown> = {
                           "properties": {
                             "teamsWithRoles": {
                               "type": "array",
-                              "description": "Team memberships for the user with their assigned roles.",
+                              "nullable": true,
+                              "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                               "items": {
                                 "type": "object",
                                 "additionalProperties": false,
@@ -9128,7 +9157,8 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "totalCount": {
                               "type": "integer",
-                              "description": "Total number of team memberships returned for the user.",
+                              "nullable": true,
+                              "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                               "minimum": 0,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "total_count",
@@ -9147,7 +9177,8 @@ const DesignSchema: Record<string, unknown> = {
                           "properties": {
                             "organizationsWithRoles": {
                               "type": "array",
-                              "description": "Organization memberships for the user with their assigned roles.",
+                              "nullable": true,
+                              "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                               "items": {
                                 "type": "object",
                                 "additionalProperties": false,
@@ -9282,7 +9313,8 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "totalCount": {
                               "type": "integer",
-                              "description": "Total number of organization memberships returned for the user.",
+                              "nullable": true,
+                              "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                               "minimum": 0,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "total_count",
@@ -10530,7 +10562,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "properties": {
                                   "teamsWithRoles": {
                                     "type": "array",
-                                    "description": "Team memberships for the user with their assigned roles.",
+                                    "nullable": true,
+                                    "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                                     "items": {
                                       "type": "object",
                                       "additionalProperties": false,
@@ -10659,7 +10692,8 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "totalCount": {
                                     "type": "integer",
-                                    "description": "Total number of team memberships returned for the user.",
+                                    "nullable": true,
+                                    "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                                     "minimum": 0,
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "total_count",
@@ -10678,7 +10712,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "properties": {
                                   "organizationsWithRoles": {
                                     "type": "array",
-                                    "description": "Organization memberships for the user with their assigned roles.",
+                                    "nullable": true,
+                                    "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                                     "items": {
                                       "type": "object",
                                       "additionalProperties": false,
@@ -10813,7 +10848,8 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "totalCount": {
                                     "type": "integer",
-                                    "description": "Total number of organization memberships returned for the user.",
+                                    "nullable": true,
+                                    "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                                     "minimum": 0,
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "total_count",
@@ -16266,7 +16302,8 @@ const DesignSchema: Record<string, unknown> = {
                 "properties": {
                   "teamsWithRoles": {
                     "type": "array",
-                    "description": "Team memberships for the user with their assigned roles.",
+                    "nullable": true,
+                    "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                     "items": {
                       "type": "object",
                       "additionalProperties": false,
@@ -16395,7 +16432,8 @@ const DesignSchema: Record<string, unknown> = {
                   },
                   "totalCount": {
                     "type": "integer",
-                    "description": "Total number of team memberships returned for the user.",
+                    "nullable": true,
+                    "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                     "minimum": 0,
                     "x-oapi-codegen-extra-tags": {
                       "db": "total_count",
@@ -16414,7 +16452,8 @@ const DesignSchema: Record<string, unknown> = {
                 "properties": {
                   "organizationsWithRoles": {
                     "type": "array",
-                    "description": "Organization memberships for the user with their assigned roles.",
+                    "nullable": true,
+                    "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                     "items": {
                       "type": "object",
                       "additionalProperties": false,
@@ -16549,7 +16588,8 @@ const DesignSchema: Record<string, unknown> = {
                   },
                   "totalCount": {
                     "type": "integer",
-                    "description": "Total number of organization memberships returned for the user.",
+                    "nullable": true,
+                    "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                     "minimum": 0,
                     "x-oapi-codegen-extra-tags": {
                       "db": "total_count",
@@ -17287,7 +17327,8 @@ const DesignSchema: Record<string, unknown> = {
                       "properties": {
                         "teamsWithRoles": {
                           "type": "array",
-                          "description": "Team memberships for the user with their assigned roles.",
+                          "nullable": true,
+                          "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                           "items": {
                             "type": "object",
                             "additionalProperties": false,
@@ -17416,7 +17457,8 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "totalCount": {
                           "type": "integer",
-                          "description": "Total number of team memberships returned for the user.",
+                          "nullable": true,
+                          "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
@@ -17435,7 +17477,8 @@ const DesignSchema: Record<string, unknown> = {
                       "properties": {
                         "organizationsWithRoles": {
                           "type": "array",
-                          "description": "Organization memberships for the user with their assigned roles.",
+                          "nullable": true,
+                          "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                           "items": {
                             "type": "object",
                             "additionalProperties": false,
@@ -17570,7 +17613,8 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "totalCount": {
                           "type": "integer",
-                          "description": "Total number of organization memberships returned for the user.",
+                          "nullable": true,
+                          "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
@@ -18869,7 +18913,8 @@ const DesignSchema: Record<string, unknown> = {
                       "properties": {
                         "teamsWithRoles": {
                           "type": "array",
-                          "description": "Team memberships for the user with their assigned roles.",
+                          "nullable": true,
+                          "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                           "items": {
                             "type": "object",
                             "additionalProperties": false,
@@ -18998,7 +19043,8 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "totalCount": {
                           "type": "integer",
-                          "description": "Total number of team memberships returned for the user.",
+                          "nullable": true,
+                          "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
@@ -19017,7 +19063,8 @@ const DesignSchema: Record<string, unknown> = {
                       "properties": {
                         "organizationsWithRoles": {
                           "type": "array",
-                          "description": "Organization memberships for the user with their assigned roles.",
+                          "nullable": true,
+                          "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                           "items": {
                             "type": "object",
                             "additionalProperties": false,
@@ -19152,7 +19199,8 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "totalCount": {
                           "type": "integer",
-                          "description": "Total number of organization memberships returned for the user.",
+                          "nullable": true,
+                          "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
@@ -20107,7 +20155,8 @@ const DesignSchema: Record<string, unknown> = {
                 "properties": {
                   "teamsWithRoles": {
                     "type": "array",
-                    "description": "Team memberships for the user with their assigned roles.",
+                    "nullable": true,
+                    "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                     "items": {
                       "type": "object",
                       "additionalProperties": false,
@@ -20236,7 +20285,8 @@ const DesignSchema: Record<string, unknown> = {
                   },
                   "totalCount": {
                     "type": "integer",
-                    "description": "Total number of team memberships returned for the user.",
+                    "nullable": true,
+                    "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                     "minimum": 0,
                     "x-oapi-codegen-extra-tags": {
                       "db": "total_count",
@@ -20255,7 +20305,8 @@ const DesignSchema: Record<string, unknown> = {
                 "properties": {
                   "organizationsWithRoles": {
                     "type": "array",
-                    "description": "Organization memberships for the user with their assigned roles.",
+                    "nullable": true,
+                    "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                     "items": {
                       "type": "object",
                       "additionalProperties": false,
@@ -20390,7 +20441,8 @@ const DesignSchema: Record<string, unknown> = {
                   },
                   "totalCount": {
                     "type": "integer",
-                    "description": "Total number of organization memberships returned for the user.",
+                    "nullable": true,
+                    "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                     "minimum": 0,
                     "x-oapi-codegen-extra-tags": {
                       "db": "total_count",
@@ -21017,7 +21069,8 @@ const DesignSchema: Record<string, unknown> = {
                       "properties": {
                         "teamsWithRoles": {
                           "type": "array",
-                          "description": "Team memberships for the user with their assigned roles.",
+                          "nullable": true,
+                          "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                           "items": {
                             "type": "object",
                             "additionalProperties": false,
@@ -21146,7 +21199,8 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "totalCount": {
                           "type": "integer",
-                          "description": "Total number of team memberships returned for the user.",
+                          "nullable": true,
+                          "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
@@ -21165,7 +21219,8 @@ const DesignSchema: Record<string, unknown> = {
                       "properties": {
                         "organizationsWithRoles": {
                           "type": "array",
-                          "description": "Organization memberships for the user with their assigned roles.",
+                          "nullable": true,
+                          "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                           "items": {
                             "type": "object",
                             "additionalProperties": false,
@@ -21300,7 +21355,8 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "totalCount": {
                           "type": "integer",
-                          "description": "Total number of organization memberships returned for the user.",
+                          "nullable": true,
+                          "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",

@@ -342,10 +342,10 @@ type User struct {
 
 	// Organizations Organizations the user belongs to with role information
 	Organizations *struct {
-		// OrganizationsWithRoles Organization memberships for the user with their assigned roles.
+		// OrganizationsWithRoles Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.
 		OrganizationsWithRoles *[]OrganizationWithRoles `db:"organizations_with_roles" json:"organizationsWithRoles" yaml:"organizationsWithRoles"`
 
-		// TotalCount Total number of organization memberships returned for the user.
+		// TotalCount Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.
 		TotalCount *int `db:"total_count" json:"totalCount" yaml:"totalCount"`
 	} `db:"organizations" json:"organizations" yaml:"organizations"`
 	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences,omitempty"`
@@ -367,10 +367,10 @@ type User struct {
 
 	// Teams Teams the user belongs to with role information
 	Teams *struct {
-		// TeamsWithRoles Team memberships for the user with their assigned roles.
+		// TeamsWithRoles Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.
 		TeamsWithRoles *[]TeamWithRoles `db:"teams_with_roles" json:"teamsWithRoles" yaml:"teamsWithRoles"`
 
-		// TotalCount Total number of team memberships returned for the user.
+		// TotalCount Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.
 		TotalCount *int `db:"total_count" json:"totalCount" yaml:"totalCount"`
 	} `db:"teams" json:"teams" yaml:"teams"`
 	UpdatedAt core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
