@@ -79,11 +79,11 @@ properties:
       json: registrant
       gorm: foreignKey:RegistrantId;references:ID
     x-order: 8
-    x-go-type: connectionv1beta1.Connection
+    x-go-type: connectionv1beta3.Connection
     x-go-type-import:
-      path: github.com/meshery/schemas/models/v1beta1/connection
-      name: connectionv1beta1
-    $ref: ../../v1beta1/connection/api.yml#/components/schemas/Connection
+      path: github.com/meshery/schemas/models/v1beta3/connection
+      name: connectionv1beta3
+    $ref: ../../v1beta3/connection/api.yml#/components/schemas/Connection
   registrantId:
     description: ID of the registrant.
     $ref: ../core/api.yml#/components/schemas/Uuid
