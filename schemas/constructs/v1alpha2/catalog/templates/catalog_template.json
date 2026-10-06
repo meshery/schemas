@@ -1,9 +1,9 @@
 {
   "publishedVersion": "",
-  "class": {},
-  "compatibility": {},
+  "class": "",
+  "compatibility": [],
   "patternCaveats": "",
   "patternInfo": "",
   "type": "Deployment",
-  "snapshotURL": {}
+  "snapshotURL": []
 }

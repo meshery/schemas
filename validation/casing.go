@@ -15,8 +15,8 @@ import (
 // and Phase 4.A administratively closed with every legacy directory
 // carrying `info.x-deprecated: true`. The audit walker
 // (validation/audit.go::walkValidatedConstructSpecs) skips deprecated
-// specs and only processes the latest non-deprecated API version per
-// construct, so the historical lowercase-suffix names enumerated by the
+// specs and processes every non-deprecated API version of a construct,
+// so the historical lowercase-suffix names enumerated by the
 // old allowlist (`userid`, `orgid`, `workspaceid`, `pageurl`,
 // `avatarurl`, …) can no longer reach the audit on any live resource:
 // the only occurrences that remain in the source tree are inside
