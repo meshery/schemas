@@ -1050,41 +1050,38 @@ components:
           schema:
             type: object
             required:
-              - Code
-              - Severity
-              - ShortDescription
-              - LongDescription
-              - ProbableCause
-              - SuggestedRemediation
+              - error
+              - code
+              - severity
             properties:
-              Code:
+              error:
+                type: string
+                description: User-facing error message; MeshKit ShortDescription when present.
+              code:
                 type: string
                 description: MeshKit error code.
-              Severity:
-                type: integer
+              severity:
+                type: string
                 description: MeshKit error severity.
-              ShortDescription:
+                enum:
+                  - EMERGENCY
+                  - ALERT
+                  - CRITICAL
+                  - FATAL
+                  - ERROR
+                x-go-type: string
+              probableCause:
                 type: array
-                nullable: true
                 items:
                   type: string
-              LongDescription:
+              suggestedRemediation:
                 type: array
-                nullable: true
                 items:
                   type: string
-              ProbableCause:
+              longDescription:
                 type: array
-                nullable: true
                 items:
                   type: string
-              SuggestedRemediation:
-                type: array
-                nullable: true
-                items:
-                  type: string
-              AdditionalInfo:
-                description: Unstructured additional information from MeshKit ErrorV2, when present.
     "404":
       description: Result not found
       content:
