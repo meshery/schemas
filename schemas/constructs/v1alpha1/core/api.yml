@@ -1044,8 +1044,11 @@ components:
           schema:
             type: string
     MeshKitError403:
-      description: MeshKit structured JSON error response for forbidden requests.
+      description: MeshKit error response for forbidden requests.
       content:
+        text/plain:
+          schema:
+            type: string
         application/json:
           schema:
             type: object
