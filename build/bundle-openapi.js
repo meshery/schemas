@@ -132,6 +132,54 @@ function mergeComponentMaps(baseComponents, incomingComponents) {
   }
 }
 
+// The keys of a Path Item Object that are operations; everything else there
+// (`parameters`, `summary`, `description`, `servers`, `$ref`) is not.
+const OPERATION_METHODS = ["get", "put", "post", "delete", "options", "head", "patch", "trace"];
+
+/**
+ * Pushes a construct's document-level `security` down onto its own operations.
+ *
+ * Only `paths` and `components` survive the merge, so a document-level
+ * `security` would otherwise be dropped and the construct's operations would
+ * ship with no security requirement at all - in the bundled specs, the
+ * published API documentation and the generated clients alike. A single
+ * top-level `security` on the merged document is not the alternative: it would
+ * claim every other construct's operations too.
+ *
+ * OpenAPI defines document-level security as the default for operations that
+ * declare none, so applying it per operation preserves exactly that meaning.
+ * An operation's own `security` always wins, including an explicit `[]`, which
+ * is how a spec opts one operation out of the document default.
+ *
+ * @param {Object} spec - A spec whose internal references are already prefixed
+ * @returns {Object} the same spec
+ */
+function applyDocumentSecurityToOperations(spec) {
+  const documentSecurity = spec?.security;
+
+  if (!Array.isArray(documentSecurity) || documentSecurity.length === 0) {
+    return spec;
+  }
+
+  for (const pathItem of Object.values(spec.paths || {})) {
+    if (!pathItem || typeof pathItem !== "object") {
+      continue;
+    }
+
+    for (const method of OPERATION_METHODS) {
+      const operation = pathItem[method];
+
+      if (!operation || typeof operation !== "object" || operation.security !== undefined) {
+        continue;
+      }
+
+      operation.security = documentSecurity;
+    }
+  }
+
+  return spec;
+}
+
 function mergePaths(basePaths, incomingPaths) {
   for (const [route, pathItem] of Object.entries(incomingPaths || {})) {
     const currentPath = (basePaths[route] ??= {});
@@ -165,7 +213,9 @@ function mergeOpenapiSpec(baseSpec, specToMerge) {
     throw new Error("Cannot merge OpenAPI spec without info.title");
   }
 
-  const normalizedSpec = prefixInternalReferences(specToMerge, prefix);
+  const normalizedSpec = applyDocumentSecurityToOperations(
+    prefixInternalReferences(specToMerge, prefix),
+  );
 
   mergeTags(baseSpec.tags ?? (baseSpec.tags = []), normalizedSpec.tags || []);
   mergePaths(baseSpec.paths ?? (baseSpec.paths = {}), normalizedSpec.paths || {});
@@ -334,6 +384,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  applyDocumentSecurityToOperations,
   dereferenceOpenapiSpec,
   mergeOpenapiSpec,
   prefixComponentRef,
