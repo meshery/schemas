@@ -601,3 +601,112 @@ func TestCheckRule48_AllHTTPMethods_Covered(t *testing.T) {
 		}
 	}
 }
+
+func TestCheckRule48_WholeWordMapMatch_NoViolation(t *testing.T) {
+	trueVal := true
+	schema := &openapi3.Schema{
+		Type:        &openapi3.Types{"object"},
+		Description: "A map of key-value properties",
+		AdditionalProperties: openapi3.AdditionalProperties{
+			Has: &trueVal,
+		},
+	}
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"PropertiesMap": &openapi3.SchemaRef{Value: schema},
+			},
+		},
+	}
+
+	vs := checkRule48("api.yml", doc, AuditOptions{})
+	if len(vs) != 0 {
+		t.Errorf("expected 0 violations for description with whole-word 'map', got %d: %v", len(vs), vs)
+	}
+}
+
+func TestCheckRule48_SubstringMapping_Violation(t *testing.T) {
+	trueVal := true
+	schema := &openapi3.Schema{
+		Type:        &openapi3.Types{"object"},
+		Description: "The connection mapping page",
+		AdditionalProperties: openapi3.AdditionalProperties{
+			Has: &trueVal,
+		},
+	}
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"MappingPayload": &openapi3.SchemaRef{Value: schema},
+			},
+		},
+	}
+
+	vs := checkRule48("api.yml", doc, AuditOptions{})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation for description containing 'mapping', got %d", len(vs))
+	}
+	if vs[0].RuleNumber != 48 {
+		t.Errorf("expected Rule 48, got %d", vs[0].RuleNumber)
+	}
+}
+
+func TestCheckRule48_Severity_AdvisoryByDefault(t *testing.T) {
+	trueVal := true
+	schema := &openapi3.Schema{
+		Type:        &openapi3.Types{"object"},
+		Description: "Unmodeled placeholder component schema",
+		AdditionalProperties: openapi3.AdditionalProperties{
+			Has: &trueVal,
+		},
+	}
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"UnmodeledPayload": &openapi3.SchemaRef{Value: schema},
+			},
+		},
+	}
+
+	vs := checkRule48("api.yml", doc, AuditOptions{Strict: false})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+	if vs[0].Severity != SeverityAdvisory {
+		t.Errorf("expected SeverityAdvisory when Strict is false, got %v", vs[0].Severity)
+	}
+}
+
+func TestCheckRule48_Severity_BlockingInStrictMode(t *testing.T) {
+	trueVal := true
+	schema := &openapi3.Schema{
+		Type:        &openapi3.Types{"object"},
+		Description: "Unmodeled placeholder component schema",
+		AdditionalProperties: openapi3.AdditionalProperties{
+			Has: &trueVal,
+		},
+	}
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"UnmodeledPayload": &openapi3.SchemaRef{Value: schema},
+			},
+		},
+	}
+
+	vs := checkRule48("api.yml", doc, AuditOptions{Strict: true})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+	if vs[0].Severity != SeverityBlocking {
+		t.Errorf("expected SeverityBlocking when Strict is true, got %v", vs[0].Severity)
+	}
+}

@@ -1305,17 +1305,23 @@ components:
         successfulComponents:
           type: array
           items:
-            $ref: "#/components/schemas/RegistryComponent"
+            type: object
+            description: Free-form summary map entries of components successfully imported containing model, category, metadata, displayName, and version.
+            additionalProperties: true
           description: Components successfully imported.
         successfulRelationships:
           type: array
           items:
-            $ref: "../../v1beta3/relationship/relationship.yaml"
+            type: object
+            description: Free-form summary map entries of relationships successfully imported containing model, metadata, displayName, and version.
+            additionalProperties: true
           description: Relationships successfully imported.
         successfulModels:
           type: array
           items:
-            $ref: "#/components/schemas/RegistryModel"
+            type: object
+            description: Free-form summary map entries of models successfully imported containing model, metadata, displayName, and version.
+            additionalProperties: true
           description: Models successfully imported.
 
         unsuccessfulComponentNames:

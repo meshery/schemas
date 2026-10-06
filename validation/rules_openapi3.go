@@ -2,6 +2,7 @@ package validation
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -226,6 +227,8 @@ var freeFormKeywords = []string{
 	"metadata", "dictionary", "map",
 }
 
+var freeFormRegex = regexp.MustCompile(`(?i)\b(free-form|freeform|arbitrary|opaque|key-value|metadata|dictionary|map)\b`)
+
 var allHTTPMethods = []string{"get", "post", "put", "delete", "options", "head", "patch", "trace"}
 
 func getPathItemOperation(item *openapi3.PathItem, method string) *openapi3.Operation {
@@ -270,13 +273,7 @@ func hasFreeFormIntentDescription(desc string) bool {
 	if desc == "" {
 		return false
 	}
-	lower := strings.ToLower(desc)
-	for _, kw := range freeFormKeywords {
-		if strings.Contains(lower, kw) {
-			return true
-		}
-	}
-	return false
+	return freeFormRegex.MatchString(desc)
 }
 
 func isReservedMapPropertyName(name string) bool {
@@ -420,7 +417,7 @@ func walkPlaceholderSchemas(
 	}
 
 	if shouldReport {
-		sev := SeverityAdvisory
+		sev := classifyDesignIssue(opts)
 		if ctx == contextArrayItems {
 			sev = SeverityBlocking
 		}
