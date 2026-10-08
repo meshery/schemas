@@ -1848,8 +1848,20 @@ export type GetFeaturesApiResponse = /** status 200 Features response */ {
     | "DesignsInWorkspace"
     | "WorkspacesInOrganization"
     | "ImageSizeInDesign"
-    | "SizePerDesign";
-  /** Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited. */
+    | "SizePerDesign"
+    | "BlowhornProfiles"
+    | "BlowhornBrowserAutomation"
+    | "BlowhornScheduler"
+    | "BlowhornDevicesPerSeat"
+    | "BlowhornPlatformLinkedIn"
+    | "BlowhornPlatformX"
+    | "BlowhornPlatformReddit"
+    | "BlowhornPlatformHackerNews"
+    | "BlowhornPlatformSlack"
+    | "BlowhornPlatformBluesky"
+    | "BlowhornPlatformGitHub"
+    | "BlowhornPlatformBlog";
+  /** Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability. */
   quantity: number;
   /** Timestamp when the resource was created. */
   created_at: string;
@@ -1891,8 +1903,20 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features respo
     | "DesignsInWorkspace"
     | "WorkspacesInOrganization"
     | "ImageSizeInDesign"
-    | "SizePerDesign";
-  /** Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited. */
+    | "SizePerDesign"
+    | "BlowhornProfiles"
+    | "BlowhornBrowserAutomation"
+    | "BlowhornScheduler"
+    | "BlowhornDevicesPerSeat"
+    | "BlowhornPlatformLinkedIn"
+    | "BlowhornPlatformX"
+    | "BlowhornPlatformReddit"
+    | "BlowhornPlatformHackerNews"
+    | "BlowhornPlatformSlack"
+    | "BlowhornPlatformBluesky"
+    | "BlowhornPlatformGitHub"
+    | "BlowhornPlatformBlog";
+  /** Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability. */
   quantity: number;
   /** Timestamp when the resource was created. */
   created_at: string;

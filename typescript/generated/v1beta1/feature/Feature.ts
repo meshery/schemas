@@ -90,10 +90,10 @@ export interface components {
              * @description Name of the entitled feature.
              * @enum {string}
              */
-            name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+            name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign" | "BlowhornProfiles" | "BlowhornBrowserAutomation" | "BlowhornScheduler" | "BlowhornDevicesPerSeat" | "BlowhornPlatformLinkedIn" | "BlowhornPlatformX" | "BlowhornPlatformReddit" | "BlowhornPlatformHackerNews" | "BlowhornPlatformSlack" | "BlowhornPlatformBluesky" | "BlowhornPlatformGitHub" | "BlowhornPlatformBlog";
             /**
              * Format: double
-             * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+             * @description Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability.
              */
             quantity: number;
             /**
@@ -108,10 +108,10 @@ export interface components {
             updated_at: string;
         };
         /**
-         * @description Enumeration of feature names that can be granted by a plan.
+         * @description Enumeration of feature names that can be granted by a plan. A feature is either a cap, where `quantity` is the maximum and 999999999999 denotes unlimited, or a capability, where any `quantity` greater than 0 grants it. A feature a plan does not list is not granted.
          * @enum {string}
          */
-        FeatureName: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+        FeatureName: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign" | "BlowhornProfiles" | "BlowhornBrowserAutomation" | "BlowhornScheduler" | "BlowhornDevicesPerSeat" | "BlowhornPlatformLinkedIn" | "BlowhornPlatformX" | "BlowhornPlatformReddit" | "BlowhornPlatformHackerNews" | "BlowhornPlatformSlack" | "BlowhornPlatformBluesky" | "BlowhornPlatformGitHub" | "BlowhornPlatformBlog";
         /** @description List of features. */
         FeaturesPage: {
             /**
@@ -160,10 +160,10 @@ export interface components {
              * @description Name of the entitled feature.
              * @enum {string}
              */
-            name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+            name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign" | "BlowhornProfiles" | "BlowhornBrowserAutomation" | "BlowhornScheduler" | "BlowhornDevicesPerSeat" | "BlowhornPlatformLinkedIn" | "BlowhornPlatformX" | "BlowhornPlatformReddit" | "BlowhornPlatformHackerNews" | "BlowhornPlatformSlack" | "BlowhornPlatformBluesky" | "BlowhornPlatformGitHub" | "BlowhornPlatformBlog";
             /**
              * Format: double
-             * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+             * @description Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability.
              */
             quantity: number;
             /**
@@ -297,10 +297,10 @@ export interface operations {
                          * @description Name of the entitled feature.
                          * @enum {string}
                          */
-                        name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+                        name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign" | "BlowhornProfiles" | "BlowhornBrowserAutomation" | "BlowhornScheduler" | "BlowhornDevicesPerSeat" | "BlowhornPlatformLinkedIn" | "BlowhornPlatformX" | "BlowhornPlatformReddit" | "BlowhornPlatformHackerNews" | "BlowhornPlatformSlack" | "BlowhornPlatformBluesky" | "BlowhornPlatformGitHub" | "BlowhornPlatformBlog";
                         /**
                          * Format: double
-                         * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+                         * @description Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability.
                          */
                         quantity: number;
                         /**
@@ -410,10 +410,10 @@ export interface operations {
                          * @description Name of the entitled feature.
                          * @enum {string}
                          */
-                        name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+                        name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign" | "BlowhornProfiles" | "BlowhornBrowserAutomation" | "BlowhornScheduler" | "BlowhornDevicesPerSeat" | "BlowhornPlatformLinkedIn" | "BlowhornPlatformX" | "BlowhornPlatformReddit" | "BlowhornPlatformHackerNews" | "BlowhornPlatformSlack" | "BlowhornPlatformBluesky" | "BlowhornPlatformGitHub" | "BlowhornPlatformBlog";
                         /**
                          * Format: double
-                         * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+                         * @description Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability.
                          */
                         quantity: number;
                         /**
