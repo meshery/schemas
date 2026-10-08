@@ -4,6 +4,8 @@ See https://docs.meshery.io/project/releases
 
 ## Unreleased
 
+- **Organization (v1beta2)**: hierarchical organizations. Adds `GET` and `POST /api/identity/orgs/{orgId}/children` (`getChildOrgs`, `createChildOrg`), the closed `ChildOrganization` projection (`id`, `name`, `description`, `country`, `region`, `domain`, optional `parentId`, `createdAt`, `updatedAt`) and the `ChildOrganizationsPage` wrapper (`organizations`, `totalCount`), and declares `409` on `deleteOrg` for a parent that still has live children. The parent is the path; `OrganizationPayload` and the public organization read do not grow `parentId`. Contract: `docs/organization-hierarchy-contract.md`.
+
 - **RTK Query**: error responses from Meshery Server (and any backend emitting MeshKit JSON errors) now surface structured fields on `error.meshkit` — `code`, `severity`, `message`, `probableCause`, `suggestedRemediation`, `longDescription`. Both `cloudBaseApi` and `mesheryBaseApi` wrap their `fetchBaseQuery` with a transform that maps the snake_case wire envelope (`error`, `code`, `severity`, `probable_cause`, `suggested_remediation`, `long_description`) to camelCase JS-side fields, leaving `error.data` (the raw body) untouched for backward compatibility. New exported types: `MeshkitError`, `MeshkitFetchBaseQueryError`. Pairs with the `meshery/meshery` server migration that promotes every non-2xx response from `text/plain` to `application/json`. See `docs/superpowers/plans/2026-04-24-plaintext-response-migration.md` in the meshery/meshery repo for full context.
 
 ## v1.1.0 — Phase 1 of the identifier-naming migration

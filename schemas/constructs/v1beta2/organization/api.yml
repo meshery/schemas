@@ -134,7 +134,11 @@ paths:
       security:
         - jwt: []
       summary: Delete an organization
-      description: Deletes the organization.
+      description: >-
+        Soft-deletes the organization. An organization that still has live
+        child organizations is not deleted: the request is refused with 409
+        and nothing changes. Children are neither reparented nor
+        cascade-deleted; delete or leave them first.
       operationId: deleteOrg
       parameters:
         - $ref: "#/components/parameters/orgId"
@@ -149,6 +153,8 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          description: Conflict - the organization still has live child organizations, so it was not deleted
         "500":
           $ref: "#/components/responses/500"
     put:
@@ -167,6 +173,86 @@ paths:
       responses:
         "200":
           description: Single-organization page response for the updated organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  /api/identity/orgs/{orgId}/children:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Read the direct child organizations of an organization
+      description: >-
+        Returns the live organizations whose parent is the organization named by
+        orgId, as the ChildOrganization projection. Only direct children are
+        returned; the hierarchy has no depth limit, and a listed child may itself
+        be a parent, but this operation never walks grandchildren or ancestors.
+        Authorization is the View Organizations permission key evaluated in the
+        parent (orgId); a caller without it receives 403 before any lookup, and a
+        parent the caller may see but that has no children is a 200 with an
+        empty page. The Provider Organization is never a parent, so it has no
+        children to list.
+      operationId: getChildOrgs
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: Direct child organizations of the parent organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChildOrganizationsPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Create a child organization
+      description: >-
+        Creates a new organization whose parent is the organization named by
+        orgId. The path is the parent; the body is the same organization
+        payload the flat create accepts (name, country, region, description)
+        and carries no parentId - a parentId in the body is ignored. The
+        parent is stamped at creation and cannot be changed afterwards.
+        Authorization is the Create Organization permission key evaluated in
+        the parent (orgId). The Provider Organization is never a valid parent:
+        naming it, or the "all" scope, as orgId is refused with 403. A missing
+        or soft-deleted parent is 404, and the body does not distinguish the
+        two. An empty name is 400. On success the creator receives Organization
+        Admin in the new child and the response is the same single-organization
+        page wrapper the flat create returns; parentId is absent from it.
+      operationId: createChildOrg
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        $ref: "#/components/requestBodies/organizationPayload"
+      responses:
+        "201":
+          description: Single-organization page response for the created child organization
           content:
             application/json:
               schema:
@@ -762,6 +848,84 @@ components:
           maxItems: 1
           items:
             $ref: "#/components/schemas/AvailableOrganization"
+
+    ChildOrganization:
+      type: object
+      description: >-
+        Direct child organization as listed under its parent. A deliberately
+        narrow projection of the organization record: it carries no owner,
+        metadata, invite id, or members, because every holder of View
+        Organizations in the parent can read this list and those fields are not
+        part of what the parent is entitled to see. parentId, when present, is
+        the id of the parent organization named in the request path.
+      additionalProperties: false
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+          description: Organization ID of the child.
+          x-go-name: ID
+        name:
+          $ref: "#/components/schemas/Text"
+          description: Name of the child organization.
+        description:
+          $ref: "#/components/schemas/Text"
+          description: Description of the child organization.
+        country:
+          $ref: "#/components/schemas/Text"
+          description: Country of the child organization.
+        region:
+          $ref: "#/components/schemas/Text"
+          description: Region of the child organization.
+        domain:
+          $ref: "#/components/schemas/Text"
+          description: Custom domain assigned to the child organization, when configured.
+        parentId:
+          $ref: "#/components/schemas/UUID"
+          description: >-
+            ID of the parent organization. Stamped at creation and never
+            changed; absent only on a top-level organization, which this
+            listing never returns.
+          x-go-name: ParentID
+          x-oapi-codegen-extra-tags:
+            json: "parentId,omitempty"
+        createdAt:
+          $ref: "#/components/schemas/Time"
+          description: Timestamp when the child organization was created.
+          x-oapi-codegen-extra-tags:
+            json: "createdAt"
+        updatedAt:
+          $ref: "#/components/schemas/Time"
+          description: Timestamp when the child organization was last updated.
+          x-oapi-codegen-extra-tags:
+            json: "updatedAt"
+
+    ChildOrganizationsPage:
+      type: object
+      description: >-
+        Page of the direct child organizations of one parent. Carries only the
+        organizations list and the total count; it is not the OrganizationsPage
+        wrapper, whose AvailableOrganization rows expose owner and metadata.
+      additionalProperties: false
+      required:
+        - organizations
+        - totalCount
+      properties:
+        organizations:
+          type: array
+          description: Direct child organizations in this page.
+          items:
+            $ref: "#/components/schemas/ChildOrganization"
+        totalCount:
+          type: integer
+          description: Total number of live direct children across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount"
 
     OrganizationPayload:
       type: object
