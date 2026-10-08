@@ -65,9 +65,33 @@ export interface paths {
         post?: never;
         /**
          * Delete an organization
-         * @description Deletes the organization.
+         * @description Soft-deletes the organization. An organization that still has live child organizations is not deleted: the request is refused with 409 and nothing changes. Children are neither reparented nor cascade-deleted; delete or leave them first.
          */
         delete: operations["deleteOrg"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/orgs/{orgId}/children": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read the direct child organizations of an organization
+         * @description Returns the live organizations whose parent is the organization named by orgId, as the ChildOrganization projection. Only direct children are returned; the hierarchy has no depth limit, and a listed child may itself be a parent, but this operation never walks grandchildren or ancestors. Authorization is the View Organizations permission key evaluated in the parent (orgId); a caller without it receives 403 before any lookup, and a parent the caller may see but that has no children is a 200 with an empty page. The Provider Organization is never a parent, so it has no children to list.
+         */
+        get: operations["getChildOrgs"];
+        put?: never;
+        /**
+         * Create a child organization
+         * @description Creates a new organization whose parent is the organization named by orgId. The path is the parent; the body is the same organization payload the flat create accepts (name, country, region, description) and carries no parentId - a parentId in the body is ignored. The parent is stamped at creation and cannot be changed afterwards. Authorization is the Create Organization permission key evaluated in the parent (orgId). The Provider Organization is never a valid parent: naming it, or the "all" scope, as orgId is refused with 403. A missing or soft-deleted parent is 404, and the body does not distinguish the two. An empty name is 400. On success the creator receives Organization Admin in the new child and the response is the same single-organization page wrapper the flat create returns; parentId is absent from it.
+         */
+        post: operations["createChildOrg"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1089,6 +1113,77 @@ export interface components {
                  */
                 deletedAt?: string;
             }[];
+        };
+        /** @description Direct child organization as listed under its parent. A deliberately narrow projection of the organization record: it carries no owner, metadata, invite id, or members, because every holder of View Organizations in the parent can read this list and those fields are not part of what the parent is entitled to see. parentId, when present, is the id of the parent organization named in the request path. */
+        ChildOrganization: {
+            /**
+             * Format: uuid
+             * @description Organization ID of the child.
+             */
+            id: string;
+            /** @description Name of the child organization. */
+            name: string;
+            /** @description Description of the child organization. */
+            description?: string;
+            /** @description Country of the child organization. */
+            country?: string;
+            /** @description Region of the child organization. */
+            region?: string;
+            /** @description Custom domain assigned to the child organization, when configured. */
+            domain?: string;
+            /**
+             * Format: uuid
+             * @description ID of the parent organization. Stamped at creation and never changed; absent only on a top-level organization, which this listing never returns.
+             */
+            parentId?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the child organization was created.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the child organization was last updated.
+             */
+            updatedAt: string;
+        };
+        /** @description Page of the direct child organizations of one parent. Carries only the organizations list and the total count; it is not the OrganizationsPage wrapper, whose AvailableOrganization rows expose owner and metadata. */
+        ChildOrganizationsPage: {
+            /** @description Direct child organizations in this page. */
+            organizations: {
+                /**
+                 * Format: uuid
+                 * @description Organization ID of the child.
+                 */
+                id: string;
+                /** @description Name of the child organization. */
+                name: string;
+                /** @description Description of the child organization. */
+                description?: string;
+                /** @description Country of the child organization. */
+                country?: string;
+                /** @description Region of the child organization. */
+                region?: string;
+                /** @description Custom domain assigned to the child organization, when configured. */
+                domain?: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the parent organization. Stamped at creation and never changed; absent only on a top-level organization, which this listing never returns.
+                 */
+                parentId?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the child organization was created.
+                 */
+                createdAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the child organization was last updated.
+                 */
+                updatedAt: string;
+            }[];
+            /** @description Total number of live direct children across all pages. */
+            totalCount: number;
         };
         /** @description Payload for creating or updating an organization. Contains only client-settable fields. */
         OrganizationPayload: {
@@ -2877,6 +2972,466 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Conflict - the organization still has live child organizations, so it was not deleted */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getChildOrgs: {
+        parameters: {
+            query?: {
+                /** @description Zero-based index of the result page to return. */
+                page?: number;
+                /** @description Maximum number of items returned on each page. */
+                pageSize?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Organization ID. */
+                orgId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Direct child organizations of the parent organization */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Direct child organizations in this page. */
+                        organizations: {
+                            /**
+                             * Format: uuid
+                             * @description Organization ID of the child.
+                             */
+                            id: string;
+                            /** @description Name of the child organization. */
+                            name: string;
+                            /** @description Description of the child organization. */
+                            description?: string;
+                            /** @description Country of the child organization. */
+                            country?: string;
+                            /** @description Region of the child organization. */
+                            region?: string;
+                            /** @description Custom domain assigned to the child organization, when configured. */
+                            domain?: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the parent organization. Stamped at creation and never changed; absent only on a top-level organization, which this listing never returns.
+                             */
+                            parentId?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the child organization was created.
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the child organization was last updated.
+                             */
+                            updatedAt: string;
+                        }[];
+                        /** @description Total number of live direct children across all pages. */
+                        totalCount: number;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    createChildOrg: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization ID. */
+                orgId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Body for creating or updating an organization */
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Name of the organization. */
+                    name?: string;
+                    /** @description Country of the organization. */
+                    country?: string;
+                    /** @description Region of the organization. */
+                    region?: string;
+                    /** @description Description of the organization. */
+                    description?: string;
+                    /** @description Indicates whether organization members should be notified of this update. */
+                    notifyOrgUpdate?: boolean;
+                    /** @description Organization-level user experience preferences. */
+                    preferences?: {
+                        /** @description UI theme configured for an organization. */
+                        theme: {
+                            /**
+                             * Format: uuid
+                             * @description Theme identifier.
+                             */
+                            id: string;
+                            /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+                            logo: {
+                                /** @description Image asset anchored to a named location within an organization theme. */
+                                desktopView: {
+                                    /** @description SVG markup for the asset. */
+                                    svg: string;
+                                    /** @description Named location of the asset (e.g. header, footer). */
+                                    location: string;
+                                };
+                                /** @description Image asset anchored to a named location within an organization theme. */
+                                mobileView: {
+                                    /** @description SVG markup for the asset. */
+                                    svg: string;
+                                    /** @description Named location of the asset (e.g. header, footer). */
+                                    location: string;
+                                };
+                                /** @description Image asset anchored to a named location within an organization theme. */
+                                darkDesktopView: {
+                                    /** @description SVG markup for the asset. */
+                                    svg: string;
+                                    /** @description Named location of the asset (e.g. header, footer). */
+                                    location: string;
+                                };
+                                /** @description Image asset anchored to a named location within an organization theme. */
+                                darkMobileView: {
+                                    /** @description SVG markup for the asset. */
+                                    svg: string;
+                                    /** @description Named location of the asset (e.g. header, footer). */
+                                    location: string;
+                                };
+                            };
+                            /** @description Arbitrary theme variables keyed by name. */
+                            vars?: {
+                                [key: string]: unknown;
+                            };
+                        };
+                        /** @description Preferences specific to dashboard behavior. */
+                        dashboard: {
+                            [key: string]: unknown;
+                        };
+                        /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                        authBranding?: {
+                            /** @description Ordered slides rendered in the auth-page feature carousel. */
+                            carousel?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the slide image asset.
+                                 */
+                                imageUrl: string;
+                                /** @description Slide title. */
+                                title: string;
+                                /** @description Slide description text. */
+                                description: string;
+                            }[];
+                            /** @description FAQ entries rendered on the auth pages. */
+                            faqs?: {
+                                /** @description The question text. */
+                                question: string;
+                                /** @description The answer text. */
+                                answer: string;
+                            }[];
+                        };
+                        /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+                        links?: {
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's Terms of Service page.
+                             */
+                            termsOfService?: string;
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's Privacy Policy page.
+                             */
+                            privacy?: string;
+                            /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                            support?: {
+                                [key: string]: string;
+                            };
+                            /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                            social?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's LinkedIn profile.
+                                 */
+                                linkedin?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's X (formerly Twitter) profile.
+                                 */
+                                x?: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's YouTube channel.
+                                 */
+                                youtube?: string;
+                            };
+                        };
+                        /**
+                         * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+                         * @default true
+                         */
+                        showAuthCarousel?: boolean;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Single-organization page response for the created child organization */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Zero-based page index returned in this response. */
+                        page?: number;
+                        /** @description Maximum number of items returned on each page. */
+                        pageSize?: number;
+                        /** @description Total number of items across all pages. */
+                        totalCount?: number;
+                        /** @description Organizations returned in this single-item page wrapper. */
+                        organizations?: {
+                            /**
+                             * Format: uuid
+                             * @description Organization ID.
+                             */
+                            id?: string;
+                            /** @description Name of the organization. */
+                            name?: string;
+                            /** @description Description of the organization. */
+                            description?: string;
+                            /** @description Country of the organization. */
+                            country?: string;
+                            /** @description Region of the organization. */
+                            region?: string;
+                            /** @description Custom domain assigned to the organization, when configured. */
+                            domain?: string;
+                            /** @description Display name of the organization owner. */
+                            owner?: string;
+                            /** @description Free-form metadata associated with an organization, including preferences. */
+                            metadata?: {
+                                /** @description Organization-level user experience preferences. */
+                                preferences: {
+                                    /** @description UI theme configured for an organization. */
+                                    theme: {
+                                        /**
+                                         * Format: uuid
+                                         * @description Theme identifier.
+                                         */
+                                        id: string;
+                                        /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+                                        logo: {
+                                            /** @description Image asset anchored to a named location within an organization theme. */
+                                            desktopView: {
+                                                /** @description SVG markup for the asset. */
+                                                svg: string;
+                                                /** @description Named location of the asset (e.g. header, footer). */
+                                                location: string;
+                                            };
+                                            /** @description Image asset anchored to a named location within an organization theme. */
+                                            mobileView: {
+                                                /** @description SVG markup for the asset. */
+                                                svg: string;
+                                                /** @description Named location of the asset (e.g. header, footer). */
+                                                location: string;
+                                            };
+                                            /** @description Image asset anchored to a named location within an organization theme. */
+                                            darkDesktopView: {
+                                                /** @description SVG markup for the asset. */
+                                                svg: string;
+                                                /** @description Named location of the asset (e.g. header, footer). */
+                                                location: string;
+                                            };
+                                            /** @description Image asset anchored to a named location within an organization theme. */
+                                            darkMobileView: {
+                                                /** @description SVG markup for the asset. */
+                                                svg: string;
+                                                /** @description Named location of the asset (e.g. header, footer). */
+                                                location: string;
+                                            };
+                                        };
+                                        /** @description Arbitrary theme variables keyed by name. */
+                                        vars?: {
+                                            [key: string]: unknown;
+                                        };
+                                    };
+                                    /** @description Preferences specific to dashboard behavior. */
+                                    dashboard: {
+                                        [key: string]: unknown;
+                                    };
+                                    /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                                    authBranding?: {
+                                        /** @description Ordered slides rendered in the auth-page feature carousel. */
+                                        carousel?: {
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the slide image asset.
+                                             */
+                                            imageUrl: string;
+                                            /** @description Slide title. */
+                                            title: string;
+                                            /** @description Slide description text. */
+                                            description: string;
+                                        }[];
+                                        /** @description FAQ entries rendered on the auth pages. */
+                                        faqs?: {
+                                            /** @description The question text. */
+                                            question: string;
+                                            /** @description The answer text. */
+                                            answer: string;
+                                        }[];
+                                    };
+                                    /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+                                    links?: {
+                                        /**
+                                         * Format: uri
+                                         * @description URL of the organization's Terms of Service page.
+                                         */
+                                        termsOfService?: string;
+                                        /**
+                                         * Format: uri
+                                         * @description URL of the organization's Privacy Policy page.
+                                         */
+                                        privacy?: string;
+                                        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                                        support?: {
+                                            [key: string]: string;
+                                        };
+                                        /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                                        social?: {
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's LinkedIn profile.
+                                             */
+                                            linkedin?: string;
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's X (formerly Twitter) profile.
+                                             */
+                                            x?: string;
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the organization's YouTube channel.
+                                             */
+                                            youtube?: string;
+                                        };
+                                    };
+                                    /**
+                                     * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+                                     * @default true
+                                     */
+                                    showAuthCarousel: boolean;
+                                };
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was soft-deleted.
+                             */
+                            deletedAt?: string;
+                        }[];
+                    };
+                };
             };
             /** @description Invalid request body or request param */
             400: {

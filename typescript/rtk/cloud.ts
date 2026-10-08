@@ -362,6 +362,24 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Organization_Organizations"],
       }),
+      getChildOrgs: build.query<GetChildOrgsApiResponse, GetChildOrgsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Organization_Organizations"],
+      }),
+      createChildOrg: build.mutation<CreateChildOrgApiResponse, CreateChildOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
       getOrgPreferences: build.query<GetOrgPreferencesApiResponse, GetOrgPreferencesApiArg>({
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/preferences` }),
         providesTags: ["Organization_Organizations"],
@@ -3888,6 +3906,267 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
   }[];
 };
 export type UpdateOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Body for creating or updating an organization */
+  body: {
+    /** Name of the organization. */
+    name?: string;
+    /** Country of the organization. */
+    country?: string;
+    /** Region of the organization. */
+    region?: string;
+    /** Description of the organization. */
+    description?: string;
+    /** Indicates whether organization members should be notified of this update. */
+    notifyOrgUpdate?: boolean;
+    /** Organization-level user experience preferences. */
+    preferences?: {
+      /** UI theme configured for an organization. */
+      theme: {
+        /** Theme identifier. */
+        id: string;
+        /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+        logo: {
+          /** Image asset anchored to a named location within an organization theme. */
+          desktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          mobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkDesktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkMobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+        };
+        /** Arbitrary theme variables keyed by name. */
+        vars?: {
+          [key: string]: any;
+        };
+      };
+      /** Preferences specific to dashboard behavior. */
+      dashboard: {
+        [key: string]: any;
+      };
+      /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+      authBranding?: {
+        /** Ordered slides rendered in the auth-page feature carousel. */
+        carousel?: {
+          /** URL of the slide image asset. */
+          imageUrl: string;
+          /** Slide title. */
+          title: string;
+          /** Slide description text. */
+          description: string;
+        }[];
+        /** FAQ entries rendered on the auth pages. */
+        faqs?: {
+          /** The question text. */
+          question: string;
+          /** The answer text. */
+          answer: string;
+        }[];
+      };
+      /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+      links?: {
+        /** URL of the organization's Terms of Service page. */
+        termsOfService?: string;
+        /** URL of the organization's Privacy Policy page. */
+        privacy?: string;
+        /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+        support?: {
+          [key: string]: string;
+        };
+        /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        social?: {
+          /** URL of the organization's LinkedIn profile. */
+          linkedin?: string;
+          /** URL of the organization's X (formerly Twitter) profile. */
+          x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
+        };
+      };
+      /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+      showAuthCarousel?: boolean;
+    };
+  };
+};
+export type GetChildOrgsApiResponse = /** status 200 Direct child organizations of the parent organization */ {
+  /** Direct child organizations in this page. */
+  organizations: {
+    /** Organization ID of the child. */
+    id: string;
+    /** Name of the child organization. */
+    name: string;
+    /** Description of the child organization. */
+    description?: string;
+    /** Country of the child organization. */
+    country?: string;
+    /** Region of the child organization. */
+    region?: string;
+    /** Custom domain assigned to the child organization, when configured. */
+    domain?: string;
+    /** ID of the parent organization. Stamped at creation and never changed; absent only on a top-level organization, which this listing never returns. */
+    parentId?: string;
+    /** Timestamp when the child organization was created. */
+    createdAt: string;
+    /** Timestamp when the child organization was last updated. */
+    updatedAt: string;
+  }[];
+  /** Total number of live direct children across all pages. */
+  totalCount: number;
+};
+export type GetChildOrgsApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Zero-based index of the result page to return. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+};
+export type CreateChildOrgApiResponse =
+  /** status 201 Single-organization page response for the created child organization */ {
+    /** Zero-based page index returned in this response. */
+    page?: number;
+    /** Maximum number of items returned on each page. */
+    pageSize?: number;
+    /** Total number of items across all pages. */
+    totalCount?: number;
+    /** Organizations returned in this single-item page wrapper. */
+    organizations?: {
+      /** Organization ID. */
+      id?: string;
+      /** Name of the organization. */
+      name?: string;
+      /** Description of the organization. */
+      description?: string;
+      /** Country of the organization. */
+      country?: string;
+      /** Region of the organization. */
+      region?: string;
+      /** Custom domain assigned to the organization, when configured. */
+      domain?: string;
+      /** Display name of the organization owner. */
+      owner?: string;
+      /** Free-form metadata associated with an organization, including preferences. */
+      metadata?: {
+        /** Organization-level user experience preferences. */
+        preferences: {
+          /** UI theme configured for an organization. */
+          theme: {
+            /** Theme identifier. */
+            id: string;
+            /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+            logo: {
+              /** Image asset anchored to a named location within an organization theme. */
+              desktopView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              mobileView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              darkDesktopView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              darkMobileView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+            };
+            /** Arbitrary theme variables keyed by name. */
+            vars?: {
+              [key: string]: any;
+            };
+          };
+          /** Preferences specific to dashboard behavior. */
+          dashboard: {
+            [key: string]: any;
+          };
+          /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+          authBranding?: {
+            /** Ordered slides rendered in the auth-page feature carousel. */
+            carousel?: {
+              /** URL of the slide image asset. */
+              imageUrl: string;
+              /** Slide title. */
+              title: string;
+              /** Slide description text. */
+              description: string;
+            }[];
+            /** FAQ entries rendered on the auth pages. */
+            faqs?: {
+              /** The question text. */
+              question: string;
+              /** The answer text. */
+              answer: string;
+            }[];
+          };
+          /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+          links?: {
+            /** URL of the organization's Terms of Service page. */
+            termsOfService?: string;
+            /** URL of the organization's Privacy Policy page. */
+            privacy?: string;
+            /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+            support?: {
+              [key: string]: string;
+            };
+            /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+            social?: {
+              /** URL of the organization's LinkedIn profile. */
+              linkedin?: string;
+              /** URL of the organization's X (formerly Twitter) profile. */
+              x?: string;
+              /** URL of the organization's YouTube channel. */
+              youtube?: string;
+            };
+          };
+          /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+          showAuthCarousel?: boolean;
+        };
+      };
+      /** Timestamp when the organization was created. */
+      createdAt?: string;
+      /** Timestamp when the organization was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the organization was soft-deleted. */
+      deletedAt?: string;
+    }[];
+  };
+export type CreateChildOrgApiArg = {
   /** Organization ID. */
   orgId: string;
   /** Body for creating or updating an organization */
@@ -16320,6 +16599,9 @@ export const {
   useLazyGetOrgQuery,
   useDeleteOrgMutation,
   useUpdateOrgMutation,
+  useGetChildOrgsQuery,
+  useLazyGetChildOrgsQuery,
+  useCreateChildOrgMutation,
   useGetOrgPreferencesQuery,
   useLazyGetOrgPreferencesQuery,
   useAddTeamToOrgMutation,
