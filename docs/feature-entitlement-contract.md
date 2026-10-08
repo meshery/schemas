@@ -75,6 +75,11 @@ flag column is the name `outbox/entitlement.py` maps each value to.
    not read this extension; it exists for the published OpenAPI documentation.
 4. Add it to `validation/feature_name_test.go`, which pins the enum's contents
    and order and fails when a value lacks a description.
-5. Run `make build` and commit the regenerated Go, TypeScript and RTK output.
+5. Run `make build` to prove the value generates cleanly. Generated artifacts
+   (`models/`, `typescript/generated/`, `typescript/rtk/`) are normally
+   committed by automation once the change reaches `master`, not in the PR
+   (see `AGENTS.md`, Build). Commit them in the PR only when a downstream
+   consumer must pin the PR's own commit for the generated Go constants, as
+   meshery-cloud does for the Blowhorn set; say so in the PR description.
 6. Open the meshery-cloud migration and seed change, and point the consuming
    product's client at the new literal.
