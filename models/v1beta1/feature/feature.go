@@ -10,12 +10,24 @@ import (
 
 // Defines values for FeatureName.
 const (
-	ComponentsInDesign       FeatureName = "ComponentsInDesign"
-	DesignsInWorkspace       FeatureName = "DesignsInWorkspace"
-	ImageSizeInDesign        FeatureName = "ImageSizeInDesign"
-	RelationshipsInDesign    FeatureName = "RelationshipsInDesign"
-	SizePerDesign            FeatureName = "SizePerDesign"
-	WorkspacesInOrganization FeatureName = "WorkspacesInOrganization"
+	BlowhornBrowserAutomation  FeatureName = "BlowhornBrowserAutomation"
+	BlowhornDevicesPerSeat     FeatureName = "BlowhornDevicesPerSeat"
+	BlowhornPlatformBlog       FeatureName = "BlowhornPlatformBlog"
+	BlowhornPlatformBluesky    FeatureName = "BlowhornPlatformBluesky"
+	BlowhornPlatformGitHub     FeatureName = "BlowhornPlatformGitHub"
+	BlowhornPlatformHackerNews FeatureName = "BlowhornPlatformHackerNews"
+	BlowhornPlatformLinkedIn   FeatureName = "BlowhornPlatformLinkedIn"
+	BlowhornPlatformReddit     FeatureName = "BlowhornPlatformReddit"
+	BlowhornPlatformSlack      FeatureName = "BlowhornPlatformSlack"
+	BlowhornPlatformX          FeatureName = "BlowhornPlatformX"
+	BlowhornProfiles           FeatureName = "BlowhornProfiles"
+	BlowhornScheduler          FeatureName = "BlowhornScheduler"
+	ComponentsInDesign         FeatureName = "ComponentsInDesign"
+	DesignsInWorkspace         FeatureName = "DesignsInWorkspace"
+	ImageSizeInDesign          FeatureName = "ImageSizeInDesign"
+	RelationshipsInDesign      FeatureName = "RelationshipsInDesign"
+	SizePerDesign              FeatureName = "SizePerDesign"
+	WorkspacesInOrganization   FeatureName = "WorkspacesInOrganization"
 )
 
 // Feature A feature is a quantified entitlement granted to an organization through its subscription plan, such as the number of components allowed in a design.
@@ -29,10 +41,10 @@ type Feature struct {
 	// Plan Plan entity schema.
 	Plan *planv1beta3.Plan `fk_id:"PlanId" belongs_to:"plans" json:"plan,omitempty" yaml:"plan,omitempty"`
 
-	// Name Enumeration of feature names that can be granted by a plan.
+	// Name Enumeration of feature names that can be granted by a plan. A feature is either a cap, where `quantity` is the maximum and 999999999999 denotes unlimited, or a capability, where any `quantity` greater than 0 grants it. A feature a plan does not list is not granted.
 	Name FeatureName `csv:"name" db:"name" json:"name" yaml:"name"`
 
-	// Quantity Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+	// Quantity Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability.
 	Quantity float64 `csv:"quantity" db:"quantity" json:"quantity" yaml:"quantity"`
 
 	// CreatedAt Timestamp when the resource was created.
@@ -42,7 +54,7 @@ type Feature struct {
 	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 }
 
-// FeatureName Enumeration of feature names that can be granted by a plan.
+// FeatureName Enumeration of feature names that can be granted by a plan. A feature is either a cap, where `quantity` is the maximum and 999999999999 denotes unlimited, or a capability, where any `quantity` greater than 0 grants it. A feature a plan does not list is not granted.
 type FeatureName string
 
 // Page defines model for page.
