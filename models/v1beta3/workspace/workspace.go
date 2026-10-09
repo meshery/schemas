@@ -285,3 +285,18 @@ type ViewId = core.ViewId
 
 // WorkspaceId defines model for workspaceId.
 type WorkspaceId = core.WorkspaceId
+
+// CoreMeshKitError403 defines model for 403.
+type CoreMeshKitError403 struct {
+	// Code MeshKit error code.
+	Code string `json:"code" yaml:"code"`
+
+	// Error User-facing error message; MeshKit ShortDescription when present.
+	Error           string    `json:"error" yaml:"error"`
+	LongDescription *[]string `json:"longDescription,omitempty" yaml:"longDescription,omitempty"`
+	ProbableCause   *[]string `json:"probableCause,omitempty" yaml:"probableCause,omitempty"`
+
+	// Severity MeshKit error severity.
+	Severity             string    `json:"severity" yaml:"severity"`
+	SuggestedRemediation *[]string `json:"suggestedRemediation,omitempty" yaml:"suggestedRemediation,omitempty"`
+}
