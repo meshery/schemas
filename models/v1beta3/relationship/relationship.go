@@ -423,6 +423,9 @@ type Selector struct {
 
 	// To Destination side of the selector. For kind=hierarchical, to is the parent.
 	To []SelectorItem `json:"to" yaml:"to"`
+
+	// Via Optional. Describes the intermediary component(s) which are involved in the relationship.
+	Via []SelectorItem `json:"via,omitempty" yaml:"via,omitempty"`
 }
 
 // SelectorItem Optional fields that are a part of the selector. Absence of a field has an implied * meaning.
