@@ -13,5 +13,18 @@ info:
 paths: {}
 components:
   schemas:
+    CatalogDataContentClass:
+      type: string
+      description: Support-level classification emitted for catalog content.
+      enum:
+        - official
+        - verified
+        - project
+        - community
+      x-enum-varnames:
+        - CatalogDataContentClassOfficial
+        - CatalogDataContentClassVerified
+        - CatalogDataContentClassProject
+        - CatalogDataContentClassCommunity
     CatalogData:
       $ref: "./catalog.yaml"
