@@ -15436,8 +15436,8 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
       /** Contains reference to the dark and light mode snapshots of the design. */
       snapshotURL?: string[];
     };
-    created_at?: string;
-    user_id?: string;
+    createdAt?: string;
+    userId?: string;
     location?: {
       [key: string]: string;
     };
@@ -16475,8 +16475,8 @@ export type UnassignDesignFromWorkspaceApiArg = {
 };
 export type GetViewsOfWorkspaceApiResponse = /** status 200 Views */ {
   page?: number;
-  page_size?: number;
-  total_count?: number;
+  pageSize?: number;
+  totalCount?: number;
   /** Views in this page, enriched with workspace and organization context. */
   views?: {
     id?: string;
