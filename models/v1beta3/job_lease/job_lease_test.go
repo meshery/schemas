@@ -1,4 +1,4 @@
-package job_lease
+package job_lease //nolint:staticcheck // ST1003: name is fixed by the generated job_lease.go in this package
 
 import (
 	"encoding/json"

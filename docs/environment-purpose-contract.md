@@ -122,7 +122,7 @@ resolver queries, for the database index predicate under
 ## Uniqueness
 
 **At most one live environment per organization may carry any single privileged
-purpose** - `administrative`, and each privileged value the enum later gains.
+purpose** - `administrative`, `blowhorn`, and each privileged value the enum later gains.
 
 The rule is stated over the privileged values rather than as "not `user`", for
 the reason given under [Reading the value](#reading-the-value): `''` is a real
