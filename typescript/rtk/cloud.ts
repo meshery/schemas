@@ -12322,7 +12322,22 @@ export type HandleResourceShareApiArg = {
   resourceType: string;
   resourceId: string;
   body: {
-    [key: string]: any;
+    /** Actors to grant access to. May be empty. */
+    grantAccess: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      actorId: string;
+      /** Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does. */
+      actorType: string;
+    }[];
+    /** Actors to revoke access from. May be empty. */
+    revokeAccess: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      actorId: string;
+      /** Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does. */
+      actorType: string;
+    }[];
+    /** Whether to notify the affected actors of the change. */
+    notifyUsers: boolean;
   };
 };
 export type GetResourceAccessActorsByTypeApiResponse = /** status 200 Resource access actors */ {
