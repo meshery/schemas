@@ -82,9 +82,10 @@ test("committed python output matches its manifest spec and generated-file diges
   );
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
 
-  assert.equal(manifest.generator, config.python.generatorPackage);
-  assert.equal(manifest.generatorVersion, config.python.generatorVersion);
-  assert.equal(manifest.ruffVersion, config.python.ruffVersion);
+  const pinHint = "committed python manifest pins differ from build/lib/config.js; run 'make generate-python'";
+  assert.equal(manifest.generator, config.python.generatorPackage, pinHint);
+  assert.equal(manifest.generatorVersion, config.python.generatorVersion, pinHint);
+  assert.equal(manifest.ruffVersion, config.python.ruffVersion, pinHint);
 
   for (const [key, entry] of Object.entries(manifest.specs)) {
     const specPath = paths.fromRoot(entry.spec);

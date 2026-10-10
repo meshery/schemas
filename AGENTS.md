@@ -31,7 +31,7 @@ make validate-schemas  # run repository schema validation rules
 npm run build    # build TypeScript distribution (dist/)
 ```
 
-Generated artifacts (`models/`, `typescript/generated/`, `python/generated/`) are committed by automation on `master`. The TypeScript distribution in `dist/` is produced by the npm build/publish workflow and is not committed to this repo. Do not edit generated artifacts by hand, and do not manually commit regenerated output in normal PRs unless the change explicitly requires it (a PR that alters a Python pilot construct's bundled spec, including via shared `core` schemas it references or the bundler, must commit regenerated `python/generated/` output; see [`docs/schema-tooling.md`](docs/schema-tooling.md#python-client-generation-pilot-issue-1240)).
+Generated artifacts (`models/`, `typescript/generated/`, `python/generated/`) are committed by automation on `master`. The TypeScript distribution in `dist/` is produced by the npm build/publish workflow and is not committed to this repo. Do not edit generated artifacts by hand, and do not manually commit regenerated output in normal PRs unless the change explicitly requires it (a PR that alters a bundled Python pilot spec must commit regenerated `python/generated/` output; see [`docs/schema-tooling.md`](docs/schema-tooling.md#python-client-generation-pilot-issue-1240)).
 
 **Never hand-edit generated output:**
 
