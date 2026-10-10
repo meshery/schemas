@@ -1,0 +1,229 @@
+openapi: 3.0.0
+info:
+  title: BlowhornBinding
+  description: |
+    OpenAPI schema for Blowhorn bindings - per-host profile-to-directory
+    records keyed by the (profile, host) pair.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: blowhornBindings
+    description: Operations related to Blowhorn bindings.
+
+paths:
+  /api/blowhorn/bindings:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornBindings
+      summary: List Blowhorn bindings
+      operationId: listBlowhornBindings
+      description: Returns a paginated list of Blowhorn bindings in the organization, optionally filtered by profile or host.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: organizationId
+          in: query
+          required: false
+          description: Scope results to an organization.
+          schema:
+            type: string
+            format: uuid
+        - name: profile
+          in: query
+          required: false
+          description: Filter by bound profile subject.
+          schema:
+            type: string
+        - name: host
+          in: query
+          required: false
+          description: Filter by host.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blowhorn bindings page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornBindingPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornBindings
+      summary: Bind Blowhorn profile to host
+      operationId: bindBlowhornBinding
+      description: |
+        Binds a profile to a directory on a host, creating the binding or
+        refreshing the entry for the (profile, host) pair. Binding the
+        same profile to a different directory on the same host is refused
+        with a 409.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlowhornBindingPayload"
+      responses:
+        "200":
+          description: Blowhorn binding saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornBinding"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/blowhorn/bindings/{blowhornBindingId}:
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornBindings
+      summary: Unbind Blowhorn profile from host
+      operationId: unbindBlowhornBinding
+      description: Removes the binding for the (profile, host) pair.
+      parameters:
+        - $ref: "#/components/parameters/blowhornBindingId"
+      responses:
+        "204":
+          description: Blowhorn binding removed
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer [REDACTED]
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    409:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/409"
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    blowhornBindingId:
+      name: blowhornBindingId
+      in: path
+      description: Blowhorn binding ID
+      required: true
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      name: pageSize
+      in: query
+      description: Number of items per page (canonical camelCase form).
+      schema:
+        type: integer
+        minimum: 1
+    pagesize:
+      name: pagesize
+      in: query
+      description: |
+        Number of items per page. Deprecated alias of pageSize;
+        canonical `pageSize` wins when both are present.
+      deprecated: true
+      schema:
+        type: integer
+        minimum: 1
+    search:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
+
+  schemas:
+    BlowhornBinding:
+      $ref: "./blowhorn_binding.yaml"
+
+    BlowhornBindingPayload:
+      type: object
+      description: |
+        Payload for binding a profile to a host. Contains only
+        client-settable fields; the owning `organizationId` (derived
+        from the authenticated session) and the server-generated
+        `createdAt` / `updatedAt` timestamps are intentionally excluded.
+      required:
+        - profile
+        - host
+        - directory
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Existing Blowhorn binding ID for updates; omit on bind.
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        profile:
+          type: string
+          description: Subject of the Blowhorn profile to bind.
+          minLength: 1
+          maxLength: 255
+        host:
+          type: string
+          description: Host the profile is bound on. An identity, not a permission.
+          minLength: 1
+          maxLength: 255
+        directory:
+          type: string
+          description: Profile directory on the host.
+          minLength: 1
+          maxLength: 1024
+
+    BlowhornBindingPage:
+      type: object
+      description: Paginated collection of Blowhorn bindings.
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        blowhornBindings:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlowhornBinding"
+            x-go-type: BlowhornBinding
+          description: Blowhorn bindings included on this page of results.

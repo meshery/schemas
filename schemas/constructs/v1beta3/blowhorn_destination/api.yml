@@ -1,0 +1,228 @@
+openapi: 3.0.0
+info:
+  title: BlowhornDestination
+  description: |
+    OpenAPI schema for Blowhorn destinations - named publishing targets
+    per platform, scoped by organization.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: blowhornDestinations
+    description: Operations related to Blowhorn destinations.
+
+paths:
+  /api/blowhorn/destinations:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornDestinations
+      summary: List Blowhorn destinations
+      operationId: listBlowhornDestinations
+      description: Returns a paginated list of Blowhorn destinations in the organization.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: organizationId
+          in: query
+          required: false
+          description: Scope results to an organization.
+          schema:
+            type: string
+            format: uuid
+        - name: platform
+          in: query
+          required: false
+          description: Filter by target platform (e.g. linkedin).
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blowhorn destinations page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornDestinationPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornDestinations
+      summary: Upsert Blowhorn destination
+      operationId: upsertBlowhornDestination
+      description: |
+        Creates a new Blowhorn destination when no `id` is supplied, or
+        updates the entry matching the provided `id`. Ownership is
+        derived from the authenticated session; any client-supplied
+        owner is ignored.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlowhornDestinationPayload"
+      responses:
+        "200":
+          description: Blowhorn destination saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornDestination"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/blowhorn/destinations/{blowhornDestinationId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornDestinations
+      summary: Get Blowhorn destination by ID
+      operationId: getBlowhornDestination
+      parameters:
+        - $ref: "#/components/parameters/blowhornDestinationId"
+      responses:
+        "200":
+          description: Blowhorn destination response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornDestination"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer [REDACTED]
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    blowhornDestinationId:
+      name: blowhornDestinationId
+      in: path
+      description: Blowhorn destination ID
+      required: true
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      name: pageSize
+      in: query
+      description: Number of items per page (canonical camelCase form).
+      schema:
+        type: integer
+        minimum: 1
+    pagesize:
+      name: pagesize
+      in: query
+      description: |
+        Number of items per page. Deprecated alias of pageSize;
+        canonical `pageSize` wins when both are present.
+      deprecated: true
+      schema:
+        type: integer
+        minimum: 1
+    search:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
+
+  schemas:
+    BlowhornDestination:
+      $ref: "./blowhorn_destination.yaml"
+
+    BlowhornDestinationPayload:
+      type: object
+      description: |
+        Payload for creating or updating a Blowhorn destination. Contains
+        only client-settable fields; the owning `organizationId` (derived
+        from the authenticated session) and the server-generated
+        `createdAt` / `updatedAt` timestamps are intentionally excluded.
+      required:
+        - platform
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Existing Blowhorn destination ID for updates; omit on create.
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        name:
+          type: string
+          description: Human-readable destination name.
+          maxLength: 255
+        platform:
+          type: string
+          description: Target platform for the destination (e.g. linkedin).
+          minLength: 1
+          maxLength: 255
+        target:
+          type: string
+          description: Platform-side publishing target (page, group or channel identifier).
+          maxLength: 1024
+        settings:
+          type: object
+          description: Destination settings, stored as a JSON blob.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+
+    BlowhornDestinationPage:
+      type: object
+      description: Paginated collection of Blowhorn destinations.
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        blowhornDestinations:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlowhornDestination"
+            x-go-type: BlowhornDestination
+          description: Blowhorn destinations included on this page of results.

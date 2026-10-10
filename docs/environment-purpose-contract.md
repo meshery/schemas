@@ -8,6 +8,7 @@ organization-level configuration key on.
 | --- | --- |
 | `user` | An ordinary environment. People create these to logically group Connections and their Credentials. This is what an environment is unless something says otherwise. |
 | `administrative` | An environment the platform itself provisions to hold organization-level configuration. Resolvers of that configuration trust it. |
+| `blowhorn` | An environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain. Privileged in the same sense as `administrative`: the uniqueness invariant, the explicit-predicate reads, and the server-side provisioning rule all generalise to it unchanged. |
 | absent | Identical to `user`. Every environment written before the column existed is in this state. |
 
 The property is optional on the wire and omitted when empty. It is deliberately
@@ -132,9 +133,9 @@ stored value that means ordinary, and a negative predicate sweeps it in.
   description, and enforced nowhere in this repo.
 - **Database** is where it is enforced: a partial unique index over
   (`organization_id`, `purpose`) restricted to live rows carrying a privileged
-  purpose - `WHERE deleted_at IS NULL AND purpose = 'administrative'`, widened
-  to an `IN` list as further privileged values are added. Each consumer adds it
-  in its own migration. `WHERE purpose <> 'user'` is the predicate to avoid: it
+  purpose - `WHERE deleted_at IS NULL AND purpose IN ('administrative',
+  'blowhorn')`, widened further as additional privileged values are added.
+  Each consumer adds it in its own migration. `WHERE purpose <> 'user'` is the predicate to avoid: it
   indexes ordinary rows stored as `''`, so the second ordinary environment an
   organization creates collides with the first and fails to insert.
 - **Writers** must normalise. A consumer persisting an environment whose purpose
@@ -187,10 +188,10 @@ each consumer, **never through the API**:
 2. Set `purpose = 'administrative'` on the rows that the previous name-based
    convention selected, scoped per organization.
 3. Add the partial unique index over the privileged values -
-   `... WHERE deleted_at IS NULL AND purpose = 'administrative'`, not
-   `WHERE purpose <> 'user'`. If step 2 produced a duplicate for any
-   organization, the index creation fails - resolve that data before the
-   migration lands rather than dropping the index.
+   `... WHERE deleted_at IS NULL AND purpose IN ('administrative',
+   'blowhorn')`, not `WHERE purpose <> 'user'`. If step 2 produced a
+   duplicate for any organization, the index creation fails - resolve that
+   data before the migration lands rather than dropping the index.
 4. Repoint the resolver at `purpose` and delete the name-based lookup. Until the
    resolver is repointed, the flag is inert and the name is still the
    enforcement point.

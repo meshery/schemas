@@ -1,0 +1,85 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Blowhorn Destination Schema
+description: |
+  Server-returned Blowhorn destination as persisted by meshery-cloud. A
+  destination names where an organization publishes on a platform. An
+  environment reference may be attached later; destinations do not carry
+  one in this version.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - platform
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated Blowhorn destination ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  name:
+    type: string
+    description: Human-readable destination name.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: name
+    x-order: 3
+  platform:
+    type: string
+    description: Target platform for the destination (e.g. linkedin).
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: platform
+    x-order: 4
+  target:
+    type: string
+    description: Platform-side publishing target (page, group or channel identifier).
+    maxLength: 1024
+    x-oapi-codegen-extra-tags:
+      db: target
+    x-order: 5
+  settings:
+    type: object
+    description: Destination settings, stored as a JSON blob.
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: settings
+    x-order: 6
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of Blowhorn destination creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 7
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last Blowhorn destination modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 8
+  deletedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the Blowhorn destination was soft-deleted.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
+    x-order: 9

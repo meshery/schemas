@@ -1,0 +1,73 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Blowhorn Mentee Schema
+description: |
+  Server-returned Blowhorn mentee as persisted by meshery-cloud. Mentees
+  track mentored subjects through stages; recording a mentee and dropping
+  it is a single operation that stamps the drop time.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - subject
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated Blowhorn mentee ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  subject:
+    type: string
+    description: Mentored subject.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: subject
+    x-order: 3
+  stage:
+    type: string
+    description: Mentorship stage of the subject.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: stage
+    x-order: 4
+  metadata:
+    type: object
+    description: Mentee metadata, stored as a JSON blob.
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: metadata
+    x-order: 5
+  droppedAt:
+    type: string
+    format: date-time
+    description: Time the mentee was recorded and dropped, if any. Set only by the record-and-drop operation.
+    x-go-type: time.Time
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: dropped_at
+    x-order: 6
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of Blowhorn mentee creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 7
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last Blowhorn mentee modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 8

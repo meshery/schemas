@@ -1,0 +1,306 @@
+openapi: 3.0.0
+info:
+  title: BlowhornProfile
+  description: |
+    OpenAPI schema for Blowhorn profiles - subject-to-slug records with
+    free-form attributes, scoped by organization and keyed by subject.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: blowhornProfiles
+    description: Operations related to Blowhorn profiles.
+
+paths:
+  /api/blowhorn/profiles:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornProfiles
+      summary: List Blowhorn profiles
+      operationId: listBlowhornProfiles
+      description: Returns a paginated list of Blowhorn profiles in the organization.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: organizationId
+          in: query
+          required: false
+          description: Scope results to an organization.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Blowhorn profiles page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornProfilePage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornProfiles
+      summary: Upsert Blowhorn profile
+      operationId: upsertBlowhornProfile
+      description: |
+        Creates a new Blowhorn profile when no `id` is supplied, or
+        updates the entry matching the provided `id`. Ownership is
+        derived from the authenticated session; any client-supplied
+        owner is ignored. Slug renames are guarded server-side.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlowhornProfilePayload"
+      responses:
+        "200":
+          description: Blowhorn profile saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornProfile"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/blowhorn/profiles/by-subject:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornProfiles
+      summary: Get Blowhorn profile by subject
+      operationId: getBlowhornProfileBySubject
+      description: Returns the Blowhorn profile keyed by the given subject within the organization.
+      parameters:
+        - name: organizationId
+          in: query
+          required: true
+          description: Organization scoping the lookup.
+          schema:
+            type: string
+            format: uuid
+        - name: subject
+          in: query
+          required: true
+          description: Subject the profile is keyed by.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blowhorn profile response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornProfile"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/blowhorn/profiles/{blowhornProfileId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornProfiles
+      summary: Get Blowhorn profile by ID
+      operationId: getBlowhornProfile
+      parameters:
+        - $ref: "#/components/parameters/blowhornProfileId"
+      responses:
+        "200":
+          description: Blowhorn profile response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornProfile"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornProfiles
+      summary: Update Blowhorn profile
+      operationId: updateBlowhornProfile
+      description: Updates the Blowhorn profile matching the path ID. Slug renames are guarded server-side.
+      parameters:
+        - $ref: "#/components/parameters/blowhornProfileId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlowhornProfilePayload"
+      responses:
+        "200":
+          description: Blowhorn profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornProfile"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornProfiles
+      summary: Delete Blowhorn profile
+      operationId: deleteBlowhornProfile
+      description: Soft-deletes the Blowhorn profile.
+      parameters:
+        - $ref: "#/components/parameters/blowhornProfileId"
+      responses:
+        "204":
+          description: Blowhorn profile deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer [REDACTED]
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    blowhornProfileId:
+      name: blowhornProfileId
+      in: path
+      description: Blowhorn profile ID
+      required: true
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      name: pageSize
+      in: query
+      description: Number of items per page (canonical camelCase form).
+      schema:
+        type: integer
+        minimum: 1
+    pagesize:
+      name: pagesize
+      in: query
+      description: |
+        Number of items per page. Deprecated alias of pageSize;
+        canonical `pageSize` wins when both are present.
+      deprecated: true
+      schema:
+        type: integer
+        minimum: 1
+    search:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
+
+  schemas:
+    BlowhornProfile:
+      $ref: "./blowhorn_profile.yaml"
+
+    BlowhornProfilePayload:
+      type: object
+      description: |
+        Payload for creating or updating a Blowhorn profile. Contains
+        only client-settable fields; the owning `organizationId` (derived
+        from the authenticated session) and the server-generated
+        `createdAt` / `updatedAt` timestamps are intentionally excluded.
+      required:
+        - subject
+        - slug
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Existing Blowhorn profile ID for updates; omit on create.
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        subject:
+          type: string
+          description: Subject the profile is keyed by.
+          minLength: 1
+          maxLength: 255
+        slug:
+          type: string
+          description: Unique slug for the profile within the organization. Renames are guarded server-side.
+          minLength: 1
+          maxLength: 255
+        attributes:
+          type: object
+          description: Free-form profile attributes, stored as a JSON blob.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+
+    BlowhornProfilePage:
+      type: object
+      description: Paginated collection of Blowhorn profiles.
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        blowhornProfiles:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlowhornProfile"
+            x-go-type: BlowhornProfile
+          description: Blowhorn profiles included on this page of results.

@@ -34,6 +34,7 @@ paths:
       description: Retrieves tokens associated with the authenticated user.
       parameters:
       - $ref: '#/components/parameters/isOauth'
+      - $ref: '#/components/parameters/purpose'
       - $ref: '#/components/parameters/page'
       - $ref: '#/components/parameters/pageSize'
       - $ref: '#/components/parameters/pagesize'
@@ -227,7 +228,7 @@ components:
     purpose:
       name: purpose
       in: query
-      description: Purpose for which the token is generated.
+      description: Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens).
       schema:
         type: string
         maxLength: 500
