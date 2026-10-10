@@ -113,7 +113,7 @@ type MesheryViewWithLocation struct {
 	WorkspaceName string `db:"workspace_name" json:"workspace_name,omitempty" yaml:"workspace_name,omitempty"`
 }
 
-// ViewPayload Payload for creating or updating a view.
+// ViewPayload Payload for creating a view.
 type ViewPayload struct {
 	// Filters Filter configuration for this view.
 	Filters core.Map `json:"filters,omitempty" yaml:"filters,omitempty"`
@@ -123,6 +123,21 @@ type ViewPayload struct {
 
 	// Name Display name of the view.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// Visibility Visibility level of the view.
+	Visibility *string `json:"visibility,omitempty" yaml:"visibility,omitempty"`
+}
+
+// ViewUpdatePayload Partial update for a view. Every property is optional; an omitted property retains its stored value. A supplied name still cannot be empty.
+type ViewUpdatePayload struct {
+	// Filters Filter configuration for this view.
+	Filters core.Map `json:"filters,omitempty" yaml:"filters,omitempty"`
+
+	// Metadata Metadata associated with the view.
+	Metadata core.Map `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+
+	// Name Display name of the view.
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
 
 	// Visibility Visibility level of the view.
 	Visibility *string `json:"visibility,omitempty" yaml:"visibility,omitempty"`
