@@ -14,8 +14,9 @@
  *   bundle      - Bundle and merge OpenAPI specifications
  *   golang      - Generate Go structs from OpenAPI specs
  *   rtk         - Generate RTK Query clients
+ *   python      - Generate Python client (pilot constructs)
  *   types       - Generate TypeScript type definitions
- *   all         - Run full build pipeline (validate → bundle → golang → rtk → types)
+ *   all         - Run full build pipeline (validate → bundle → golang → rtk → python → types)
  *   help        - Show this help message
  *
  * EXAMPLES:
@@ -52,6 +53,11 @@ const commands = {
     script: "generate-rtk.js",
     dependsOn: "bundle",
   },
+  python: {
+    description: "Generate Python client (pilot constructs)",
+    script: "generate-python.js",
+    dependsOn: "bundle",
+  },
   types: {
     description: "Generate TypeScript type definitions",
     script: "generate-typescript.js",
@@ -75,7 +81,7 @@ const commands = {
   },
   all: {
     description: "Run full build pipeline",
-    pipeline: ["validate", "bundle", "golang", "rtk", "types"],
+    pipeline: ["validate", "bundle", "golang", "rtk", "python", "types"],
   },
 };
 

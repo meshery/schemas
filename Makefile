@@ -47,7 +47,7 @@ generate-site-index: site-data-generate
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup generate-ts generate-enums-ts test-enums-ts publish-ts bundle-openapi generate-golang test-gofmt generate-rtk test-rtk test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
+.PHONY: setup generate-ts generate-enums-ts test-enums-ts publish-ts bundle-openapi generate-golang test-gofmt generate-rtk test-rtk generate-python test-python test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -98,6 +98,16 @@ generate-rtk: bundle-openapi
 test-rtk: bundle-openapi
 	node --test tests/generate-rtk.test.js
 	node --test tests/readonly-request-body.test.js
+
+## Generate Python client, pilot constructs only (requires bundle-openapi and the pinned pip toolchain)
+generate-python: bundle-openapi
+	node build/generate-python.js
+
+## Run Python generation guard, install the distribution, run the pytest round-trip (requires generate-python)
+test-python: generate-python
+	node --test tests/generate-python.test.js
+	python3 -m pip install ./python/generated
+	python3 -m pytest python/tests -q
 
 ## Run TypeScript unit tests (node --test with native type-stripping; needs Node >= 22.6)
 test-ts:
@@ -265,8 +275,8 @@ schemas-versions-latest:
 			END { for (c in constructs) printf "%-20s %s\n", c, constructs[c] }' \
 		| sort
 
-## Generate and bundle schema package (bundles OpenAPI, generates Go, RTK, TypeScript, and permissions)
-build: validate-schemas bundle-openapi generate-golang  generate-rtk generate-ts generate-enums-ts generate-permissions build-ts test-golang
+## Generate and bundle schema package (bundles OpenAPI, generates Go, RTK, Python, TypeScript, and permissions)
+build: validate-schemas bundle-openapi generate-golang  generate-rtk generate-python test-python generate-ts generate-enums-ts generate-permissions build-ts test-golang
 
 #-----------------------------------------------------------------------------
 # Dependencies

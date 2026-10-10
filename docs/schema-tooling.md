@@ -96,3 +96,23 @@ The secret is **provisioned** on `meshery/schemas` and authorises all three sibl
 - `layer5labs/meshery-extensions` (private - PAT must be a member of the `layer5labs` org with `contents: read`)
 
 If the secret is ever removed or becomes under-scoped, `actions/checkout@v7` receives an empty `token:` input and falls back to unauthenticated access. The public `meshery/meshery` checkout still succeeds; both private siblings will fail and - thanks to `continue-on-error: true` - be skipped cleanly. The job remains green, the comment surfaces only the public column, and the "Skipped consumer checkouts" note lists which consumers were omitted. When the PAT nears expiry it must be rotated in the repo secrets; the workflow itself needs no change.
+
+## Python client generation (pilot, issue #1240)
+
+Typed Python clients are generated from the already-bundled `_openapi_build` specs with [`openapi-python-client`](https://github.com/openapi-generators/openapi-python-client), pinned to an exact version in `build/lib/config.js` (`config.python`) so committed output reproduces byte-for-byte. That object is the single source of truth for the pin, the pilot scope, and the warning allow-list; the CI install steps read the pin from it rather than duplicating it.
+
+- **Pilot scope:** `config.python.pilotPackages` (currently `v1beta2/key` — the current canonical-casing key construct; `v1beta1/key` is `x-deprecated` and excluded from the merged bundles, so it is not piloted). `build/generate-python.js` resolves the pilot through the shared `build/lib/config.js` discovery and requires `bundle-openapi` first, like the other generators.
+- **Layout:** one `meshery-schemas` distribution under `python/generated/` (hatchling build, `src/` layout). `pyproject.toml` and `src/meshery_schemas/__init__.py` are hand-maintained scaffolding; each pilot construct lands as a generated subpackage (`src/meshery_schemas/key/`, PEP 561 `py.typed` included). The pinned generator cannot emit a hatchling project itself, so generation runs with `--meta none` into a temp staging dir and the script assembles the tree. Never hand-edit `src/` or `.python-gen-manifest.json` — automation owns them on `master`, same as `models/` and `typescript/generated/`.
+- **Warnings-as-errors:** generation fails before touching `python/generated/` on any generator warning without an allow-list entry in `config.python.warningAllowlist`. The pilot allow-list is empty: the key construct generates warning-free. The manifest (`.python-gen-manifest.json`) records generator, spec digests, and warnings per construct.
+- **Tests:** `tests/generate-python.test.js` pins the warning parser/matcher, the exact-version pin, pilot discovery, manifest freshness (spec digests), and tree invariants; `python/tests/test_key_round_trip.py` is a pytest suite that installs the distribution and round-trips the `Key` model through the construct's own `key_template.json` (including the camelCase-wire mapping check for newer API versions).
+- **Make targets:** `make generate-python` (regenerate + enforce) and `make test-python` (guard test + `pip install ./python/generated` + pytest), wired into `make build` after `generate-rtk`. Local toolchain setup:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install "openapi-python-client==$(node -p "require('./build/lib/config.js').python.generatorVersion")" pytest
+make generate-python test-python
+```
+
+- **CI:** the `blocking-validation` job in `.github/workflows/schema-audit.yml` runs `make test-python` (same guard level as Go/TS); `generate-artifacts-from-schemas.yml` picks up generation via `make build` and self-commits refreshed output. Do not wire the full cloud/meshery bundles or PyPI publishing yet (Phases 2–4 of #1240).
+- **Phase 2 entry points:** the full-bundle warning baselines are tracked in the Phase 0 hardening issues (bare `type: array` without `items`, non-JSON download responses, duplicate inline response model names); each must be resolved or explicitly allow-listed before the pilot scope expands. The `cloud` + `meshery` API subpackage split lands with the pre-split full bundles.

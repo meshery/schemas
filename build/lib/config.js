@@ -24,6 +24,7 @@ const paths = {
   buildDir: "_openapi_build",
   modelsDir: "models",
   typescriptDir: "typescript/generated",
+  pythonDir: "python/generated",
 
   // Build config files
   openapiConfig: "build/openapi.config.yml",
@@ -44,6 +45,33 @@ const paths = {
  * Merged construct filename (must be JSON for RTK query generation)
  */
 const mergedConstructFilename = "merged-openapi.json";
+
+/**
+ * Python client generation settings (issue #1240).
+ *
+ * The generator is pinned to an exact version so committed output
+ * reproduces byte-for-byte (cf. #1194 for the oapi-codegen pin lesson).
+ * The single source of truth for the pin is this object: both
+ * build/generate-python.js and the CI install steps read it.
+ */
+const python = {
+  generatorPackage: "openapi-python-client",
+  generatorVersion: "0.29.1",
+  // Phase 1 pilot scope, as "version/dirName" keys. v1beta2/key is the
+  // current canonical-casing key construct; v1beta1/key is x-deprecated
+  // (excluded from the merged bundles) so it is not piloted.
+  // Phase 2 expands generation to the full cloud/meshery bundles.
+  pilotPackages: ["v1beta2/key"],
+  // Distribution identity for python/generated/pyproject.toml.
+  distName: "meshery-schemas",
+  packageName: "meshery_schemas",
+  // Generator warnings that are explicitly accepted. Empty during the
+  // pilot: the key construct generates warning-free. Entries are
+  // normalized warning lines (see normalizePythonWarning in
+  // build/generate-python.js); generation fails on any warning that is
+  // not listed here.
+  warningAllowlist: [],
+};
 
 /**
  * Package name overrides
@@ -280,6 +308,7 @@ function printDiscoveredPackages() {
 module.exports = {
   paths,
   mergedConstructFilename,
+  python,
   packageNameOverrides,
   excludePackages,
   excludeFromMerge,

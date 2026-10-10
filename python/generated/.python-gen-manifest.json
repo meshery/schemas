@@ -1,0 +1,15 @@
+{
+  "generator": "openapi-python-client",
+  "generatorVersion": "0.29.1",
+  "meta": "none",
+  "specs": {
+    "v1beta2/key": {
+      "spec": "_openapi_build/constructs/v1beta2/key/merged-openapi.json",
+      "sha256": "7b06a9526bccc3aa675ebdd1d192b3d3d0e226064687f76c9a062238d490c0a4"
+    }
+  },
+  "warnings": {
+    "v1beta2/key": []
+  },
+  "warningAllowlist": []
+}
