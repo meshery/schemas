@@ -28,20 +28,13 @@ paths:
         - blowhornLedger
       summary: List Blowhorn ledger entries
       operationId: listBlowhornLedger
-      description: Returns a paginated list of Blowhorn ledger entries in the organization, optionally filtered by ledger.
+      description: Returns a paginated list of Blowhorn ledger entries in the organization of the authenticated session, optionally filtered by ledger.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
-        - name: organizationId
-          in: query
-          required: false
-          description: Scope results to an organization.
-          schema:
-            type: string
-            format: uuid
         - name: ledger
           in: query
           required: false
@@ -177,20 +170,13 @@ paths:
         - blowhornLedger
       summary: List Blowhorn contacts
       operationId: listBlowhornContacts
-      description: Returns a paginated list of Blowhorn contacts in the organization, optionally filtered by platform.
+      description: Returns a paginated list of Blowhorn contacts in the organization of the authenticated session, optionally filtered by platform.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
-        - name: organizationId
-          in: query
-          required: false
-          description: Scope results to an organization.
-          schema:
-            type: string
-            format: uuid
         - name: platform
           in: query
           required: false
@@ -247,20 +233,13 @@ paths:
         - blowhornLedger
       summary: List Blowhorn mentees
       operationId: listBlowhornMentees
-      description: Returns a paginated list of Blowhorn mentees in the organization.
+      description: Returns a paginated list of Blowhorn mentees in the organization of the authenticated session.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
-        - name: organizationId
-          in: query
-          required: false
-          description: Scope results to an organization.
-          schema:
-            type: string
-            format: uuid
       responses:
         "200":
           description: Blowhorn mentees page

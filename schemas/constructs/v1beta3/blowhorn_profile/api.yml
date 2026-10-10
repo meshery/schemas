@@ -27,20 +27,13 @@ paths:
         - blowhornProfiles
       summary: List Blowhorn profiles
       operationId: listBlowhornProfiles
-      description: Returns a paginated list of Blowhorn profiles in the organization.
+      description: Returns a paginated list of Blowhorn profiles in the organization of the authenticated session.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
-        - name: organizationId
-          in: query
-          required: false
-          description: Scope results to an organization.
-          schema:
-            type: string
-            format: uuid
       responses:
         "200":
           description: Blowhorn profiles page
@@ -90,15 +83,8 @@ paths:
         - blowhornProfiles
       summary: Get Blowhorn profile by subject
       operationId: getBlowhornProfileBySubject
-      description: Returns the Blowhorn profile keyed by the given subject within the organization.
+      description: Returns the Blowhorn profile keyed by the given subject within the organization of the authenticated session.
       parameters:
-        - name: organizationId
-          in: query
-          required: true
-          description: Organization scoping the lookup.
-          schema:
-            type: string
-            format: uuid
         - name: subject
           in: query
           required: true

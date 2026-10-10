@@ -30,16 +30,8 @@ paths:
       operationId: getBlowhornHealth
       description: |
         Returns the frozen Blowhorn contract version and whether the
-        calling organization is bound. Migrations move server-side; this
-        endpoint reports the contract the server speaks.
-      parameters:
-        - name: organizationId
-          in: query
-          required: false
-          description: Organization whose binding is checked. When omitted the authenticated session's organization is checked.
-          schema:
-            type: string
-            format: uuid
+        organization of the authenticated session is bound. Migrations move
+        server-side; this endpoint reports the contract the server speaks.
       responses:
         "200":
           description: Blowhorn health response

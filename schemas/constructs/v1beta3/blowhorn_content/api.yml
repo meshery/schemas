@@ -28,20 +28,13 @@ paths:
         - blowhornContent
       summary: List Blowhorn content
       operationId: listBlowhornContent
-      description: Returns a paginated list of Blowhorn content rows in the organization.
+      description: Returns a paginated list of Blowhorn content rows in the organization of the authenticated session.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
-        - name: organizationId
-          in: query
-          required: false
-          description: Scope results to an organization.
-          schema:
-            type: string
-            format: uuid
         - name: profile
           in: query
           required: false
@@ -66,10 +59,10 @@ paths:
       summary: Insert Blowhorn content
       operationId: insertBlowhornContent
       description: |
-        Inserts a new Blowhorn content row, or updates the row matching
-        the provided `id`. The `fingerprint` is server-computed; any
-        supplied value is ignored. The `expectedFingerprint`
-        precondition is ignored on insert.
+        Inserts a new Blowhorn content row. Insert-only: any supplied
+        `id` and `expectedFingerprint` are ignored; existing rows change
+        only through the conditional `updateBlowhornContent`. The
+        `fingerprint` is server-computed.
       requestBody:
         required: true
         content:
@@ -77,8 +70,8 @@ paths:
             schema:
               $ref: "#/components/schemas/BlowhornContentPayload"
       responses:
-        "200":
-          description: Blowhorn content saved
+        "201":
+          description: Blowhorn content created
           content:
             application/json:
               schema:
@@ -237,7 +230,7 @@ components:
       properties:
         id:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
-          description: Existing Blowhorn content ID for updates; omit on insert.
+          description: Existing Blowhorn content ID for updates; ignored on insert.
           x-oapi-codegen-extra-tags:
             json: "id,omitempty"
         profile:

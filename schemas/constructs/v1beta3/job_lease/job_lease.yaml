@@ -79,8 +79,11 @@ properties:
     type: string
     format: date-time
     description: Time the job becomes due.
-    x-go-type: time.Time
-    x-go-type-skip-optional-pointer: true
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
     x-oapi-codegen-extra-tags:
       db: run_at
     x-order: 8
@@ -88,8 +91,11 @@ properties:
     type: string
     format: date-time
     description: Next scheduled time for recurring jobs.
-    x-go-type: time.Time
-    x-go-type-skip-optional-pointer: true
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
     x-oapi-codegen-extra-tags:
       db: next_run_at
     x-order: 9
@@ -129,8 +135,11 @@ properties:
     type: string
     format: date-time
     description: Time of the most recent execution attempt.
-    x-go-type: time.Time
-    x-go-type-skip-optional-pointer: true
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
     x-oapi-codegen-extra-tags:
       db: last_run_at
     x-order: 14
@@ -151,8 +160,11 @@ properties:
     type: string
     format: date-time
     description: Time the lease was claimed. Server-managed.
-    x-go-type: time.Time
-    x-go-type-skip-optional-pointer: true
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
     x-oapi-codegen-extra-tags:
       db: claimed_at
     x-order: 17
@@ -160,8 +172,11 @@ properties:
     type: string
     format: date-time
     description: Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder.
-    x-go-type: time.Time
-    x-go-type-skip-optional-pointer: true
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
     x-oapi-codegen-extra-tags:
       db: lease_expires_at
     x-order: 18
@@ -169,8 +184,11 @@ properties:
     type: string
     format: date-time
     description: Time the row was paused. Server-managed; set only by pause, cleared by resume.
-    x-go-type: time.Time
-    x-go-type-skip-optional-pointer: true
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
     x-oapi-codegen-extra-tags:
       db: paused_at
     x-order: 19
@@ -208,8 +226,11 @@ properties:
     type: string
     format: date-time
     description: Computed projection of the current claim time.
-    x-go-type: time.Time
-    x-go-type-skip-optional-pointer: true
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
     x-order: 25
   lockStale:
     type: boolean

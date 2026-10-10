@@ -27,20 +27,13 @@ paths:
         - blowhornBindings
       summary: List Blowhorn bindings
       operationId: listBlowhornBindings
-      description: Returns a paginated list of Blowhorn bindings in the organization, optionally filtered by profile or host.
+      description: Returns a paginated list of Blowhorn bindings in the organization of the authenticated session, optionally filtered by profile or host.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
-        - name: organizationId
-          in: query
-          required: false
-          description: Scope results to an organization.
-          schema:
-            type: string
-            format: uuid
         - name: profile
           in: query
           required: false

@@ -4,8 +4,6 @@
 package blowhorn_ledger
 
 import (
-	"time"
-
 	core "github.com/meshery/schemas/models/core"
 )
 
@@ -106,9 +104,9 @@ type BlowhornLedgerEntry struct {
 	ClaimedBy *string `db:"claimed_by" json:"claimedBy,omitempty" yaml:"claimedBy,omitempty"`
 
 	// ClaimedAt Time the entry was claimed, if any. Set only by claim-if-absent.
-	ClaimedAt time.Time `db:"claimed_at" json:"claimedAt,omitempty" yaml:"claimedAt,omitempty"`
-	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
-	UpdatedAt core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+	ClaimedAt *core.NullTime `db:"claimed_at" json:"claimedAt" yaml:"claimedAt"`
+	CreatedAt core.Time      `db:"created_at" json:"createdAt" yaml:"createdAt"`
+	UpdatedAt core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 }
 
 // BlowhornLedgerPage Paginated collection of Blowhorn ledger entries.
@@ -165,9 +163,9 @@ type BlowhornMentee struct {
 	Metadata core.Map `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
 	// DroppedAt Time the mentee was recorded and dropped, if any. Set only by the record-and-drop operation.
-	DroppedAt time.Time `db:"dropped_at" json:"droppedAt,omitempty" yaml:"droppedAt,omitempty"`
-	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
-	UpdatedAt core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+	DroppedAt *core.NullTime `db:"dropped_at" json:"droppedAt" yaml:"droppedAt"`
+	CreatedAt core.Time      `db:"created_at" json:"createdAt" yaml:"createdAt"`
+	UpdatedAt core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 }
 
 // BlowhornMenteeDropRequest Record-and-drop payload.

@@ -33,8 +33,8 @@ paths:
       summary: List job leases
       operationId: listJobLeases
       description: |
-        Returns a paginated list of job leases in the organization,
-        optionally filtered by status. Each entry projects the computed
+        Returns a paginated list of job leases in the organization of the
+        authenticated session, optionally filtered by status. Each entry projects the computed
         `locked`, `lockedBy`, `lockedAt` and `lockStale` keys.
       parameters:
         - $ref: "#/components/parameters/page"
@@ -42,13 +42,6 @@ paths:
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
-        - name: organizationId
-          in: query
-          required: false
-          description: Scope results to an organization.
-          schema:
-            type: string
-            format: uuid
         - name: status
           in: query
           required: false
@@ -105,11 +98,15 @@ paths:
       summary: Claim a due job lease
       operationId: claimJobLease
       description: |
-        Hands one due, unheld, unpaused row to the calling machine in a
-        single server-side statement. Answers the row, or null when no row
+        Hands one due, unheld, unpaused row to the machine named by
+        `machineId` in a single server-side statement, recording it as
+        `claimedBy`. Answers the row, or null when no row
         qualifies - a lost race is null, never an error. `force` drops only
         the due test for trigger-now; a live foreign lease still refuses.
         `ignorePause` is the single operator override over pause scopes.
+        The holder identity is client-asserted: in v1 the holder check on
+        claim, renew and release is advisory, not an authorization
+        boundary, and calls made with purpose-scoped tokens are audited.
       requestBody:
         required: true
         content:
@@ -138,16 +135,9 @@ paths:
       summary: Get organization schedule pause
       operationId: getSchedulePause
       description: |
-        Returns the organization-wide pause row. A 404 is the ordinary
-        answer when no pause is set, and is not an error condition.
-      parameters:
-        - name: organizationId
-          in: query
-          required: true
-          description: Organization whose pause row is read.
-          schema:
-            type: string
-            format: uuid
+        Returns the organization-wide pause row for the organization of the
+        authenticated session. A 404 is the ordinary answer when no pause is
+        set, and is not an error condition.
       responses:
         "200":
           description: Organization schedule pause
@@ -168,16 +158,9 @@ paths:
       summary: Set organization schedule pause
       operationId: setSchedulePause
       description: |
-        Sets the organization-wide pause. While set, no row in the
-        organization is claimed unless the claim carries `ignorePause`.
-      parameters:
-        - name: organizationId
-          in: query
-          required: true
-          description: Organization whose pause row is set.
-          schema:
-            type: string
-            format: uuid
+        Sets the organization-wide pause for the organization of the
+        authenticated session. While set, no row in the organization is
+        claimed unless the claim carries `ignorePause`.
       requestBody:
         required: true
         content:
@@ -203,15 +186,9 @@ paths:
         - jobLeases
       summary: Clear organization schedule pause
       operationId: clearSchedulePause
-      description: Clears the organization-wide pause so due rows become claimable again.
-      parameters:
-        - name: organizationId
-          in: query
-          required: true
-          description: Organization whose pause row is cleared.
-          schema:
-            type: string
-            format: uuid
+      description: |
+        Clears the organization-wide pause for the organization of the
+        authenticated session so due rows become claimable again.
       responses:
         "204":
           description: Organization schedule pause cleared
@@ -311,7 +288,9 @@ paths:
       description: |
         Holder-only liveness: moves only `leaseExpiresAt` for the holder
         named by `machineId`. Answers the row, or null when the row is not
-        held by that holder - never taken back.
+        held by that holder - never taken back. `machineId` is
+        client-asserted, so the holder check is advisory in v1; calls made
+        with purpose-scoped tokens are audited.
       parameters:
         - $ref: "#/components/parameters/jobLeaseId"
       requestBody:
@@ -346,7 +325,9 @@ paths:
       description: |
         Clears the claim (`claimedBy`, `claimedAt`, `leaseExpiresAt`) for
         the holder named by `machineId` and merges the supplied result
-        values. Claim and identity keys are refused here.
+        values. Claim and identity keys are refused here. `machineId` is
+        client-asserted, so the holder check is advisory in v1; calls made
+        with purpose-scoped tokens are audited.
       parameters:
         - $ref: "#/components/parameters/jobLeaseId"
       requestBody:
@@ -572,7 +553,14 @@ components:
     JobLeaseClaimRequest:
       type: object
       description: Claim filter for handing one due row to the caller.
+      required:
+        - machineId
       properties:
+        machineId:
+          type: string
+          description: Machine taking the lease, recorded as `claimedBy`. Client-asserted; the holder check is advisory in v1.
+          minLength: 1
+          maxLength: 255
         rowNumber:
           type: integer
           description: Claim only the row with this row number.
@@ -596,7 +584,7 @@ components:
       properties:
         machineId:
           type: string
-          description: Machine holding the lease. Only the holder may renew.
+          description: Machine holding the lease. Only the holder may renew. Client-asserted; the holder check is advisory in v1.
           minLength: 1
           maxLength: 255
         leaseMinutes:
@@ -612,7 +600,7 @@ components:
       properties:
         machineId:
           type: string
-          description: Machine holding the lease. Only the holder may release.
+          description: Machine holding the lease. Only the holder may release. Client-asserted; the holder check is advisory in v1.
           minLength: 1
           maxLength: 255
         values:
@@ -644,7 +632,9 @@ components:
           description: The claimed or renewed row, or null when the operation took no row.
           nullable: true
           x-go-type: JobLease
-          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "jobLease"
+            yaml: "jobLease"
 
     JobLeasePage:
       type: object

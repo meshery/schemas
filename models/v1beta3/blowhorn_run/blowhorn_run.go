@@ -30,9 +30,9 @@ type BlowhornAnalytics struct {
 	Metrics core.Map `db:"metrics" json:"metrics" yaml:"metrics"`
 
 	// ComputedAt Time the metrics were computed.
-	ComputedAt time.Time `db:"computed_at" json:"computedAt,omitempty" yaml:"computedAt,omitempty"`
-	CreatedAt  core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
-	UpdatedAt  core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+	ComputedAt *core.NullTime `db:"computed_at" json:"computedAt" yaml:"computedAt"`
+	CreatedAt  core.Time      `db:"created_at" json:"createdAt" yaml:"createdAt"`
+	UpdatedAt  core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 }
 
 // BlowhornAnalyticsPage Paginated collection of Blowhorn analytics rollups.

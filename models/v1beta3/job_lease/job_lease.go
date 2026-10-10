@@ -51,10 +51,10 @@ type JobLease struct {
 	Params core.Map `db:"params" json:"params,omitempty" yaml:"params,omitempty"`
 
 	// RunAt Time the job becomes due.
-	RunAt time.Time `db:"run_at" json:"runAt,omitempty" yaml:"runAt,omitempty"`
+	RunAt *core.NullTime `db:"run_at" json:"runAt" yaml:"runAt"`
 
 	// NextRunAt Next scheduled time for recurring jobs.
-	NextRunAt time.Time `db:"next_run_at" json:"nextRunAt,omitempty" yaml:"nextRunAt,omitempty"`
+	NextRunAt *core.NullTime `db:"next_run_at" json:"nextRunAt" yaml:"nextRunAt"`
 
 	// Recurrence Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs.
 	Recurrence *string `db:"recurrence" json:"recurrence,omitempty" yaml:"recurrence,omitempty"`
@@ -69,7 +69,7 @@ type JobLease struct {
 	DriverMode *string `db:"driver_mode" json:"driverMode,omitempty" yaml:"driverMode,omitempty"`
 
 	// LastRunAt Time of the most recent execution attempt.
-	LastRunAt time.Time `db:"last_run_at" json:"lastRunAt,omitempty" yaml:"lastRunAt,omitempty"`
+	LastRunAt *core.NullTime `db:"last_run_at" json:"lastRunAt" yaml:"lastRunAt"`
 
 	// LastError Error reported by the most recent execution attempt.
 	LastError *string `db:"last_error" json:"lastError,omitempty" yaml:"lastError,omitempty"`
@@ -78,13 +78,13 @@ type JobLease struct {
 	ClaimedBy *string `db:"claimed_by" json:"claimedBy,omitempty" yaml:"claimedBy,omitempty"`
 
 	// ClaimedAt Time the lease was claimed. Server-managed.
-	ClaimedAt time.Time `db:"claimed_at" json:"claimedAt,omitempty" yaml:"claimedAt,omitempty"`
+	ClaimedAt *core.NullTime `db:"claimed_at" json:"claimedAt" yaml:"claimedAt"`
 
 	// LeaseExpiresAt Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder.
-	LeaseExpiresAt time.Time `db:"lease_expires_at" json:"leaseExpiresAt,omitempty" yaml:"leaseExpiresAt,omitempty"`
+	LeaseExpiresAt *core.NullTime `db:"lease_expires_at" json:"leaseExpiresAt" yaml:"leaseExpiresAt"`
 
 	// PausedAt Time the row was paused. Server-managed; set only by pause, cleared by resume.
-	PausedAt time.Time `db:"paused_at" json:"pausedAt,omitempty" yaml:"pausedAt,omitempty"`
+	PausedAt *core.NullTime `db:"paused_at" json:"pausedAt" yaml:"pausedAt"`
 
 	// PausedBy Identity that paused the row. Server-managed.
 	PausedBy *string `db:"paused_by" json:"pausedBy,omitempty" yaml:"pausedBy,omitempty"`
@@ -102,7 +102,7 @@ type JobLease struct {
 	LockedBy *string `json:"lockedBy,omitempty" yaml:"lockedBy,omitempty"`
 
 	// LockedAt Computed projection of the current claim time.
-	LockedAt time.Time `json:"lockedAt,omitempty" yaml:"lockedAt,omitempty"`
+	LockedAt *core.NullTime `json:"lockedAt" yaml:"lockedAt"`
 
 	// LockStale Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable.
 	LockStale *bool     `json:"lockStale,omitempty" yaml:"lockStale,omitempty"`
@@ -131,7 +131,7 @@ type JobLeaseActionResponse struct {
 	// pause and resume operations. `locked`, `lockedBy`, `lockedAt` and
 	// `lockStale` are computed projections for schedule screens, not stored
 	// columns.
-	JobLease JobLease `json:"jobLease,omitempty" yaml:"jobLease,omitempty"`
+	JobLease *JobLease `json:"jobLease" yaml:"jobLease"`
 }
 
 // JobLeaseClaimRequest Claim filter for handing one due row to the caller.
@@ -144,6 +144,9 @@ type JobLeaseClaimRequest struct {
 
 	// LeaseMinutes Requested lease duration in minutes. When omitted the server applies its default lease duration.
 	LeaseMinutes *int `json:"leaseMinutes,omitempty" yaml:"leaseMinutes,omitempty"`
+
+	// MachineId Machine taking the lease, recorded as `claimedBy`. Client-asserted; the holder check is advisory in v1.
+	MachineId string `json:"machineId" yaml:"machineId"`
 
 	// RowNumber Claim only the row with this row number.
 	RowNumber *int `json:"rowNumber,omitempty" yaml:"rowNumber,omitempty"`
@@ -217,7 +220,7 @@ type JobLeasePayload struct {
 
 // JobLeaseReleaseRequest Release payload clearing the claim and landing result values.
 type JobLeaseReleaseRequest struct {
-	// MachineId Machine holding the lease. Only the holder may release.
+	// MachineId Machine holding the lease. Only the holder may release. Client-asserted; the holder check is advisory in v1.
 	MachineId string `json:"machineId" yaml:"machineId"`
 
 	// Values Result values merged into the row on release (e.g. last run outcome and error).
@@ -229,7 +232,7 @@ type JobLeaseRenewRequest struct {
 	// LeaseMinutes Requested lease extension in minutes. When omitted the server applies its default lease duration.
 	LeaseMinutes *int `json:"leaseMinutes,omitempty" yaml:"leaseMinutes,omitempty"`
 
-	// MachineId Machine holding the lease. Only the holder may renew.
+	// MachineId Machine holding the lease. Only the holder may renew. Client-asserted; the holder check is advisory in v1.
 	MachineId string `json:"machineId" yaml:"machineId"`
 }
 

@@ -27,20 +27,13 @@ paths:
         - blowhornRuns
       summary: List Blowhorn run records
       operationId: listBlowhornRunRecords
-      description: Returns a paginated list of Blowhorn run records in the organization.
+      description: Returns a paginated list of Blowhorn run records in the organization of the authenticated session.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
-        - name: organizationId
-          in: query
-          required: false
-          description: Scope results to an organization.
-          schema:
-            type: string
-            format: uuid
         - name: runId
           in: query
           required: false
@@ -115,20 +108,13 @@ paths:
         - blowhornRuns
       summary: List Blowhorn analytics
       operationId: listBlowhornAnalytics
-      description: Returns a paginated list of Blowhorn analytics rollups in the organization.
+      description: Returns a paginated list of Blowhorn analytics rollups in the organization of the authenticated session.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
-        - name: organizationId
-          in: query
-          required: false
-          description: Scope results to an organization.
-          schema:
-            type: string
-            format: uuid
         - name: scope
           in: query
           required: false

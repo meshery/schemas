@@ -27,20 +27,13 @@ paths:
         - blowhornDestinations
       summary: List Blowhorn destinations
       operationId: listBlowhornDestinations
-      description: Returns a paginated list of Blowhorn destinations in the organization.
+      description: Returns a paginated list of Blowhorn destinations in the organization of the authenticated session.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
-        - name: organizationId
-          in: query
-          required: false
-          description: Scope results to an organization.
-          schema:
-            type: string
-            format: uuid
         - name: platform
           in: query
           required: false
