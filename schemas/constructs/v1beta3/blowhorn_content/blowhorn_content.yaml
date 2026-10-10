@@ -1,0 +1,88 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Blowhorn Content Schema
+description: |
+  Server-returned Blowhorn content row as persisted by meshery-cloud.
+  Content rows carry a row number and a server-computed fingerprint over
+  their canonical values; updates are conditional on the fingerprint the
+  writer read, so stale writes are refused rather than silently applied.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - profile
+  - rowNumber
+  - fingerprint
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated Blowhorn content ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  profile:
+    type: string
+    description: Subject of the owning Blowhorn profile.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: profile
+    x-order: 3
+  rowNumber:
+    type: integer
+    description: Row number of the content within the owning profile.
+    minimum: 0
+    x-oapi-codegen-extra-tags:
+      db: row_number
+    x-order: 4
+  fingerprint:
+    type: string
+    description: Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: fingerprint
+    x-order: 5
+  data:
+    type: object
+    description: Content values, stored as a JSON blob.
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: data
+    x-order: 6
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of Blowhorn content creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 7
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last Blowhorn content modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 8
+  deletedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the Blowhorn content was soft-deleted.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
+    x-order: 9

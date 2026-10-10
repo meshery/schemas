@@ -111,7 +111,11 @@ properties:
       people create to logically group Connections and their Credentials.
       `administrative` designates an environment the platform itself
       provisions to hold organization-level configuration, and which resolvers
-      of that configuration therefore trust.
+      of that configuration therefore trust. `blowhorn` designates an
+      environment the platform itself provisions to hold an organization's
+      Blowhorn configuration and secrets, resolved by the purpose-typed
+      credential chain; it is privileged in the same sense as
+      `administrative`.
 
 
       Absent means `user`. Nothing may read an unset or unrecognised value as
@@ -150,6 +154,7 @@ properties:
     enum:
       - user
       - administrative
+      - blowhorn
     # No `readOnly: true` here, despite it being the natural annotation for a
     # server-owned property, because the RTK client generator mis-handles it.
     # oazapfts' checkSchemaOnlyMode propagates readOnly UP the containment tree
@@ -173,6 +178,7 @@ properties:
     x-enum-varnames:
       - EnvironmentPurposeUser
       - EnvironmentPurposeAdministrative
+      - EnvironmentPurposeBlowhorn
     # No `default:` here on purpose. openapi-typescript reads a default on a
     # response property as a promise the server always sends the field, and
     # emits it non-optional - untrue for every row written before the column
