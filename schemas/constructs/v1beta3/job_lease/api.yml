@@ -434,7 +434,11 @@ components:
     404:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
     409:
-      $ref: "../../v1beta2/core/api.yml#/components/responses/409"
+      description: Conflict - the request conflicts with the current job lease state (stale expectedFingerprint precondition, or release by a machine that is not the current lease holder)
+      content:
+        text/plain:
+          schema:
+            type: string
     500:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
 
