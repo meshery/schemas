@@ -145,7 +145,7 @@ schemas/
       meshery.ts
 
   python/                           # Python source and generated files
-    generated/                      # Auto-generated distribution (do NOT commit)
+    generated/                      # Auto-generated distribution (commit regenerated output when a pilot schema changes)
       pyproject.toml                # Hand-maintained scaffold (hatchling, meshery-schemas)
       src/meshery_schemas/
         <construct>/                # Generated client per pilot construct
