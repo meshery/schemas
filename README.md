@@ -143,7 +143,14 @@ schemas/
     rtk/                            # RTK Query client configurations
       cloud.ts
       meshery.ts
-  
+
+  python/                           # Python source and generated files
+    generated/                      # Auto-generated distribution (commit regenerated output when a bundled pilot spec changes)
+      pyproject.toml                # Hand-maintained scaffold (hatchling, meshery-schemas)
+      src/meshery_schemas/
+        <construct>/                # Generated client per pilot construct
+    tests/                          # Hand-maintained pytest suites
+
   dist/                             # Built distribution (do NOT commit)
     index.js, index.d.ts
     cloudApi.js, mesheryApi.js
@@ -490,6 +497,7 @@ Meshery supports **automated code generation** from schemas for:
 * **TypeScript Types**: Interfaces and type definitions → `typescript/generated/<version>/<package>/<Package>.d.ts`
 * **TypeScript Schemas**: OpenAPI schemas as const JS objects → `typescript/generated/<version>/<package>/<Package>Schema.ts`
 * **RTK Query**: Clients generated from OpenAPI for use with Redux → `typescript/rtk/`
+* **Python**: Typed clients generated from OpenAPI (pilot: key construct) → `python/generated/` (`meshery-schemas` distribution)
 * **JSON/YAML**: Templates with defaults and resolved references.
 
 ### TypeScript Schema Exports
