@@ -103,8 +103,8 @@ test-rtk: bundle-openapi
 generate-python: bundle-openapi
 	node build/generate-python.js
 
-## Run Python generation guard, install the distribution, run the pytest round-trip (requires generate-python)
-test-python: generate-python
+## Guard the committed Python client against its manifest, install the distribution, run the pytest round-trip (refresh with generate-python)
+test-python: bundle-openapi
 	node --test tests/generate-python.test.js
 	python3 -m pip install ./python/generated
 	python3 -m pytest python/tests -q
@@ -275,8 +275,8 @@ schemas-versions-latest:
 			END { for (c in constructs) printf "%-20s %s\n", c, constructs[c] }' \
 		| sort
 
-## Generate and bundle schema package (bundles OpenAPI, generates Go, RTK, Python, TypeScript, and permissions)
-build: validate-schemas bundle-openapi generate-golang  generate-rtk generate-python test-python generate-ts generate-enums-ts generate-permissions build-ts test-golang
+## Generate and bundle schema package (bundles OpenAPI, generates Go, RTK, TypeScript, and permissions)
+build: validate-schemas bundle-openapi generate-golang  generate-rtk generate-ts generate-enums-ts generate-permissions build-ts test-golang
 
 #-----------------------------------------------------------------------------
 # Dependencies

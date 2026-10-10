@@ -38,7 +38,7 @@ jobs:
           go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.1
           echo "$HOME/go/bin" >> $GITHUB_PATH
 
-      # `make build` runs `generate-python`/`test-python`, which need the
+      # `generate-python`/`test-python` run after `make build` and need the
       # pinned generator and ruff (single source of truth: build/lib/config.js).
       - uses: actions/setup-python@v5
         with:
@@ -54,6 +54,16 @@ jobs:
         shell: bash
         run: |
           make build
+
+      - name: Generate Python client
+        shell: bash
+        run: |
+          make generate-python
+
+      - name: Python client tests
+        shell: bash
+        run: |
+          make test-python
 
       - name: Site data tests
         shell: bash

@@ -69,9 +69,9 @@ jobs:
       - name: Run RTK guard tests
         run: make test-rtk
 
-      # `test-python` regenerates the pilot client from the bundled specs
-      # (failing on any un-allow-listed generator warning), runs the
-      # generation guard test, installs the distribution, and runs pytest.
+      # `test-python` does not regenerate: it guards the committed pilot
+      # client against its manifest (bundled-spec and generated-file
+      # digests), installs the distribution, and runs pytest.
       # The generator and ruff pins live in build/lib/config.js and are read here
       # rather than duplicated.
       - name: Setup Python

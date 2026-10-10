@@ -16,7 +16,7 @@
  *   rtk         - Generate RTK Query clients
  *   python      - Generate Python client (pilot constructs)
  *   types       - Generate TypeScript type definitions
- *   all         - Run full build pipeline (validate → bundle → golang → rtk → python → types)
+ *   all         - Run full build pipeline (validate → bundle → golang → rtk → types)
  *   help        - Show this help message
  *
  * EXAMPLES:
@@ -81,7 +81,7 @@ const commands = {
   },
   all: {
     description: "Run full build pipeline",
-    pipeline: ["validate", "bundle", "golang", "rtk", "python", "types"],
+    pipeline: ["validate", "bundle", "golang", "rtk", "types"],
   },
 };
 

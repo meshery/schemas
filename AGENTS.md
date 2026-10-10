@@ -26,7 +26,7 @@ For constructs that have been migrated:
 ## Build
 
 ```bash
-make build       # generate Go structs + TypeScript types + RTK clients + Python client (pilot)
+make build       # generate Go structs + TypeScript types + RTK clients
 make validate-schemas  # run repository schema validation rules
 npm run build    # build TypeScript distribution (dist/)
 ```
