@@ -325,9 +325,14 @@ paths:
       description: |
         Clears the claim (`claimedBy`, `claimedAt`, `leaseExpiresAt`) for
         the holder named by `machineId` and merges the supplied result
-        values. Claim and identity keys are refused here. `machineId` is
-        client-asserted, so the holder check is advisory in v1; calls made
-        with purpose-scoped tokens are audited.
+        values. Claim and identity keys are refused here. Holder-only: when
+        `machineId` is not the current holder the release is refused with a
+        409 and nothing changes - the claim columns and row values are left
+        untouched, so a live foreign claim is never cleared. A holder whose
+        lease lapsed and was re-claimed by another machine therefore gets a
+        409 when it finishes late. `machineId` is client-asserted, so the
+        holder check is advisory in v1; calls made with purpose-scoped
+        tokens are audited.
       parameters:
         - $ref: "#/components/parameters/jobLeaseId"
       requestBody:
@@ -349,6 +354,8 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
 
@@ -600,7 +607,7 @@ components:
       properties:
         machineId:
           type: string
-          description: Machine holding the lease. Only the holder may release. Client-asserted; the holder check is advisory in v1.
+          description: Machine holding the lease. Only the holder may release; a non-holder is refused with a 409 and nothing changes. Client-asserted; the holder check is advisory in v1.
           minLength: 1
           maxLength: 255
         values:

@@ -220,7 +220,7 @@ type JobLeasePayload struct {
 
 // JobLeaseReleaseRequest Release payload clearing the claim and landing result values.
 type JobLeaseReleaseRequest struct {
-	// MachineId Machine holding the lease. Only the holder may release. Client-asserted; the holder check is advisory in v1.
+	// MachineId Machine holding the lease. Only the holder may release; a non-holder is refused with a 409 and nothing changes. Client-asserted; the holder check is advisory in v1.
 	MachineId string `json:"machineId" yaml:"machineId"`
 
 	// Values Result values merged into the row on release (e.g. last run outcome and error).
