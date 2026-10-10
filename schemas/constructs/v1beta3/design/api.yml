@@ -1134,15 +1134,48 @@ components:
         modelsCount:
           type: array
           items:
-            type: object
-            additionalProperties: true
+            $ref: "#/components/schemas/ModelsCount"
           description: Model-by-count aggregates for the catalog page.
         categoryCount:
           type: array
           items:
-            type: object
-            additionalProperties: true
+            $ref: "#/components/schemas/CategoryCount"
           description: Category-by-count aggregates for the catalog page.
+
+    ModelsCount:
+      type: object
+      description: Number of catalog entries registered under a model.
+      additionalProperties: false
+      properties:
+        model:
+          type: string
+          description: Name of the model registrant.
+          minLength: 1
+          maxLength: 255
+        count:
+          type: integer
+          description: Number of catalog entries registered under the model.
+          minimum: 0
+        displayName:
+          type: string
+          description: Human-readable name of the model.
+          minLength: 1
+          maxLength: 255
+
+    CategoryCount:
+      type: object
+      description: Number of catalog entries in a category.
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          description: Catalog category represented by this aggregate.
+          minLength: 1
+          maxLength: 255
+        count:
+          type: integer
+          description: Number of catalog entries in the category.
+          minimum: 0
 
     CatalogContentType:
       type: string
