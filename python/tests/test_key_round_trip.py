@@ -7,6 +7,7 @@ schemas declare is what gets verified.
 """
 
 import json
+import tomllib
 from pathlib import Path
 from uuid import UUID
 
@@ -19,6 +20,7 @@ from meshery_schemas.key.types import UNSET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE = REPO_ROOT / "schemas" / "constructs" / "v1beta2" / "key" / "templates" / "key_template.json"
+PYPROJECT = REPO_ROOT / "python" / "generated" / "pyproject.toml"
 
 
 def load_template() -> dict:
@@ -75,3 +77,11 @@ def test_key_endpoint_modules_expose_sync_and_async_variants():
         client = cls(**kwargs)
         assert callable(client.get_httpx_client)
         assert callable(client.get_async_httpx_client)
+
+
+def test_distribution_identity_and_hatch_wheel_packages():
+    pyproject = tomllib.loads(PYPROJECT.read_text())
+
+    assert pyproject["project"]["name"] == "meshery-schemas"
+    assert pyproject["build-system"]["build-backend"] == "hatchling.build"
+    assert pyproject["tool"]["hatch"]["build"]["targets"]["wheel"]["packages"] == ["src/meshery_schemas"]

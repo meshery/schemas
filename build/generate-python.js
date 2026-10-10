@@ -19,8 +19,8 @@
  *      written on failure)
  *   4. Assembles python/generated/src/meshery_schemas/<construct>/ from the
  *      staged output plus a PEP 561 py.typed marker
- *   5. Records generator, spec digests, and warnings in
- *      python/generated/.python-gen-manifest.json
+ *   5. Records generator, spec digests, generated-file digests, and
+ *      warnings in python/generated/.python-gen-manifest.json
  *
  * USAGE:
  *   node build/generate-python.js
@@ -28,8 +28,9 @@
  * PREREQUISITES:
  *   Run bundle-openapi.js first to generate the OpenAPI specs in _openapi_build/.
  *   Install the pinned toolchain once:
- *     python3 -m pip install "openapi-python-client==$(node -p "require('./build/lib/config.js').python.generatorVersion")"
- *   (ruff ships with the generator install and must be on PATH.)
+ *     python3 -m pip install \
+ *       "openapi-python-client==$(node -p "require('./build/lib/config.js').python.generatorVersion")" \
+ *       "ruff==$(node -p "require('./build/lib/config.js').python.ruffVersion")"
  *   Generated code requires Python >= 3.11.
  *
  * OWNERSHIP:
@@ -135,14 +136,45 @@ function specDigest(absolutePath) {
 }
 
 /**
- * Check the Python toolchain: python3 >= 3.11, the pinned
- * openapi-python-client on PATH, and ruff on PATH (ruff ships with the
- * generator install and powers its post-processing step).
+ * Digest every file under each generated subpackage, keyed by path
+ * relative to python/generated/ (POSIX separators, sorted).
  *
- * @returns {{python: string, generator: string}} Observed versions
+ * @param {string} distRoot - python/generated/ directory
+ * @param {string[]} subpackageDirs - Generated subpackage directories
+ * @returns {Object<string, string>} Relative path -> SHA-256 hex digest
+ */
+function generatedFileDigests(distRoot, subpackageDirs) {
+  const files = [];
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else {
+        files.push(full);
+      }
+    }
+  };
+  subpackageDirs.forEach(walk);
+
+  const digests = {};
+  for (const relative of files.map((full) => path.relative(distRoot, full).split(path.sep).join("/")).sort()) {
+    digests[relative] = specDigest(path.join(distRoot, relative));
+  }
+  return digests;
+}
+
+/**
+ * Check the Python toolchain: python3 >= 3.11, the pinned
+ * openapi-python-client on PATH, and the pinned ruff on PATH (ruff powers
+ * the generator's post-processing step, so its version shapes the output).
+ *
+ * @returns {{python: string, generator: string, ruff: string}} Observed versions
  */
 function checkPythonToolchain() {
   const pin = `${config.python.generatorPackage}==${config.python.generatorVersion}`;
+  const ruffPin = `ruff==${config.python.ruffVersion}`;
+  const installHint = `Install the pinned toolchain once:\n  python3 -m pip install "${pin}" "${ruffPin}"`;
 
   const python = spawnSync("python3", ["--version"], { encoding: "utf-8" });
   const pythonVersion = `${python.stdout || ""}${python.stderr || ""}`.trim();
@@ -155,21 +187,25 @@ function checkPythonToolchain() {
   const generatorVersion = `${generator.stdout || ""}${generator.stderr || ""}`.trim();
   if (generator.error || generator.status !== 0) {
     throw new Error(
-      `openapi-python-client is not on PATH. Install the pinned toolchain once:\n  python3 -m pip install "${pin}"`,
+      `openapi-python-client is not on PATH. ${installHint}`,
     );
   }
   if (!generatorVersion.endsWith(config.python.generatorVersion)) {
     throw new Error(
-      `openapi-python-client ${config.python.generatorVersion} is required (saw: ${generatorVersion}).\nInstall the pinned toolchain once:\n  python3 -m pip install "${pin}"`,
+      `openapi-python-client ${config.python.generatorVersion} is required (saw: ${generatorVersion}).\n${installHint}`,
     );
   }
 
   const ruff = spawnSync("ruff", ["--version"], { encoding: "utf-8" });
+  const ruffVersion = `${ruff.stdout || ""}${ruff.stderr || ""}`.trim();
   if (ruff.error || ruff.status !== 0) {
-    throw new Error(`ruff is not on PATH (it ships with the generator install):\n  python3 -m pip install "${pin}"`);
+    throw new Error(`ruff is not on PATH. ${installHint}`);
+  }
+  if (ruffVersion !== `ruff ${config.python.ruffVersion}`) {
+    throw new Error(`ruff ${config.python.ruffVersion} is required (saw: ${ruffVersion}).\n${installHint}`);
   }
 
-  return { python: pythonVersion, generator: generatorVersion };
+  return { python: pythonVersion, generator: generatorVersion, ruff: ruffVersion };
 }
 
 /**
@@ -264,11 +300,12 @@ function copyStagedTree(src, dest) {
  * Assemble the distribution from staged output. Enforcement first: any
  * warning without an allow-list entry aborts before python/generated/
  * is touched. Then each pilot subpackage is replaced wholesale (stale
- * files cannot linger) and the manifest is rewritten.
+ * files cannot linger) and the manifest is rewritten with the digests of
+ * every assembled file.
  *
  * @param {Array} pilotPackages - Resolved pilot constructs
  * @param {Map} stagedByKey - "version/dirName" -> generator record
- * @param {{python: string, generator: string}} toolchain - Observed versions
+ * @param {{python: string, generator: string, ruff: string}} toolchain - Observed versions
  */
 function assembleDistribution(pilotPackages, stagedByKey, toolchain) {
   const allowlist = config.python.warningAllowlist;
@@ -293,6 +330,7 @@ function assembleDistribution(pilotPackages, stagedByKey, toolchain) {
 
   const distRoot = paths.fromRoot(config.paths.pythonDir);
   const specs = {};
+  const subpackageDirs = [];
   for (const pkg of pilotPackages) {
     const key = `${pkg.version}/${pkg.dirName}`;
     const record = stagedByKey.get(key);
@@ -306,21 +344,24 @@ function assembleDistribution(pilotPackages, stagedByKey, toolchain) {
     paths.removeDir(destDir);
     copyStagedTree(record.stagedDir, destDir);
     fs.writeFileSync(path.join(destDir, PY_TYPED), "", "utf-8");
+    subpackageDirs.push(destDir);
     logger.success(`Assembled: ${paths.relativePath(destDir)}`);
   }
 
   const manifest = {
     generator: config.python.generatorPackage,
     generatorVersion: config.python.generatorVersion,
+    ruffVersion: config.python.ruffVersion,
     meta: "none",
     specs,
+    files: generatedFileDigests(distRoot, subpackageDirs),
     warnings: warningsByPackage,
     warningAllowlist: allowlist,
   };
   const manifestPath = path.join(distRoot, MANIFEST_FILENAME);
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf-8");
   logger.success(`Wrote: ${paths.relativePath(manifestPath)}`);
-  logger.info(`Toolchain: ${toolchain.python} / ${toolchain.generator}`);
+  logger.info(`Toolchain: ${toolchain.python} / ${toolchain.generator} / ${toolchain.ruff}`);
 }
 
 /**
@@ -368,6 +409,7 @@ module.exports = {
   copyStagedTree,
   findUnlistedPythonWarnings,
   generatePilotPackage,
+  generatedFileDigests,
   getPilotPackages,
   normalizePythonWarning,
   specDigest,

@@ -49,14 +49,18 @@ const mergedConstructFilename = "merged-openapi.json";
 /**
  * Python client generation settings (issue #1240).
  *
- * The generator is pinned to an exact version so committed output
- * reproduces byte-for-byte (cf. #1194 for the oapi-codegen pin lesson).
- * The single source of truth for the pin is this object: both
- * build/generate-python.js and the CI install steps read it.
+ * The generator and its ruff post-processor are pinned to exact versions
+ * so committed output reproduces byte-for-byte (cf. #1194 for the
+ * oapi-codegen pin lesson). The single source of truth for the pins is
+ * this object: both build/generate-python.js and the CI install steps
+ * read it.
  */
 const python = {
   generatorPackage: "openapi-python-client",
   generatorVersion: "0.29.1",
+  // ruff runs the generator's post-processing (fix + format), so its
+  // version shapes the emitted code; verified paired with 0.29.1.
+  ruffVersion: "0.17.0",
   // Phase 1 pilot scope, as "version/dirName" keys. v1beta2/key is the
   // current canonical-casing key construct; v1beta1/key is x-deprecated
   // (excluded from the merged bundles) so it is not piloted.

@@ -39,13 +39,14 @@ jobs:
           echo "$HOME/go/bin" >> $GITHUB_PATH
 
       # `make build` runs `generate-python`/`test-python`, which need the
-      # pinned generator (single source of truth: build/lib/config.js).
+      # pinned generator and ruff (single source of truth: build/lib/config.js).
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: |
           python -m pip install \
             "openapi-python-client==$(node -p "require('./build/lib/config.js').python.generatorVersion")" \
+            "ruff==$(node -p "require('./build/lib/config.js').python.ruffVersion")" \
             pytest
 
 

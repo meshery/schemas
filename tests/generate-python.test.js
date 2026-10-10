@@ -8,8 +8,10 @@ const paths = require("../build/lib/paths");
 const {
   collectPythonWarnings,
   findUnlistedPythonWarnings,
+  generatedFileDigests,
   getPilotPackages,
   normalizePythonWarning,
+  specDigest,
 } = require("../build/generate-python");
 
 // Recorded from a real openapi-python-client 0.29.1 run against a spec with
@@ -55,9 +57,10 @@ test("findUnlistedPythonWarnings fails on warnings with no allow-list entry", ()
   assert.deepEqual(findUnlistedPythonWarnings([], []), []);
 });
 
-test("python generator pin is an exact version", () => {
+test("python generator and ruff pins are exact versions", () => {
   assert.equal(config.python.generatorPackage, "openapi-python-client");
   assert.match(config.python.generatorVersion, /^\d+\.\d+\.\d+$/);
+  assert.match(config.python.ruffVersion, /^\d+\.\d+\.\d+$/);
   assert.ok(Array.isArray(config.python.warningAllowlist));
 });
 
@@ -70,7 +73,7 @@ test("python pilot constructs resolve through shared discovery", () => {
   }
 });
 
-test("committed python output matches its generation manifest", () => {
+test("committed python output matches its manifest spec and generated-file digests", () => {
   const distRoot = paths.fromRoot(config.paths.pythonDir);
   const manifestPath = path.join(distRoot, ".python-gen-manifest.json");
   assert.ok(
@@ -81,6 +84,7 @@ test("committed python output matches its generation manifest", () => {
 
   assert.equal(manifest.generator, config.python.generatorPackage);
   assert.equal(manifest.generatorVersion, config.python.generatorVersion);
+  assert.equal(manifest.ruffVersion, config.python.ruffVersion);
 
   for (const [key, entry] of Object.entries(manifest.specs)) {
     const specPath = paths.fromRoot(entry.spec);
@@ -88,13 +92,19 @@ test("committed python output matches its generation manifest", () => {
       paths.fileExists(specPath),
       `bundled spec for ${key} not found at ${entry.spec}; run 'node build/bundle-openapi.js' first`,
     );
-    const { specDigest } = require("../build/generate-python");
     assert.equal(
       specDigest(specPath),
       entry.sha256,
       `committed python client for ${key} is stale (spec digest mismatch); run 'make generate-python'`,
     );
   }
+
+  const subpackageDirs = getPilotPackages().map((pkg) => path.join(distRoot, "src", config.python.packageName, pkg.name));
+  assert.deepEqual(
+    generatedFileDigests(distRoot, subpackageDirs),
+    manifest.files,
+    "committed generated python files differ from the manifest digests (hand-edited or stale); run 'make generate-python'",
+  );
 
   const recorded = Object.values(manifest.warnings).flat();
   assert.deepEqual(findUnlistedPythonWarnings(recorded, manifest.warningAllowlist), []);
@@ -103,10 +113,6 @@ test("committed python output matches its generation manifest", () => {
 
 test("committed python tree keeps scaffold/generated separation and no tool state", () => {
   const distRoot = paths.fromRoot(config.paths.pythonDir);
-
-  const pyproject = fs.readFileSync(path.join(distRoot, "pyproject.toml"), "utf-8");
-  assert.match(pyproject, /name = "meshery-schemas"/);
-  assert.match(pyproject, /build-backend = "hatchling\.build"/);
 
   assert.ok(
     paths.fileExists(path.join(distRoot, "src", config.python.packageName, "key", "models", "key.py")),
