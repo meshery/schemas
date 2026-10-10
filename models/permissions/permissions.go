@@ -6,7 +6,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "074bfd49fc94fbe7125cfac2215c0844135ca66e378e6e1bfa6a8a9de7ca1be8"
+const IndexID = "f3b782e7396cf230d10ee3e64db1338eb5a44430619bd26b4f84b0e8214894f2"
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -1361,4 +1361,49 @@ var (
 
 	// ChaosManagementAsDaemonsets - No description available
 	ChaosManagementAsDaemonsets = PermissionKey(uuid.Must(uuid.FromString("b73d71ec-f5b2-4d0b-83de-6e2dccff5041")))
+
+	// BlowhornManagementViewJobLeases - List and inspect shared job leases, including claim and pause state.
+	BlowhornManagementViewJobLeases = PermissionKey(uuid.Must(uuid.FromString("eafc0d41-c847-4d09-bef5-dff136c418f1")))
+
+	// BlowhornManagementManageJobLeases - Create, update, delete, claim, renew, release, pause and resume shared job leases.
+	BlowhornManagementManageJobLeases = PermissionKey(uuid.Must(uuid.FromString("6babb477-6b2f-4789-8ed4-b213c0aeeea6")))
+
+	// BlowhornManagementViewBlowhornProfiles - List and inspect Blowhorn profiles.
+	BlowhornManagementViewBlowhornProfiles = PermissionKey(uuid.Must(uuid.FromString("9fed5304-30d2-4dc1-a7e2-9c30ea920f20")))
+
+	// BlowhornManagementManageBlowhornProfiles - Create, update and delete Blowhorn profiles.
+	BlowhornManagementManageBlowhornProfiles = PermissionKey(uuid.Must(uuid.FromString("67c4a558-d5d5-4749-a968-c3a2ac622148")))
+
+	// BlowhornManagementViewBlowhornContent - List and inspect Blowhorn content rows.
+	BlowhornManagementViewBlowhornContent = PermissionKey(uuid.Must(uuid.FromString("7cae4770-04b7-4deb-a1dd-9f4564235f43")))
+
+	// BlowhornManagementManageBlowhornContent - Insert, update and delete Blowhorn content rows.
+	BlowhornManagementManageBlowhornContent = PermissionKey(uuid.Must(uuid.FromString("a2b188fe-68aa-4e9a-8d40-604cf9831159")))
+
+	// BlowhornManagementViewBlowhornDestinations - List and inspect Blowhorn destinations.
+	BlowhornManagementViewBlowhornDestinations = PermissionKey(uuid.Must(uuid.FromString("5997dfed-fb70-48de-a2a0-0da6da3c2541")))
+
+	// BlowhornManagementManageBlowhornDestinations - Create and update Blowhorn destinations.
+	BlowhornManagementManageBlowhornDestinations = PermissionKey(uuid.Must(uuid.FromString("255aad27-4341-47a4-a54b-8c09280fb0f8")))
+
+	// BlowhornManagementViewBlowhornBindings - List and inspect Blowhorn host bindings.
+	BlowhornManagementViewBlowhornBindings = PermissionKey(uuid.Must(uuid.FromString("6f4228c8-3b84-4272-bc8a-7885feaf8230")))
+
+	// BlowhornManagementManageBlowhornBindings - Bind and unbind Blowhorn profiles on hosts.
+	BlowhornManagementManageBlowhornBindings = PermissionKey(uuid.Must(uuid.FromString("004edc34-eeaa-4169-bd97-5f64dc2397e4")))
+
+	// BlowhornManagementViewBlowhornLedger - List and inspect Blowhorn ledger entries, contacts and mentees.
+	BlowhornManagementViewBlowhornLedger = PermissionKey(uuid.Must(uuid.FromString("bb73ba87-86d3-4674-982f-4b2f09cabe4f")))
+
+	// BlowhornManagementManageBlowhornLedger - Record, claim and delete Blowhorn ledger entries, contacts and mentees.
+	BlowhornManagementManageBlowhornLedger = PermissionKey(uuid.Must(uuid.FromString("e777954a-79eb-4e68-9688-b5d16f520766")))
+
+	// BlowhornManagementViewBlowhornRuns - List and inspect Blowhorn run records and analytics.
+	BlowhornManagementViewBlowhornRuns = PermissionKey(uuid.Must(uuid.FromString("ab48c577-83bc-4f46-b9ba-75f9b079f681")))
+
+	// BlowhornManagementManageBlowhornRuns - Append Blowhorn run records and record analytics rollups.
+	BlowhornManagementManageBlowhornRuns = PermissionKey(uuid.Must(uuid.FromString("c6dbe8f1-be04-4b44-a247-fd56564646dc")))
+
+	// BlowhornManagementViewBlowhornHealth - Read the Blowhorn contract version and organization binding status.
+	BlowhornManagementViewBlowhornHealth = PermissionKey(uuid.Must(uuid.FromString("0b51f710-4047-4311-9164-54cd658424cd")))
 )

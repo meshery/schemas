@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "074bfd49fc94fbe7125cfac2215c0844135ca66e378e6e1bfa6a8a9de7ca1be8" as const;
+export const PERMISSIONS_INDEX_ID = "f3b782e7396cf230d10ee3e64db1338eb5a44430619bd26b4f84b0e8214894f2" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -4932,6 +4932,171 @@ export const Keys = {
     subcategory: "MeshMonkey",
     function: "As daemonsets",
     description: ""
+  },
+
+  /**
+   * List and inspect shared job leases, including claim and pause state.
+   */
+  BlowhornManagementViewJobLeases: {
+    id: "eafc0d41-c847-4d09-bef5-dff136c418f1" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Job Leases",
+    function: "View Job Leases",
+    description: "List and inspect shared job leases, including claim and pause state."
+  },
+
+  /**
+   * Create, update, delete, claim, renew, release, pause and resume shared job leases.
+   */
+  BlowhornManagementManageJobLeases: {
+    id: "6babb477-6b2f-4789-8ed4-b213c0aeeea6" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Job Leases",
+    function: "Manage Job Leases",
+    description: "Create, update, delete, claim, renew, release, pause and resume shared job leases."
+  },
+
+  /**
+   * List and inspect Blowhorn profiles.
+   */
+  BlowhornManagementViewBlowhornProfiles: {
+    id: "9fed5304-30d2-4dc1-a7e2-9c30ea920f20" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Profiles",
+    function: "View Blowhorn Profiles",
+    description: "List and inspect Blowhorn profiles."
+  },
+
+  /**
+   * Create, update and delete Blowhorn profiles.
+   */
+  BlowhornManagementManageBlowhornProfiles: {
+    id: "67c4a558-d5d5-4749-a968-c3a2ac622148" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Profiles",
+    function: "Manage Blowhorn Profiles",
+    description: "Create, update and delete Blowhorn profiles."
+  },
+
+  /**
+   * List and inspect Blowhorn content rows.
+   */
+  BlowhornManagementViewBlowhornContent: {
+    id: "7cae4770-04b7-4deb-a1dd-9f4564235f43" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Content",
+    function: "View Blowhorn Content",
+    description: "List and inspect Blowhorn content rows."
+  },
+
+  /**
+   * Insert, update and delete Blowhorn content rows.
+   */
+  BlowhornManagementManageBlowhornContent: {
+    id: "a2b188fe-68aa-4e9a-8d40-604cf9831159" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Content",
+    function: "Manage Blowhorn Content",
+    description: "Insert, update and delete Blowhorn content rows."
+  },
+
+  /**
+   * List and inspect Blowhorn destinations.
+   */
+  BlowhornManagementViewBlowhornDestinations: {
+    id: "5997dfed-fb70-48de-a2a0-0da6da3c2541" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Destinations",
+    function: "View Blowhorn Destinations",
+    description: "List and inspect Blowhorn destinations."
+  },
+
+  /**
+   * Create and update Blowhorn destinations.
+   */
+  BlowhornManagementManageBlowhornDestinations: {
+    id: "255aad27-4341-47a4-a54b-8c09280fb0f8" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Destinations",
+    function: "Manage Blowhorn Destinations",
+    description: "Create and update Blowhorn destinations."
+  },
+
+  /**
+   * List and inspect Blowhorn host bindings.
+   */
+  BlowhornManagementViewBlowhornBindings: {
+    id: "6f4228c8-3b84-4272-bc8a-7885feaf8230" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Bindings",
+    function: "View Blowhorn Bindings",
+    description: "List and inspect Blowhorn host bindings."
+  },
+
+  /**
+   * Bind and unbind Blowhorn profiles on hosts.
+   */
+  BlowhornManagementManageBlowhornBindings: {
+    id: "004edc34-eeaa-4169-bd97-5f64dc2397e4" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Bindings",
+    function: "Manage Blowhorn Bindings",
+    description: "Bind and unbind Blowhorn profiles on hosts."
+  },
+
+  /**
+   * List and inspect Blowhorn ledger entries, contacts and mentees.
+   */
+  BlowhornManagementViewBlowhornLedger: {
+    id: "bb73ba87-86d3-4674-982f-4b2f09cabe4f" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Ledger",
+    function: "View Blowhorn Ledger",
+    description: "List and inspect Blowhorn ledger entries, contacts and mentees."
+  },
+
+  /**
+   * Record, claim and delete Blowhorn ledger entries, contacts and mentees.
+   */
+  BlowhornManagementManageBlowhornLedger: {
+    id: "e777954a-79eb-4e68-9688-b5d16f520766" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Ledger",
+    function: "Manage Blowhorn Ledger",
+    description: "Record, claim and delete Blowhorn ledger entries, contacts and mentees."
+  },
+
+  /**
+   * List and inspect Blowhorn run records and analytics.
+   */
+  BlowhornManagementViewBlowhornRuns: {
+    id: "ab48c577-83bc-4f46-b9ba-75f9b079f681" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Runs",
+    function: "View Blowhorn Runs",
+    description: "List and inspect Blowhorn run records and analytics."
+  },
+
+  /**
+   * Append Blowhorn run records and record analytics rollups.
+   */
+  BlowhornManagementManageBlowhornRuns: {
+    id: "c6dbe8f1-be04-4b44-a247-fd56564646dc" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Runs",
+    function: "Manage Blowhorn Runs",
+    description: "Append Blowhorn run records and record analytics rollups."
+  },
+
+  /**
+   * Read the Blowhorn contract version and organization binding status.
+   */
+  BlowhornManagementViewBlowhornHealth: {
+    id: "0b51f710-4047-4311-9164-54cd658424cd" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Health",
+    function: "View Blowhorn Health",
+    description: "Read the Blowhorn contract version and organization binding status."
   }
 } as const;
 
@@ -7163,7 +7328,82 @@ export const PermissionKeys = {
   /**
    * No description available
    */
-  ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey
+  ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey,
+
+  /**
+   * List and inspect shared job leases, including claim and pause state.
+   */
+  BlowhornManagementViewJobLeases: "eafc0d41-c847-4d09-bef5-dff136c418f1" as PermissionKey,
+
+  /**
+   * Create, update, delete, claim, renew, release, pause and resume shared job leases.
+   */
+  BlowhornManagementManageJobLeases: "6babb477-6b2f-4789-8ed4-b213c0aeeea6" as PermissionKey,
+
+  /**
+   * List and inspect Blowhorn profiles.
+   */
+  BlowhornManagementViewBlowhornProfiles: "9fed5304-30d2-4dc1-a7e2-9c30ea920f20" as PermissionKey,
+
+  /**
+   * Create, update and delete Blowhorn profiles.
+   */
+  BlowhornManagementManageBlowhornProfiles: "67c4a558-d5d5-4749-a968-c3a2ac622148" as PermissionKey,
+
+  /**
+   * List and inspect Blowhorn content rows.
+   */
+  BlowhornManagementViewBlowhornContent: "7cae4770-04b7-4deb-a1dd-9f4564235f43" as PermissionKey,
+
+  /**
+   * Insert, update and delete Blowhorn content rows.
+   */
+  BlowhornManagementManageBlowhornContent: "a2b188fe-68aa-4e9a-8d40-604cf9831159" as PermissionKey,
+
+  /**
+   * List and inspect Blowhorn destinations.
+   */
+  BlowhornManagementViewBlowhornDestinations: "5997dfed-fb70-48de-a2a0-0da6da3c2541" as PermissionKey,
+
+  /**
+   * Create and update Blowhorn destinations.
+   */
+  BlowhornManagementManageBlowhornDestinations: "255aad27-4341-47a4-a54b-8c09280fb0f8" as PermissionKey,
+
+  /**
+   * List and inspect Blowhorn host bindings.
+   */
+  BlowhornManagementViewBlowhornBindings: "6f4228c8-3b84-4272-bc8a-7885feaf8230" as PermissionKey,
+
+  /**
+   * Bind and unbind Blowhorn profiles on hosts.
+   */
+  BlowhornManagementManageBlowhornBindings: "004edc34-eeaa-4169-bd97-5f64dc2397e4" as PermissionKey,
+
+  /**
+   * List and inspect Blowhorn ledger entries, contacts and mentees.
+   */
+  BlowhornManagementViewBlowhornLedger: "bb73ba87-86d3-4674-982f-4b2f09cabe4f" as PermissionKey,
+
+  /**
+   * Record, claim and delete Blowhorn ledger entries, contacts and mentees.
+   */
+  BlowhornManagementManageBlowhornLedger: "e777954a-79eb-4e68-9688-b5d16f520766" as PermissionKey,
+
+  /**
+   * List and inspect Blowhorn run records and analytics.
+   */
+  BlowhornManagementViewBlowhornRuns: "ab48c577-83bc-4f46-b9ba-75f9b079f681" as PermissionKey,
+
+  /**
+   * Append Blowhorn run records and record analytics rollups.
+   */
+  BlowhornManagementManageBlowhornRuns: "c6dbe8f1-be04-4b44-a247-fd56564646dc" as PermissionKey,
+
+  /**
+   * Read the Blowhorn contract version and organization binding status.
+   */
+  BlowhornManagementViewBlowhornHealth: "0b51f710-4047-4311-9164-54cd658424cd" as PermissionKey
 } as const;
 
 /**

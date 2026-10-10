@@ -3185,7 +3185,7 @@ export interface operations {
                              */
                             deletedAt?: string | null;
                             /**
-                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
@@ -3196,7 +3196,7 @@ export interface operations {
                              *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
                              */
-                            purpose?: "user" | "administrative";
+                            purpose?: "user" | "administrative" | "blowhorn";
                         }[];
                     };
                 };

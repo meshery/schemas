@@ -17,6 +17,13 @@ export const addTagTypes = [
   "User_users",
   "View_views",
   "Academy_API_Academy",
+  "BlowhornBinding_blowhornBindings",
+  "BlowhornContent_blowhornContent",
+  "BlowhornDestination_blowhornDestinations",
+  "BlowhornHealth_blowhornHealth",
+  "BlowhornLedger_blowhornLedger",
+  "BlowhornProfile_blowhornProfiles",
+  "BlowhornRun_blowhornRuns",
   "Connection_API_Connections",
   "Connection_API_ConnectionDefinitions",
   "Design_designs",
@@ -24,6 +31,7 @@ export const addTagTypes = [
   "Events_events",
   "Filter_filters",
   "Invitation_Invitation",
+  "JobLease_jobLeases",
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
@@ -849,6 +857,260 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
         providesTags: ["Academy_API_Academy"],
       }),
+      listBlowhornBindings: build.query<ListBlowhornBindingsApiResponse, ListBlowhornBindingsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/bindings`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            profile: queryArg?.profile,
+            host: queryArg?.host,
+          },
+        }),
+        providesTags: ["BlowhornBinding_blowhornBindings"],
+      }),
+      bindBlowhornBinding: build.mutation<BindBlowhornBindingApiResponse, BindBlowhornBindingApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/bindings`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornBinding_blowhornBindings"],
+      }),
+      unbindBlowhornBinding: build.mutation<UnbindBlowhornBindingApiResponse, UnbindBlowhornBindingApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/bindings/${queryArg.blowhornBindingId}`, method: "DELETE" }),
+        invalidatesTags: ["BlowhornBinding_blowhornBindings"],
+      }),
+      listBlowhornContent: build.query<ListBlowhornContentApiResponse, ListBlowhornContentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/content`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            profile: queryArg?.profile,
+          },
+        }),
+        providesTags: ["BlowhornContent_blowhornContent"],
+      }),
+      insertBlowhornContent: build.mutation<InsertBlowhornContentApiResponse, InsertBlowhornContentApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/content`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornContent_blowhornContent"],
+      }),
+      getBlowhornContent: build.query<GetBlowhornContentApiResponse, GetBlowhornContentApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/content/${queryArg.blowhornContentId}` }),
+        providesTags: ["BlowhornContent_blowhornContent"],
+      }),
+      updateBlowhornContent: build.mutation<UpdateBlowhornContentApiResponse, UpdateBlowhornContentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/content/${queryArg.blowhornContentId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["BlowhornContent_blowhornContent"],
+      }),
+      deleteBlowhornContent: build.mutation<DeleteBlowhornContentApiResponse, DeleteBlowhornContentApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/content/${queryArg.blowhornContentId}`, method: "DELETE" }),
+        invalidatesTags: ["BlowhornContent_blowhornContent"],
+      }),
+      listBlowhornDestinations: build.query<ListBlowhornDestinationsApiResponse, ListBlowhornDestinationsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/destinations`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            platform: queryArg?.platform,
+          },
+        }),
+        providesTags: ["BlowhornDestination_blowhornDestinations"],
+      }),
+      upsertBlowhornDestination: build.mutation<UpsertBlowhornDestinationApiResponse, UpsertBlowhornDestinationApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/destinations`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornDestination_blowhornDestinations"],
+      }),
+      getBlowhornDestination: build.query<GetBlowhornDestinationApiResponse, GetBlowhornDestinationApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/destinations/${queryArg.blowhornDestinationId}` }),
+        providesTags: ["BlowhornDestination_blowhornDestinations"],
+      }),
+      getBlowhornHealth: build.query<GetBlowhornHealthApiResponse, GetBlowhornHealthApiArg>({
+        query: () => ({ url: `/api/blowhorn/health` }),
+        providesTags: ["BlowhornHealth_blowhornHealth"],
+      }),
+      listBlowhornLedger: build.query<ListBlowhornLedgerApiResponse, ListBlowhornLedgerApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/ledger`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            ledger: queryArg?.ledger,
+          },
+        }),
+        providesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      recordBlowhornLedgerEntry: build.mutation<RecordBlowhornLedgerEntryApiResponse, RecordBlowhornLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/ledger`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      getBlowhornLedgerEntry: build.query<GetBlowhornLedgerEntryApiResponse, GetBlowhornLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/ledger/${queryArg.blowhornLedgerEntryId}` }),
+        providesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      deleteBlowhornLedgerEntry: build.mutation<DeleteBlowhornLedgerEntryApiResponse, DeleteBlowhornLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/ledger/${queryArg.blowhornLedgerEntryId}`, method: "DELETE" }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      claimIfAbsentBlowhornLedgerEntry: build.mutation<
+        ClaimIfAbsentBlowhornLedgerEntryApiResponse,
+        ClaimIfAbsentBlowhornLedgerEntryApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/ledger/${queryArg.blowhornLedgerEntryId}/claim`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      listBlowhornContacts: build.query<ListBlowhornContactsApiResponse, ListBlowhornContactsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/contacts`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            platform: queryArg?.platform,
+          },
+        }),
+        providesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      upsertBlowhornContact: build.mutation<UpsertBlowhornContactApiResponse, UpsertBlowhornContactApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/contacts`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      listBlowhornMentees: build.query<ListBlowhornMenteesApiResponse, ListBlowhornMenteesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/mentees`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      upsertBlowhornMentee: build.mutation<UpsertBlowhornMenteeApiResponse, UpsertBlowhornMenteeApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/mentees`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      deleteBlowhornMentee: build.mutation<DeleteBlowhornMenteeApiResponse, DeleteBlowhornMenteeApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/mentees/${queryArg.blowhornMenteeId}`, method: "DELETE" }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      recordAndDropBlowhornMentee: build.mutation<
+        RecordAndDropBlowhornMenteeApiResponse,
+        RecordAndDropBlowhornMenteeApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/mentees/${queryArg.blowhornMenteeId}/drop`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      listBlowhornProfiles: build.query<ListBlowhornProfilesApiResponse, ListBlowhornProfilesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/profiles`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      upsertBlowhornProfile: build.mutation<UpsertBlowhornProfileApiResponse, UpsertBlowhornProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/profiles`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      getBlowhornProfileBySubject: build.query<
+        GetBlowhornProfileBySubjectApiResponse,
+        GetBlowhornProfileBySubjectApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/profiles/by-subject`,
+          params: {
+            subject: queryArg?.subject,
+          },
+        }),
+        providesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      getBlowhornProfile: build.query<GetBlowhornProfileApiResponse, GetBlowhornProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}` }),
+        providesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      updateBlowhornProfile: build.mutation<UpdateBlowhornProfileApiResponse, UpdateBlowhornProfileApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      deleteBlowhornProfile: build.mutation<DeleteBlowhornProfileApiResponse, DeleteBlowhornProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}`, method: "DELETE" }),
+        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      listBlowhornRunRecords: build.query<ListBlowhornRunRecordsApiResponse, ListBlowhornRunRecordsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/runs`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            runId: queryArg?.runId,
+            kind: queryArg?.kind,
+            profile: queryArg?.profile,
+            platform: queryArg?.platform,
+          },
+        }),
+        providesTags: ["BlowhornRun_blowhornRuns"],
+      }),
+      appendBlowhornRunRecord: build.mutation<AppendBlowhornRunRecordApiResponse, AppendBlowhornRunRecordApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/runs`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornRun_blowhornRuns"],
+      }),
+      listBlowhornAnalytics: build.query<ListBlowhornAnalyticsApiResponse, ListBlowhornAnalyticsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/analytics`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            scope: queryArg?.scope,
+          },
+        }),
+        providesTags: ["BlowhornRun_blowhornRuns"],
+      }),
+      recordBlowhornAnalytics: build.mutation<RecordBlowhornAnalyticsApiResponse, RecordBlowhornAnalyticsApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/analytics`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornRun_blowhornRuns"],
+      }),
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
         query: (queryArg) => ({
           url: `/api/integrations/connections`,
@@ -1403,6 +1665,80 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/identity/users/request/notification` }),
         providesTags: ["Invitation_Invitation"],
       }),
+      listJobLeases: build.query<ListJobLeasesApiResponse, ListJobLeasesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/job-leases`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["JobLease_jobLeases"],
+      }),
+      createJobLease: build.mutation<CreateJobLeaseApiResponse, CreateJobLeaseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      claimJobLease: build.mutation<ClaimJobLeaseApiResponse, ClaimJobLeaseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases/claim`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      getSchedulePause: build.query<GetSchedulePauseApiResponse, GetSchedulePauseApiArg>({
+        query: () => ({ url: `/api/job-leases/schedule-pause` }),
+        providesTags: ["JobLease_jobLeases"],
+      }),
+      setSchedulePause: build.mutation<SetSchedulePauseApiResponse, SetSchedulePauseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases/schedule-pause`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      clearSchedulePause: build.mutation<ClearSchedulePauseApiResponse, ClearSchedulePauseApiArg>({
+        query: () => ({ url: `/api/job-leases/schedule-pause`, method: "DELETE" }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      getJobLease: build.query<GetJobLeaseApiResponse, GetJobLeaseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases/${queryArg.jobLeaseId}` }),
+        providesTags: ["JobLease_jobLeases"],
+      }),
+      updateJobLease: build.mutation<UpdateJobLeaseApiResponse, UpdateJobLeaseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases/${queryArg.jobLeaseId}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      deleteJobLease: build.mutation<DeleteJobLeaseApiResponse, DeleteJobLeaseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases/${queryArg.jobLeaseId}`, method: "DELETE" }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      renewJobLease: build.mutation<RenewJobLeaseApiResponse, RenewJobLeaseApiArg>({
+        query: (queryArg) => ({
+          url: `/api/job-leases/${queryArg.jobLeaseId}/renew`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      releaseJobLease: build.mutation<ReleaseJobLeaseApiResponse, ReleaseJobLeaseApiArg>({
+        query: (queryArg) => ({
+          url: `/api/job-leases/${queryArg.jobLeaseId}/release`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      pauseJobLease: build.mutation<PauseJobLeaseApiResponse, PauseJobLeaseApiArg>({
+        query: (queryArg) => ({
+          url: `/api/job-leases/${queryArg.jobLeaseId}/pause`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      resumeJobLease: build.mutation<ResumeJobLeaseApiResponse, ResumeJobLeaseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases/${queryArg.jobLeaseId}/resume`, method: "POST" }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
       getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
         query: (queryArg) => ({
           url: `/api/content/patterns/resource`,
@@ -1577,6 +1913,7 @@ const injectedRtkApi = api
           url: `/api/identity/tokens`,
           params: {
             isOauth: queryArg?.isOauth,
+            purpose: queryArg?.purpose,
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
@@ -1949,7 +2286,7 @@ export type GetOrganizationSmtpEnvironmentApiResponse =
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
     
     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
     
@@ -1958,7 +2295,7 @@ export type GetOrganizationSmtpEnvironmentApiResponse =
     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
     
     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   };
 export type GetOrganizationSmtpEnvironmentApiArg = {
   /** Organization ID */
@@ -8058,6 +8395,989 @@ export type GetCertificateByIdApiArg = {
   /** The ID of the certificate to retrieve */
   certificateId: string;
 };
+export type ListBlowhornBindingsApiResponse = /** status 200 Blowhorn bindings page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn bindings included on this page of results. */
+  blowhornBindings?: {
+    /** Server-generated Blowhorn binding ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Subject of the bound Blowhorn profile. */
+    profile: string;
+    /** Host the profile is bound on. An identity, not a permission. */
+    host: string;
+    /** Profile directory on the host. */
+    directory: string;
+    /** Timestamp of Blowhorn binding creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn binding modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListBlowhornBindingsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by bound profile subject. */
+  profile?: string;
+  /** Filter by host. */
+  host?: string;
+};
+export type BindBlowhornBindingApiResponse = /** status 200 Blowhorn binding saved */ {
+  /** Server-generated Blowhorn binding ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the bound Blowhorn profile. */
+  profile: string;
+  /** Host the profile is bound on. An identity, not a permission. */
+  host: string;
+  /** Profile directory on the host. */
+  directory: string;
+  /** Timestamp of Blowhorn binding creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn binding modification. */
+  updatedAt: string;
+};
+export type BindBlowhornBindingApiArg = {
+  body: {
+    /** Existing Blowhorn binding ID for updates; omit on bind. */
+    id?: string;
+    /** Subject of the Blowhorn profile to bind. */
+    profile: string;
+    /** Host the profile is bound on. An identity, not a permission. */
+    host: string;
+    /** Profile directory on the host. */
+    directory: string;
+  };
+};
+export type UnbindBlowhornBindingApiResponse = unknown;
+export type UnbindBlowhornBindingApiArg = {
+  /** Blowhorn binding ID */
+  blowhornBindingId: string;
+};
+export type ListBlowhornContentApiResponse = /** status 200 Blowhorn content page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn content rows included on this page of results. */
+  blowhornContent?: {
+    /** Server-generated Blowhorn content ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Subject of the owning Blowhorn profile. */
+    profile: string;
+    /** Row number of the content within the owning profile. */
+    rowNumber: number;
+    /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+    fingerprint: string;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Timestamp of Blowhorn content creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn content modification. */
+    updatedAt: string;
+    /** Timestamp when the Blowhorn content was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListBlowhornContentApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by owning profile subject. */
+  profile?: string;
+};
+export type InsertBlowhornContentApiResponse = /** status 201 Blowhorn content created */ {
+  /** Server-generated Blowhorn content ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the owning Blowhorn profile. */
+  profile: string;
+  /** Row number of the content within the owning profile. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of Blowhorn content creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn content modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn content was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type InsertBlowhornContentApiArg = {
+  body: {
+    /** Existing Blowhorn content ID for updates; ignored on insert. */
+    id?: string;
+    /** Subject of the owning Blowhorn profile. */
+    profile: string;
+    /** Row number of the content within the owning profile. */
+    rowNumber: number;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        insert.
+         */
+    expectedFingerprint?: string;
+  };
+};
+export type GetBlowhornContentApiResponse = /** status 200 Blowhorn content response */ {
+  /** Server-generated Blowhorn content ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the owning Blowhorn profile. */
+  profile: string;
+  /** Row number of the content within the owning profile. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of Blowhorn content creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn content modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn content was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetBlowhornContentApiArg = {
+  /** Blowhorn content ID */
+  blowhornContentId: string;
+};
+export type UpdateBlowhornContentApiResponse = /** status 200 Blowhorn content updated */ {
+  /** Server-generated Blowhorn content ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the owning Blowhorn profile. */
+  profile: string;
+  /** Row number of the content within the owning profile. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of Blowhorn content creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn content modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn content was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpdateBlowhornContentApiArg = {
+  /** Blowhorn content ID */
+  blowhornContentId: string;
+  body: {
+    /** Existing Blowhorn content ID for updates; ignored on insert. */
+    id?: string;
+    /** Subject of the owning Blowhorn profile. */
+    profile: string;
+    /** Row number of the content within the owning profile. */
+    rowNumber: number;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        insert.
+         */
+    expectedFingerprint?: string;
+  };
+};
+export type DeleteBlowhornContentApiResponse = unknown;
+export type DeleteBlowhornContentApiArg = {
+  /** Blowhorn content ID */
+  blowhornContentId: string;
+};
+export type ListBlowhornDestinationsApiResponse = /** status 200 Blowhorn destinations page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn destinations included on this page of results. */
+  blowhornDestinations?: {
+    /** Server-generated Blowhorn destination ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Human-readable destination name. */
+    name?: string;
+    /** Target platform for the destination (e.g. linkedin). */
+    platform: string;
+    /** Platform-side publishing target (page, group or channel identifier). */
+    target?: string;
+    /** Destination settings, stored as a JSON blob. */
+    settings?: object;
+    /** Timestamp of Blowhorn destination creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn destination modification. */
+    updatedAt: string;
+    /** Timestamp when the Blowhorn destination was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListBlowhornDestinationsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by target platform (e.g. linkedin). */
+  platform?: string;
+};
+export type UpsertBlowhornDestinationApiResponse = /** status 200 Blowhorn destination saved */ {
+  /** Server-generated Blowhorn destination ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Human-readable destination name. */
+  name?: string;
+  /** Target platform for the destination (e.g. linkedin). */
+  platform: string;
+  /** Platform-side publishing target (page, group or channel identifier). */
+  target?: string;
+  /** Destination settings, stored as a JSON blob. */
+  settings?: object;
+  /** Timestamp of Blowhorn destination creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn destination modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn destination was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpsertBlowhornDestinationApiArg = {
+  body: {
+    /** Existing Blowhorn destination ID for updates; omit on create. */
+    id?: string;
+    /** Human-readable destination name. */
+    name?: string;
+    /** Target platform for the destination (e.g. linkedin). */
+    platform: string;
+    /** Platform-side publishing target (page, group or channel identifier). */
+    target?: string;
+    /** Destination settings, stored as a JSON blob. */
+    settings?: object;
+  };
+};
+export type GetBlowhornDestinationApiResponse = /** status 200 Blowhorn destination response */ {
+  /** Server-generated Blowhorn destination ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Human-readable destination name. */
+  name?: string;
+  /** Target platform for the destination (e.g. linkedin). */
+  platform: string;
+  /** Platform-side publishing target (page, group or channel identifier). */
+  target?: string;
+  /** Destination settings, stored as a JSON blob. */
+  settings?: object;
+  /** Timestamp of Blowhorn destination creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn destination modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn destination was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetBlowhornDestinationApiArg = {
+  /** Blowhorn destination ID */
+  blowhornDestinationId: string;
+};
+export type GetBlowhornHealthApiResponse = /** status 200 Blowhorn health response */ {
+  /** Frozen Blowhorn contract version the server speaks. */
+  contractVersion: string;
+  /** Whether the organization is bound for Blowhorn operations. */
+  bound: boolean;
+  /** Organization whose binding was checked. */
+  organizationId?: string;
+  /** Time the binding was checked. */
+  checkedAt?: string;
+};
+export type GetBlowhornHealthApiArg = void;
+export type ListBlowhornLedgerApiResponse = /** status 200 Blowhorn ledger entries page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn ledger entries included on this page of results. */
+  blowhornLedgerEntries?: {
+    /** Server-generated Blowhorn ledger entry ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Ledger discriminator naming the idempotent set. */
+    ledger: string;
+    /** Key within the ledger. Unique per ledger. */
+    entryKey: string;
+    /** Entry value, stored as a JSON blob. */
+    value?: object;
+    /** Holder that claimed the entry, if any. Set only by claim-if-absent. */
+    claimedBy?: string;
+    /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+    claimedAt?: string | null;
+    /** Timestamp of Blowhorn ledger entry creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn ledger entry modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListBlowhornLedgerApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by ledger discriminator. */
+  ledger?: string;
+};
+export type RecordBlowhornLedgerEntryApiResponse = /** status 200 Blowhorn ledger entry recorded */ {
+  /** Server-generated Blowhorn ledger entry ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Ledger discriminator naming the idempotent set. */
+  ledger: string;
+  /** Key within the ledger. Unique per ledger. */
+  entryKey: string;
+  /** Entry value, stored as a JSON blob. */
+  value?: object;
+  /** Holder that claimed the entry, if any. Set only by claim-if-absent. */
+  claimedBy?: string;
+  /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+  claimedAt?: string | null;
+  /** Timestamp of Blowhorn ledger entry creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn ledger entry modification. */
+  updatedAt: string;
+};
+export type RecordBlowhornLedgerEntryApiArg = {
+  body: {
+    /** Existing Blowhorn ledger entry ID for updates; omit on record. */
+    id?: string;
+    /** Ledger discriminator naming the idempotent set. */
+    ledger: string;
+    /** Key within the ledger. Unique per ledger. */
+    entryKey: string;
+    /** Entry value, stored as a JSON blob. */
+    value?: object;
+  };
+};
+export type GetBlowhornLedgerEntryApiResponse = /** status 200 Blowhorn ledger entry response */ {
+  /** Server-generated Blowhorn ledger entry ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Ledger discriminator naming the idempotent set. */
+  ledger: string;
+  /** Key within the ledger. Unique per ledger. */
+  entryKey: string;
+  /** Entry value, stored as a JSON blob. */
+  value?: object;
+  /** Holder that claimed the entry, if any. Set only by claim-if-absent. */
+  claimedBy?: string;
+  /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+  claimedAt?: string | null;
+  /** Timestamp of Blowhorn ledger entry creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn ledger entry modification. */
+  updatedAt: string;
+};
+export type GetBlowhornLedgerEntryApiArg = {
+  /** Blowhorn ledger entry ID */
+  blowhornLedgerEntryId: string;
+};
+export type DeleteBlowhornLedgerEntryApiResponse = unknown;
+export type DeleteBlowhornLedgerEntryApiArg = {
+  /** Blowhorn ledger entry ID */
+  blowhornLedgerEntryId: string;
+};
+export type ClaimIfAbsentBlowhornLedgerEntryApiResponse = /** status 200 Blowhorn ledger entry claimed */ {
+  /** Server-generated Blowhorn ledger entry ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Ledger discriminator naming the idempotent set. */
+  ledger: string;
+  /** Key within the ledger. Unique per ledger. */
+  entryKey: string;
+  /** Entry value, stored as a JSON blob. */
+  value?: object;
+  /** Holder that claimed the entry, if any. Set only by claim-if-absent. */
+  claimedBy?: string;
+  /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+  claimedAt?: string | null;
+  /** Timestamp of Blowhorn ledger entry creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn ledger entry modification. */
+  updatedAt: string;
+};
+export type ClaimIfAbsentBlowhornLedgerEntryApiArg = {
+  /** Blowhorn ledger entry ID */
+  blowhornLedgerEntryId: string;
+  body: {
+    /** Holder taking the entry. Refused with a 409 when the entry is already claimed. */
+    holder: string;
+  };
+};
+export type ListBlowhornContactsApiResponse = /** status 200 Blowhorn contacts page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn contacts included on this page of results. */
+  blowhornContacts?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Platform the contact belongs to (e.g. linkedin, github). */
+    platform: string;
+    /** Platform-side handle identifying the contact. Unique per platform within the organization. */
+    handle: string;
+    /** Human-readable contact name. */
+    displayName?: string;
+    /** Platform-side profile URL for the contact. */
+    profileUrl?: string;
+    /** Contact metadata, stored as a JSON blob. */
+    metadata?: object;
+    /** Timestamp of Blowhorn contact creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn contact modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListBlowhornContactsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by platform (e.g. linkedin, github). */
+  platform?: string;
+};
+export type UpsertBlowhornContactApiResponse = /** status 200 Blowhorn contact saved */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Platform the contact belongs to (e.g. linkedin, github). */
+  platform: string;
+  /** Platform-side handle identifying the contact. Unique per platform within the organization. */
+  handle: string;
+  /** Human-readable contact name. */
+  displayName?: string;
+  /** Platform-side profile URL for the contact. */
+  profileUrl?: string;
+  /** Contact metadata, stored as a JSON blob. */
+  metadata?: object;
+  /** Timestamp of Blowhorn contact creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn contact modification. */
+  updatedAt: string;
+};
+export type UpsertBlowhornContactApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** Platform the contact belongs to (e.g. linkedin, github). */
+    platform: string;
+    /** Platform-side handle identifying the contact. Unique per platform within the organization. */
+    handle: string;
+    /** Human-readable contact name. */
+    displayName?: string;
+    /** Platform-side profile URL for the contact. */
+    profileUrl?: string;
+    /** Contact metadata, stored as a JSON blob. */
+    metadata?: object;
+  };
+};
+export type ListBlowhornMenteesApiResponse = /** status 200 Blowhorn mentees page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn mentees included on this page of results. */
+  blowhornMentees?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Mentored subject. */
+    subject: string;
+    /** Mentorship stage of the subject. */
+    stage?: string;
+    /** Mentee metadata, stored as a JSON blob. */
+    metadata?: object;
+    /** Time the mentee was recorded and dropped, if any. Set only by the record-and-drop operation. */
+    droppedAt?: string | null;
+    /** Timestamp of Blowhorn mentee creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn mentee modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListBlowhornMenteesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type UpsertBlowhornMenteeApiResponse = /** status 200 Blowhorn mentee saved */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Mentored subject. */
+  subject: string;
+  /** Mentorship stage of the subject. */
+  stage?: string;
+  /** Mentee metadata, stored as a JSON blob. */
+  metadata?: object;
+  /** Time the mentee was recorded and dropped, if any. Set only by the record-and-drop operation. */
+  droppedAt?: string | null;
+  /** Timestamp of Blowhorn mentee creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn mentee modification. */
+  updatedAt: string;
+};
+export type UpsertBlowhornMenteeApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** Mentored subject. */
+    subject: string;
+    /** Mentorship stage of the subject. */
+    stage?: string;
+    /** Mentee metadata, stored as a JSON blob. */
+    metadata?: object;
+  };
+};
+export type DeleteBlowhornMenteeApiResponse = unknown;
+export type DeleteBlowhornMenteeApiArg = {
+  /** Blowhorn mentee ID */
+  blowhornMenteeId: string;
+};
+export type RecordAndDropBlowhornMenteeApiResponse = /** status 200 Blowhorn mentee recorded and dropped */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Mentored subject. */
+  subject: string;
+  /** Mentorship stage of the subject. */
+  stage?: string;
+  /** Mentee metadata, stored as a JSON blob. */
+  metadata?: object;
+  /** Time the mentee was recorded and dropped, if any. Set only by the record-and-drop operation. */
+  droppedAt?: string | null;
+  /** Timestamp of Blowhorn mentee creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn mentee modification. */
+  updatedAt: string;
+};
+export type RecordAndDropBlowhornMenteeApiArg = {
+  /** Blowhorn mentee ID */
+  blowhornMenteeId: string;
+  body: {
+    /** Final mentorship stage recorded with the drop. */
+    stage?: string;
+  };
+};
+export type ListBlowhornProfilesApiResponse = /** status 200 Blowhorn profiles page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn profiles included on this page of results. */
+  blowhornProfiles?: {
+    /** Server-generated Blowhorn profile ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Subject the profile is keyed by. */
+    subject: string;
+    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+    slug: string;
+    /** Free-form profile attributes, stored as a JSON blob. */
+    attributes?: object;
+    /** Timestamp of Blowhorn profile creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn profile modification. */
+    updatedAt: string;
+    /** Timestamp when the Blowhorn profile was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListBlowhornProfilesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type UpsertBlowhornProfileApiResponse = /** status 200 Blowhorn profile saved */ {
+  /** Server-generated Blowhorn profile ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject the profile is keyed by. */
+  subject: string;
+  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+  slug: string;
+  /** Free-form profile attributes, stored as a JSON blob. */
+  attributes?: object;
+  /** Timestamp of Blowhorn profile creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn profile modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn profile was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpsertBlowhornProfileApiArg = {
+  body: {
+    /** Existing Blowhorn profile ID for updates; omit on create. */
+    id?: string;
+    /** Subject the profile is keyed by. */
+    subject: string;
+    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+    slug: string;
+    /** Free-form profile attributes, stored as a JSON blob. */
+    attributes?: object;
+  };
+};
+export type GetBlowhornProfileBySubjectApiResponse = /** status 200 Blowhorn profile response */ {
+  /** Server-generated Blowhorn profile ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject the profile is keyed by. */
+  subject: string;
+  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+  slug: string;
+  /** Free-form profile attributes, stored as a JSON blob. */
+  attributes?: object;
+  /** Timestamp of Blowhorn profile creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn profile modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn profile was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetBlowhornProfileBySubjectApiArg = {
+  /** Subject the profile is keyed by. */
+  subject: string;
+};
+export type GetBlowhornProfileApiResponse = /** status 200 Blowhorn profile response */ {
+  /** Server-generated Blowhorn profile ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject the profile is keyed by. */
+  subject: string;
+  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+  slug: string;
+  /** Free-form profile attributes, stored as a JSON blob. */
+  attributes?: object;
+  /** Timestamp of Blowhorn profile creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn profile modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn profile was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetBlowhornProfileApiArg = {
+  /** Blowhorn profile ID */
+  blowhornProfileId: string;
+};
+export type UpdateBlowhornProfileApiResponse = /** status 200 Blowhorn profile updated */ {
+  /** Server-generated Blowhorn profile ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject the profile is keyed by. */
+  subject: string;
+  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+  slug: string;
+  /** Free-form profile attributes, stored as a JSON blob. */
+  attributes?: object;
+  /** Timestamp of Blowhorn profile creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn profile modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn profile was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpdateBlowhornProfileApiArg = {
+  /** Blowhorn profile ID */
+  blowhornProfileId: string;
+  body: {
+    /** Existing Blowhorn profile ID for updates; omit on create. */
+    id?: string;
+    /** Subject the profile is keyed by. */
+    subject: string;
+    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+    slug: string;
+    /** Free-form profile attributes, stored as a JSON blob. */
+    attributes?: object;
+  };
+};
+export type DeleteBlowhornProfileApiResponse = unknown;
+export type DeleteBlowhornProfileApiArg = {
+  /** Blowhorn profile ID */
+  blowhornProfileId: string;
+};
+export type ListBlowhornRunRecordsApiResponse = /** status 200 Blowhorn run records page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn run records included on this page of results. */
+  blowhornRunRecords?: {
+    /** Server-generated Blowhorn run record ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Run identifier grouping the records of one execution. */
+    runId: string;
+    /** Record kind within the run. */
+    kind: string;
+    /** Event time of the record within the run. Part of the idempotency tuple. */
+    ts: string;
+    /** Subject of the profile the record concerns. */
+    profile?: string;
+    /** Platform the record concerns (e.g. linkedin). */
+    platform?: string;
+    /** Record values, stored as a JSON blob. */
+    data?: object;
+    /** Timestamp of Blowhorn run record creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn run record modification. */
+    updatedAt: string;
+    /** Timestamp when the Blowhorn run record was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListBlowhornRunRecordsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by run identifier. */
+  runId?: string;
+  /** Filter by record kind. */
+  kind?: string;
+  /** Filter by profile subject. */
+  profile?: string;
+  /** Filter by platform (e.g. linkedin). */
+  platform?: string;
+};
+export type AppendBlowhornRunRecordApiResponse = /** status 200 Blowhorn run record appended */ {
+  /** Server-generated Blowhorn run record ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Run identifier grouping the records of one execution. */
+  runId: string;
+  /** Record kind within the run. */
+  kind: string;
+  /** Event time of the record within the run. Part of the idempotency tuple. */
+  ts: string;
+  /** Subject of the profile the record concerns. */
+  profile?: string;
+  /** Platform the record concerns (e.g. linkedin). */
+  platform?: string;
+  /** Record values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of Blowhorn run record creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn run record modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn run record was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type AppendBlowhornRunRecordApiArg = {
+  body: {
+    /** Existing Blowhorn run record ID; omit on append. */
+    id?: string;
+    /** Run identifier grouping the records of one execution. */
+    runId: string;
+    /** Record kind within the run. */
+    kind: string;
+    /** Event time of the record within the run. Part of the idempotency tuple. */
+    ts: string;
+    /** Subject of the profile the record concerns. */
+    profile?: string;
+    /** Platform the record concerns (e.g. linkedin). */
+    platform?: string;
+    /** Record values, stored as a JSON blob. */
+    data?: object;
+  };
+};
+export type ListBlowhornAnalyticsApiResponse = /** status 200 Blowhorn analytics page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn analytics rollups included on this page of results. */
+  blowhornAnalytics?: {
+    /** Server-generated Blowhorn analytics ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Aggregation scope (e.g. profile subject or organization-wide rollup name). */
+    scope: string;
+    /** Aggregation window the metrics cover (e.g. day, week). */
+    window?: string;
+    /** Aggregated metrics, stored as a JSON blob. */
+    metrics: object;
+    /** Time the metrics were computed. */
+    computedAt?: string | null;
+    /** Timestamp of Blowhorn analytics creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn analytics modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListBlowhornAnalyticsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by aggregation scope. */
+  scope?: string;
+};
+export type RecordBlowhornAnalyticsApiResponse = /** status 200 Blowhorn analytics recorded */ {
+  /** Server-generated Blowhorn analytics ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Aggregation scope (e.g. profile subject or organization-wide rollup name). */
+  scope: string;
+  /** Aggregation window the metrics cover (e.g. day, week). */
+  window?: string;
+  /** Aggregated metrics, stored as a JSON blob. */
+  metrics: object;
+  /** Time the metrics were computed. */
+  computedAt?: string | null;
+  /** Timestamp of Blowhorn analytics creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn analytics modification. */
+  updatedAt: string;
+};
+export type RecordBlowhornAnalyticsApiArg = {
+  body: {
+    /** Existing Blowhorn analytics ID for updates; omit on record. */
+    id?: string;
+    /** Aggregation scope (e.g. profile subject or organization-wide rollup name). */
+    scope: string;
+    /** Aggregation window the metrics cover (e.g. day, week). */
+    window?: string;
+    /** Aggregated metrics, stored as a JSON blob. */
+    metrics: object;
+    /** Time the metrics were computed. */
+    computedAt?: string;
+  };
+};
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
   /** List of connections on this page */
   connections: {
@@ -8321,7 +9641,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
-      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
             
             Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
             
@@ -8330,7 +9650,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
             Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
             
             The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-      purpose?: "user" | "administrative";
+      purpose?: "user" | "administrative" | "blowhorn";
     }[];
     /** Specifies the version of the schema used for the definition. */
     schemaVersion: string;
@@ -8638,7 +9958,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -8647,7 +9967,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -9096,7 +10416,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -9105,7 +10425,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -9375,7 +10695,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -9384,7 +10704,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -12601,7 +13921,7 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   updatedAt?: string;
   /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
   deletedAt?: string | null;
-  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
     
     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
     
@@ -12610,7 +13930,7 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
     
     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-  purpose?: "user" | "administrative";
+  purpose?: "user" | "administrative" | "blowhorn";
 };
 export type CreateEnvironmentApiArg = {
   /** Body for creating environment */
@@ -12652,7 +13972,7 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -12661,7 +13981,7 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
 };
 export type GetEnvironmentsApiArg = {
@@ -12707,7 +14027,7 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -12716,7 +14036,7 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
 };
 export type GetEnvironmentByIdApiArg = {
@@ -12754,7 +14074,7 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -12763,7 +14083,7 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
 };
 export type UpdateEnvironmentApiArg = {
@@ -13854,6 +15174,759 @@ export type GetSignupRequestNotificationApiResponse = /** status 200 Signup requ
   preProcessed: boolean;
 };
 export type GetSignupRequestNotificationApiArg = void;
+export type ListJobLeasesApiResponse = /** status 200 Job leases page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Job leases included on this page of results. */
+  jobLeases?: {
+    /** Server-generated job lease ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+    rowNumber: number;
+    /** Job command to execute when the lease is held. */
+    command: string;
+    /** Profile reference the job runs against. */
+    profile?: string;
+    /** Target platform for the job (e.g. linkedin). */
+    platform?: string;
+    /** Arbitrary job parameters, stored as a JSON blob. */
+    params?: object;
+    /** Time the job becomes due. */
+    runAt?: string | null;
+    /** Next scheduled time for recurring jobs. */
+    nextRunAt?: string | null;
+    /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+    recurrence?: string;
+    /** Remaining execution attempts for the job. */
+    retryBudget?: number;
+    /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+    status: "pending" | "leased" | "succeeded" | "failed";
+    /** Execution driver mode for the job. */
+    driverMode?: string;
+    /** Time of the most recent execution attempt. */
+    lastRunAt?: string | null;
+    /** Error reported by the most recent execution attempt. */
+    lastError?: string;
+    /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+    claimedBy?: string;
+    /** Time the lease was claimed. Server-managed. */
+    claimedAt?: string | null;
+    /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+    leaseExpiresAt?: string | null;
+    /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+    pausedAt?: string | null;
+    /** Identity that paused the row. Server-managed. */
+    pausedBy?: string;
+    /** Operator reason for pausing the row. Server-managed. */
+    pauseReason?: string;
+    /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+    fingerprint: string;
+    /** Computed projection. True while a live lease is held on the row. */
+    locked?: boolean;
+    /** Computed projection of the current lease holder. */
+    lockedBy?: string;
+    /** Computed projection of the current claim time. */
+    lockedAt?: string | null;
+    /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+    lockStale?: boolean;
+    /** Timestamp of job lease creation. */
+    createdAt: string;
+    /** Timestamp of last job lease modification. */
+    updatedAt: string;
+    /** Timestamp when the job lease was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListJobLeasesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by job status (pending, leased, succeeded, failed). */
+  status?: string;
+};
+export type CreateJobLeaseApiResponse = /** status 201 Job lease created */ {
+  /** Server-generated job lease ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+  rowNumber: number;
+  /** Job command to execute when the lease is held. */
+  command: string;
+  /** Profile reference the job runs against. */
+  profile?: string;
+  /** Target platform for the job (e.g. linkedin). */
+  platform?: string;
+  /** Arbitrary job parameters, stored as a JSON blob. */
+  params?: object;
+  /** Time the job becomes due. */
+  runAt?: string | null;
+  /** Next scheduled time for recurring jobs. */
+  nextRunAt?: string | null;
+  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+  recurrence?: string;
+  /** Remaining execution attempts for the job. */
+  retryBudget?: number;
+  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+  status: "pending" | "leased" | "succeeded" | "failed";
+  /** Execution driver mode for the job. */
+  driverMode?: string;
+  /** Time of the most recent execution attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent execution attempt. */
+  lastError?: string;
+  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+  claimedBy?: string;
+  /** Time the lease was claimed. Server-managed. */
+  claimedAt?: string | null;
+  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+  leaseExpiresAt?: string | null;
+  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+  pausedAt?: string | null;
+  /** Identity that paused the row. Server-managed. */
+  pausedBy?: string;
+  /** Operator reason for pausing the row. Server-managed. */
+  pauseReason?: string;
+  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Computed projection. True while a live lease is held on the row. */
+  locked?: boolean;
+  /** Computed projection of the current lease holder. */
+  lockedBy?: string;
+  /** Computed projection of the current claim time. */
+  lockedAt?: string | null;
+  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+  lockStale?: boolean;
+  /** Timestamp of job lease creation. */
+  createdAt: string;
+  /** Timestamp of last job lease modification. */
+  updatedAt: string;
+  /** Timestamp when the job lease was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type CreateJobLeaseApiArg = {
+  body: {
+    /** Existing job lease ID for updates; omit on create. */
+    id?: string;
+    /** Targetable row number within the organization's job set. */
+    rowNumber: number;
+    /** Job command to execute when the lease is held. */
+    command: string;
+    /** Profile reference the job runs against. */
+    profile?: string;
+    /** Target platform for the job (e.g. linkedin). */
+    platform?: string;
+    /** Arbitrary job parameters, stored as a JSON blob. */
+    params?: object;
+    /** Time the job becomes due. */
+    runAt?: string;
+    /** Next scheduled time for recurring jobs. */
+    nextRunAt?: string;
+    /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+    recurrence?: string;
+    /** Remaining execution attempts for the job. */
+    retryBudget?: number;
+    /** Execution driver mode for the job. */
+    driverMode?: string;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        create.
+         */
+    expectedFingerprint?: string;
+  };
+};
+export type ClaimJobLeaseApiResponse =
+  /** status 200 Claim result holding the row, or null when nothing was claimed */ {
+    /** Server-returned job lease as persisted by meshery-cloud. A job lease is a
+    due-work row plus time-bound claim state, shared by Layer5 Cloud and
+    Blowhorn: competing consumers claim, renew and release leases on due jobs,
+    and pause scopes gate which rows are claimable. The claim race is decided
+    server-side in a single statement; losing racers receive null, never an
+    error. Claim columns (`claimedBy`, `claimedAt`, `leaseExpiresAt`) and pause
+    columns (`pausedAt`, `pausedBy`, `pauseReason`) are server-managed and are
+    refused on CRUD paths; they change only through the claim, renew, release,
+    pause and resume operations. `locked`, `lockedBy`, `lockedAt` and
+    `lockStale` are computed projections for schedule screens, not stored
+    columns.
+     */
+    jobLease?: {
+      /** Server-generated job lease ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+      rowNumber: number;
+      /** Job command to execute when the lease is held. */
+      command: string;
+      /** Profile reference the job runs against. */
+      profile?: string;
+      /** Target platform for the job (e.g. linkedin). */
+      platform?: string;
+      /** Arbitrary job parameters, stored as a JSON blob. */
+      params?: object;
+      /** Time the job becomes due. */
+      runAt?: string | null;
+      /** Next scheduled time for recurring jobs. */
+      nextRunAt?: string | null;
+      /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+      recurrence?: string;
+      /** Remaining execution attempts for the job. */
+      retryBudget?: number;
+      /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+      status: "pending" | "leased" | "succeeded" | "failed";
+      /** Execution driver mode for the job. */
+      driverMode?: string;
+      /** Time of the most recent execution attempt. */
+      lastRunAt?: string | null;
+      /** Error reported by the most recent execution attempt. */
+      lastError?: string;
+      /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+      claimedBy?: string;
+      /** Time the lease was claimed. Server-managed. */
+      claimedAt?: string | null;
+      /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+      leaseExpiresAt?: string | null;
+      /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+      pausedAt?: string | null;
+      /** Identity that paused the row. Server-managed. */
+      pausedBy?: string;
+      /** Operator reason for pausing the row. Server-managed. */
+      pauseReason?: string;
+      /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+      fingerprint: string;
+      /** Computed projection. True while a live lease is held on the row. */
+      locked?: boolean;
+      /** Computed projection of the current lease holder. */
+      lockedBy?: string;
+      /** Computed projection of the current claim time. */
+      lockedAt?: string | null;
+      /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+      lockStale?: boolean;
+      /** Timestamp of job lease creation. */
+      createdAt: string;
+      /** Timestamp of last job lease modification. */
+      updatedAt: string;
+      /** Timestamp when the job lease was soft-deleted. */
+      deletedAt?: string | null;
+    } | null;
+  };
+export type ClaimJobLeaseApiArg = {
+  body: {
+    /** Machine taking the lease, recorded as `claimedBy`. Client-asserted; the holder check is advisory in v1. */
+    machineId: string;
+    /** Claim only the row with this row number. */
+    rowNumber?: number;
+    /** Trigger-now override that drops only the due test; a live foreign lease still refuses. */
+    force?: boolean;
+    /** Single operator override over the organization-wide and per-row pause scopes. */
+    ignorePause?: boolean;
+    /** Requested lease duration in minutes. When omitted the server applies its default lease duration. */
+    leaseMinutes?: number;
+  };
+};
+export type GetSchedulePauseApiResponse = /** status 200 Organization schedule pause */ {
+  /** Server-generated schedule pause ID. */
+  id: string;
+  /** Organization the pause applies to. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Operator reason for pausing the organization schedule. */
+  reason?: string;
+  /** Identity that set the pause. Server-managed. */
+  pausedBy?: string;
+  /** Timestamp of schedule pause creation. */
+  createdAt: string;
+  /** Timestamp of last schedule pause modification. */
+  updatedAt: string;
+};
+export type GetSchedulePauseApiArg = void;
+export type SetSchedulePauseApiResponse = /** status 200 Organization schedule pause set */ {
+  /** Server-generated schedule pause ID. */
+  id: string;
+  /** Organization the pause applies to. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Operator reason for pausing the organization schedule. */
+  reason?: string;
+  /** Identity that set the pause. Server-managed. */
+  pausedBy?: string;
+  /** Timestamp of schedule pause creation. */
+  createdAt: string;
+  /** Timestamp of last schedule pause modification. */
+  updatedAt: string;
+};
+export type SetSchedulePauseApiArg = {
+  body: {
+    /** Operator reason for pausing the organization schedule. */
+    reason?: string;
+  };
+};
+export type ClearSchedulePauseApiResponse = unknown;
+export type ClearSchedulePauseApiArg = void;
+export type GetJobLeaseApiResponse = /** status 200 Job lease response */ {
+  /** Server-generated job lease ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+  rowNumber: number;
+  /** Job command to execute when the lease is held. */
+  command: string;
+  /** Profile reference the job runs against. */
+  profile?: string;
+  /** Target platform for the job (e.g. linkedin). */
+  platform?: string;
+  /** Arbitrary job parameters, stored as a JSON blob. */
+  params?: object;
+  /** Time the job becomes due. */
+  runAt?: string | null;
+  /** Next scheduled time for recurring jobs. */
+  nextRunAt?: string | null;
+  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+  recurrence?: string;
+  /** Remaining execution attempts for the job. */
+  retryBudget?: number;
+  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+  status: "pending" | "leased" | "succeeded" | "failed";
+  /** Execution driver mode for the job. */
+  driverMode?: string;
+  /** Time of the most recent execution attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent execution attempt. */
+  lastError?: string;
+  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+  claimedBy?: string;
+  /** Time the lease was claimed. Server-managed. */
+  claimedAt?: string | null;
+  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+  leaseExpiresAt?: string | null;
+  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+  pausedAt?: string | null;
+  /** Identity that paused the row. Server-managed. */
+  pausedBy?: string;
+  /** Operator reason for pausing the row. Server-managed. */
+  pauseReason?: string;
+  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Computed projection. True while a live lease is held on the row. */
+  locked?: boolean;
+  /** Computed projection of the current lease holder. */
+  lockedBy?: string;
+  /** Computed projection of the current claim time. */
+  lockedAt?: string | null;
+  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+  lockStale?: boolean;
+  /** Timestamp of job lease creation. */
+  createdAt: string;
+  /** Timestamp of last job lease modification. */
+  updatedAt: string;
+  /** Timestamp when the job lease was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+};
+export type UpdateJobLeaseApiResponse = /** status 200 Job lease updated */ {
+  /** Server-generated job lease ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+  rowNumber: number;
+  /** Job command to execute when the lease is held. */
+  command: string;
+  /** Profile reference the job runs against. */
+  profile?: string;
+  /** Target platform for the job (e.g. linkedin). */
+  platform?: string;
+  /** Arbitrary job parameters, stored as a JSON blob. */
+  params?: object;
+  /** Time the job becomes due. */
+  runAt?: string | null;
+  /** Next scheduled time for recurring jobs. */
+  nextRunAt?: string | null;
+  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+  recurrence?: string;
+  /** Remaining execution attempts for the job. */
+  retryBudget?: number;
+  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+  status: "pending" | "leased" | "succeeded" | "failed";
+  /** Execution driver mode for the job. */
+  driverMode?: string;
+  /** Time of the most recent execution attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent execution attempt. */
+  lastError?: string;
+  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+  claimedBy?: string;
+  /** Time the lease was claimed. Server-managed. */
+  claimedAt?: string | null;
+  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+  leaseExpiresAt?: string | null;
+  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+  pausedAt?: string | null;
+  /** Identity that paused the row. Server-managed. */
+  pausedBy?: string;
+  /** Operator reason for pausing the row. Server-managed. */
+  pauseReason?: string;
+  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Computed projection. True while a live lease is held on the row. */
+  locked?: boolean;
+  /** Computed projection of the current lease holder. */
+  lockedBy?: string;
+  /** Computed projection of the current claim time. */
+  lockedAt?: string | null;
+  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+  lockStale?: boolean;
+  /** Timestamp of job lease creation. */
+  createdAt: string;
+  /** Timestamp of last job lease modification. */
+  updatedAt: string;
+  /** Timestamp when the job lease was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpdateJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+  body: {
+    /** Existing job lease ID for updates; omit on create. */
+    id?: string;
+    /** Targetable row number within the organization's job set. */
+    rowNumber: number;
+    /** Job command to execute when the lease is held. */
+    command: string;
+    /** Profile reference the job runs against. */
+    profile?: string;
+    /** Target platform for the job (e.g. linkedin). */
+    platform?: string;
+    /** Arbitrary job parameters, stored as a JSON blob. */
+    params?: object;
+    /** Time the job becomes due. */
+    runAt?: string;
+    /** Next scheduled time for recurring jobs. */
+    nextRunAt?: string;
+    /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+    recurrence?: string;
+    /** Remaining execution attempts for the job. */
+    retryBudget?: number;
+    /** Execution driver mode for the job. */
+    driverMode?: string;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        create.
+         */
+    expectedFingerprint?: string;
+  };
+};
+export type DeleteJobLeaseApiResponse = unknown;
+export type DeleteJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+};
+export type RenewJobLeaseApiResponse =
+  /** status 200 Renew result holding the row, or null when not held by the caller */ {
+    /** Server-returned job lease as persisted by meshery-cloud. A job lease is a
+    due-work row plus time-bound claim state, shared by Layer5 Cloud and
+    Blowhorn: competing consumers claim, renew and release leases on due jobs,
+    and pause scopes gate which rows are claimable. The claim race is decided
+    server-side in a single statement; losing racers receive null, never an
+    error. Claim columns (`claimedBy`, `claimedAt`, `leaseExpiresAt`) and pause
+    columns (`pausedAt`, `pausedBy`, `pauseReason`) are server-managed and are
+    refused on CRUD paths; they change only through the claim, renew, release,
+    pause and resume operations. `locked`, `lockedBy`, `lockedAt` and
+    `lockStale` are computed projections for schedule screens, not stored
+    columns.
+     */
+    jobLease?: {
+      /** Server-generated job lease ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+      rowNumber: number;
+      /** Job command to execute when the lease is held. */
+      command: string;
+      /** Profile reference the job runs against. */
+      profile?: string;
+      /** Target platform for the job (e.g. linkedin). */
+      platform?: string;
+      /** Arbitrary job parameters, stored as a JSON blob. */
+      params?: object;
+      /** Time the job becomes due. */
+      runAt?: string | null;
+      /** Next scheduled time for recurring jobs. */
+      nextRunAt?: string | null;
+      /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+      recurrence?: string;
+      /** Remaining execution attempts for the job. */
+      retryBudget?: number;
+      /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+      status: "pending" | "leased" | "succeeded" | "failed";
+      /** Execution driver mode for the job. */
+      driverMode?: string;
+      /** Time of the most recent execution attempt. */
+      lastRunAt?: string | null;
+      /** Error reported by the most recent execution attempt. */
+      lastError?: string;
+      /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+      claimedBy?: string;
+      /** Time the lease was claimed. Server-managed. */
+      claimedAt?: string | null;
+      /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+      leaseExpiresAt?: string | null;
+      /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+      pausedAt?: string | null;
+      /** Identity that paused the row. Server-managed. */
+      pausedBy?: string;
+      /** Operator reason for pausing the row. Server-managed. */
+      pauseReason?: string;
+      /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+      fingerprint: string;
+      /** Computed projection. True while a live lease is held on the row. */
+      locked?: boolean;
+      /** Computed projection of the current lease holder. */
+      lockedBy?: string;
+      /** Computed projection of the current claim time. */
+      lockedAt?: string | null;
+      /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+      lockStale?: boolean;
+      /** Timestamp of job lease creation. */
+      createdAt: string;
+      /** Timestamp of last job lease modification. */
+      updatedAt: string;
+      /** Timestamp when the job lease was soft-deleted. */
+      deletedAt?: string | null;
+    } | null;
+  };
+export type RenewJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+  body: {
+    /** Machine holding the lease. Only the holder may renew. Client-asserted; the holder check is advisory in v1. */
+    machineId: string;
+    /** Requested lease extension in minutes. When omitted the server applies its default lease duration. */
+    leaseMinutes?: number;
+  };
+};
+export type ReleaseJobLeaseApiResponse = /** status 200 Job lease released */ {
+  /** Server-generated job lease ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+  rowNumber: number;
+  /** Job command to execute when the lease is held. */
+  command: string;
+  /** Profile reference the job runs against. */
+  profile?: string;
+  /** Target platform for the job (e.g. linkedin). */
+  platform?: string;
+  /** Arbitrary job parameters, stored as a JSON blob. */
+  params?: object;
+  /** Time the job becomes due. */
+  runAt?: string | null;
+  /** Next scheduled time for recurring jobs. */
+  nextRunAt?: string | null;
+  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+  recurrence?: string;
+  /** Remaining execution attempts for the job. */
+  retryBudget?: number;
+  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+  status: "pending" | "leased" | "succeeded" | "failed";
+  /** Execution driver mode for the job. */
+  driverMode?: string;
+  /** Time of the most recent execution attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent execution attempt. */
+  lastError?: string;
+  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+  claimedBy?: string;
+  /** Time the lease was claimed. Server-managed. */
+  claimedAt?: string | null;
+  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+  leaseExpiresAt?: string | null;
+  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+  pausedAt?: string | null;
+  /** Identity that paused the row. Server-managed. */
+  pausedBy?: string;
+  /** Operator reason for pausing the row. Server-managed. */
+  pauseReason?: string;
+  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Computed projection. True while a live lease is held on the row. */
+  locked?: boolean;
+  /** Computed projection of the current lease holder. */
+  lockedBy?: string;
+  /** Computed projection of the current claim time. */
+  lockedAt?: string | null;
+  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+  lockStale?: boolean;
+  /** Timestamp of job lease creation. */
+  createdAt: string;
+  /** Timestamp of last job lease modification. */
+  updatedAt: string;
+  /** Timestamp when the job lease was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type ReleaseJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+  body: {
+    /** Machine holding the lease. Only the holder may release; a non-holder is refused with a 409 and nothing changes. Client-asserted; the holder check is advisory in v1. */
+    machineId: string;
+    /** Result values merged into the row on release (e.g. last run outcome and error). */
+    values?: object;
+  };
+};
+export type PauseJobLeaseApiResponse = /** status 200 Job lease row paused */ {
+  /** Server-generated job lease ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+  rowNumber: number;
+  /** Job command to execute when the lease is held. */
+  command: string;
+  /** Profile reference the job runs against. */
+  profile?: string;
+  /** Target platform for the job (e.g. linkedin). */
+  platform?: string;
+  /** Arbitrary job parameters, stored as a JSON blob. */
+  params?: object;
+  /** Time the job becomes due. */
+  runAt?: string | null;
+  /** Next scheduled time for recurring jobs. */
+  nextRunAt?: string | null;
+  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+  recurrence?: string;
+  /** Remaining execution attempts for the job. */
+  retryBudget?: number;
+  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+  status: "pending" | "leased" | "succeeded" | "failed";
+  /** Execution driver mode for the job. */
+  driverMode?: string;
+  /** Time of the most recent execution attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent execution attempt. */
+  lastError?: string;
+  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+  claimedBy?: string;
+  /** Time the lease was claimed. Server-managed. */
+  claimedAt?: string | null;
+  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+  leaseExpiresAt?: string | null;
+  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+  pausedAt?: string | null;
+  /** Identity that paused the row. Server-managed. */
+  pausedBy?: string;
+  /** Operator reason for pausing the row. Server-managed. */
+  pauseReason?: string;
+  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Computed projection. True while a live lease is held on the row. */
+  locked?: boolean;
+  /** Computed projection of the current lease holder. */
+  lockedBy?: string;
+  /** Computed projection of the current claim time. */
+  lockedAt?: string | null;
+  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+  lockStale?: boolean;
+  /** Timestamp of job lease creation. */
+  createdAt: string;
+  /** Timestamp of last job lease modification. */
+  updatedAt: string;
+  /** Timestamp when the job lease was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type PauseJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+  body: {
+    /** Operator reason for pausing the row. */
+    reason?: string;
+  };
+};
+export type ResumeJobLeaseApiResponse = /** status 200 Job lease row resumed */ {
+  /** Server-generated job lease ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+  rowNumber: number;
+  /** Job command to execute when the lease is held. */
+  command: string;
+  /** Profile reference the job runs against. */
+  profile?: string;
+  /** Target platform for the job (e.g. linkedin). */
+  platform?: string;
+  /** Arbitrary job parameters, stored as a JSON blob. */
+  params?: object;
+  /** Time the job becomes due. */
+  runAt?: string | null;
+  /** Next scheduled time for recurring jobs. */
+  nextRunAt?: string | null;
+  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+  recurrence?: string;
+  /** Remaining execution attempts for the job. */
+  retryBudget?: number;
+  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+  status: "pending" | "leased" | "succeeded" | "failed";
+  /** Execution driver mode for the job. */
+  driverMode?: string;
+  /** Time of the most recent execution attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent execution attempt. */
+  lastError?: string;
+  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+  claimedBy?: string;
+  /** Time the lease was claimed. Server-managed. */
+  claimedAt?: string | null;
+  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+  leaseExpiresAt?: string | null;
+  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+  pausedAt?: string | null;
+  /** Identity that paused the row. Server-managed. */
+  pausedBy?: string;
+  /** Operator reason for pausing the row. Server-managed. */
+  pauseReason?: string;
+  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Computed projection. True while a live lease is held on the row. */
+  locked?: boolean;
+  /** Computed projection of the current lease holder. */
+  lockedBy?: string;
+  /** Computed projection of the current claim time. */
+  lockedAt?: string | null;
+  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+  lockStale?: boolean;
+  /** Timestamp of job lease creation. */
+  createdAt: string;
+  /** Timestamp of last job lease modification. */
+  updatedAt: string;
+  /** Timestamp when the job lease was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type ResumeJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+};
 export type GetPatternResourcesApiResponse = /** status 200 Pattern resources page */ {
   /** Current page number of the result set. */
   page?: number;
@@ -14829,6 +16902,8 @@ export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
 export type GetUserTokensApiArg = {
   /** Whether to retrieve OAuth-backed sessions instead of API tokens. */
   isOauth?: boolean;
+  /** Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
+  purpose?: string;
   /** Get responses by page */
   page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
@@ -14874,7 +16949,7 @@ export type GenerateTokenApiResponse = /** status 201 Token generated */ {
 export type GenerateTokenApiArg = {
   /** Name of the token. */
   name: string;
-  /** Purpose for which the token is generated. */
+  /** Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
   purpose?: string;
 };
 export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
@@ -15340,7 +17415,7 @@ export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -15349,7 +17424,7 @@ export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments 
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
 };
 export type GetEnvironmentsOfWorkspaceApiArg = {
@@ -16714,6 +18789,54 @@ export const {
   useLazyGetAcademyAdminRegistrationsQuery,
   useGetCertificateByIdQuery,
   useLazyGetCertificateByIdQuery,
+  useListBlowhornBindingsQuery,
+  useLazyListBlowhornBindingsQuery,
+  useBindBlowhornBindingMutation,
+  useUnbindBlowhornBindingMutation,
+  useListBlowhornContentQuery,
+  useLazyListBlowhornContentQuery,
+  useInsertBlowhornContentMutation,
+  useGetBlowhornContentQuery,
+  useLazyGetBlowhornContentQuery,
+  useUpdateBlowhornContentMutation,
+  useDeleteBlowhornContentMutation,
+  useListBlowhornDestinationsQuery,
+  useLazyListBlowhornDestinationsQuery,
+  useUpsertBlowhornDestinationMutation,
+  useGetBlowhornDestinationQuery,
+  useLazyGetBlowhornDestinationQuery,
+  useGetBlowhornHealthQuery,
+  useLazyGetBlowhornHealthQuery,
+  useListBlowhornLedgerQuery,
+  useLazyListBlowhornLedgerQuery,
+  useRecordBlowhornLedgerEntryMutation,
+  useGetBlowhornLedgerEntryQuery,
+  useLazyGetBlowhornLedgerEntryQuery,
+  useDeleteBlowhornLedgerEntryMutation,
+  useClaimIfAbsentBlowhornLedgerEntryMutation,
+  useListBlowhornContactsQuery,
+  useLazyListBlowhornContactsQuery,
+  useUpsertBlowhornContactMutation,
+  useListBlowhornMenteesQuery,
+  useLazyListBlowhornMenteesQuery,
+  useUpsertBlowhornMenteeMutation,
+  useDeleteBlowhornMenteeMutation,
+  useRecordAndDropBlowhornMenteeMutation,
+  useListBlowhornProfilesQuery,
+  useLazyListBlowhornProfilesQuery,
+  useUpsertBlowhornProfileMutation,
+  useGetBlowhornProfileBySubjectQuery,
+  useLazyGetBlowhornProfileBySubjectQuery,
+  useGetBlowhornProfileQuery,
+  useLazyGetBlowhornProfileQuery,
+  useUpdateBlowhornProfileMutation,
+  useDeleteBlowhornProfileMutation,
+  useListBlowhornRunRecordsQuery,
+  useLazyListBlowhornRunRecordsQuery,
+  useAppendBlowhornRunRecordMutation,
+  useListBlowhornAnalyticsQuery,
+  useLazyListBlowhornAnalyticsQuery,
+  useRecordBlowhornAnalyticsMutation,
   useGetConnectionsQuery,
   useLazyGetConnectionsQuery,
   useRegisterConnectionMutation,
@@ -16810,6 +18933,22 @@ export const {
   useDenySignupRequestMutation,
   useGetSignupRequestNotificationQuery,
   useLazyGetSignupRequestNotificationQuery,
+  useListJobLeasesQuery,
+  useLazyListJobLeasesQuery,
+  useCreateJobLeaseMutation,
+  useClaimJobLeaseMutation,
+  useGetSchedulePauseQuery,
+  useLazyGetSchedulePauseQuery,
+  useSetSchedulePauseMutation,
+  useClearSchedulePauseMutation,
+  useGetJobLeaseQuery,
+  useLazyGetJobLeaseQuery,
+  useUpdateJobLeaseMutation,
+  useDeleteJobLeaseMutation,
+  useRenewJobLeaseMutation,
+  useReleaseJobLeaseMutation,
+  usePauseJobLeaseMutation,
+  useResumeJobLeaseMutation,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,

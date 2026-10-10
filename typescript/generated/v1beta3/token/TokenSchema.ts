@@ -66,6 +66,15 @@ const TokenSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "purpose",
+            "in": "query",
+            "description": "Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens).",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          },
+          {
             "name": "page",
             "in": "query",
             "description": "Get responses by page",
@@ -341,7 +350,7 @@ const TokenSchema: Record<string, unknown> = {
           {
             "name": "purpose",
             "in": "query",
-            "description": "Purpose for which the token is generated.",
+            "description": "Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens).",
             "schema": {
               "type": "string",
               "maxLength": 500
@@ -1439,7 +1448,7 @@ const TokenSchema: Record<string, unknown> = {
       "purpose": {
         "name": "purpose",
         "in": "query",
-        "description": "Purpose for which the token is generated.",
+        "description": "Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens).",
         "schema": {
           "type": "string",
           "maxLength": 500
