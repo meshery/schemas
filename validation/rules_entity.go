@@ -3,6 +3,7 @@ package validation
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"sort"
@@ -138,7 +139,14 @@ func checkRule34(relDir, constructDir string, _ AuditOptions) []Violation {
 			}
 
 			relTmpl := filepath.ToSlash(filepath.Join(relDir, "templates", tmplEntry.Name()))
-			for key, val := range tmpl {
+			tmplKeys := make([]string, 0, len(tmpl))
+			for k := range tmpl {
+				tmplKeys = append(tmplKeys, k)
+			}
+			sort.Strings(tmplKeys)
+
+			for _, key := range tmplKeys {
+				val := tmpl[key]
 				prop, ok := schema.Properties[key]
 				if !ok || prop == nil || prop.Type == "" {
 					continue
@@ -164,7 +172,7 @@ func validate(
 	schemaProp *propertyDef,
 	templateValue any,
 	relTmpl string,
-	propName string,
+	propPath string,
 	out *[]Violation,
 ) {
 	// Nothing to validate.
@@ -185,7 +193,7 @@ func validate(
 		if !ok {
 			*out = append(*out, Violation{
 				File:       relTmpl,
-				Message:    fmt.Sprintf(`Template property %q is not an object but schema declares type: object. Use an empty object {} as the default.`, propName),
+				Message:    fmt.Sprintf(`Template property %q is not an object but schema declares type: object. Use an empty object {} as the default.`, propPath),
 				Severity:   SeverityBlocking,
 				RuleNumber: 34,
 			})
@@ -193,17 +201,29 @@ func validate(
 		}
 
 		if schemaProp.Properties != nil {
-			for childName, childValue := range obj {
+			keys := make([]string, 0, len(obj))
+			for k := range obj {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+
+			for _, childName := range keys {
+				childValue := obj[childName]
 				childSchema, ok := schemaProp.Properties[childName]
 				if !ok {
 					continue
+				}
+
+				childPath := childName
+				if propPath != "" {
+					childPath = propPath + "." + childName
 				}
 
 				validate(
 					childSchema,
 					childValue,
 					relTmpl,
-					childName,
+					childPath,
 					out,
 				)
 			}
@@ -220,19 +240,23 @@ func validate(
 		if !ok {
 			*out = append(*out, Violation{
 				File:       relTmpl,
-				Message:    fmt.Sprintf(`Template property %q is not an array but schema declares type: array. Use an empty array [] as the default.`, propName),
+				Message:    fmt.Sprintf(`Template property %q is not an array but schema declares type: array. Use an empty array [] as the default.`, propPath),
 				Severity:   SeverityBlocking,
 				RuleNumber: 34,
 			})
 			return
 		}
 
-		for _, element := range arr {
+		for i, element := range arr {
+			itemPath := fmt.Sprintf("[%d]", i)
+			if propPath != "" {
+				itemPath = fmt.Sprintf("%s[%d]", propPath, i)
+			}
 			validate(
 				schemaProp.Items,
 				element,
 				relTmpl,
-				propName,
+				itemPath,
 				out,
 			)
 		}
@@ -244,38 +268,99 @@ func validate(
 	// Primitive comparison
 	// -------------------------
 
-	_, isArray := templateValue.([]any)
+	jsType, isInteger := classifyValueType(templateValue)
 
-	jsType := "object"
-	if isArray {
-		jsType = "array"
-	} else {
-		switch templateValue.(type) {
-		case string:
-			jsType = "string"
-		case float64, int:
-			jsType = "number"
-		case bool:
-			jsType = "boolean"
+	if schemaProp.Type == "string" && jsType != "string" {
+		if jsType == "object" {
+			*out = append(*out, Violation{
+				File:       relTmpl,
+				Message:    fmt.Sprintf(`Template property %q is an object but schema declares type: string. Use an empty string "" as the default.`, propPath),
+				Severity:   SeverityBlocking,
+				RuleNumber: 34,
+			})
+		} else {
+			*out = append(*out, Violation{
+				File:       relTmpl,
+				Message:    fmt.Sprintf(`Template property %q has type %s but schema declares type: string. Use an empty string "" as the default.`, propPath, jsType),
+				Severity:   SeverityBlocking,
+				RuleNumber: 34,
+			})
 		}
 	}
 
-	if schemaProp.Type == "string" && jsType == "object" {
+	if schemaProp.Type == "integer" && !isInteger {
+		if jsType == "string" {
+			*out = append(*out, Violation{
+				File:       relTmpl,
+				Message:    fmt.Sprintf(`Template property %q is a string but schema declares type: integer. Use 0 as the default.`, propPath),
+				Severity:   SeverityBlocking,
+				RuleNumber: 34,
+			})
+		} else {
+			*out = append(*out, Violation{
+				File:       relTmpl,
+				Message:    fmt.Sprintf(`Template property %q has type %s but schema declares type: integer. Use 0 as the default.`, propPath, jsType),
+				Severity:   SeverityBlocking,
+				RuleNumber: 34,
+			})
+		}
+	}
+
+	if schemaProp.Type == "number" && jsType != "number" && !isInteger {
+		if jsType == "string" {
+			*out = append(*out, Violation{
+				File:       relTmpl,
+				Message:    fmt.Sprintf(`Template property %q is a string but schema declares type: number. Use 0 as the default.`, propPath),
+				Severity:   SeverityBlocking,
+				RuleNumber: 34,
+			})
+		} else {
+			*out = append(*out, Violation{
+				File:       relTmpl,
+				Message:    fmt.Sprintf(`Template property %q has type %s but schema declares type: number. Use 0 as the default.`, propPath, jsType),
+				Severity:   SeverityBlocking,
+				RuleNumber: 34,
+			})
+		}
+	}
+
+	if schemaProp.Type == "boolean" && jsType != "boolean" {
 		*out = append(*out, Violation{
 			File:       relTmpl,
-			Message:    fmt.Sprintf(`Template property %q is an object but schema declares type: string. Use an empty string "" as the default.`, propName),
+			Message:    fmt.Sprintf(`Template property %q has type %s but schema declares type: boolean. Use false as the default.`, propPath, jsType),
 			Severity:   SeverityBlocking,
 			RuleNumber: 34,
 		})
 	}
+}
 
-	if (schemaProp.Type == "integer" || schemaProp.Type == "number") && jsType == "string" {
-		*out = append(*out, Violation{
-			File:       relTmpl,
-			Message:    fmt.Sprintf(`Template property %q is a string but schema declares type: %s. Use 0 as the default.`, propName, schemaProp.Type),
-			Severity:   SeverityBlocking,
-			RuleNumber: 34,
-		})
+// classifyValueType returns the JSON Schema type name of a parsed template value,
+// and reports whether numeric values conform to the integer contract (zero fractional part).
+func classifyValueType(val any) (jsType string, isInteger bool) {
+	switch v := val.(type) {
+	case string:
+		return "string", false
+	case bool:
+		return "boolean", false
+	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
+		return "integer", true
+	case float64:
+		if !math.IsNaN(v) && !math.IsInf(v, 0) && v == math.Trunc(v) {
+			return "integer", true
+		}
+		return "number", false
+	case float32:
+		f := float64(v)
+		if !math.IsNaN(f) && !math.IsInf(f, 0) && f == math.Trunc(f) {
+			return "integer", true
+		}
+		return "number", false
+	case map[string]any:
+		return "object", false
+	case []any:
+		return "array", false
+	default:
+		return "unknown", false
 	}
 }
 

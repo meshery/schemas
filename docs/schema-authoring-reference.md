@@ -99,10 +99,12 @@ post:
 
 The schema validator enforces that default template values in `templates/` match the property types declared in their corresponding entity schema (Rule 34). This verification supports deep traversal:
 
-- **Nested object traversal**: The validator recursively verifies each key of a nested object property against the corresponding nested property schema.
-- **Array item traversal**: The validator iterates through array template items and verifies each element against the `items` property schema definition.
-- **`$ref` skipping**: Properties referencing external schemas (via `$ref`) are skipped during this template validation, as the referenced structure is maintained externally.
-- **Type mismatch**: If a nested object or array schema property receives an incompatible scalar value (e.g. `metadata: ""` for `type: object`), the validator will emit a type mismatch violation. This also applies to primitive properties receiving invalid types (e.g. an `integer` schema receiving a string value, or a `string` schema receiving an object).
+- **Nested object traversal**: The validator recursively verifies each key of a nested object property against the corresponding nested property schema. Error diagnostics surface the full property path (e.g. `metadata.labels.app`).
+- **Array item traversal**: The validator iterates through array template items and verifies each element against the `items` property schema definition, including indexed element paths (e.g. `containers[0].name`).
+- **`$ref` skipping**: Properties referencing external schemas (via `$ref`) are skipped at all recursion depths (root, nested objects, and array items), as referenced structures are maintained externally.
+- **Primitive and container type validation**: Supported schema types (`string`, `integer`, `number`, `boolean`, `object`, and `array`) reject incompatible values. Under JSON Schema semantics, `integer` schemas accept whole numeric values (including integral floating-point representations such as `1.0` produced by JSON decoding) but reject fractional values (such as `1.5`), while `number` schemas accept both integers and fractional numbers. Scalar schemas reject incompatible container types (e.g. an array or object supplied for a string), and `boolean` properties reject strings or numbers.
+- **Null and absent values**: Explicit `null` values and omitted properties are skipped and do not trigger type mismatch violations.
+- **Recommended defaults**: When providing default values in templates, use `""` for strings, `0` for integers/numbers, `false` for booleans, `{}` for objects, and `[]` for arrays. Note that Rule 34 validates property types and structural container shapes; it does not evaluate constraint keywords such as regex patterns or string length limits.
 
 ## Server-owned properties
 
