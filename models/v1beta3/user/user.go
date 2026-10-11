@@ -6,10 +6,10 @@ package user
 import (
 	"time"
 
+	"github.com/gofrs/uuid"
 	"github.com/lib/pq"
 	"github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-	"github.com/gofrs/uuid"
 )
 
 // Defines values for UserStatus.
@@ -243,7 +243,7 @@ type TeamWithRoles struct {
 	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
 
 	// Metadata Free-form metadata associated with the team.
-	Metadata  core.Map          `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Metadata  core.Map  `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 	CreatedAt core.Time `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
 	UpdatedAt core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 
@@ -265,7 +265,7 @@ type User struct {
 	Bio *string `db:"bio" json:"bio" yaml:"bio"`
 
 	// Country User's country information stored as JSONB
-	Country   core.Map          `db:"country" json:"country" yaml:"country"`
+	Country   core.Map  `db:"country" json:"country" yaml:"country"`
 	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 
 	// DeletedAt Timestamp when the user record was soft-deleted (null if not deleted)
@@ -273,7 +273,7 @@ type User struct {
 
 	// Email User's email address
 	Email          openapi_types.Email `db:"email" json:"email" yaml:"email"`
-	FirstLoginTime core.Time   `db:"first_login_time" json:"firstLoginTime" yaml:"firstLoginTime,omitempty"`
+	FirstLoginTime core.Time           `db:"first_login_time" json:"firstLoginTime" yaml:"firstLoginTime,omitempty"`
 
 	// FirstName User's first name
 	FirstName string `db:"first_name" json:"firstName" yaml:"firstName"`
@@ -287,10 +287,10 @@ type User struct {
 
 	// Organizations Organizations the user belongs to with role information
 	Organizations *struct {
-		// OrganizationsWithRoles Organization memberships for the user with their assigned roles.
+		// OrganizationsWithRoles Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.
 		OrganizationsWithRoles *[]OrganizationWithRoles `db:"organizations_with_roles" json:"organizationsWithRoles" yaml:"organizationsWithRoles"`
 
-		// TotalCount Total number of organization memberships returned for the user.
+		// TotalCount Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.
 		TotalCount *int `db:"total_count" json:"totalCount" yaml:"totalCount"`
 	} `db:"organizations" json:"organizations" yaml:"organizations"`
 	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences,omitempty"`
@@ -312,10 +312,10 @@ type User struct {
 
 	// Teams Teams the user belongs to with role information
 	Teams *struct {
-		// TeamsWithRoles Team memberships for the user with their assigned roles.
+		// TeamsWithRoles Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.
 		TeamsWithRoles *[]TeamWithRoles `db:"teams_with_roles" json:"teamsWithRoles" yaml:"teamsWithRoles"`
 
-		// TotalCount Total number of team memberships returned for the user.
+		// TotalCount Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.
 		TotalCount *int `db:"total_count" json:"totalCount" yaml:"totalCount"`
 	} `db:"teams" json:"teams" yaml:"teams"`
 	UpdatedAt core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
@@ -342,7 +342,7 @@ type UserEmailAddress struct {
 
 	// Source How this address became associated with the account
 	Source    UserEmailAddressSource `db:"source" json:"source" yaml:"source"`
-	UpdatedAt core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+	UpdatedAt core.Time              `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	UserID core.Uuid `db:"owner" json:"userId" yaml:"userId"`

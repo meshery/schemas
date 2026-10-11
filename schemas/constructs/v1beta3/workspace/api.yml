@@ -174,7 +174,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "../../v1beta1/team/api.yml#/components/schemas/TeamPage"
+                $ref: "../../v1beta2/team/api.yml#/components/schemas/TeamPage"
         "400":
           $ref: "#/components/responses/400"
         "401":

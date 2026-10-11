@@ -107,7 +107,7 @@ type UserRoleUpdateRequest struct {
 	Status *string `json:"status,omitempty" yaml:"status,omitempty"`
 
 	// RoleNames The role names of the userroleupdaterequest.
-	RoleNames *[]string         `json:"roleNames,omitempty" yaml:"roleNames,omitempty"`
+	RoleNames *[]string     `json:"roleNames,omitempty" yaml:"roleNames,omitempty"`
 	CreatedAt meshcore.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	UpdatedAt meshcore.Time `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 

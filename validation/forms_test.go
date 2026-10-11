@@ -63,6 +63,11 @@ var formCases = []formCase{
 		form:      "schemas/constructs/v1beta3/workspace/forms/createOrEdit.json",
 	},
 	{
+		name:      "v1beta1/organization_smtp/configure",
+		canonical: "schemas/constructs/v1beta1/organization_smtp/api.yml#/components/schemas/OrganizationSmtpConfigurationPayload",
+		form:      "schemas/constructs/v1beta1/organization_smtp/forms/configure.json",
+	},
+	{
 		name:      "v1beta1/credential/kubernetes",
 		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
 		form:      "schemas/constructs/v1beta1/credential/forms/kubernetes.json",

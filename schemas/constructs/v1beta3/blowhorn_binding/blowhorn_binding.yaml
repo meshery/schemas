@@ -1,0 +1,65 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Blowhorn Binding Schema
+description: |
+  Server-returned Blowhorn binding as persisted by meshery-cloud. A binding
+  maps a profile to a directory on a host, keyed by the (profile, host)
+  pair, and doubles as the device and seat record. Binding the same profile
+  to a different directory on the same host is a conflict.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - profile
+  - host
+  - directory
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated Blowhorn binding ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  profile:
+    type: string
+    description: Subject of the bound Blowhorn profile.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: profile
+    x-order: 3
+  host:
+    type: string
+    description: Host the profile is bound on. An identity, not a permission.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: host
+    x-order: 4
+  directory:
+    type: string
+    description: Profile directory on the host.
+    minLength: 1
+    maxLength: 1024
+    x-oapi-codegen-extra-tags:
+      db: directory
+    x-order: 5
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of Blowhorn binding creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 6
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last Blowhorn binding modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 7

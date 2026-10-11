@@ -29,13 +29,31 @@ export interface components {
             /** @description Specifies the version of the relationship definition. */
             version: string;
             /**
-             * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
+             * @description Kind of the Relationship. Enum: hierarchical, edge, sibling.
+             *
+             *     hierarchical: parent-child containment, nesting, or inheritance. from is the child; to is the parent.
+             *     edge: a connection between peers (network, mount, permission, reference, and similar).
+             *     sibling: schema-native encoding for peer grouping such as tagsets. In-tree Kubernetes models instead encode tagsets as kind=hierarchical, type=sibling, subType=matchlabels. Do not mix the two encodings in one model.
+             *
+             *     Learn more at https://docs.meshery.io/concepts/logical/relationships.
              * @enum {string}
              */
             kind: "hierarchical" | "edge" | "sibling";
-            /** @description Classification of relationships. Used to group relationships similar in nature. */
+            /**
+             * @description Classification of relationships. Open string (not an enum). Used with kind and subType to select the visual paradigm and evaluation policy.
+             *
+             *     Canonical values: parent (with kind=hierarchical); binding (assigns, mounts, or entitles); non-binding (real link that does not provision the attachment); sibling (in-tree tagsets with kind=hierarchical); matchlabels (schema-native tagsets with kind=sibling).
+             *
+             *     Copy an established kind/type/subType combination rather than inventing a type. See docs/relationship-definition-taxonomy.md.
+             */
             type: string;
-            /** @description Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship. */
+            /**
+             * @description Most granular unit of relationship classification. Open string. Combined with kind and type, uniquely identifies the visual paradigm.
+             *
+             *     Canonical values: inventory, alias, wallet, matchlabels, tagsets, reference, network, firewall, permission, mount, annotation.
+             *
+             *     badge is a visual-paradigm name only; there is no in-tree encoding. Do not invent subType=badge without a visualization and evaluation policy. See docs/relationship-definition-taxonomy.md.
+             */
             subType: string;
             /**
              * @description Status of the relationship.
@@ -231,7 +249,7 @@ export interface components {
             selectors?: {
                 /** @description Selectors used to define relationships which are allowed. */
                 allow: {
-                    /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                    /** @description Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many). */
                     from: {
                         /**
                          * Format: uuid
@@ -253,8 +271,19 @@ export interface components {
                                 id?: string;
                                 /** @description Kind of the resource. */
                                 kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
+                                /**
+                                 * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                                 *
+                                 *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                                 */
                                 mutatorRef?: string[][];
+                                /**
+                                 * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                                 */
                                 mutatedRef?: string[][];
                             }[];
                             /** @description The to of the matchselector. */
@@ -266,8 +295,19 @@ export interface components {
                                 id?: string;
                                 /** @description Kind of the resource. */
                                 kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
+                                /**
+                                 * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                                 *
+                                 *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                                 */
                                 mutatorRef?: string[][];
+                                /**
+                                 * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                                 */
                                 mutatedRef?: string[][];
                             }[];
                         };
@@ -302,7 +342,7 @@ export interface components {
                                 kind: string;
                             };
                         };
-                        /** @description Patch configuration for the selector */
+                        /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                         patch?: {
                             /**
                              * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -311,18 +351,30 @@ export interface components {
                              *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                              *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                              *     remove: Removes a value.
+                             *     replace: Replaces the value at the target location.
                              *     copy: Copies a value from one location to another.
                              *     move: Moves a value from one location to another.
                              *     test: Tests that a value at the target location is equal to a specified value.
                              * @enum {string}
                              */
-                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                            /** @description JSON ref to value from where patch should be applied. */
+                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         };
                     }[];
-                    /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                    /** @description Destination side of the selector. For kind=hierarchical, to is the parent. */
                     to: {
                         /**
                          * Format: uuid
@@ -344,8 +396,19 @@ export interface components {
                                 id?: string;
                                 /** @description Kind of the resource. */
                                 kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
+                                /**
+                                 * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                                 *
+                                 *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                                 */
                                 mutatorRef?: string[][];
+                                /**
+                                 * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                                 */
                                 mutatedRef?: string[][];
                             }[];
                             /** @description The to of the matchselector. */
@@ -357,8 +420,19 @@ export interface components {
                                 id?: string;
                                 /** @description Kind of the resource. */
                                 kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
+                                /**
+                                 * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                                 *
+                                 *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                                 */
                                 mutatorRef?: string[][];
+                                /**
+                                 * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                                 */
                                 mutatedRef?: string[][];
                             }[];
                         };
@@ -393,7 +467,7 @@ export interface components {
                                 kind: string;
                             };
                         };
-                        /** @description Patch configuration for the selector */
+                        /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                         patch?: {
                             /**
                              * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -402,21 +476,33 @@ export interface components {
                              *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                              *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                              *     remove: Removes a value.
+                             *     replace: Replaces the value at the target location.
                              *     copy: Copies a value from one location to another.
                              *     move: Moves a value from one location to another.
                              *     test: Tests that a value at the target location is equal to a specified value.
                              * @enum {string}
                              */
-                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                            /** @description JSON ref to value from where patch should be applied. */
+                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         };
                     }[];
                 };
                 /** @description Optional selectors used to define relationships which should not be created / is restricted. */
                 deny?: {
-                    /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                    /** @description Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many). */
                     from: {
                         /**
                          * Format: uuid
@@ -438,8 +524,19 @@ export interface components {
                                 id?: string;
                                 /** @description Kind of the resource. */
                                 kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
+                                /**
+                                 * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                                 *
+                                 *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                                 */
                                 mutatorRef?: string[][];
+                                /**
+                                 * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                                 */
                                 mutatedRef?: string[][];
                             }[];
                             /** @description The to of the matchselector. */
@@ -451,8 +548,19 @@ export interface components {
                                 id?: string;
                                 /** @description Kind of the resource. */
                                 kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
+                                /**
+                                 * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                                 *
+                                 *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                                 */
                                 mutatorRef?: string[][];
+                                /**
+                                 * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                                 */
                                 mutatedRef?: string[][];
                             }[];
                         };
@@ -487,7 +595,7 @@ export interface components {
                                 kind: string;
                             };
                         };
-                        /** @description Patch configuration for the selector */
+                        /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                         patch?: {
                             /**
                              * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -496,18 +604,30 @@ export interface components {
                              *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                              *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                              *     remove: Removes a value.
+                             *     replace: Replaces the value at the target location.
                              *     copy: Copies a value from one location to another.
                              *     move: Moves a value from one location to another.
                              *     test: Tests that a value at the target location is equal to a specified value.
                              * @enum {string}
                              */
-                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                            /** @description JSON ref to value from where patch should be applied. */
+                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         };
                     }[];
-                    /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                    /** @description Destination side of the selector. For kind=hierarchical, to is the parent. */
                     to: {
                         /**
                          * Format: uuid
@@ -529,8 +649,19 @@ export interface components {
                                 id?: string;
                                 /** @description Kind of the resource. */
                                 kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
+                                /**
+                                 * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                                 *
+                                 *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                                 */
                                 mutatorRef?: string[][];
+                                /**
+                                 * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                                 */
                                 mutatedRef?: string[][];
                             }[];
                             /** @description The to of the matchselector. */
@@ -542,8 +673,19 @@ export interface components {
                                 id?: string;
                                 /** @description Kind of the resource. */
                                 kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
+                                /**
+                                 * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                                 *
+                                 *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                                 */
                                 mutatorRef?: string[][];
+                                /**
+                                 * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                                 *
+                                 *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                                 */
                                 mutatedRef?: string[][];
                             }[];
                         };
@@ -578,7 +720,7 @@ export interface components {
                                 kind: string;
                             };
                         };
-                        /** @description Patch configuration for the selector */
+                        /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                         patch?: {
                             /**
                              * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -587,22 +729,45 @@ export interface components {
                              *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                              *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                              *     remove: Removes a value.
+                             *     replace: Replaces the value at the target location.
                              *     copy: Copies a value from one location to another.
                              *     move: Moves a value from one location to another.
                              *     test: Tests that a value at the target location is equal to a specified value.
                              * @enum {string}
                              */
-                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                            /** @description JSON ref to value from where patch should be applied. */
+                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         };
                     }[];
                 };
             }[];
         };
-        /** @description JSON ref to value from where patch should be applied. */
+        /**
+         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+         *
+         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+         *
+         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+         */
         MutatorRef: string[][];
+        /**
+         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+         *
+         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+         */
         MutatedRef: string[][];
         /**
          * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -611,13 +776,14 @@ export interface components {
          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
          *     remove: Removes a value.
+         *     replace: Replaces the value at the target location.
          *     copy: Copies a value from one location to another.
          *     move: Moves a value from one location to another.
          *     test: Tests that a value at the target location is equal to a specified value.
          * @enum {string}
          */
-        RelationshipDefinitionSelectorsPatchStrategy: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-        /** @description Patch configuration for the selector */
+        RelationshipDefinitionSelectorsPatchStrategy: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+        /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
         RelationshipDefinitionSelectorsPatch: {
             /**
              * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -626,14 +792,26 @@ export interface components {
              *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
              *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
              *     remove: Removes a value.
+             *     replace: Replaces the value at the target location.
              *     copy: Copies a value from one location to another.
              *     move: Moves a value from one location to another.
              *     test: Tests that a value at the target location is equal to a specified value.
              * @enum {string}
              */
-            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-            /** @description JSON ref to value from where patch should be applied. */
+            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+            /**
+             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+             *
+             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+             *
+             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+             */
             mutatorRef?: string[][];
+            /**
+             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+             *
+             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+             */
             mutatedRef?: string[][];
         };
         /** @description Match selector item for binding between nodes */
@@ -645,8 +823,19 @@ export interface components {
             id?: string;
             /** @description Kind of the resource. */
             kind: string;
-            /** @description JSON ref to value from where patch should be applied. */
+            /**
+             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+             *
+             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+             *
+             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+             */
             mutatorRef?: string[][];
+            /**
+             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+             *
+             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+             */
             mutatedRef?: string[][];
         };
         /** @description Match configuration for selector */
@@ -662,8 +851,19 @@ export interface components {
                 id?: string;
                 /** @description Kind of the resource. */
                 kind: string;
-                /** @description JSON ref to value from where patch should be applied. */
+                /**
+                 * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                 *
+                 *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                 *
+                 *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                 */
                 mutatorRef?: string[][];
+                /**
+                 * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                 *
+                 *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                 */
                 mutatedRef?: string[][];
             }[];
             /** @description The to of the matchselector. */
@@ -675,8 +875,19 @@ export interface components {
                 id?: string;
                 /** @description Kind of the resource. */
                 kind: string;
-                /** @description JSON ref to value from where patch should be applied. */
+                /**
+                 * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                 *
+                 *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                 *
+                 *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                 */
                 mutatorRef?: string[][];
+                /**
+                 * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                 *
+                 *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                 */
                 mutatedRef?: string[][];
             }[];
         };
@@ -702,8 +913,19 @@ export interface components {
                     id?: string;
                     /** @description Kind of the resource. */
                     kind: string;
-                    /** @description JSON ref to value from where patch should be applied. */
+                    /**
+                     * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                     *
+                     *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                     *
+                     *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                     */
                     mutatorRef?: string[][];
+                    /**
+                     * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                     *
+                     *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                     */
                     mutatedRef?: string[][];
                 }[];
                 /** @description The to of the matchselector. */
@@ -715,8 +937,19 @@ export interface components {
                     id?: string;
                     /** @description Kind of the resource. */
                     kind: string;
-                    /** @description JSON ref to value from where patch should be applied. */
+                    /**
+                     * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                     *
+                     *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                     *
+                     *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                     */
                     mutatorRef?: string[][];
+                    /**
+                     * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                     *
+                     *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                     */
                     mutatedRef?: string[][];
                 }[];
             };
@@ -751,7 +984,7 @@ export interface components {
                     kind: string;
                 };
             };
-            /** @description Patch configuration for the selector */
+            /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
             patch?: {
                 /**
                  * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -760,20 +993,32 @@ export interface components {
                  *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                  *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                  *     remove: Removes a value.
+                 *     replace: Replaces the value at the target location.
                  *     copy: Copies a value from one location to another.
                  *     move: Moves a value from one location to another.
                  *     test: Tests that a value at the target location is equal to a specified value.
                  * @enum {string}
                  */
-                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                /** @description JSON ref to value from where patch should be applied. */
+                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                /**
+                 * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                 *
+                 *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                 *
+                 *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                 */
                 mutatorRef?: string[][];
+                /**
+                 * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                 *
+                 *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                 */
                 mutatedRef?: string[][];
             };
         };
         /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
         Selector: {
-            /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+            /** @description Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many). */
             from: {
                 /**
                  * Format: uuid
@@ -795,8 +1040,19 @@ export interface components {
                         id?: string;
                         /** @description Kind of the resource. */
                         kind: string;
-                        /** @description JSON ref to value from where patch should be applied. */
+                        /**
+                         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                         *
+                         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                         *
+                         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                         */
                         mutatorRef?: string[][];
+                        /**
+                         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                         *
+                         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                         */
                         mutatedRef?: string[][];
                     }[];
                     /** @description The to of the matchselector. */
@@ -808,8 +1064,19 @@ export interface components {
                         id?: string;
                         /** @description Kind of the resource. */
                         kind: string;
-                        /** @description JSON ref to value from where patch should be applied. */
+                        /**
+                         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                         *
+                         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                         *
+                         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                         */
                         mutatorRef?: string[][];
+                        /**
+                         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                         *
+                         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                         */
                         mutatedRef?: string[][];
                     }[];
                 };
@@ -844,7 +1111,7 @@ export interface components {
                         kind: string;
                     };
                 };
-                /** @description Patch configuration for the selector */
+                /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                 patch?: {
                     /**
                      * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -853,18 +1120,30 @@ export interface components {
                      *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                      *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                      *     remove: Removes a value.
+                     *     replace: Replaces the value at the target location.
                      *     copy: Copies a value from one location to another.
                      *     move: Moves a value from one location to another.
                      *     test: Tests that a value at the target location is equal to a specified value.
                      * @enum {string}
                      */
-                    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                    /** @description JSON ref to value from where patch should be applied. */
+                    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                    /**
+                     * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                     *
+                     *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                     *
+                     *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                     */
                     mutatorRef?: string[][];
+                    /**
+                     * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                     *
+                     *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                     */
                     mutatedRef?: string[][];
                 };
             }[];
-            /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+            /** @description Destination side of the selector. For kind=hierarchical, to is the parent. */
             to: {
                 /**
                  * Format: uuid
@@ -886,8 +1165,19 @@ export interface components {
                         id?: string;
                         /** @description Kind of the resource. */
                         kind: string;
-                        /** @description JSON ref to value from where patch should be applied. */
+                        /**
+                         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                         *
+                         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                         *
+                         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                         */
                         mutatorRef?: string[][];
+                        /**
+                         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                         *
+                         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                         */
                         mutatedRef?: string[][];
                     }[];
                     /** @description The to of the matchselector. */
@@ -899,8 +1189,19 @@ export interface components {
                         id?: string;
                         /** @description Kind of the resource. */
                         kind: string;
-                        /** @description JSON ref to value from where patch should be applied. */
+                        /**
+                         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                         *
+                         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                         *
+                         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                         */
                         mutatorRef?: string[][];
+                        /**
+                         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                         *
+                         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                         */
                         mutatedRef?: string[][];
                     }[];
                 };
@@ -935,7 +1236,7 @@ export interface components {
                         kind: string;
                     };
                 };
-                /** @description Patch configuration for the selector */
+                /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                 patch?: {
                     /**
                      * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -944,14 +1245,26 @@ export interface components {
                      *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                      *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                      *     remove: Removes a value.
+                     *     replace: Replaces the value at the target location.
                      *     copy: Copies a value from one location to another.
                      *     move: Moves a value from one location to another.
                      *     test: Tests that a value at the target location is equal to a specified value.
                      * @enum {string}
                      */
-                    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                    /** @description JSON ref to value from where patch should be applied. */
+                    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                    /**
+                     * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                     *
+                     *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                     *
+                     *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                     */
                     mutatorRef?: string[][];
+                    /**
+                     * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                     *
+                     *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                     */
                     mutatedRef?: string[][];
                 };
             }[];
@@ -960,7 +1273,7 @@ export interface components {
         SelectorSetItem: {
             /** @description Selectors used to define relationships which are allowed. */
             allow: {
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                /** @description Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many). */
                 from: {
                     /**
                      * Format: uuid
@@ -982,8 +1295,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                         /** @description The to of the matchselector. */
@@ -995,8 +1319,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                     };
@@ -1031,7 +1366,7 @@ export interface components {
                             kind: string;
                         };
                     };
-                    /** @description Patch configuration for the selector */
+                    /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                     patch?: {
                         /**
                          * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -1040,18 +1375,30 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                        /**
+                         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                         *
+                         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                         *
+                         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                         */
                         mutatorRef?: string[][];
+                        /**
+                         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                         *
+                         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                         */
                         mutatedRef?: string[][];
                     };
                 }[];
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                /** @description Destination side of the selector. For kind=hierarchical, to is the parent. */
                 to: {
                     /**
                      * Format: uuid
@@ -1073,8 +1420,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                         /** @description The to of the matchselector. */
@@ -1086,8 +1444,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                     };
@@ -1122,7 +1491,7 @@ export interface components {
                             kind: string;
                         };
                     };
-                    /** @description Patch configuration for the selector */
+                    /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                     patch?: {
                         /**
                          * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -1131,21 +1500,33 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                        /**
+                         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                         *
+                         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                         *
+                         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                         */
                         mutatorRef?: string[][];
+                        /**
+                         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                         *
+                         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                         */
                         mutatedRef?: string[][];
                     };
                 }[];
             };
             /** @description Optional selectors used to define relationships which should not be created / is restricted. */
             deny?: {
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                /** @description Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many). */
                 from: {
                     /**
                      * Format: uuid
@@ -1167,8 +1548,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                         /** @description The to of the matchselector. */
@@ -1180,8 +1572,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                     };
@@ -1216,7 +1619,7 @@ export interface components {
                             kind: string;
                         };
                     };
-                    /** @description Patch configuration for the selector */
+                    /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                     patch?: {
                         /**
                          * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -1225,18 +1628,30 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                        /**
+                         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                         *
+                         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                         *
+                         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                         */
                         mutatorRef?: string[][];
+                        /**
+                         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                         *
+                         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                         */
                         mutatedRef?: string[][];
                     };
                 }[];
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                /** @description Destination side of the selector. For kind=hierarchical, to is the parent. */
                 to: {
                     /**
                      * Format: uuid
@@ -1258,8 +1673,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                         /** @description The to of the matchselector. */
@@ -1271,8 +1697,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                     };
@@ -1307,7 +1744,7 @@ export interface components {
                             kind: string;
                         };
                     };
-                    /** @description Patch configuration for the selector */
+                    /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                     patch?: {
                         /**
                          * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -1316,14 +1753,26 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                        /**
+                         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                         *
+                         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                         *
+                         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                         */
                         mutatorRef?: string[][];
+                        /**
+                         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                         *
+                         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                         */
                         mutatedRef?: string[][];
                     };
                 }[];
@@ -1333,7 +1782,7 @@ export interface components {
         SelectorSet: {
             /** @description Selectors used to define relationships which are allowed. */
             allow: {
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                /** @description Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many). */
                 from: {
                     /**
                      * Format: uuid
@@ -1355,8 +1804,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                         /** @description The to of the matchselector. */
@@ -1368,8 +1828,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                     };
@@ -1404,7 +1875,7 @@ export interface components {
                             kind: string;
                         };
                     };
-                    /** @description Patch configuration for the selector */
+                    /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                     patch?: {
                         /**
                          * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -1413,18 +1884,30 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                        /**
+                         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                         *
+                         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                         *
+                         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                         */
                         mutatorRef?: string[][];
+                        /**
+                         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                         *
+                         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                         */
                         mutatedRef?: string[][];
                     };
                 }[];
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                /** @description Destination side of the selector. For kind=hierarchical, to is the parent. */
                 to: {
                     /**
                      * Format: uuid
@@ -1446,8 +1929,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                         /** @description The to of the matchselector. */
@@ -1459,8 +1953,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                     };
@@ -1495,7 +2000,7 @@ export interface components {
                             kind: string;
                         };
                     };
-                    /** @description Patch configuration for the selector */
+                    /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                     patch?: {
                         /**
                          * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -1504,21 +2009,33 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                        /**
+                         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                         *
+                         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                         *
+                         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                         */
                         mutatorRef?: string[][];
+                        /**
+                         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                         *
+                         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                         */
                         mutatedRef?: string[][];
                     };
                 }[];
             };
             /** @description Optional selectors used to define relationships which should not be created / is restricted. */
             deny?: {
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                /** @description Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many). */
                 from: {
                     /**
                      * Format: uuid
@@ -1540,8 +2057,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                         /** @description The to of the matchselector. */
@@ -1553,8 +2081,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                     };
@@ -1589,7 +2128,7 @@ export interface components {
                             kind: string;
                         };
                     };
-                    /** @description Patch configuration for the selector */
+                    /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                     patch?: {
                         /**
                          * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -1598,18 +2137,30 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                        /**
+                         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                         *
+                         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                         *
+                         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                         */
                         mutatorRef?: string[][];
+                        /**
+                         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                         *
+                         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                         */
                         mutatedRef?: string[][];
                     };
                 }[];
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                /** @description Destination side of the selector. For kind=hierarchical, to is the parent. */
                 to: {
                     /**
                      * Format: uuid
@@ -1631,8 +2182,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                         /** @description The to of the matchselector. */
@@ -1644,8 +2206,19 @@ export interface components {
                             id?: string;
                             /** @description Kind of the resource. */
                             kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
+                            /**
+                             * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                             *
+                             *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                             *
+                             *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                             */
                             mutatorRef?: string[][];
+                            /**
+                             * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                             *
+                             *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                             */
                             mutatedRef?: string[][];
                         }[];
                     };
@@ -1680,7 +2253,7 @@ export interface components {
                             kind: string;
                         };
                     };
-                    /** @description Patch configuration for the selector */
+                    /** @description Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches. */
                     patch?: {
                         /**
                          * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -1689,14 +2262,26 @@ export interface components {
                          *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                          *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                          *     remove: Removes a value.
+                         *     replace: Replaces the value at the target location.
                          *     copy: Copies a value from one location to another.
                          *     move: Moves a value from one location to another.
                          *     test: Tests that a value at the target location is equal to a specified value.
                          * @enum {string}
                          */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
+                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
+                        /**
+                         * @description Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+                         *
+                         *     The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+                         *
+                         *     Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
+                         */
                         mutatorRef?: string[][];
+                        /**
+                         * @description Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+                         *
+                         *     mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
+                         */
                         mutatedRef?: string[][];
                     };
                 }[];

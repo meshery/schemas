@@ -4,8 +4,8 @@
 package organization
 
 import (
-	core "github.com/meshery/schemas/models/core"
 	"github.com/gofrs/uuid"
+	core "github.com/meshery/schemas/models/core"
 )
 
 // Defines values for OrgTeamActionPayloadAction.
@@ -31,14 +31,14 @@ type AvailableOrganization struct {
 
 // AvailableTeam defines model for AvailableTeam.
 type AvailableTeam struct {
-	CreatedAt   Time                   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	DeletedAt   NullableTime           `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	Description Text                   `json:"description,omitempty" yaml:"description,omitempty"`
+	CreatedAt   Time           `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt   NullableTime   `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	Description Text           `json:"description,omitempty" yaml:"description,omitempty"`
 	ID          core.GeneralId `db:"id" json:"id" yaml:"id"`
-	Metadata    MapObject              `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-	Name        Text                   `json:"name,omitempty" yaml:"name,omitempty"`
-	Owner       Text                   `json:"owner,omitempty" yaml:"owner,omitempty"`
-	UpdatedAt   Time                   `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	Metadata    MapObject      `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Name        Text           `json:"name,omitempty" yaml:"name,omitempty"`
+	Owner       Text           `json:"owner,omitempty" yaml:"owner,omitempty"`
+	UpdatedAt   Time           `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // DashboardPrefs Preferences specific to dashboard behavior
@@ -160,12 +160,12 @@ type Preferences struct {
 
 // TeamsOrganizationsMapping defines model for TeamsOrganizationsMapping.
 type TeamsOrganizationsMapping struct {
-	CreatedAt Time                        `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	DeletedAt NullableTime                `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	CreatedAt Time                `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt NullableTime        `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 	ID        core.GeneralId      `db:"id" json:"id" yaml:"id"`
 	OrgId     core.OrganizationId `db:"org_id" json:"org_id" yaml:"org_id"`
 	TeamId    core.TeamId         `db:"team_id" json:"team_id" yaml:"team_id"`
-	UpdatedAt Time                        `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt Time                `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // TeamsOrganizationsMappingPage defines model for TeamsOrganizationsMappingPage.
@@ -205,7 +205,7 @@ type Text = core.Text
 type Theme struct {
 	// Id Theme ID.
 	ID   uuid.UUID `json:"id" yaml:"id"`
-	Logo Logo               `json:"logo" yaml:"logo"`
+	Logo Logo      `json:"logo" yaml:"logo"`
 
 	// Vars The vars of the theme.
 	Vars *map[string]interface{} `json:"vars,omitempty" yaml:"vars,omitempty"`

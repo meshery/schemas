@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "bfd819819315ab0192b6f930378760de4b79ecd8acdc4741e72b846d7e7207e2" as const;
+export const PERMISSIONS_INDEX_ID = "f3b782e7396cf230d10ee3e64db1338eb5a44430619bd26b4f84b0e8214894f2" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -674,17 +674,6 @@ export const Keys = {
     category: "Extensibility",
     subcategory: "ReST API",
     function: "Swagger integration",
-    description: ""
-  },
-
-  /**
-   * No description available
-   */
-  ExtensibilityNamespacedCustomResolvers: {
-    id: "192cd281-234a-4127-b8a8-3e6f10d9e730" as PermissionKey,
-    category: "Extensibility",
-    subcategory: "GraphQL API",
-    function: "Namespaced custom resolvers",
     description: ""
   },
 
@@ -1461,11 +1450,11 @@ export const Keys = {
   /**
    * Create, update , delete and manage recogntions awarded by your organization
    */
-  IdentityAccessManagementManageRecogntions: {
+  IdentityAccessManagementManageRecognitions: {
     id: "0a887b7f-b6c2-4a33-b080-bec9c3894d0c" as PermissionKey,
     category: "Identity & Access Management",
     subcategory: "Organization",
-    function: "Manage Recogntions",
+    function: "Manage Recognitions",
     description: "Create, update , delete and manage recogntions awarded by your organization"
   },
 
@@ -2017,6 +2006,61 @@ export const Keys = {
     subcategory: "Settings",
     function: "Reset Database",
     description: "Reset Meshery database"
+  },
+
+  /**
+   * Import a model into the capabilities registry
+   */
+  MesherySystemImportModel: {
+    id: "9e412481-744f-4676-bb1c-f40ce9e6c8f8" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Import Model",
+    description: "Import a model into the capabilities registry"
+  },
+
+  /**
+   * Create a new model in the capabilities registry
+   */
+  MesherySystemCreateModel: {
+    id: "272a1166-a023-43e8-9e27-2cd8054115bb" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Create Model",
+    description: "Create a new model in the capabilities registry"
+  },
+
+  /**
+   * Create a new relationship definition in the capabilities registry
+   */
+  MesherySystemCreateRelationship: {
+    id: "60609c21-88b1-4913-8102-5d9d0fa90953" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Create Relationship",
+    description: "Create a new relationship definition in the capabilities registry"
+  },
+
+  /**
+   * View server-wide defaults for Meshery Operator MeshSync and Broker
+   */
+  MesherySystemViewControllersConfig: {
+    id: "278e5f2f-6eca-4e26-864b-44d4246f3c19" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "View Controllers Config",
+    description: "View server-wide defaults for Meshery Operator MeshSync and Broker"
+  },
+
+  /**
+   * Edit and save server-wide defaults for Meshery Operator Meshsync and Broker
+   */
+  MesherySystemEditControllersConfig: {
+    id: "4ea3ffab-dced-4358-b138-b583d90f0451" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Edit Controllers Config",
+    description: "Edit and save server-wide defaults for Meshery Operator Meshsync and Broker"
   },
 
   /**
@@ -2875,17 +2919,6 @@ export const Keys = {
     subcategory: "Operator",
     function: "View metrics in visualizer",
     description: "View real-time resource metrics in Kanvas Operator"
-  },
-
-  /**
-   * Perform a conformance test in Kanvas Operator
-   */
-  KanvasPerformConformanceTest: {
-    id: "901ca054-0656-4db5-8d58-d618e0b82b39" as PermissionKey,
-    category: "Kanvas",
-    subcategory: "Operator",
-    function: "Perform conformance test",
-    description: "Perform a conformance test in Kanvas Operator"
   },
 
   /**
@@ -4899,6 +4932,171 @@ export const Keys = {
     subcategory: "MeshMonkey",
     function: "As daemonsets",
     description: ""
+  },
+
+  /**
+   * List and inspect shared job leases, including claim and pause state.
+   */
+  BlowhornManagementViewJobLeases: {
+    id: "eafc0d41-c847-4d09-bef5-dff136c418f1" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Job Leases",
+    function: "View Job Leases",
+    description: "List and inspect shared job leases, including claim and pause state."
+  },
+
+  /**
+   * Create, update, delete, claim, renew, release, pause and resume shared job leases.
+   */
+  BlowhornManagementManageJobLeases: {
+    id: "6babb477-6b2f-4789-8ed4-b213c0aeeea6" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Job Leases",
+    function: "Manage Job Leases",
+    description: "Create, update, delete, claim, renew, release, pause and resume shared job leases."
+  },
+
+  /**
+   * List and inspect Blowhorn profiles.
+   */
+  BlowhornManagementViewBlowhornProfiles: {
+    id: "9fed5304-30d2-4dc1-a7e2-9c30ea920f20" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Profiles",
+    function: "View Blowhorn Profiles",
+    description: "List and inspect Blowhorn profiles."
+  },
+
+  /**
+   * Create, update and delete Blowhorn profiles.
+   */
+  BlowhornManagementManageBlowhornProfiles: {
+    id: "67c4a558-d5d5-4749-a968-c3a2ac622148" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Profiles",
+    function: "Manage Blowhorn Profiles",
+    description: "Create, update and delete Blowhorn profiles."
+  },
+
+  /**
+   * List and inspect Blowhorn content rows.
+   */
+  BlowhornManagementViewBlowhornContent: {
+    id: "7cae4770-04b7-4deb-a1dd-9f4564235f43" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Content",
+    function: "View Blowhorn Content",
+    description: "List and inspect Blowhorn content rows."
+  },
+
+  /**
+   * Insert, update and delete Blowhorn content rows.
+   */
+  BlowhornManagementManageBlowhornContent: {
+    id: "a2b188fe-68aa-4e9a-8d40-604cf9831159" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Content",
+    function: "Manage Blowhorn Content",
+    description: "Insert, update and delete Blowhorn content rows."
+  },
+
+  /**
+   * List and inspect Blowhorn destinations.
+   */
+  BlowhornManagementViewBlowhornDestinations: {
+    id: "5997dfed-fb70-48de-a2a0-0da6da3c2541" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Destinations",
+    function: "View Blowhorn Destinations",
+    description: "List and inspect Blowhorn destinations."
+  },
+
+  /**
+   * Create and update Blowhorn destinations.
+   */
+  BlowhornManagementManageBlowhornDestinations: {
+    id: "255aad27-4341-47a4-a54b-8c09280fb0f8" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Destinations",
+    function: "Manage Blowhorn Destinations",
+    description: "Create and update Blowhorn destinations."
+  },
+
+  /**
+   * List and inspect Blowhorn host bindings.
+   */
+  BlowhornManagementViewBlowhornBindings: {
+    id: "6f4228c8-3b84-4272-bc8a-7885feaf8230" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Bindings",
+    function: "View Blowhorn Bindings",
+    description: "List and inspect Blowhorn host bindings."
+  },
+
+  /**
+   * Bind and unbind Blowhorn profiles on hosts.
+   */
+  BlowhornManagementManageBlowhornBindings: {
+    id: "004edc34-eeaa-4169-bd97-5f64dc2397e4" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Bindings",
+    function: "Manage Blowhorn Bindings",
+    description: "Bind and unbind Blowhorn profiles on hosts."
+  },
+
+  /**
+   * List and inspect Blowhorn ledger entries, contacts and mentees.
+   */
+  BlowhornManagementViewBlowhornLedger: {
+    id: "bb73ba87-86d3-4674-982f-4b2f09cabe4f" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Ledger",
+    function: "View Blowhorn Ledger",
+    description: "List and inspect Blowhorn ledger entries, contacts and mentees."
+  },
+
+  /**
+   * Record, claim and delete Blowhorn ledger entries, contacts and mentees.
+   */
+  BlowhornManagementManageBlowhornLedger: {
+    id: "e777954a-79eb-4e68-9688-b5d16f520766" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Ledger",
+    function: "Manage Blowhorn Ledger",
+    description: "Record, claim and delete Blowhorn ledger entries, contacts and mentees."
+  },
+
+  /**
+   * List and inspect Blowhorn run records and analytics.
+   */
+  BlowhornManagementViewBlowhornRuns: {
+    id: "ab48c577-83bc-4f46-b9ba-75f9b079f681" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Runs",
+    function: "View Blowhorn Runs",
+    description: "List and inspect Blowhorn run records and analytics."
+  },
+
+  /**
+   * Append Blowhorn run records and record analytics rollups.
+   */
+  BlowhornManagementManageBlowhornRuns: {
+    id: "c6dbe8f1-be04-4b44-a247-fd56564646dc" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Runs",
+    function: "Manage Blowhorn Runs",
+    description: "Append Blowhorn run records and record analytics rollups."
+  },
+
+  /**
+   * Read the Blowhorn contract version and organization binding status.
+   */
+  BlowhornManagementViewBlowhornHealth: {
+    id: "0b51f710-4047-4311-9164-54cd658424cd" as PermissionKey,
+    category: "Blowhorn Management",
+    subcategory: "Health",
+    function: "View Blowhorn Health",
+    description: "Read the Blowhorn contract version and organization binding status."
   }
 } as const;
 
@@ -5196,11 +5394,6 @@ export const PermissionKeys = {
    * No description available
    */
   ExtensibilitySwaggerIntegration: "045f4c47-95d7-4ee7-923e-b069faa75640" as PermissionKey,
-
-  /**
-   * No description available
-   */
-  ExtensibilityNamespacedCustomResolvers: "192cd281-234a-4127-b8a8-3e6f10d9e730" as PermissionKey,
 
   /**
    * Extend Meshery's capabilities behind a gRPC interface for Model registration and operation invocation
@@ -5555,7 +5748,7 @@ export const PermissionKeys = {
   /**
    * Create, update , delete and manage recogntions awarded by your organization
    */
-  IdentityAccessManagementManageRecogntions: "0a887b7f-b6c2-4a33-b080-bec9c3894d0c" as PermissionKey,
+  IdentityAccessManagementManageRecognitions: "0a887b7f-b6c2-4a33-b080-bec9c3894d0c" as PermissionKey,
 
   /**
    * Create, update , delete and manage invitations to your organization
@@ -5806,6 +5999,31 @@ export const PermissionKeys = {
    * Reset Meshery database
    */
   MesherySystemResetDatabase: "84fc402c-f33e-4a21-a0e3-e14f9e20b125" as PermissionKey,
+
+  /**
+   * Import a model into the capabilities registry
+   */
+  MesherySystemImportModel: "9e412481-744f-4676-bb1c-f40ce9e6c8f8" as PermissionKey,
+
+  /**
+   * Create a new model in the capabilities registry
+   */
+  MesherySystemCreateModel: "272a1166-a023-43e8-9e27-2cd8054115bb" as PermissionKey,
+
+  /**
+   * Create a new relationship definition in the capabilities registry
+   */
+  MesherySystemCreateRelationship: "60609c21-88b1-4913-8102-5d9d0fa90953" as PermissionKey,
+
+  /**
+   * View server-wide defaults for Meshery Operator MeshSync and Broker
+   */
+  MesherySystemViewControllersConfig: "278e5f2f-6eca-4e26-864b-44d4246f3c19" as PermissionKey,
+
+  /**
+   * Edit and save server-wide defaults for Meshery Operator Meshsync and Broker
+   */
+  MesherySystemEditControllersConfig: "4ea3ffab-dced-4358-b138-b583d90f0451" as PermissionKey,
 
   /**
    * No description available
@@ -6196,11 +6414,6 @@ export const PermissionKeys = {
    * View real-time resource metrics in Kanvas Operator
    */
   KanvasViewMetricsInVisualizer: "2988a366-a743-48e7-9946-daff9b2ab0a1" as PermissionKey,
-
-  /**
-   * Perform a conformance test in Kanvas Operator
-   */
-  KanvasPerformConformanceTest: "901ca054-0656-4db5-8d58-d618e0b82b39" as PermissionKey,
 
   /**
    * Stream container logs in Kanvas Operator
@@ -7115,7 +7328,82 @@ export const PermissionKeys = {
   /**
    * No description available
    */
-  ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey
+  ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey,
+
+  /**
+   * List and inspect shared job leases, including claim and pause state.
+   */
+  BlowhornManagementViewJobLeases: "eafc0d41-c847-4d09-bef5-dff136c418f1" as PermissionKey,
+
+  /**
+   * Create, update, delete, claim, renew, release, pause and resume shared job leases.
+   */
+  BlowhornManagementManageJobLeases: "6babb477-6b2f-4789-8ed4-b213c0aeeea6" as PermissionKey,
+
+  /**
+   * List and inspect Blowhorn profiles.
+   */
+  BlowhornManagementViewBlowhornProfiles: "9fed5304-30d2-4dc1-a7e2-9c30ea920f20" as PermissionKey,
+
+  /**
+   * Create, update and delete Blowhorn profiles.
+   */
+  BlowhornManagementManageBlowhornProfiles: "67c4a558-d5d5-4749-a968-c3a2ac622148" as PermissionKey,
+
+  /**
+   * List and inspect Blowhorn content rows.
+   */
+  BlowhornManagementViewBlowhornContent: "7cae4770-04b7-4deb-a1dd-9f4564235f43" as PermissionKey,
+
+  /**
+   * Insert, update and delete Blowhorn content rows.
+   */
+  BlowhornManagementManageBlowhornContent: "a2b188fe-68aa-4e9a-8d40-604cf9831159" as PermissionKey,
+
+  /**
+   * List and inspect Blowhorn destinations.
+   */
+  BlowhornManagementViewBlowhornDestinations: "5997dfed-fb70-48de-a2a0-0da6da3c2541" as PermissionKey,
+
+  /**
+   * Create and update Blowhorn destinations.
+   */
+  BlowhornManagementManageBlowhornDestinations: "255aad27-4341-47a4-a54b-8c09280fb0f8" as PermissionKey,
+
+  /**
+   * List and inspect Blowhorn host bindings.
+   */
+  BlowhornManagementViewBlowhornBindings: "6f4228c8-3b84-4272-bc8a-7885feaf8230" as PermissionKey,
+
+  /**
+   * Bind and unbind Blowhorn profiles on hosts.
+   */
+  BlowhornManagementManageBlowhornBindings: "004edc34-eeaa-4169-bd97-5f64dc2397e4" as PermissionKey,
+
+  /**
+   * List and inspect Blowhorn ledger entries, contacts and mentees.
+   */
+  BlowhornManagementViewBlowhornLedger: "bb73ba87-86d3-4674-982f-4b2f09cabe4f" as PermissionKey,
+
+  /**
+   * Record, claim and delete Blowhorn ledger entries, contacts and mentees.
+   */
+  BlowhornManagementManageBlowhornLedger: "e777954a-79eb-4e68-9688-b5d16f520766" as PermissionKey,
+
+  /**
+   * List and inspect Blowhorn run records and analytics.
+   */
+  BlowhornManagementViewBlowhornRuns: "ab48c577-83bc-4f46-b9ba-75f9b079f681" as PermissionKey,
+
+  /**
+   * Append Blowhorn run records and record analytics rollups.
+   */
+  BlowhornManagementManageBlowhornRuns: "c6dbe8f1-be04-4b44-a247-fd56564646dc" as PermissionKey,
+
+  /**
+   * Read the Blowhorn contract version and organization binding status.
+   */
+  BlowhornManagementViewBlowhornHealth: "0b51f710-4047-4311-9164-54cd658424cd" as PermissionKey
 } as const;
 
 /**

@@ -53,8 +53,9 @@ properties:
     type: number
     format: double
     description: >-
-      Quantity of the feature granted by the plan. The sentinel value
-      999999999999 denotes unlimited.
+      Quantity of the feature granted by the plan. For a cap-style feature this
+      is the maximum, and the sentinel value 999999999999 denotes unlimited. For
+      a capability-style feature any value greater than 0 grants the capability.
     minimum: 0
     x-oapi-codegen-extra-tags:
       db: quantity

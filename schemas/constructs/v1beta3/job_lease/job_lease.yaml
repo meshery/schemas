@@ -1,0 +1,263 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Job Lease Schema
+description: |
+  Server-returned job lease as persisted by meshery-cloud. A job lease is a
+  due-work row plus time-bound claim state, shared by Layer5 Cloud and
+  Blowhorn: competing consumers claim, renew and release leases on due jobs,
+  and pause scopes gate which rows are claimable. The claim race is decided
+  server-side in a single statement; losing racers receive null, never an
+  error. Claim columns (`claimedBy`, `claimedAt`, `leaseExpiresAt`) and pause
+  columns (`pausedAt`, `pausedBy`, `pauseReason`) are server-managed and are
+  refused on CRUD paths; they change only through the claim, renew, release,
+  pause and resume operations. `locked`, `lockedBy`, `lockedAt` and
+  `lockStale` are computed projections for schedule screens, not stored
+  columns.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - rowNumber
+  - command
+  - status
+  - fingerprint
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated job lease ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  rowNumber:
+    type: integer
+    description: Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides.
+    minimum: 0
+    x-oapi-codegen-extra-tags:
+      db: row_number
+    x-order: 3
+  command:
+    type: string
+    description: Job command to execute when the lease is held.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: command
+    x-order: 4
+  profile:
+    type: string
+    description: Profile reference the job runs against.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: profile
+    x-order: 5
+  platform:
+    type: string
+    description: Target platform for the job (e.g. linkedin).
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: platform
+    x-order: 6
+  params:
+    type: object
+    description: Arbitrary job parameters, stored as a JSON blob.
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: params
+    x-order: 7
+  runAt:
+    type: string
+    format: date-time
+    description: Time the job becomes due.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: run_at
+    x-order: 8
+  nextRunAt:
+    type: string
+    format: date-time
+    description: Next scheduled time for recurring jobs.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: next_run_at
+    x-order: 9
+  recurrence:
+    type: string
+    description: Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: recurrence
+    x-order: 10
+  retryBudget:
+    type: integer
+    description: Remaining execution attempts for the job.
+    minimum: 0
+    x-oapi-codegen-extra-tags:
+      db: retry_budget
+    x-order: 11
+  status:
+    type: string
+    description: Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations.
+    enum:
+      - pending
+      - leased
+      - succeeded
+      - failed
+    x-oapi-codegen-extra-tags:
+      db: status
+    x-order: 12
+  driverMode:
+    type: string
+    description: Execution driver mode for the job.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: driver_mode
+    x-order: 13
+  lastRunAt:
+    type: string
+    format: date-time
+    description: Time of the most recent execution attempt.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: last_run_at
+    x-order: 14
+  lastError:
+    type: string
+    description: Error reported by the most recent execution attempt.
+    x-oapi-codegen-extra-tags:
+      db: last_error
+    x-order: 15
+  claimedBy:
+    type: string
+    description: Machine holding the lease. Server-managed; set only by claim, refused on every other path.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: claimed_by
+    x-order: 16
+  claimedAt:
+    type: string
+    format: date-time
+    description: Time the lease was claimed. Server-managed.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: claimed_at
+    x-order: 17
+  leaseExpiresAt:
+    type: string
+    format: date-time
+    description: Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: lease_expires_at
+    x-order: 18
+  pausedAt:
+    type: string
+    format: date-time
+    description: Time the row was paused. Server-managed; set only by pause, cleared by resume.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: paused_at
+    x-order: 19
+  pausedBy:
+    type: string
+    description: Identity that paused the row. Server-managed.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: paused_by
+    x-order: 20
+  pauseReason:
+    type: string
+    description: Operator reason for pausing the row. Server-managed.
+    x-oapi-codegen-extra-tags:
+      db: pause_reason
+    x-order: 21
+  fingerprint:
+    type: string
+    description: Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: fingerprint
+    x-order: 22
+  locked:
+    type: boolean
+    description: Computed projection. True while a live lease is held on the row.
+    x-order: 23
+  lockedBy:
+    type: string
+    description: Computed projection of the current lease holder.
+    maxLength: 255
+    x-order: 24
+  lockedAt:
+    type: string
+    format: date-time
+    description: Computed projection of the current claim time.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-order: 25
+  lockStale:
+    type: boolean
+    description: Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable.
+    x-order: 26
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of job lease creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 27
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last job lease modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 28
+  deletedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the job lease was soft-deleted.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
+    x-order: 29

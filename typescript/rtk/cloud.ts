@@ -1,6 +1,7 @@
 import { cloudBaseApi as api } from "./api";
 export const addTagTypes = [
   "Feature_Features",
+  "Organization_SMTP_Configuration_OrganizationSmtp",
   "Support_Support",
   "System_API_System",
   "Badge_Badge",
@@ -16,6 +17,13 @@ export const addTagTypes = [
   "User_users",
   "View_views",
   "Academy_API_Academy",
+  "BlowhornBinding_blowhornBindings",
+  "BlowhornContent_blowhornContent",
+  "BlowhornDestination_blowhornDestinations",
+  "BlowhornHealth_blowhornHealth",
+  "BlowhornLedger_blowhornLedger",
+  "BlowhornProfile_blowhornProfiles",
+  "BlowhornRun_blowhornRuns",
   "Connection_API_Connections",
   "Connection_API_ConnectionDefinitions",
   "Design_designs",
@@ -23,6 +31,7 @@ export const addTagTypes = [
   "Events_events",
   "Filter_filters",
   "Invitation_Invitation",
+  "JobLease_jobLeases",
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
@@ -52,6 +61,99 @@ const injectedRtkApi = api
       getFeaturesByOrganization: build.query<GetFeaturesByOrganizationApiResponse, GetFeaturesByOrganizationApiArg>({
         query: (queryArg) => ({ url: `/api/entitlement/subscriptions/organizations/${queryArg.orgId}/features` }),
         providesTags: ["Feature_Features"],
+      }),
+      getOrganizationSmtpEnvironment: build.query<
+        GetOrganizationSmtpEnvironmentApiResponse,
+        GetOrganizationSmtpEnvironmentApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/orgs/${queryArg.orgId}/environments/mail-relay` }),
+        providesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      deleteOrganizationSmtpEnvironment: build.mutation<
+        DeleteOrganizationSmtpEnvironmentApiResponse,
+        DeleteOrganizationSmtpEnvironmentApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/orgs/${queryArg.orgId}/environments/mail-relay`, method: "DELETE" }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      getOrganizationSmtpConfiguration: build.query<
+        GetOrganizationSmtpConfigurationApiResponse,
+        GetOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection` }),
+        providesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      createOrganizationSmtpConfiguration: build.mutation<
+        CreateOrganizationSmtpConfigurationApiResponse,
+        CreateOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      updateOrganizationSmtpConfiguration: build.mutation<
+        UpdateOrganizationSmtpConfigurationApiResponse,
+        UpdateOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      rotateOrganizationSmtpCredential: build.mutation<
+        RotateOrganizationSmtpCredentialApiResponse,
+        RotateOrganizationSmtpCredentialApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection/credential`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      setOrganizationSmtpEnablement: build.mutation<
+        SetOrganizationSmtpEnablementApiResponse,
+        SetOrganizationSmtpEnablementApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection/enablement`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      testOrganizationSmtpConfiguration: build.mutation<
+        TestOrganizationSmtpConfigurationApiResponse,
+        TestOrganizationSmtpConfigurationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/connection/test`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      getOrganizationSmtpDomainVerification: build.query<
+        GetOrganizationSmtpDomainVerificationApiResponse,
+        GetOrganizationSmtpDomainVerificationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/domain-verification` }),
+        providesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
+      }),
+      verifyOrganizationSmtpDomain: build.mutation<
+        VerifyOrganizationSmtpDomainApiResponse,
+        VerifyOrganizationSmtpDomainApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/orgs/${queryArg.orgId}/environments/mail-relay/domain-verification`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Organization_SMTP_Configuration_OrganizationSmtp"],
       }),
       submitSupportRequest: build.mutation<SubmitSupportRequestApiResponse, SubmitSupportRequestApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/support`, method: "POST", body: queryArg.body }),
@@ -266,6 +368,24 @@ const injectedRtkApi = api
       }),
       updateOrg: build.mutation<UpdateOrgApiResponse, UpdateOrgApiArg>({
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
+      getChildOrgs: build.query<GetChildOrgsApiResponse, GetChildOrgsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Organization_Organizations"],
+      }),
+      createChildOrg: build.mutation<CreateChildOrgApiResponse, CreateChildOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          method: "POST",
+          body: queryArg.body,
+        }),
         invalidatesTags: ["Organization_Organizations"],
       }),
       getOrgPreferences: build.query<GetOrgPreferencesApiResponse, GetOrgPreferencesApiArg>({
@@ -736,6 +856,260 @@ const injectedRtkApi = api
       getCertificateById: build.query<GetCertificateByIdApiResponse, GetCertificateByIdApiArg>({
         query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
         providesTags: ["Academy_API_Academy"],
+      }),
+      listBlowhornBindings: build.query<ListBlowhornBindingsApiResponse, ListBlowhornBindingsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/bindings`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            profile: queryArg?.profile,
+            host: queryArg?.host,
+          },
+        }),
+        providesTags: ["BlowhornBinding_blowhornBindings"],
+      }),
+      bindBlowhornBinding: build.mutation<BindBlowhornBindingApiResponse, BindBlowhornBindingApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/bindings`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornBinding_blowhornBindings"],
+      }),
+      unbindBlowhornBinding: build.mutation<UnbindBlowhornBindingApiResponse, UnbindBlowhornBindingApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/bindings/${queryArg.blowhornBindingId}`, method: "DELETE" }),
+        invalidatesTags: ["BlowhornBinding_blowhornBindings"],
+      }),
+      listBlowhornContent: build.query<ListBlowhornContentApiResponse, ListBlowhornContentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/content`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            profile: queryArg?.profile,
+          },
+        }),
+        providesTags: ["BlowhornContent_blowhornContent"],
+      }),
+      insertBlowhornContent: build.mutation<InsertBlowhornContentApiResponse, InsertBlowhornContentApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/content`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornContent_blowhornContent"],
+      }),
+      getBlowhornContent: build.query<GetBlowhornContentApiResponse, GetBlowhornContentApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/content/${queryArg.blowhornContentId}` }),
+        providesTags: ["BlowhornContent_blowhornContent"],
+      }),
+      updateBlowhornContent: build.mutation<UpdateBlowhornContentApiResponse, UpdateBlowhornContentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/content/${queryArg.blowhornContentId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["BlowhornContent_blowhornContent"],
+      }),
+      deleteBlowhornContent: build.mutation<DeleteBlowhornContentApiResponse, DeleteBlowhornContentApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/content/${queryArg.blowhornContentId}`, method: "DELETE" }),
+        invalidatesTags: ["BlowhornContent_blowhornContent"],
+      }),
+      listBlowhornDestinations: build.query<ListBlowhornDestinationsApiResponse, ListBlowhornDestinationsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/destinations`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            platform: queryArg?.platform,
+          },
+        }),
+        providesTags: ["BlowhornDestination_blowhornDestinations"],
+      }),
+      upsertBlowhornDestination: build.mutation<UpsertBlowhornDestinationApiResponse, UpsertBlowhornDestinationApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/destinations`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornDestination_blowhornDestinations"],
+      }),
+      getBlowhornDestination: build.query<GetBlowhornDestinationApiResponse, GetBlowhornDestinationApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/destinations/${queryArg.blowhornDestinationId}` }),
+        providesTags: ["BlowhornDestination_blowhornDestinations"],
+      }),
+      getBlowhornHealth: build.query<GetBlowhornHealthApiResponse, GetBlowhornHealthApiArg>({
+        query: () => ({ url: `/api/blowhorn/health` }),
+        providesTags: ["BlowhornHealth_blowhornHealth"],
+      }),
+      listBlowhornLedger: build.query<ListBlowhornLedgerApiResponse, ListBlowhornLedgerApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/ledger`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            ledger: queryArg?.ledger,
+          },
+        }),
+        providesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      recordBlowhornLedgerEntry: build.mutation<RecordBlowhornLedgerEntryApiResponse, RecordBlowhornLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/ledger`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      getBlowhornLedgerEntry: build.query<GetBlowhornLedgerEntryApiResponse, GetBlowhornLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/ledger/${queryArg.blowhornLedgerEntryId}` }),
+        providesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      deleteBlowhornLedgerEntry: build.mutation<DeleteBlowhornLedgerEntryApiResponse, DeleteBlowhornLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/ledger/${queryArg.blowhornLedgerEntryId}`, method: "DELETE" }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      claimIfAbsentBlowhornLedgerEntry: build.mutation<
+        ClaimIfAbsentBlowhornLedgerEntryApiResponse,
+        ClaimIfAbsentBlowhornLedgerEntryApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/ledger/${queryArg.blowhornLedgerEntryId}/claim`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      listBlowhornContacts: build.query<ListBlowhornContactsApiResponse, ListBlowhornContactsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/contacts`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            platform: queryArg?.platform,
+          },
+        }),
+        providesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      upsertBlowhornContact: build.mutation<UpsertBlowhornContactApiResponse, UpsertBlowhornContactApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/contacts`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      listBlowhornMentees: build.query<ListBlowhornMenteesApiResponse, ListBlowhornMenteesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/mentees`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      upsertBlowhornMentee: build.mutation<UpsertBlowhornMenteeApiResponse, UpsertBlowhornMenteeApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/mentees`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      deleteBlowhornMentee: build.mutation<DeleteBlowhornMenteeApiResponse, DeleteBlowhornMenteeApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/mentees/${queryArg.blowhornMenteeId}`, method: "DELETE" }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      recordAndDropBlowhornMentee: build.mutation<
+        RecordAndDropBlowhornMenteeApiResponse,
+        RecordAndDropBlowhornMenteeApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/mentees/${queryArg.blowhornMenteeId}/drop`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
+      }),
+      listBlowhornProfiles: build.query<ListBlowhornProfilesApiResponse, ListBlowhornProfilesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/profiles`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      upsertBlowhornProfile: build.mutation<UpsertBlowhornProfileApiResponse, UpsertBlowhornProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/profiles`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      getBlowhornProfileBySubject: build.query<
+        GetBlowhornProfileBySubjectApiResponse,
+        GetBlowhornProfileBySubjectApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/profiles/by-subject`,
+          params: {
+            subject: queryArg?.subject,
+          },
+        }),
+        providesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      getBlowhornProfile: build.query<GetBlowhornProfileApiResponse, GetBlowhornProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}` }),
+        providesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      updateBlowhornProfile: build.mutation<UpdateBlowhornProfileApiResponse, UpdateBlowhornProfileApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      deleteBlowhornProfile: build.mutation<DeleteBlowhornProfileApiResponse, DeleteBlowhornProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}`, method: "DELETE" }),
+        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      listBlowhornRunRecords: build.query<ListBlowhornRunRecordsApiResponse, ListBlowhornRunRecordsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/runs`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            runId: queryArg?.runId,
+            kind: queryArg?.kind,
+            profile: queryArg?.profile,
+            platform: queryArg?.platform,
+          },
+        }),
+        providesTags: ["BlowhornRun_blowhornRuns"],
+      }),
+      appendBlowhornRunRecord: build.mutation<AppendBlowhornRunRecordApiResponse, AppendBlowhornRunRecordApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/runs`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornRun_blowhornRuns"],
+      }),
+      listBlowhornAnalytics: build.query<ListBlowhornAnalyticsApiResponse, ListBlowhornAnalyticsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/analytics`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            scope: queryArg?.scope,
+          },
+        }),
+        providesTags: ["BlowhornRun_blowhornRuns"],
+      }),
+      recordBlowhornAnalytics: build.mutation<RecordBlowhornAnalyticsApiResponse, RecordBlowhornAnalyticsApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/analytics`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornRun_blowhornRuns"],
       }),
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
         query: (queryArg) => ({
@@ -1291,6 +1665,80 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/identity/users/request/notification` }),
         providesTags: ["Invitation_Invitation"],
       }),
+      listJobLeases: build.query<ListJobLeasesApiResponse, ListJobLeasesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/job-leases`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["JobLease_jobLeases"],
+      }),
+      createJobLease: build.mutation<CreateJobLeaseApiResponse, CreateJobLeaseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      claimJobLease: build.mutation<ClaimJobLeaseApiResponse, ClaimJobLeaseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases/claim`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      getSchedulePause: build.query<GetSchedulePauseApiResponse, GetSchedulePauseApiArg>({
+        query: () => ({ url: `/api/job-leases/schedule-pause` }),
+        providesTags: ["JobLease_jobLeases"],
+      }),
+      setSchedulePause: build.mutation<SetSchedulePauseApiResponse, SetSchedulePauseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases/schedule-pause`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      clearSchedulePause: build.mutation<ClearSchedulePauseApiResponse, ClearSchedulePauseApiArg>({
+        query: () => ({ url: `/api/job-leases/schedule-pause`, method: "DELETE" }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      getJobLease: build.query<GetJobLeaseApiResponse, GetJobLeaseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases/${queryArg.jobLeaseId}` }),
+        providesTags: ["JobLease_jobLeases"],
+      }),
+      updateJobLease: build.mutation<UpdateJobLeaseApiResponse, UpdateJobLeaseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases/${queryArg.jobLeaseId}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      deleteJobLease: build.mutation<DeleteJobLeaseApiResponse, DeleteJobLeaseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases/${queryArg.jobLeaseId}`, method: "DELETE" }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      renewJobLease: build.mutation<RenewJobLeaseApiResponse, RenewJobLeaseApiArg>({
+        query: (queryArg) => ({
+          url: `/api/job-leases/${queryArg.jobLeaseId}/renew`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      releaseJobLease: build.mutation<ReleaseJobLeaseApiResponse, ReleaseJobLeaseApiArg>({
+        query: (queryArg) => ({
+          url: `/api/job-leases/${queryArg.jobLeaseId}/release`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      pauseJobLease: build.mutation<PauseJobLeaseApiResponse, PauseJobLeaseApiArg>({
+        query: (queryArg) => ({
+          url: `/api/job-leases/${queryArg.jobLeaseId}/pause`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
+      resumeJobLease: build.mutation<ResumeJobLeaseApiResponse, ResumeJobLeaseApiArg>({
+        query: (queryArg) => ({ url: `/api/job-leases/${queryArg.jobLeaseId}/resume`, method: "POST" }),
+        invalidatesTags: ["JobLease_jobLeases"],
+      }),
       getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
         query: (queryArg) => ({
           url: `/api/content/patterns/resource`,
@@ -1418,6 +1866,14 @@ const injectedRtkApi = api
         }),
         providesTags: ["Subscription_Subscriptions"],
       }),
+      upsertSubscription: build.mutation<UpsertSubscriptionApiResponse, UpsertSubscriptionApiArg>({
+        query: (queryArg) => ({ url: `/api/entitlement/subscriptions`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Subscription_Subscriptions"],
+      }),
+      getSubscriptionById: build.query<GetSubscriptionByIdApiResponse, GetSubscriptionByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}` }),
+        providesTags: ["Subscription_Subscriptions"],
+      }),
       cancelSubscription: build.mutation<CancelSubscriptionApiResponse, CancelSubscriptionApiArg>({
         query: (queryArg) => ({
           url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/cancel`,
@@ -1457,6 +1913,7 @@ const injectedRtkApi = api
           url: `/api/identity/tokens`,
           params: {
             isOauth: queryArg?.isOauth,
+            purpose: queryArg?.purpose,
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
@@ -1728,8 +2185,20 @@ export type GetFeaturesApiResponse = /** status 200 Features response */ {
     | "DesignsInWorkspace"
     | "WorkspacesInOrganization"
     | "ImageSizeInDesign"
-    | "SizePerDesign";
-  /** Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited. */
+    | "SizePerDesign"
+    | "BlowhornProfiles"
+    | "BlowhornBrowserAutomation"
+    | "BlowhornScheduler"
+    | "BlowhornDevicesPerSeat"
+    | "BlowhornPlatformLinkedIn"
+    | "BlowhornPlatformX"
+    | "BlowhornPlatformReddit"
+    | "BlowhornPlatformHackerNews"
+    | "BlowhornPlatformSlack"
+    | "BlowhornPlatformBluesky"
+    | "BlowhornPlatformGitHub"
+    | "BlowhornPlatformBlog";
+  /** Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability. */
   quantity: number;
   /** Timestamp when the resource was created. */
   created_at: string;
@@ -1771,8 +2240,20 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features respo
     | "DesignsInWorkspace"
     | "WorkspacesInOrganization"
     | "ImageSizeInDesign"
-    | "SizePerDesign";
-  /** Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited. */
+    | "SizePerDesign"
+    | "BlowhornProfiles"
+    | "BlowhornBrowserAutomation"
+    | "BlowhornScheduler"
+    | "BlowhornDevicesPerSeat"
+    | "BlowhornPlatformLinkedIn"
+    | "BlowhornPlatformX"
+    | "BlowhornPlatformReddit"
+    | "BlowhornPlatformHackerNews"
+    | "BlowhornPlatformSlack"
+    | "BlowhornPlatformBluesky"
+    | "BlowhornPlatformGitHub"
+    | "BlowhornPlatformBlog";
+  /** Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability. */
   quantity: number;
   /** Timestamp when the resource was created. */
   created_at: string;
@@ -1781,6 +2262,508 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features respo
 }[];
 export type GetFeaturesByOrganizationApiArg = {
   /** The ID of the organization */
+  orgId: string;
+};
+export type GetOrganizationSmtpEnvironmentApiResponse =
+  /** status 200 The organization has its own mail-relay environment. The canonical Environment shape, not a bespoke one: this endpoint returns an ordinary environment row that happens to carry the well-known name. */ {
+    /** ID */
+    id: string;
+    /** Specifies the version of the schema to which the environment conforms. */
+    schemaVersion: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organizationId: string;
+    /** Environment owner */
+    owner?: string;
+    /** Timestamp when the environment was created. */
+    createdAt?: string;
+    /** Additional metadata associated with the environment. */
+    metadata?: object;
+    /** Timestamp when the environment was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+    deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
+    
+    Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+    
+    At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+    
+    Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+    
+    The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative" | "blowhorn";
+  };
+export type GetOrganizationSmtpEnvironmentApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type DeleteOrganizationSmtpEnvironmentApiResponse = unknown;
+export type DeleteOrganizationSmtpEnvironmentApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type GetOrganizationSmtpConfigurationApiResponse = /** status 200 The organization's SMTP configuration. */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Hostname of the organization's SMTP server. */
+  host: string;
+  /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+  port: number;
+  /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+  encryption: "starttls" | "tls" | "none";
+  /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+  authMechanism: "plain" | "cram-md5" | "none";
+  /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+  username?: string;
+  /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+  password?: string;
+  /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+  fromAddress: string;
+  /** Display name shown alongside the from address in the message header. */
+  fromDisplayName?: string;
+  /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+  replyToAddress?: string;
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in meshery-cloud#6057. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+  status: "registered" | "connected" | "disconnected" | "ignored";
+  /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+  fallbackToProvider: boolean;
+  /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+  fromDomain?: string;
+  /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+  fromDomainVerificationToken?: string;
+  /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+  fromDomainVerifiedAt?: string | null;
+  /** Timestamp of the last message this server accepted. */
+  lastSuccessAt?: string | null;
+  /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+  lastFailureAt?: string | null;
+  /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+  lastFailureReason?:
+    | "blocked_target"
+    | "connect_refused"
+    | "connect_timeout"
+    | "tls_failed"
+    | "starttls_unsupported"
+    | "auth_rejected"
+    | "relay_rejected_sender"
+    | "relay_rejected_recipient"
+    | "delivery_failed"
+    | "credential_unreadable";
+  /** Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057. */
+  consecutiveFailures: number;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string | null;
+  /** Timestamp when the configuration was created. */
+  createdAt: string;
+  /** Timestamp when the configuration was last changed. */
+  updatedAt: string;
+  /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+  deletedAt?: string | null;
+};
+export type GetOrganizationSmtpConfigurationApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type CreateOrganizationSmtpConfigurationApiResponse = /** status 201 The stored SMTP configuration. */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Hostname of the organization's SMTP server. */
+  host: string;
+  /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+  port: number;
+  /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+  encryption: "starttls" | "tls" | "none";
+  /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+  authMechanism: "plain" | "cram-md5" | "none";
+  /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+  username?: string;
+  /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+  password?: string;
+  /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+  fromAddress: string;
+  /** Display name shown alongside the from address in the message header. */
+  fromDisplayName?: string;
+  /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+  replyToAddress?: string;
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in meshery-cloud#6057. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+  status: "registered" | "connected" | "disconnected" | "ignored";
+  /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+  fallbackToProvider: boolean;
+  /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+  fromDomain?: string;
+  /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+  fromDomainVerificationToken?: string;
+  /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+  fromDomainVerifiedAt?: string | null;
+  /** Timestamp of the last message this server accepted. */
+  lastSuccessAt?: string | null;
+  /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+  lastFailureAt?: string | null;
+  /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+  lastFailureReason?:
+    | "blocked_target"
+    | "connect_refused"
+    | "connect_timeout"
+    | "tls_failed"
+    | "starttls_unsupported"
+    | "auth_rejected"
+    | "relay_rejected_sender"
+    | "relay_rejected_recipient"
+    | "delivery_failed"
+    | "credential_unreadable";
+  /** Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057. */
+  consecutiveFailures: number;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string | null;
+  /** Timestamp when the configuration was created. */
+  createdAt: string;
+  /** Timestamp when the configuration was last changed. */
+  updatedAt: string;
+  /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+  deletedAt?: string | null;
+};
+export type CreateOrganizationSmtpConfigurationApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** Hostname of the organization's SMTP server. */
+    host: string;
+    /** TCP port the organization's SMTP server listens on. Restricted further by a submission-port allowlist. */
+    port: number;
+    /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext. */
+    encryption?: "starttls" | "tls" | "none";
+    /** SMTP authentication mechanism. Any mechanism other than `none` requires both a username and a password. */
+    authMechanism?: "plain" | "cram-md5" | "none";
+    /** Username presented to the organization's SMTP server. Required by the server, together with `password`, for every `authMechanism` other than `none`; see that property for why the pairing is a server-enforced contract rather than a schema constraint. */
+    username?: string;
+    /** Password presented to the organization's SMTP server. The server requires it, together with `username`, for every `authMechanism` other than `none`, and answers 400 when either is missing.
+        That rule is deliberately NOT encoded in `required` or as a `oneOf`/`if`-`then`. Both encodings were measured against the generator: `if`/`then` collapses this payload to `interface{}`, and `oneOf` injects a `union json.RawMessage` field with a custom marshaller, either of which costs every consumer its generated type or its wire behaviour to express a constraint the server enforces anyway. Treat this property as conditionally required by contract, not by schema.
+        This is the ONLY operation that accepts the password alongside the settings, so that registering a mail server is one call and no configuration exists in a state where it is expected to send but holds no credential. Afterwards the password is written only by the rotation operation, never by the settings update, whose payload declares no `password` property at all.
+        The redaction sentinel `***` is refused, and so is the empty string - omit the property instead of sending it empty, which the `minLength` below enforces so this payload and the rotation payload agree. */
+    password?: string;
+    /** Address the organization's mail is sent from. */
+    fromAddress: string;
+    /** Display name shown alongside the from address. */
+    fromDisplayName?: string;
+    /** Address replies are directed to. */
+    replyToAddress?: string;
+    /** Whether a message this server fails to accept is re-sent through the provider's shared relay. Disabling it means a failure is a dropped message, account verification and password recovery included. */
+    fallbackToProvider?: boolean;
+  };
+};
+export type UpdateOrganizationSmtpConfigurationApiResponse = /** status 200 The stored SMTP configuration. */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Hostname of the organization's SMTP server. */
+  host: string;
+  /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+  port: number;
+  /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+  encryption: "starttls" | "tls" | "none";
+  /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+  authMechanism: "plain" | "cram-md5" | "none";
+  /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+  username?: string;
+  /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+  password?: string;
+  /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+  fromAddress: string;
+  /** Display name shown alongside the from address in the message header. */
+  fromDisplayName?: string;
+  /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+  replyToAddress?: string;
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in meshery-cloud#6057. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+  status: "registered" | "connected" | "disconnected" | "ignored";
+  /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+  fallbackToProvider: boolean;
+  /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+  fromDomain?: string;
+  /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+  fromDomainVerificationToken?: string;
+  /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+  fromDomainVerifiedAt?: string | null;
+  /** Timestamp of the last message this server accepted. */
+  lastSuccessAt?: string | null;
+  /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+  lastFailureAt?: string | null;
+  /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+  lastFailureReason?:
+    | "blocked_target"
+    | "connect_refused"
+    | "connect_timeout"
+    | "tls_failed"
+    | "starttls_unsupported"
+    | "auth_rejected"
+    | "relay_rejected_sender"
+    | "relay_rejected_recipient"
+    | "delivery_failed"
+    | "credential_unreadable";
+  /** Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057. */
+  consecutiveFailures: number;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string | null;
+  /** Timestamp when the configuration was created. */
+  createdAt: string;
+  /** Timestamp when the configuration was last changed. */
+  updatedAt: string;
+  /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+  deletedAt?: string | null;
+};
+export type UpdateOrganizationSmtpConfigurationApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** Hostname of the organization's SMTP server. */
+    host: string;
+    /** TCP port the organization's SMTP server listens on. Restricted further by a submission-port allowlist. */
+    port: number;
+    /** Transport encryption to negotiate. */
+    encryption?: "starttls" | "tls" | "none";
+    /** SMTP authentication mechanism. Changing this to a mechanism other than `none` while no password is stored is refused; rotate the credential first. */
+    authMechanism?: "plain" | "cram-md5" | "none";
+    /** Username presented to the organization's SMTP server. */
+    username?: string;
+    /** Address the organization's mail is sent from. Changing it to a different registrable domain resets from-domain verification. */
+    fromAddress: string;
+    /** Display name shown alongside the from address. */
+    fromDisplayName?: string;
+    /** Address replies are directed to. */
+    replyToAddress?: string;
+    /** Whether a message this server fails to accept is re-sent through the provider's shared relay. */
+    fallbackToProvider?: boolean;
+  };
+};
+export type RotateOrganizationSmtpCredentialApiResponse =
+  /** status 200 The stored SMTP configuration, with the password redacted. */ {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Hostname of the organization's SMTP server. */
+    host: string;
+    /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+    port: number;
+    /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+    encryption: "starttls" | "tls" | "none";
+    /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+    authMechanism: "plain" | "cram-md5" | "none";
+    /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+    username?: string;
+    /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+    password?: string;
+    /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+    fromAddress: string;
+    /** Display name shown alongside the from address in the message header. */
+    fromDisplayName?: string;
+    /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+    replyToAddress?: string;
+    /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in meshery-cloud#6057. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+    status: "registered" | "connected" | "disconnected" | "ignored";
+    /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+    fallbackToProvider: boolean;
+    /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+    fromDomain?: string;
+    /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+    fromDomainVerificationToken?: string;
+    /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+    fromDomainVerifiedAt?: string | null;
+    /** Timestamp of the last message this server accepted. */
+    lastSuccessAt?: string | null;
+    /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+    lastFailureAt?: string | null;
+    /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+    lastFailureReason?:
+      | "blocked_target"
+      | "connect_refused"
+      | "connect_timeout"
+      | "tls_failed"
+      | "starttls_unsupported"
+      | "auth_rejected"
+      | "relay_rejected_sender"
+      | "relay_rejected_recipient"
+      | "delivery_failed"
+      | "credential_unreadable";
+    /** Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057. */
+    consecutiveFailures: number;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    createdBy?: string | null;
+    /** Timestamp when the configuration was created. */
+    createdAt: string;
+    /** Timestamp when the configuration was last changed. */
+    updatedAt: string;
+    /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+    deletedAt?: string | null;
+  };
+export type RotateOrganizationSmtpCredentialApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** New password. The redaction sentinel `***` and the empty string are refused with a 400 rather than treated as "leave the stored value alone", so echoing a read back cannot erase the credential. */
+    password: string;
+  };
+};
+export type SetOrganizationSmtpEnablementApiResponse = /** status 200 The stored SMTP configuration. */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Hostname of the organization's SMTP server. */
+  host: string;
+  /** TCP port the organization's SMTP server listens on. The server additionally restricts this to a submission-port allowlist; a syntactically valid port outside it is refused. */
+  port: number;
+  /** Transport encryption to negotiate. `starttls` upgrades a cleartext connection (typically port 587), `tls` opens an implicit TLS connection (typically port 465), and `none` sends in cleartext and is intended only for an internal relay on a trusted network. */
+  encryption: "starttls" | "tls" | "none";
+  /** SMTP authentication mechanism. `none` is permitted only for a relay that authorizes by source address; a configuration using any other mechanism must carry both a username and a password. */
+  authMechanism: "plain" | "cram-md5" | "none";
+  /** Username presented to the organization's SMTP server. Held beside the host rather than with the password because it is an identifier rather than a secret, and the health surface must show it without a decryption round trip. It is usually an email address, so it is returned only on an authorized read. */
+  username?: string;
+  /** Present only when a password is stored, and then always the redaction sentinel `***` - never the stored value, which is encrypted at rest and is never projected into a response. Its presence is therefore the only thing it reports: a configuration whose `authMechanism` is `none` stores no password and omits this property entirely. It is optional rather than required for exactly that reason.
+    Read-only, and read-only here means read-only: no request body references this schema. The write semantics belong to the payload schemas - `OrganizationSmtpConfigurationPayload` on create and `OrganizationSmtpCredentialPayload` on rotation - and are documented there. */
+  password?: string;
+  /** Address the organization's mail is sent from. Its domain must be verified before mail is routed through this server. */
+  fromAddress: string;
+  /** Display name shown alongside the from address in the message header. */
+  fromDisplayName?: string;
+  /** Address replies are directed to. It is also the address carried when a message falls back to the provider relay, which rewrites the from address to the provider's own so the message stays aligned for SPF and DMARC. */
+  replyToAddress?: string;
+  /** Lifecycle and transport verdict, carrying the connection status vocabulary because the configuration IS a connection. `registered` means configured but never proven - the from domain is unverified, or no message has yet been delivered - and mail takes the provider relay. `connected` means the last delivery attempt succeeded and mail is routed through this server. `disconnected` means the most recent delivery attempt did not succeed, and `fallbackToProvider` governs what becomes of that message. It is a verdict on the last attempt alone: a SINGLE failure records it, there is no failure threshold, and the status does not by itself stop the server being dialled for the next message. Read it as "the last attempt failed", not as "this server has been taken out of rotation" - the circuit breaker that would do the latter is planned, not built, and is tracked in meshery-cloud#6057. `ignored` means an administrator turned it off.
+    
+    The writers are disjoint on purpose: only an administrator writes `ignored`, and only a delivery outcome writes `connected` or `disconnected`. That is what keeps a deliberate opt-out distinguishable from a failing relay. It also makes "enabled while the from domain is unverified" unrepresentable rather than merely forbidden, which is why this property replaces the separate `enabled` and `verificationState` pair it supersedes. */
+  status: "registered" | "connected" | "disconnected" | "ignored";
+  /** Whether a message that this server fails to accept is re-sent through the provider's shared relay. Disabling it means the organization owns delivery entirely and a failure is a dropped message, including account verification and password recovery. */
+  fallbackToProvider: boolean;
+  /** Registrable domain of the from address, held separately as the unit that ownership is proven for. */
+  fromDomain?: string;
+  /** Token the organization publishes in DNS to prove control of the from domain. Not a credential - it authorizes nothing and grants no access. */
+  fromDomainVerificationToken?: string;
+  /** Timestamp at which control of the from domain was last proven. Null while unproven. */
+  fromDomainVerifiedAt?: string | null;
+  /** Timestamp of the last message this server accepted. */
+  lastSuccessAt?: string | null;
+  /** Timestamp of the last delivery attempt this server rejected or failed to accept. */
+  lastFailureAt?: string | null;
+  /** Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach. */
+  lastFailureReason?:
+    | "blocked_target"
+    | "connect_refused"
+    | "connect_timeout"
+    | "tls_failed"
+    | "starttls_unsupported"
+    | "auth_rejected"
+    | "relay_rejected_sender"
+    | "relay_rejected_recipient"
+    | "delivery_failed"
+    | "credential_unreadable";
+  /** Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057. */
+  consecutiveFailures: number;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string | null;
+  /** Timestamp when the configuration was created. */
+  createdAt: string;
+  /** Timestamp when the configuration was last changed. */
+  updatedAt: string;
+  /** Timestamp when the configuration was soft deleted. Null while it remains active. */
+  deletedAt?: string | null;
+};
+export type SetOrganizationSmtpEnablementApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** True returns the configuration to `registered` so it may prove itself and carry mail; false moves it to `ignored`. Turning it on is refused while the from domain is unverified. */
+    enabled: boolean;
+  };
+};
+export type TestOrganizationSmtpConfigurationApiResponse =
+  /** status 200 The classified outcome of the delivery attempt. */ {
+    /** What happened. `delivered` means the server accepted the message; every other value names the stage that refused it. */
+    outcome:
+      | "delivered"
+      | "blocked_target"
+      | "connect_refused"
+      | "connect_timeout"
+      | "tls_failed"
+      | "starttls_unsupported"
+      | "auth_rejected"
+      | "relay_rejected_sender"
+      | "relay_rejected_recipient"
+      | "delivery_failed"
+      | "credential_unreadable";
+    /** Human-readable summary of the outcome, drawn from a fixed set of phrasings. */
+    message?: string;
+    /** Address the test message was addressed to. */
+    sentTo?: string;
+    /** When the delivery was attempted. */
+    testedAt: string;
+  };
+export type TestOrganizationSmtpConfigurationApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    /** Recipient of the test message. Defaults to the calling administrator's own address. */
+    to?: string;
+  };
+};
+export type GetOrganizationSmtpDomainVerificationApiResponse =
+  /** status 200 The verification challenge and its current state. */ {
+    /** Registrable domain the proof applies to. */
+    domain: string;
+    /** How the domain is proven. `custom-domain` means it matches the organization's own registered custom domain and needs no record; `dns-txt` means the record below must be published. */
+    method: "custom-domain" | "dns-txt";
+    /** Fully qualified name of the TXT record to publish. */
+    recordName?: string;
+    /** Value the TXT record must carry. */
+    recordValue?: string;
+    /** Whether control of the domain is currently proven. */
+    verified: boolean;
+    /** When control was last proven. Null while unproven. */
+    verifiedAt?: string | null;
+    /** Why the last check did not prove control. */
+    failureReason?: "record_not_found" | "record_mismatch" | "lookup_failed" | "domain_reserved";
+  };
+export type GetOrganizationSmtpDomainVerificationApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type VerifyOrganizationSmtpDomainApiResponse = /** status 200 The outcome of the verification check. */ {
+  /** Registrable domain the proof applies to. */
+  domain: string;
+  /** How the domain is proven. `custom-domain` means it matches the organization's own registered custom domain and needs no record; `dns-txt` means the record below must be published. */
+  method: "custom-domain" | "dns-txt";
+  /** Fully qualified name of the TXT record to publish. */
+  recordName?: string;
+  /** Value the TXT record must carry. */
+  recordValue?: string;
+  /** Whether control of the domain is currently proven. */
+  verified: boolean;
+  /** When control was last proven. Null while unproven. */
+  verifiedAt?: string | null;
+  /** Why the last check did not prove control. */
+  failureReason?: "record_not_found" | "record_mismatch" | "lookup_failed" | "domain_reserved";
+};
+export type VerifyOrganizationSmtpDomainApiArg = {
+  /** Organization ID */
   orgId: string;
 };
 export type SubmitSupportRequestApiResponse = /** status 201 Support request submitted */ {
@@ -1946,6 +2929,8 @@ export type GetUserCredentialsApiResponse = /** status 200 Credentials response 
     name: string;
     /** UUID of the user who owns this credential. */
     userId: string;
+    /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+    orgOwner?: string;
     /** Credential type (e.g. token, basic, AWS). */
     type: string;
     /** Key-value pairs containing the sensitive credential data. */
@@ -1983,6 +2968,8 @@ export type SaveUserCredentialApiResponse = /** status 201 Credential saved */ {
   name: string;
   /** UUID of the user who owns this credential. */
   userId: string;
+  /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+  orgOwner?: string;
   /** Credential type (e.g. token, basic, AWS). */
   type: string;
   /** Key-value pairs containing the sensitive credential data. */
@@ -2002,6 +2989,8 @@ export type SaveUserCredentialApiArg = {
     name: string;
     /** UUID of the user who owns this credential. */
     userId?: string;
+    /** UUID of the organization to designate as the owner of this credential. A caller may supply this field; the server authorizes it against the authenticated principal and rejects the request when that principal may not write for the named organization. */
+    orgOwner?: string;
     /** Credential type (e.g. token, basic, AWS). */
     type: string;
     /** Key-value pairs containing the sensitive credential data. */
@@ -2015,6 +3004,8 @@ export type UpdateUserCredentialApiResponse = /** status 200 Credential updated 
   name: string;
   /** UUID of the user who owns this credential. */
   userId: string;
+  /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+  orgOwner?: string;
   /** Credential type (e.g. token, basic, AWS). */
   type: string;
   /** Key-value pairs containing the sensitive credential data. */
@@ -2034,6 +3025,8 @@ export type UpdateUserCredentialApiArg = {
     name: string;
     /** UUID of the user who owns this credential. */
     userId?: string;
+    /** UUID of the organization to designate as the owner of this credential. A caller may supply this field; the server authorizes it against the authenticated principal and rejects the request when that principal may not write for the named organization. */
+    orgOwner?: string;
     /** Credential type (e.g. token, basic, AWS). */
     type: string;
     /** Key-value pairs containing the sensitive credential data. */
@@ -2052,6 +3045,8 @@ export type GetCredentialByIdApiResponse = /** status 200 Credential response */
   name: string;
   /** UUID of the user who owns this credential. */
   userId: string;
+  /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+  orgOwner?: string;
   /** Credential type (e.g. token, basic, AWS). */
   type: string;
   /** Key-value pairs containing the sensitive credential data. */
@@ -2721,7 +3716,7 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
             answer: string;
           }[];
         };
-        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
           termsOfService?: string;
@@ -2730,6 +3725,15 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
           /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
           support?: {
             [key: string]: string;
+          };
+          /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+          social?: {
+            /** URL of the organization's LinkedIn profile. */
+            linkedin?: string;
+            /** URL of the organization's X (formerly Twitter) profile. */
+            x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -2846,7 +3850,7 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
             answer: string;
           }[];
         };
-        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
           termsOfService?: string;
@@ -2855,6 +3859,15 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
           /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
           support?: {
             [key: string]: string;
+          };
+          /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+          social?: {
+            /** URL of the organization's LinkedIn profile. */
+            linkedin?: string;
+            /** URL of the organization's X (formerly Twitter) profile. */
+            x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -2947,7 +3960,7 @@ export type CreateOrgApiArg = {
           answer: string;
         }[];
       };
-      /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+      /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
       links?: {
         /** URL of the organization's Terms of Service page. */
         termsOfService?: string;
@@ -2956,6 +3969,15 @@ export type CreateOrgApiArg = {
         /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
         support?: {
           [key: string]: string;
+        };
+        /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        social?: {
+          /** URL of the organization's LinkedIn profile. */
+          linkedin?: string;
+          /** URL of the organization's X (formerly Twitter) profile. */
+          x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
         };
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3081,7 +4103,7 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
             answer: string;
           }[];
         };
-        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
           termsOfService?: string;
@@ -3090,6 +4112,15 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
           /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
           support?: {
             [key: string]: string;
+          };
+          /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+          social?: {
+            /** URL of the organization's LinkedIn profile. */
+            linkedin?: string;
+            /** URL of the organization's X (formerly Twitter) profile. */
+            x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3203,7 +4234,7 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
             answer: string;
           }[];
         };
-        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
           termsOfService?: string;
@@ -3212,6 +4243,15 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
           /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
           support?: {
             [key: string]: string;
+          };
+          /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+          social?: {
+            /** URL of the organization's LinkedIn profile. */
+            linkedin?: string;
+            /** URL of the organization's X (formerly Twitter) profile. */
+            x?: string;
+            /** URL of the organization's YouTube channel. */
+            youtube?: string;
           };
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3306,7 +4346,7 @@ export type UpdateOrgApiArg = {
           answer: string;
         }[];
       };
-      /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+      /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
       links?: {
         /** URL of the organization's Terms of Service page. */
         termsOfService?: string;
@@ -3315,6 +4355,276 @@ export type UpdateOrgApiArg = {
         /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
         support?: {
           [key: string]: string;
+        };
+        /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        social?: {
+          /** URL of the organization's LinkedIn profile. */
+          linkedin?: string;
+          /** URL of the organization's X (formerly Twitter) profile. */
+          x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
+        };
+      };
+      /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+      showAuthCarousel?: boolean;
+    };
+  };
+};
+export type GetChildOrgsApiResponse = /** status 200 Direct child organizations of the parent organization */ {
+  /** Direct child organizations in this page. */
+  organizations: {
+    /** Organization ID of the child. */
+    id: string;
+    /** Name of the child organization. */
+    name: string;
+    /** Description of the child organization. */
+    description?: string;
+    /** Country of the child organization. */
+    country?: string;
+    /** Region of the child organization. */
+    region?: string;
+    /** Custom domain assigned to the child organization, when configured. */
+    domain?: string;
+    /** ID of the parent organization. Stamped at creation and never changed; absent only on a top-level organization, which this listing never returns. */
+    parentId?: string;
+    /** Timestamp when the child organization was created. */
+    createdAt: string;
+    /** Timestamp when the child organization was last updated. */
+    updatedAt: string;
+  }[];
+  /** Total number of live direct children across all pages. */
+  totalCount: number;
+};
+export type GetChildOrgsApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Zero-based index of the result page to return. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+};
+export type CreateChildOrgApiResponse =
+  /** status 201 Single-organization page response for the created child organization */ {
+    /** Zero-based page index returned in this response. */
+    page?: number;
+    /** Maximum number of items returned on each page. */
+    pageSize?: number;
+    /** Total number of items across all pages. */
+    totalCount?: number;
+    /** Organizations returned in this single-item page wrapper. */
+    organizations?: {
+      /** Organization ID. */
+      id?: string;
+      /** Name of the organization. */
+      name?: string;
+      /** Description of the organization. */
+      description?: string;
+      /** Country of the organization. */
+      country?: string;
+      /** Region of the organization. */
+      region?: string;
+      /** Custom domain assigned to the organization, when configured. */
+      domain?: string;
+      /** Display name of the organization owner. */
+      owner?: string;
+      /** Free-form metadata associated with an organization, including preferences. */
+      metadata?: {
+        /** Organization-level user experience preferences. */
+        preferences: {
+          /** UI theme configured for an organization. */
+          theme: {
+            /** Theme identifier. */
+            id: string;
+            /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+            logo: {
+              /** Image asset anchored to a named location within an organization theme. */
+              desktopView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              mobileView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              darkDesktopView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              darkMobileView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+            };
+            /** Arbitrary theme variables keyed by name. */
+            vars?: {
+              [key: string]: any;
+            };
+          };
+          /** Preferences specific to dashboard behavior. */
+          dashboard: {
+            [key: string]: any;
+          };
+          /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+          authBranding?: {
+            /** Ordered slides rendered in the auth-page feature carousel. */
+            carousel?: {
+              /** URL of the slide image asset. */
+              imageUrl: string;
+              /** Slide title. */
+              title: string;
+              /** Slide description text. */
+              description: string;
+            }[];
+            /** FAQ entries rendered on the auth pages. */
+            faqs?: {
+              /** The question text. */
+              question: string;
+              /** The answer text. */
+              answer: string;
+            }[];
+          };
+          /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+          links?: {
+            /** URL of the organization's Terms of Service page. */
+            termsOfService?: string;
+            /** URL of the organization's Privacy Policy page. */
+            privacy?: string;
+            /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+            support?: {
+              [key: string]: string;
+            };
+            /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+            social?: {
+              /** URL of the organization's LinkedIn profile. */
+              linkedin?: string;
+              /** URL of the organization's X (formerly Twitter) profile. */
+              x?: string;
+              /** URL of the organization's YouTube channel. */
+              youtube?: string;
+            };
+          };
+          /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+          showAuthCarousel?: boolean;
+        };
+      };
+      /** Timestamp when the organization was created. */
+      createdAt?: string;
+      /** Timestamp when the organization was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the organization was soft-deleted. */
+      deletedAt?: string;
+    }[];
+  };
+export type CreateChildOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Body for creating or updating an organization */
+  body: {
+    /** Name of the organization. */
+    name?: string;
+    /** Country of the organization. */
+    country?: string;
+    /** Region of the organization. */
+    region?: string;
+    /** Description of the organization. */
+    description?: string;
+    /** Indicates whether organization members should be notified of this update. */
+    notifyOrgUpdate?: boolean;
+    /** Organization-level user experience preferences. */
+    preferences?: {
+      /** UI theme configured for an organization. */
+      theme: {
+        /** Theme identifier. */
+        id: string;
+        /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+        logo: {
+          /** Image asset anchored to a named location within an organization theme. */
+          desktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          mobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkDesktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkMobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+        };
+        /** Arbitrary theme variables keyed by name. */
+        vars?: {
+          [key: string]: any;
+        };
+      };
+      /** Preferences specific to dashboard behavior. */
+      dashboard: {
+        [key: string]: any;
+      };
+      /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+      authBranding?: {
+        /** Ordered slides rendered in the auth-page feature carousel. */
+        carousel?: {
+          /** URL of the slide image asset. */
+          imageUrl: string;
+          /** Slide title. */
+          title: string;
+          /** Slide description text. */
+          description: string;
+        }[];
+        /** FAQ entries rendered on the auth pages. */
+        faqs?: {
+          /** The question text. */
+          question: string;
+          /** The answer text. */
+          answer: string;
+        }[];
+      };
+      /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+      links?: {
+        /** URL of the organization's Terms of Service page. */
+        termsOfService?: string;
+        /** URL of the organization's Privacy Policy page. */
+        privacy?: string;
+        /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+        support?: {
+          [key: string]: string;
+        };
+        /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        social?: {
+          /** URL of the organization's LinkedIn profile. */
+          linkedin?: string;
+          /** URL of the organization's X (formerly Twitter) profile. */
+          x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
         };
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -3388,7 +4698,7 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
         answer: string;
       }[];
     };
-    /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+    /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
     links?: {
       /** URL of the organization's Terms of Service page. */
       termsOfService?: string;
@@ -3397,6 +4707,15 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
       /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
       support?: {
         [key: string]: string;
+      };
+      /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+      social?: {
+        /** URL of the organization's LinkedIn profile. */
+        linkedin?: string;
+        /** URL of the organization's X (formerly Twitter) profile. */
+        x?: string;
+        /** URL of the organization's YouTube channel. */
+        youtube?: string;
       };
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
@@ -4137,59 +5456,63 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   }[];
 };
@@ -4326,59 +5649,63 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   roleNames?: string[];
   /** Teams the user belongs to with role information */
   teams?: {
-    /** Team memberships for the user with their assigned roles. */
-    teamsWithRoles?: {
-      /** Unique identifier of the team. */
-      id: string;
-      /** Name of the team. */
-      name: string;
-      /** Human readable description of the team. */
-      description?: string;
-      /** Identifier of the team owner. */
-      owner?: string;
-      /** Free-form metadata associated with the team. */
-      metadata?: {
-        [key: string]: any;
-      };
-      /** Timestamp when the team was created. */
-      createdAt?: string;
-      /** Timestamp when the team was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the team was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of team memberships returned for the user. */
-    totalCount?: number;
+    /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    teamsWithRoles?:
+      | {
+          /** Unique identifier of the team. */
+          id: string;
+          /** Name of the team. */
+          name: string;
+          /** Human readable description of the team. */
+          description?: string;
+          /** Identifier of the team owner. */
+          owner?: string;
+          /** Free-form metadata associated with the team. */
+          metadata?: {
+            [key: string]: any;
+          };
+          /** Timestamp when the team was created. */
+          createdAt?: string;
+          /** Timestamp when the team was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the team was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
   /** Organizations the user belongs to with role information */
   organizations?: {
-    /** Organization memberships for the user with their assigned roles. */
-    organizationsWithRoles?: {
-      /** Unique identifier of the organization. */
-      id: string;
-      /** Name of the organization. */
-      name: string;
-      /** Human readable description of the organization. */
-      description?: string;
-      /** Country associated with the organization. */
-      country?: string;
-      /** Region associated with the organization. */
-      region?: string;
-      /** Identifier of the organization owner. */
-      owner?: string;
-      /** Timestamp when the organization was created. */
-      createdAt?: string;
-      /** Timestamp when the organization was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the organization was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of organization memberships returned for the user. */
-    totalCount?: number;
+    /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    organizationsWithRoles?:
+      | {
+          /** Unique identifier of the organization. */
+          id: string;
+          /** Name of the organization. */
+          name: string;
+          /** Human readable description of the organization. */
+          description?: string;
+          /** Country associated with the organization. */
+          country?: string;
+          /** Region associated with the organization. */
+          region?: string;
+          /** Identifier of the organization owner. */
+          owner?: string;
+          /** Timestamp when the organization was created. */
+          createdAt?: string;
+          /** Timestamp when the organization was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the organization was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
 };
 export type GetUserProfileByIdApiArg = {
@@ -4502,59 +5829,63 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   roleNames?: string[];
   /** Teams the user belongs to with role information */
   teams?: {
-    /** Team memberships for the user with their assigned roles. */
-    teamsWithRoles?: {
-      /** Unique identifier of the team. */
-      id: string;
-      /** Name of the team. */
-      name: string;
-      /** Human readable description of the team. */
-      description?: string;
-      /** Identifier of the team owner. */
-      owner?: string;
-      /** Free-form metadata associated with the team. */
-      metadata?: {
-        [key: string]: any;
-      };
-      /** Timestamp when the team was created. */
-      createdAt?: string;
-      /** Timestamp when the team was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the team was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of team memberships returned for the user. */
-    totalCount?: number;
+    /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    teamsWithRoles?:
+      | {
+          /** Unique identifier of the team. */
+          id: string;
+          /** Name of the team. */
+          name: string;
+          /** Human readable description of the team. */
+          description?: string;
+          /** Identifier of the team owner. */
+          owner?: string;
+          /** Free-form metadata associated with the team. */
+          metadata?: {
+            [key: string]: any;
+          };
+          /** Timestamp when the team was created. */
+          createdAt?: string;
+          /** Timestamp when the team was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the team was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
   /** Organizations the user belongs to with role information */
   organizations?: {
-    /** Organization memberships for the user with their assigned roles. */
-    organizationsWithRoles?: {
-      /** Unique identifier of the organization. */
-      id: string;
-      /** Name of the organization. */
-      name: string;
-      /** Human readable description of the organization. */
-      description?: string;
-      /** Country associated with the organization. */
-      country?: string;
-      /** Region associated with the organization. */
-      region?: string;
-      /** Identifier of the organization owner. */
-      owner?: string;
-      /** Timestamp when the organization was created. */
-      createdAt?: string;
-      /** Timestamp when the organization was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the organization was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of organization memberships returned for the user. */
-    totalCount?: number;
+    /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    organizationsWithRoles?:
+      | {
+          /** Unique identifier of the organization. */
+          id: string;
+          /** Name of the organization. */
+          name: string;
+          /** Human readable description of the organization. */
+          description?: string;
+          /** Country associated with the organization. */
+          country?: string;
+          /** Region associated with the organization. */
+          region?: string;
+          /** Identifier of the organization owner. */
+          owner?: string;
+          /** Timestamp when the organization was created. */
+          createdAt?: string;
+          /** Timestamp when the organization was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the organization was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
 };
 export type GetUserApiArg = void;
@@ -7064,6 +8395,989 @@ export type GetCertificateByIdApiArg = {
   /** The ID of the certificate to retrieve */
   certificateId: string;
 };
+export type ListBlowhornBindingsApiResponse = /** status 200 Blowhorn bindings page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn bindings included on this page of results. */
+  blowhornBindings?: {
+    /** Server-generated Blowhorn binding ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Subject of the bound Blowhorn profile. */
+    profile: string;
+    /** Host the profile is bound on. An identity, not a permission. */
+    host: string;
+    /** Profile directory on the host. */
+    directory: string;
+    /** Timestamp of Blowhorn binding creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn binding modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListBlowhornBindingsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by bound profile subject. */
+  profile?: string;
+  /** Filter by host. */
+  host?: string;
+};
+export type BindBlowhornBindingApiResponse = /** status 200 Blowhorn binding saved */ {
+  /** Server-generated Blowhorn binding ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the bound Blowhorn profile. */
+  profile: string;
+  /** Host the profile is bound on. An identity, not a permission. */
+  host: string;
+  /** Profile directory on the host. */
+  directory: string;
+  /** Timestamp of Blowhorn binding creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn binding modification. */
+  updatedAt: string;
+};
+export type BindBlowhornBindingApiArg = {
+  body: {
+    /** Existing Blowhorn binding ID for updates; omit on bind. */
+    id?: string;
+    /** Subject of the Blowhorn profile to bind. */
+    profile: string;
+    /** Host the profile is bound on. An identity, not a permission. */
+    host: string;
+    /** Profile directory on the host. */
+    directory: string;
+  };
+};
+export type UnbindBlowhornBindingApiResponse = unknown;
+export type UnbindBlowhornBindingApiArg = {
+  /** Blowhorn binding ID */
+  blowhornBindingId: string;
+};
+export type ListBlowhornContentApiResponse = /** status 200 Blowhorn content page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn content rows included on this page of results. */
+  blowhornContent?: {
+    /** Server-generated Blowhorn content ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Subject of the owning Blowhorn profile. */
+    profile: string;
+    /** Row number of the content within the owning profile. */
+    rowNumber: number;
+    /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+    fingerprint: string;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Timestamp of Blowhorn content creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn content modification. */
+    updatedAt: string;
+    /** Timestamp when the Blowhorn content was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListBlowhornContentApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by owning profile subject. */
+  profile?: string;
+};
+export type InsertBlowhornContentApiResponse = /** status 201 Blowhorn content created */ {
+  /** Server-generated Blowhorn content ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the owning Blowhorn profile. */
+  profile: string;
+  /** Row number of the content within the owning profile. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of Blowhorn content creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn content modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn content was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type InsertBlowhornContentApiArg = {
+  body: {
+    /** Existing Blowhorn content ID for updates; ignored on insert. */
+    id?: string;
+    /** Subject of the owning Blowhorn profile. */
+    profile: string;
+    /** Row number of the content within the owning profile. */
+    rowNumber: number;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        insert.
+         */
+    expectedFingerprint?: string;
+  };
+};
+export type GetBlowhornContentApiResponse = /** status 200 Blowhorn content response */ {
+  /** Server-generated Blowhorn content ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the owning Blowhorn profile. */
+  profile: string;
+  /** Row number of the content within the owning profile. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of Blowhorn content creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn content modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn content was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetBlowhornContentApiArg = {
+  /** Blowhorn content ID */
+  blowhornContentId: string;
+};
+export type UpdateBlowhornContentApiResponse = /** status 200 Blowhorn content updated */ {
+  /** Server-generated Blowhorn content ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the owning Blowhorn profile. */
+  profile: string;
+  /** Row number of the content within the owning profile. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of Blowhorn content creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn content modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn content was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpdateBlowhornContentApiArg = {
+  /** Blowhorn content ID */
+  blowhornContentId: string;
+  body: {
+    /** Existing Blowhorn content ID for updates; ignored on insert. */
+    id?: string;
+    /** Subject of the owning Blowhorn profile. */
+    profile: string;
+    /** Row number of the content within the owning profile. */
+    rowNumber: number;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        insert.
+         */
+    expectedFingerprint?: string;
+  };
+};
+export type DeleteBlowhornContentApiResponse = unknown;
+export type DeleteBlowhornContentApiArg = {
+  /** Blowhorn content ID */
+  blowhornContentId: string;
+};
+export type ListBlowhornDestinationsApiResponse = /** status 200 Blowhorn destinations page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn destinations included on this page of results. */
+  blowhornDestinations?: {
+    /** Server-generated Blowhorn destination ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Human-readable destination name. */
+    name?: string;
+    /** Target platform for the destination (e.g. linkedin). */
+    platform: string;
+    /** Platform-side publishing target (page, group or channel identifier). */
+    target?: string;
+    /** Destination settings, stored as a JSON blob. */
+    settings?: object;
+    /** Timestamp of Blowhorn destination creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn destination modification. */
+    updatedAt: string;
+    /** Timestamp when the Blowhorn destination was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListBlowhornDestinationsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by target platform (e.g. linkedin). */
+  platform?: string;
+};
+export type UpsertBlowhornDestinationApiResponse = /** status 200 Blowhorn destination saved */ {
+  /** Server-generated Blowhorn destination ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Human-readable destination name. */
+  name?: string;
+  /** Target platform for the destination (e.g. linkedin). */
+  platform: string;
+  /** Platform-side publishing target (page, group or channel identifier). */
+  target?: string;
+  /** Destination settings, stored as a JSON blob. */
+  settings?: object;
+  /** Timestamp of Blowhorn destination creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn destination modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn destination was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpsertBlowhornDestinationApiArg = {
+  body: {
+    /** Existing Blowhorn destination ID for updates; omit on create. */
+    id?: string;
+    /** Human-readable destination name. */
+    name?: string;
+    /** Target platform for the destination (e.g. linkedin). */
+    platform: string;
+    /** Platform-side publishing target (page, group or channel identifier). */
+    target?: string;
+    /** Destination settings, stored as a JSON blob. */
+    settings?: object;
+  };
+};
+export type GetBlowhornDestinationApiResponse = /** status 200 Blowhorn destination response */ {
+  /** Server-generated Blowhorn destination ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Human-readable destination name. */
+  name?: string;
+  /** Target platform for the destination (e.g. linkedin). */
+  platform: string;
+  /** Platform-side publishing target (page, group or channel identifier). */
+  target?: string;
+  /** Destination settings, stored as a JSON blob. */
+  settings?: object;
+  /** Timestamp of Blowhorn destination creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn destination modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn destination was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetBlowhornDestinationApiArg = {
+  /** Blowhorn destination ID */
+  blowhornDestinationId: string;
+};
+export type GetBlowhornHealthApiResponse = /** status 200 Blowhorn health response */ {
+  /** Frozen Blowhorn contract version the server speaks. */
+  contractVersion: string;
+  /** Whether the organization is bound for Blowhorn operations. */
+  bound: boolean;
+  /** Organization whose binding was checked. */
+  organizationId?: string;
+  /** Time the binding was checked. */
+  checkedAt?: string;
+};
+export type GetBlowhornHealthApiArg = void;
+export type ListBlowhornLedgerApiResponse = /** status 200 Blowhorn ledger entries page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn ledger entries included on this page of results. */
+  blowhornLedgerEntries?: {
+    /** Server-generated Blowhorn ledger entry ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Ledger discriminator naming the idempotent set. */
+    ledger: string;
+    /** Key within the ledger. Unique per ledger. */
+    entryKey: string;
+    /** Entry value, stored as a JSON blob. */
+    value?: object;
+    /** Holder that claimed the entry, if any. Set only by claim-if-absent. */
+    claimedBy?: string;
+    /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+    claimedAt?: string | null;
+    /** Timestamp of Blowhorn ledger entry creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn ledger entry modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListBlowhornLedgerApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by ledger discriminator. */
+  ledger?: string;
+};
+export type RecordBlowhornLedgerEntryApiResponse = /** status 200 Blowhorn ledger entry recorded */ {
+  /** Server-generated Blowhorn ledger entry ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Ledger discriminator naming the idempotent set. */
+  ledger: string;
+  /** Key within the ledger. Unique per ledger. */
+  entryKey: string;
+  /** Entry value, stored as a JSON blob. */
+  value?: object;
+  /** Holder that claimed the entry, if any. Set only by claim-if-absent. */
+  claimedBy?: string;
+  /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+  claimedAt?: string | null;
+  /** Timestamp of Blowhorn ledger entry creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn ledger entry modification. */
+  updatedAt: string;
+};
+export type RecordBlowhornLedgerEntryApiArg = {
+  body: {
+    /** Existing Blowhorn ledger entry ID for updates; omit on record. */
+    id?: string;
+    /** Ledger discriminator naming the idempotent set. */
+    ledger: string;
+    /** Key within the ledger. Unique per ledger. */
+    entryKey: string;
+    /** Entry value, stored as a JSON blob. */
+    value?: object;
+  };
+};
+export type GetBlowhornLedgerEntryApiResponse = /** status 200 Blowhorn ledger entry response */ {
+  /** Server-generated Blowhorn ledger entry ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Ledger discriminator naming the idempotent set. */
+  ledger: string;
+  /** Key within the ledger. Unique per ledger. */
+  entryKey: string;
+  /** Entry value, stored as a JSON blob. */
+  value?: object;
+  /** Holder that claimed the entry, if any. Set only by claim-if-absent. */
+  claimedBy?: string;
+  /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+  claimedAt?: string | null;
+  /** Timestamp of Blowhorn ledger entry creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn ledger entry modification. */
+  updatedAt: string;
+};
+export type GetBlowhornLedgerEntryApiArg = {
+  /** Blowhorn ledger entry ID */
+  blowhornLedgerEntryId: string;
+};
+export type DeleteBlowhornLedgerEntryApiResponse = unknown;
+export type DeleteBlowhornLedgerEntryApiArg = {
+  /** Blowhorn ledger entry ID */
+  blowhornLedgerEntryId: string;
+};
+export type ClaimIfAbsentBlowhornLedgerEntryApiResponse = /** status 200 Blowhorn ledger entry claimed */ {
+  /** Server-generated Blowhorn ledger entry ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Ledger discriminator naming the idempotent set. */
+  ledger: string;
+  /** Key within the ledger. Unique per ledger. */
+  entryKey: string;
+  /** Entry value, stored as a JSON blob. */
+  value?: object;
+  /** Holder that claimed the entry, if any. Set only by claim-if-absent. */
+  claimedBy?: string;
+  /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+  claimedAt?: string | null;
+  /** Timestamp of Blowhorn ledger entry creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn ledger entry modification. */
+  updatedAt: string;
+};
+export type ClaimIfAbsentBlowhornLedgerEntryApiArg = {
+  /** Blowhorn ledger entry ID */
+  blowhornLedgerEntryId: string;
+  body: {
+    /** Holder taking the entry. Refused with a 409 when the entry is already claimed. */
+    holder: string;
+  };
+};
+export type ListBlowhornContactsApiResponse = /** status 200 Blowhorn contacts page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn contacts included on this page of results. */
+  blowhornContacts?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Platform the contact belongs to (e.g. linkedin, github). */
+    platform: string;
+    /** Platform-side handle identifying the contact. Unique per platform within the organization. */
+    handle: string;
+    /** Human-readable contact name. */
+    displayName?: string;
+    /** Platform-side profile URL for the contact. */
+    profileUrl?: string;
+    /** Contact metadata, stored as a JSON blob. */
+    metadata?: object;
+    /** Timestamp of Blowhorn contact creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn contact modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListBlowhornContactsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by platform (e.g. linkedin, github). */
+  platform?: string;
+};
+export type UpsertBlowhornContactApiResponse = /** status 200 Blowhorn contact saved */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Platform the contact belongs to (e.g. linkedin, github). */
+  platform: string;
+  /** Platform-side handle identifying the contact. Unique per platform within the organization. */
+  handle: string;
+  /** Human-readable contact name. */
+  displayName?: string;
+  /** Platform-side profile URL for the contact. */
+  profileUrl?: string;
+  /** Contact metadata, stored as a JSON blob. */
+  metadata?: object;
+  /** Timestamp of Blowhorn contact creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn contact modification. */
+  updatedAt: string;
+};
+export type UpsertBlowhornContactApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** Platform the contact belongs to (e.g. linkedin, github). */
+    platform: string;
+    /** Platform-side handle identifying the contact. Unique per platform within the organization. */
+    handle: string;
+    /** Human-readable contact name. */
+    displayName?: string;
+    /** Platform-side profile URL for the contact. */
+    profileUrl?: string;
+    /** Contact metadata, stored as a JSON blob. */
+    metadata?: object;
+  };
+};
+export type ListBlowhornMenteesApiResponse = /** status 200 Blowhorn mentees page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn mentees included on this page of results. */
+  blowhornMentees?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Mentored subject. */
+    subject: string;
+    /** Mentorship stage of the subject. */
+    stage?: string;
+    /** Mentee metadata, stored as a JSON blob. */
+    metadata?: object;
+    /** Time the mentee was recorded and dropped, if any. Set only by the record-and-drop operation. */
+    droppedAt?: string | null;
+    /** Timestamp of Blowhorn mentee creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn mentee modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListBlowhornMenteesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type UpsertBlowhornMenteeApiResponse = /** status 200 Blowhorn mentee saved */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Mentored subject. */
+  subject: string;
+  /** Mentorship stage of the subject. */
+  stage?: string;
+  /** Mentee metadata, stored as a JSON blob. */
+  metadata?: object;
+  /** Time the mentee was recorded and dropped, if any. Set only by the record-and-drop operation. */
+  droppedAt?: string | null;
+  /** Timestamp of Blowhorn mentee creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn mentee modification. */
+  updatedAt: string;
+};
+export type UpsertBlowhornMenteeApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** Mentored subject. */
+    subject: string;
+    /** Mentorship stage of the subject. */
+    stage?: string;
+    /** Mentee metadata, stored as a JSON blob. */
+    metadata?: object;
+  };
+};
+export type DeleteBlowhornMenteeApiResponse = unknown;
+export type DeleteBlowhornMenteeApiArg = {
+  /** Blowhorn mentee ID */
+  blowhornMenteeId: string;
+};
+export type RecordAndDropBlowhornMenteeApiResponse = /** status 200 Blowhorn mentee recorded and dropped */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Mentored subject. */
+  subject: string;
+  /** Mentorship stage of the subject. */
+  stage?: string;
+  /** Mentee metadata, stored as a JSON blob. */
+  metadata?: object;
+  /** Time the mentee was recorded and dropped, if any. Set only by the record-and-drop operation. */
+  droppedAt?: string | null;
+  /** Timestamp of Blowhorn mentee creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn mentee modification. */
+  updatedAt: string;
+};
+export type RecordAndDropBlowhornMenteeApiArg = {
+  /** Blowhorn mentee ID */
+  blowhornMenteeId: string;
+  body: {
+    /** Final mentorship stage recorded with the drop. */
+    stage?: string;
+  };
+};
+export type ListBlowhornProfilesApiResponse = /** status 200 Blowhorn profiles page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn profiles included on this page of results. */
+  blowhornProfiles?: {
+    /** Server-generated Blowhorn profile ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Subject the profile is keyed by. */
+    subject: string;
+    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+    slug: string;
+    /** Free-form profile attributes, stored as a JSON blob. */
+    attributes?: object;
+    /** Timestamp of Blowhorn profile creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn profile modification. */
+    updatedAt: string;
+    /** Timestamp when the Blowhorn profile was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListBlowhornProfilesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type UpsertBlowhornProfileApiResponse = /** status 200 Blowhorn profile saved */ {
+  /** Server-generated Blowhorn profile ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject the profile is keyed by. */
+  subject: string;
+  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+  slug: string;
+  /** Free-form profile attributes, stored as a JSON blob. */
+  attributes?: object;
+  /** Timestamp of Blowhorn profile creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn profile modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn profile was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpsertBlowhornProfileApiArg = {
+  body: {
+    /** Existing Blowhorn profile ID for updates; omit on create. */
+    id?: string;
+    /** Subject the profile is keyed by. */
+    subject: string;
+    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+    slug: string;
+    /** Free-form profile attributes, stored as a JSON blob. */
+    attributes?: object;
+  };
+};
+export type GetBlowhornProfileBySubjectApiResponse = /** status 200 Blowhorn profile response */ {
+  /** Server-generated Blowhorn profile ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject the profile is keyed by. */
+  subject: string;
+  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+  slug: string;
+  /** Free-form profile attributes, stored as a JSON blob. */
+  attributes?: object;
+  /** Timestamp of Blowhorn profile creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn profile modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn profile was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetBlowhornProfileBySubjectApiArg = {
+  /** Subject the profile is keyed by. */
+  subject: string;
+};
+export type GetBlowhornProfileApiResponse = /** status 200 Blowhorn profile response */ {
+  /** Server-generated Blowhorn profile ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject the profile is keyed by. */
+  subject: string;
+  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+  slug: string;
+  /** Free-form profile attributes, stored as a JSON blob. */
+  attributes?: object;
+  /** Timestamp of Blowhorn profile creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn profile modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn profile was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetBlowhornProfileApiArg = {
+  /** Blowhorn profile ID */
+  blowhornProfileId: string;
+};
+export type UpdateBlowhornProfileApiResponse = /** status 200 Blowhorn profile updated */ {
+  /** Server-generated Blowhorn profile ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject the profile is keyed by. */
+  subject: string;
+  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+  slug: string;
+  /** Free-form profile attributes, stored as a JSON blob. */
+  attributes?: object;
+  /** Timestamp of Blowhorn profile creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn profile modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn profile was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpdateBlowhornProfileApiArg = {
+  /** Blowhorn profile ID */
+  blowhornProfileId: string;
+  body: {
+    /** Existing Blowhorn profile ID for updates; omit on create. */
+    id?: string;
+    /** Subject the profile is keyed by. */
+    subject: string;
+    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+    slug: string;
+    /** Free-form profile attributes, stored as a JSON blob. */
+    attributes?: object;
+  };
+};
+export type DeleteBlowhornProfileApiResponse = unknown;
+export type DeleteBlowhornProfileApiArg = {
+  /** Blowhorn profile ID */
+  blowhornProfileId: string;
+};
+export type ListBlowhornRunRecordsApiResponse = /** status 200 Blowhorn run records page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn run records included on this page of results. */
+  blowhornRunRecords?: {
+    /** Server-generated Blowhorn run record ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Run identifier grouping the records of one execution. */
+    runId: string;
+    /** Record kind within the run. */
+    kind: string;
+    /** Event time of the record within the run. Part of the idempotency tuple. */
+    ts: string;
+    /** Subject of the profile the record concerns. */
+    profile?: string;
+    /** Platform the record concerns (e.g. linkedin). */
+    platform?: string;
+    /** Record values, stored as a JSON blob. */
+    data?: object;
+    /** Timestamp of Blowhorn run record creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn run record modification. */
+    updatedAt: string;
+    /** Timestamp when the Blowhorn run record was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListBlowhornRunRecordsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by run identifier. */
+  runId?: string;
+  /** Filter by record kind. */
+  kind?: string;
+  /** Filter by profile subject. */
+  profile?: string;
+  /** Filter by platform (e.g. linkedin). */
+  platform?: string;
+};
+export type AppendBlowhornRunRecordApiResponse = /** status 200 Blowhorn run record appended */ {
+  /** Server-generated Blowhorn run record ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Run identifier grouping the records of one execution. */
+  runId: string;
+  /** Record kind within the run. */
+  kind: string;
+  /** Event time of the record within the run. Part of the idempotency tuple. */
+  ts: string;
+  /** Subject of the profile the record concerns. */
+  profile?: string;
+  /** Platform the record concerns (e.g. linkedin). */
+  platform?: string;
+  /** Record values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of Blowhorn run record creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn run record modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn run record was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type AppendBlowhornRunRecordApiArg = {
+  body: {
+    /** Existing Blowhorn run record ID; omit on append. */
+    id?: string;
+    /** Run identifier grouping the records of one execution. */
+    runId: string;
+    /** Record kind within the run. */
+    kind: string;
+    /** Event time of the record within the run. Part of the idempotency tuple. */
+    ts: string;
+    /** Subject of the profile the record concerns. */
+    profile?: string;
+    /** Platform the record concerns (e.g. linkedin). */
+    platform?: string;
+    /** Record values, stored as a JSON blob. */
+    data?: object;
+  };
+};
+export type ListBlowhornAnalyticsApiResponse = /** status 200 Blowhorn analytics page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn analytics rollups included on this page of results. */
+  blowhornAnalytics?: {
+    /** Server-generated Blowhorn analytics ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Aggregation scope (e.g. profile subject or organization-wide rollup name). */
+    scope: string;
+    /** Aggregation window the metrics cover (e.g. day, week). */
+    window?: string;
+    /** Aggregated metrics, stored as a JSON blob. */
+    metrics: object;
+    /** Time the metrics were computed. */
+    computedAt?: string | null;
+    /** Timestamp of Blowhorn analytics creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn analytics modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListBlowhornAnalyticsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by aggregation scope. */
+  scope?: string;
+};
+export type RecordBlowhornAnalyticsApiResponse = /** status 200 Blowhorn analytics recorded */ {
+  /** Server-generated Blowhorn analytics ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Aggregation scope (e.g. profile subject or organization-wide rollup name). */
+  scope: string;
+  /** Aggregation window the metrics cover (e.g. day, week). */
+  window?: string;
+  /** Aggregated metrics, stored as a JSON blob. */
+  metrics: object;
+  /** Time the metrics were computed. */
+  computedAt?: string | null;
+  /** Timestamp of Blowhorn analytics creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn analytics modification. */
+  updatedAt: string;
+};
+export type RecordBlowhornAnalyticsApiArg = {
+  body: {
+    /** Existing Blowhorn analytics ID for updates; omit on record. */
+    id?: string;
+    /** Aggregation scope (e.g. profile subject or organization-wide rollup name). */
+    scope: string;
+    /** Aggregation window the metrics cover (e.g. day, week). */
+    window?: string;
+    /** Aggregated metrics, stored as a JSON blob. */
+    metrics: object;
+    /** Time the metrics were computed. */
+    computedAt?: string;
+  };
+};
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
   /** List of connections on this page */
   connections: {
@@ -7327,6 +9641,16 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
+            
+            Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+            
+            At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+            
+            Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            
+            The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+      purpose?: "user" | "administrative" | "blowhorn";
     }[];
     /** Specifies the version of the schema used for the definition. */
     schemaVersion: string;
@@ -7634,6 +9958,16 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -8082,6 +10416,16 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -8351,6 +10695,16 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -9274,59 +11628,63 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
     /** Optional structured location metadata (branch, host, path, ...). */
@@ -9543,59 +11901,63 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
   /** Optional structured location metadata (branch, host, path, ...). */
@@ -9855,59 +12217,63 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
   /** Optional structured location metadata (branch, host, path, ...). */
@@ -10108,59 +12474,63 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
   /** Optional structured location metadata (branch, host, path, ...). */
@@ -10366,59 +12736,63 @@ export type ImportDesignApiResponse =
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
     /** Optional structured location metadata (branch, host, path, ...). */
@@ -10633,59 +13007,63 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
     /** Optional structured location metadata (branch, host, path, ...). */
@@ -10945,59 +13323,63 @@ export type PublishCatalogContentApiResponse = /** status 200 Catalog request re
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
   /** Approval status of the request. */
@@ -11152,59 +13534,63 @@ export type UnPublishCatalogContentApiResponse = /** status 200 Catalog request 
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
   /** Approval status of the request. */
@@ -11436,59 +13822,63 @@ export type GetCatalogRequestApiResponse = /** status 200 Catalog requests page 
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
     /** Approval status of the request. */
@@ -11531,6 +13921,16 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   updatedAt?: string;
   /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
   deletedAt?: string | null;
+  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
+    
+    Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+    
+    At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+    
+    Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+    
+    The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+  purpose?: "user" | "administrative" | "blowhorn";
 };
 export type CreateEnvironmentApiArg = {
   /** Body for creating environment */
@@ -11572,6 +13972,16 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
 };
 export type GetEnvironmentsApiArg = {
@@ -11617,6 +14027,16 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
 };
 export type GetEnvironmentByIdApiArg = {
@@ -11654,6 +14074,16 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
 };
 export type UpdateEnvironmentApiArg = {
@@ -12744,6 +15174,759 @@ export type GetSignupRequestNotificationApiResponse = /** status 200 Signup requ
   preProcessed: boolean;
 };
 export type GetSignupRequestNotificationApiArg = void;
+export type ListJobLeasesApiResponse = /** status 200 Job leases page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Job leases included on this page of results. */
+  jobLeases?: {
+    /** Server-generated job lease ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+    rowNumber: number;
+    /** Job command to execute when the lease is held. */
+    command: string;
+    /** Profile reference the job runs against. */
+    profile?: string;
+    /** Target platform for the job (e.g. linkedin). */
+    platform?: string;
+    /** Arbitrary job parameters, stored as a JSON blob. */
+    params?: object;
+    /** Time the job becomes due. */
+    runAt?: string | null;
+    /** Next scheduled time for recurring jobs. */
+    nextRunAt?: string | null;
+    /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+    recurrence?: string;
+    /** Remaining execution attempts for the job. */
+    retryBudget?: number;
+    /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+    status: "pending" | "leased" | "succeeded" | "failed";
+    /** Execution driver mode for the job. */
+    driverMode?: string;
+    /** Time of the most recent execution attempt. */
+    lastRunAt?: string | null;
+    /** Error reported by the most recent execution attempt. */
+    lastError?: string;
+    /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+    claimedBy?: string;
+    /** Time the lease was claimed. Server-managed. */
+    claimedAt?: string | null;
+    /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+    leaseExpiresAt?: string | null;
+    /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+    pausedAt?: string | null;
+    /** Identity that paused the row. Server-managed. */
+    pausedBy?: string;
+    /** Operator reason for pausing the row. Server-managed. */
+    pauseReason?: string;
+    /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+    fingerprint: string;
+    /** Computed projection. True while a live lease is held on the row. */
+    locked?: boolean;
+    /** Computed projection of the current lease holder. */
+    lockedBy?: string;
+    /** Computed projection of the current claim time. */
+    lockedAt?: string | null;
+    /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+    lockStale?: boolean;
+    /** Timestamp of job lease creation. */
+    createdAt: string;
+    /** Timestamp of last job lease modification. */
+    updatedAt: string;
+    /** Timestamp when the job lease was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListJobLeasesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by job status (pending, leased, succeeded, failed). */
+  status?: string;
+};
+export type CreateJobLeaseApiResponse = /** status 201 Job lease created */ {
+  /** Server-generated job lease ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+  rowNumber: number;
+  /** Job command to execute when the lease is held. */
+  command: string;
+  /** Profile reference the job runs against. */
+  profile?: string;
+  /** Target platform for the job (e.g. linkedin). */
+  platform?: string;
+  /** Arbitrary job parameters, stored as a JSON blob. */
+  params?: object;
+  /** Time the job becomes due. */
+  runAt?: string | null;
+  /** Next scheduled time for recurring jobs. */
+  nextRunAt?: string | null;
+  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+  recurrence?: string;
+  /** Remaining execution attempts for the job. */
+  retryBudget?: number;
+  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+  status: "pending" | "leased" | "succeeded" | "failed";
+  /** Execution driver mode for the job. */
+  driverMode?: string;
+  /** Time of the most recent execution attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent execution attempt. */
+  lastError?: string;
+  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+  claimedBy?: string;
+  /** Time the lease was claimed. Server-managed. */
+  claimedAt?: string | null;
+  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+  leaseExpiresAt?: string | null;
+  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+  pausedAt?: string | null;
+  /** Identity that paused the row. Server-managed. */
+  pausedBy?: string;
+  /** Operator reason for pausing the row. Server-managed. */
+  pauseReason?: string;
+  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Computed projection. True while a live lease is held on the row. */
+  locked?: boolean;
+  /** Computed projection of the current lease holder. */
+  lockedBy?: string;
+  /** Computed projection of the current claim time. */
+  lockedAt?: string | null;
+  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+  lockStale?: boolean;
+  /** Timestamp of job lease creation. */
+  createdAt: string;
+  /** Timestamp of last job lease modification. */
+  updatedAt: string;
+  /** Timestamp when the job lease was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type CreateJobLeaseApiArg = {
+  body: {
+    /** Existing job lease ID for updates; omit on create. */
+    id?: string;
+    /** Targetable row number within the organization's job set. */
+    rowNumber: number;
+    /** Job command to execute when the lease is held. */
+    command: string;
+    /** Profile reference the job runs against. */
+    profile?: string;
+    /** Target platform for the job (e.g. linkedin). */
+    platform?: string;
+    /** Arbitrary job parameters, stored as a JSON blob. */
+    params?: object;
+    /** Time the job becomes due. */
+    runAt?: string;
+    /** Next scheduled time for recurring jobs. */
+    nextRunAt?: string;
+    /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+    recurrence?: string;
+    /** Remaining execution attempts for the job. */
+    retryBudget?: number;
+    /** Execution driver mode for the job. */
+    driverMode?: string;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        create.
+         */
+    expectedFingerprint?: string;
+  };
+};
+export type ClaimJobLeaseApiResponse =
+  /** status 200 Claim result holding the row, or null when nothing was claimed */ {
+    /** Server-returned job lease as persisted by meshery-cloud. A job lease is a
+    due-work row plus time-bound claim state, shared by Layer5 Cloud and
+    Blowhorn: competing consumers claim, renew and release leases on due jobs,
+    and pause scopes gate which rows are claimable. The claim race is decided
+    server-side in a single statement; losing racers receive null, never an
+    error. Claim columns (`claimedBy`, `claimedAt`, `leaseExpiresAt`) and pause
+    columns (`pausedAt`, `pausedBy`, `pauseReason`) are server-managed and are
+    refused on CRUD paths; they change only through the claim, renew, release,
+    pause and resume operations. `locked`, `lockedBy`, `lockedAt` and
+    `lockStale` are computed projections for schedule screens, not stored
+    columns.
+     */
+    jobLease?: {
+      /** Server-generated job lease ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+      rowNumber: number;
+      /** Job command to execute when the lease is held. */
+      command: string;
+      /** Profile reference the job runs against. */
+      profile?: string;
+      /** Target platform for the job (e.g. linkedin). */
+      platform?: string;
+      /** Arbitrary job parameters, stored as a JSON blob. */
+      params?: object;
+      /** Time the job becomes due. */
+      runAt?: string | null;
+      /** Next scheduled time for recurring jobs. */
+      nextRunAt?: string | null;
+      /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+      recurrence?: string;
+      /** Remaining execution attempts for the job. */
+      retryBudget?: number;
+      /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+      status: "pending" | "leased" | "succeeded" | "failed";
+      /** Execution driver mode for the job. */
+      driverMode?: string;
+      /** Time of the most recent execution attempt. */
+      lastRunAt?: string | null;
+      /** Error reported by the most recent execution attempt. */
+      lastError?: string;
+      /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+      claimedBy?: string;
+      /** Time the lease was claimed. Server-managed. */
+      claimedAt?: string | null;
+      /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+      leaseExpiresAt?: string | null;
+      /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+      pausedAt?: string | null;
+      /** Identity that paused the row. Server-managed. */
+      pausedBy?: string;
+      /** Operator reason for pausing the row. Server-managed. */
+      pauseReason?: string;
+      /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+      fingerprint: string;
+      /** Computed projection. True while a live lease is held on the row. */
+      locked?: boolean;
+      /** Computed projection of the current lease holder. */
+      lockedBy?: string;
+      /** Computed projection of the current claim time. */
+      lockedAt?: string | null;
+      /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+      lockStale?: boolean;
+      /** Timestamp of job lease creation. */
+      createdAt: string;
+      /** Timestamp of last job lease modification. */
+      updatedAt: string;
+      /** Timestamp when the job lease was soft-deleted. */
+      deletedAt?: string | null;
+    } | null;
+  };
+export type ClaimJobLeaseApiArg = {
+  body: {
+    /** Machine taking the lease, recorded as `claimedBy`. Client-asserted; the holder check is advisory in v1. */
+    machineId: string;
+    /** Claim only the row with this row number. */
+    rowNumber?: number;
+    /** Trigger-now override that drops only the due test; a live foreign lease still refuses. */
+    force?: boolean;
+    /** Single operator override over the organization-wide and per-row pause scopes. */
+    ignorePause?: boolean;
+    /** Requested lease duration in minutes. When omitted the server applies its default lease duration. */
+    leaseMinutes?: number;
+  };
+};
+export type GetSchedulePauseApiResponse = /** status 200 Organization schedule pause */ {
+  /** Server-generated schedule pause ID. */
+  id: string;
+  /** Organization the pause applies to. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Operator reason for pausing the organization schedule. */
+  reason?: string;
+  /** Identity that set the pause. Server-managed. */
+  pausedBy?: string;
+  /** Timestamp of schedule pause creation. */
+  createdAt: string;
+  /** Timestamp of last schedule pause modification. */
+  updatedAt: string;
+};
+export type GetSchedulePauseApiArg = void;
+export type SetSchedulePauseApiResponse = /** status 200 Organization schedule pause set */ {
+  /** Server-generated schedule pause ID. */
+  id: string;
+  /** Organization the pause applies to. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Operator reason for pausing the organization schedule. */
+  reason?: string;
+  /** Identity that set the pause. Server-managed. */
+  pausedBy?: string;
+  /** Timestamp of schedule pause creation. */
+  createdAt: string;
+  /** Timestamp of last schedule pause modification. */
+  updatedAt: string;
+};
+export type SetSchedulePauseApiArg = {
+  body: {
+    /** Operator reason for pausing the organization schedule. */
+    reason?: string;
+  };
+};
+export type ClearSchedulePauseApiResponse = unknown;
+export type ClearSchedulePauseApiArg = void;
+export type GetJobLeaseApiResponse = /** status 200 Job lease response */ {
+  /** Server-generated job lease ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+  rowNumber: number;
+  /** Job command to execute when the lease is held. */
+  command: string;
+  /** Profile reference the job runs against. */
+  profile?: string;
+  /** Target platform for the job (e.g. linkedin). */
+  platform?: string;
+  /** Arbitrary job parameters, stored as a JSON blob. */
+  params?: object;
+  /** Time the job becomes due. */
+  runAt?: string | null;
+  /** Next scheduled time for recurring jobs. */
+  nextRunAt?: string | null;
+  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+  recurrence?: string;
+  /** Remaining execution attempts for the job. */
+  retryBudget?: number;
+  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+  status: "pending" | "leased" | "succeeded" | "failed";
+  /** Execution driver mode for the job. */
+  driverMode?: string;
+  /** Time of the most recent execution attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent execution attempt. */
+  lastError?: string;
+  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+  claimedBy?: string;
+  /** Time the lease was claimed. Server-managed. */
+  claimedAt?: string | null;
+  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+  leaseExpiresAt?: string | null;
+  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+  pausedAt?: string | null;
+  /** Identity that paused the row. Server-managed. */
+  pausedBy?: string;
+  /** Operator reason for pausing the row. Server-managed. */
+  pauseReason?: string;
+  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Computed projection. True while a live lease is held on the row. */
+  locked?: boolean;
+  /** Computed projection of the current lease holder. */
+  lockedBy?: string;
+  /** Computed projection of the current claim time. */
+  lockedAt?: string | null;
+  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+  lockStale?: boolean;
+  /** Timestamp of job lease creation. */
+  createdAt: string;
+  /** Timestamp of last job lease modification. */
+  updatedAt: string;
+  /** Timestamp when the job lease was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+};
+export type UpdateJobLeaseApiResponse = /** status 200 Job lease updated */ {
+  /** Server-generated job lease ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+  rowNumber: number;
+  /** Job command to execute when the lease is held. */
+  command: string;
+  /** Profile reference the job runs against. */
+  profile?: string;
+  /** Target platform for the job (e.g. linkedin). */
+  platform?: string;
+  /** Arbitrary job parameters, stored as a JSON blob. */
+  params?: object;
+  /** Time the job becomes due. */
+  runAt?: string | null;
+  /** Next scheduled time for recurring jobs. */
+  nextRunAt?: string | null;
+  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+  recurrence?: string;
+  /** Remaining execution attempts for the job. */
+  retryBudget?: number;
+  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+  status: "pending" | "leased" | "succeeded" | "failed";
+  /** Execution driver mode for the job. */
+  driverMode?: string;
+  /** Time of the most recent execution attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent execution attempt. */
+  lastError?: string;
+  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+  claimedBy?: string;
+  /** Time the lease was claimed. Server-managed. */
+  claimedAt?: string | null;
+  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+  leaseExpiresAt?: string | null;
+  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+  pausedAt?: string | null;
+  /** Identity that paused the row. Server-managed. */
+  pausedBy?: string;
+  /** Operator reason for pausing the row. Server-managed. */
+  pauseReason?: string;
+  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Computed projection. True while a live lease is held on the row. */
+  locked?: boolean;
+  /** Computed projection of the current lease holder. */
+  lockedBy?: string;
+  /** Computed projection of the current claim time. */
+  lockedAt?: string | null;
+  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+  lockStale?: boolean;
+  /** Timestamp of job lease creation. */
+  createdAt: string;
+  /** Timestamp of last job lease modification. */
+  updatedAt: string;
+  /** Timestamp when the job lease was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpdateJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+  body: {
+    /** Existing job lease ID for updates; omit on create. */
+    id?: string;
+    /** Targetable row number within the organization's job set. */
+    rowNumber: number;
+    /** Job command to execute when the lease is held. */
+    command: string;
+    /** Profile reference the job runs against. */
+    profile?: string;
+    /** Target platform for the job (e.g. linkedin). */
+    platform?: string;
+    /** Arbitrary job parameters, stored as a JSON blob. */
+    params?: object;
+    /** Time the job becomes due. */
+    runAt?: string;
+    /** Next scheduled time for recurring jobs. */
+    nextRunAt?: string;
+    /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+    recurrence?: string;
+    /** Remaining execution attempts for the job. */
+    retryBudget?: number;
+    /** Execution driver mode for the job. */
+    driverMode?: string;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        create.
+         */
+    expectedFingerprint?: string;
+  };
+};
+export type DeleteJobLeaseApiResponse = unknown;
+export type DeleteJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+};
+export type RenewJobLeaseApiResponse =
+  /** status 200 Renew result holding the row, or null when not held by the caller */ {
+    /** Server-returned job lease as persisted by meshery-cloud. A job lease is a
+    due-work row plus time-bound claim state, shared by Layer5 Cloud and
+    Blowhorn: competing consumers claim, renew and release leases on due jobs,
+    and pause scopes gate which rows are claimable. The claim race is decided
+    server-side in a single statement; losing racers receive null, never an
+    error. Claim columns (`claimedBy`, `claimedAt`, `leaseExpiresAt`) and pause
+    columns (`pausedAt`, `pausedBy`, `pauseReason`) are server-managed and are
+    refused on CRUD paths; they change only through the claim, renew, release,
+    pause and resume operations. `locked`, `lockedBy`, `lockedAt` and
+    `lockStale` are computed projections for schedule screens, not stored
+    columns.
+     */
+    jobLease?: {
+      /** Server-generated job lease ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+      rowNumber: number;
+      /** Job command to execute when the lease is held. */
+      command: string;
+      /** Profile reference the job runs against. */
+      profile?: string;
+      /** Target platform for the job (e.g. linkedin). */
+      platform?: string;
+      /** Arbitrary job parameters, stored as a JSON blob. */
+      params?: object;
+      /** Time the job becomes due. */
+      runAt?: string | null;
+      /** Next scheduled time for recurring jobs. */
+      nextRunAt?: string | null;
+      /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+      recurrence?: string;
+      /** Remaining execution attempts for the job. */
+      retryBudget?: number;
+      /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+      status: "pending" | "leased" | "succeeded" | "failed";
+      /** Execution driver mode for the job. */
+      driverMode?: string;
+      /** Time of the most recent execution attempt. */
+      lastRunAt?: string | null;
+      /** Error reported by the most recent execution attempt. */
+      lastError?: string;
+      /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+      claimedBy?: string;
+      /** Time the lease was claimed. Server-managed. */
+      claimedAt?: string | null;
+      /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+      leaseExpiresAt?: string | null;
+      /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+      pausedAt?: string | null;
+      /** Identity that paused the row. Server-managed. */
+      pausedBy?: string;
+      /** Operator reason for pausing the row. Server-managed. */
+      pauseReason?: string;
+      /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+      fingerprint: string;
+      /** Computed projection. True while a live lease is held on the row. */
+      locked?: boolean;
+      /** Computed projection of the current lease holder. */
+      lockedBy?: string;
+      /** Computed projection of the current claim time. */
+      lockedAt?: string | null;
+      /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+      lockStale?: boolean;
+      /** Timestamp of job lease creation. */
+      createdAt: string;
+      /** Timestamp of last job lease modification. */
+      updatedAt: string;
+      /** Timestamp when the job lease was soft-deleted. */
+      deletedAt?: string | null;
+    } | null;
+  };
+export type RenewJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+  body: {
+    /** Machine holding the lease. Only the holder may renew. Client-asserted; the holder check is advisory in v1. */
+    machineId: string;
+    /** Requested lease extension in minutes. When omitted the server applies its default lease duration. */
+    leaseMinutes?: number;
+  };
+};
+export type ReleaseJobLeaseApiResponse = /** status 200 Job lease released */ {
+  /** Server-generated job lease ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+  rowNumber: number;
+  /** Job command to execute when the lease is held. */
+  command: string;
+  /** Profile reference the job runs against. */
+  profile?: string;
+  /** Target platform for the job (e.g. linkedin). */
+  platform?: string;
+  /** Arbitrary job parameters, stored as a JSON blob. */
+  params?: object;
+  /** Time the job becomes due. */
+  runAt?: string | null;
+  /** Next scheduled time for recurring jobs. */
+  nextRunAt?: string | null;
+  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+  recurrence?: string;
+  /** Remaining execution attempts for the job. */
+  retryBudget?: number;
+  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+  status: "pending" | "leased" | "succeeded" | "failed";
+  /** Execution driver mode for the job. */
+  driverMode?: string;
+  /** Time of the most recent execution attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent execution attempt. */
+  lastError?: string;
+  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+  claimedBy?: string;
+  /** Time the lease was claimed. Server-managed. */
+  claimedAt?: string | null;
+  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+  leaseExpiresAt?: string | null;
+  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+  pausedAt?: string | null;
+  /** Identity that paused the row. Server-managed. */
+  pausedBy?: string;
+  /** Operator reason for pausing the row. Server-managed. */
+  pauseReason?: string;
+  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Computed projection. True while a live lease is held on the row. */
+  locked?: boolean;
+  /** Computed projection of the current lease holder. */
+  lockedBy?: string;
+  /** Computed projection of the current claim time. */
+  lockedAt?: string | null;
+  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+  lockStale?: boolean;
+  /** Timestamp of job lease creation. */
+  createdAt: string;
+  /** Timestamp of last job lease modification. */
+  updatedAt: string;
+  /** Timestamp when the job lease was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type ReleaseJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+  body: {
+    /** Machine holding the lease. Only the holder may release; a non-holder is refused with a 409 and nothing changes. Client-asserted; the holder check is advisory in v1. */
+    machineId: string;
+    /** Result values merged into the row on release (e.g. last run outcome and error). */
+    values?: object;
+  };
+};
+export type PauseJobLeaseApiResponse = /** status 200 Job lease row paused */ {
+  /** Server-generated job lease ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+  rowNumber: number;
+  /** Job command to execute when the lease is held. */
+  command: string;
+  /** Profile reference the job runs against. */
+  profile?: string;
+  /** Target platform for the job (e.g. linkedin). */
+  platform?: string;
+  /** Arbitrary job parameters, stored as a JSON blob. */
+  params?: object;
+  /** Time the job becomes due. */
+  runAt?: string | null;
+  /** Next scheduled time for recurring jobs. */
+  nextRunAt?: string | null;
+  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+  recurrence?: string;
+  /** Remaining execution attempts for the job. */
+  retryBudget?: number;
+  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+  status: "pending" | "leased" | "succeeded" | "failed";
+  /** Execution driver mode for the job. */
+  driverMode?: string;
+  /** Time of the most recent execution attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent execution attempt. */
+  lastError?: string;
+  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+  claimedBy?: string;
+  /** Time the lease was claimed. Server-managed. */
+  claimedAt?: string | null;
+  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+  leaseExpiresAt?: string | null;
+  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+  pausedAt?: string | null;
+  /** Identity that paused the row. Server-managed. */
+  pausedBy?: string;
+  /** Operator reason for pausing the row. Server-managed. */
+  pauseReason?: string;
+  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Computed projection. True while a live lease is held on the row. */
+  locked?: boolean;
+  /** Computed projection of the current lease holder. */
+  lockedBy?: string;
+  /** Computed projection of the current claim time. */
+  lockedAt?: string | null;
+  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+  lockStale?: boolean;
+  /** Timestamp of job lease creation. */
+  createdAt: string;
+  /** Timestamp of last job lease modification. */
+  updatedAt: string;
+  /** Timestamp when the job lease was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type PauseJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+  body: {
+    /** Operator reason for pausing the row. */
+    reason?: string;
+  };
+};
+export type ResumeJobLeaseApiResponse = /** status 200 Job lease row resumed */ {
+  /** Server-generated job lease ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
+  rowNumber: number;
+  /** Job command to execute when the lease is held. */
+  command: string;
+  /** Profile reference the job runs against. */
+  profile?: string;
+  /** Target platform for the job (e.g. linkedin). */
+  platform?: string;
+  /** Arbitrary job parameters, stored as a JSON blob. */
+  params?: object;
+  /** Time the job becomes due. */
+  runAt?: string | null;
+  /** Next scheduled time for recurring jobs. */
+  nextRunAt?: string | null;
+  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
+  recurrence?: string;
+  /** Remaining execution attempts for the job. */
+  retryBudget?: number;
+  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
+  status: "pending" | "leased" | "succeeded" | "failed";
+  /** Execution driver mode for the job. */
+  driverMode?: string;
+  /** Time of the most recent execution attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent execution attempt. */
+  lastError?: string;
+  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
+  claimedBy?: string;
+  /** Time the lease was claimed. Server-managed. */
+  claimedAt?: string | null;
+  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
+  leaseExpiresAt?: string | null;
+  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
+  pausedAt?: string | null;
+  /** Identity that paused the row. Server-managed. */
+  pausedBy?: string;
+  /** Operator reason for pausing the row. Server-managed. */
+  pauseReason?: string;
+  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Computed projection. True while a live lease is held on the row. */
+  locked?: boolean;
+  /** Computed projection of the current lease holder. */
+  lockedBy?: string;
+  /** Computed projection of the current claim time. */
+  lockedAt?: string | null;
+  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
+  lockStale?: boolean;
+  /** Timestamp of job lease creation. */
+  createdAt: string;
+  /** Timestamp of last job lease modification. */
+  updatedAt: string;
+  /** Timestamp when the job lease was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type ResumeJobLeaseApiArg = {
+  /** Job lease ID */
+  jobLeaseId: string;
+};
 export type GetPatternResourcesApiResponse = /** status 200 Pattern resources page */ {
   /** Current page number of the result set. */
   page?: number;
@@ -13428,6 +16611,120 @@ export type GetSubscriptionsApiArg = {
   /** Filter subscriptions by plan UUID. Repeat for multiple values. */
   planId?: string[];
 };
+export type UpsertSubscriptionApiResponse = /** status 200 Subscription updated */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Subscriptions returned on the current page. */
+  subscriptions: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    orgId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    planId: string;
+    /** Eager-loaded plan associated with this subscription. */
+    plan?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Display name of the plan. */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      /** Billing cadence for the plan (monthly, annually, or none). */
+      cadence: "none" | "monthly" | "annually";
+      /** Unit of consumption this plan charges against (e.g. user). */
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan. */
+      minimumUnits: number;
+      /** Price per unit of the plan. */
+      pricePerUnit: number;
+      /** Currency in which the plan is priced. */
+      currency: "usd";
+    };
+    /** Number of units subscribed (eg number of users). */
+    quantity: number;
+    /** Timestamp when the subscription period started. */
+    startDate?: string;
+    /** Timestamp when the current subscription period ends. */
+    endDate?: string;
+    /** Current status of the subscription (e.g. active, past_due, canceled). */
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+    /** Timestamp when the subscription was created. */
+    createdAt?: string;
+    /** Timestamp when the subscription was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the subscription was soft-deleted, if applicable. */
+    deletedAt?: string;
+    /** Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
+    billingId: string;
+  }[];
+};
+export type UpsertSubscriptionApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    planId: string;
+    /** Number of units subscribed (eg number of users). */
+    quantity: number;
+  };
+};
+export type GetSubscriptionByIdApiResponse = /** status 200 Subscription response */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Subscriptions returned on the current page. */
+  subscriptions: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    orgId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    planId: string;
+    /** Eager-loaded plan associated with this subscription. */
+    plan?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Display name of the plan. */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      /** Billing cadence for the plan (monthly, annually, or none). */
+      cadence: "none" | "monthly" | "annually";
+      /** Unit of consumption this plan charges against (e.g. user). */
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan. */
+      minimumUnits: number;
+      /** Price per unit of the plan. */
+      pricePerUnit: number;
+      /** Currency in which the plan is priced. */
+      currency: "usd";
+    };
+    /** Number of units subscribed (eg number of users). */
+    quantity: number;
+    /** Timestamp when the subscription period started. */
+    startDate?: string;
+    /** Timestamp when the current subscription period ends. */
+    endDate?: string;
+    /** Current status of the subscription (e.g. active, past_due, canceled). */
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+    /** Timestamp when the subscription was created. */
+    createdAt?: string;
+    /** Timestamp when the subscription was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the subscription was soft-deleted, if applicable. */
+    deletedAt?: string;
+    /** Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
+    billingId: string;
+  }[];
+};
+export type GetSubscriptionByIdApiArg = {
+  /** Subscription ID */
+  subscriptionId: string;
+};
 export type CancelSubscriptionApiResponse = /** status 200 Subscription cancellation scheduled */ {
   /** Current page number of the result set. */
   page: number;
@@ -13605,6 +16902,8 @@ export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
 export type GetUserTokensApiArg = {
   /** Whether to retrieve OAuth-backed sessions instead of API tokens. */
   isOauth?: boolean;
+  /** Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
+  purpose?: string;
   /** Get responses by page */
   page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
@@ -13650,7 +16949,7 @@ export type GenerateTokenApiResponse = /** status 201 Token generated */ {
 export type GenerateTokenApiArg = {
   /** Name of the token. */
   name: string;
-  /** Purpose for which the token is generated. */
+  /** Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
   purpose?: string;
 };
 export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
@@ -14010,9 +17309,12 @@ export type DeleteWorkspaceApiArg = {
   workspaceId: string;
 };
 export type GetTeamsOfWorkspaceApiResponse = /** status 200 Teams */ {
+  /** Current page number of the result set. */
   page?: number;
-  page_size?: number;
-  total_count?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
   /** The teams of the teampage. */
   teams?: {
     /** Team ID */
@@ -14025,10 +17327,12 @@ export type GetTeamsOfWorkspaceApiResponse = /** status 200 Teams */ {
     owner?: string;
     /** Additional metadata for the team */
     metadata?: object;
-    created_at?: string;
-    updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
+    /** Timestamp when the team was created. */
+    createdAt: string;
+    /** Timestamp when the team was last updated. */
+    updatedAt: string;
+    /** Timestamp when the team was soft-deleted, if applicable. */
+    deletedAt?: string;
   }[];
 };
 export type GetTeamsOfWorkspaceApiArg = {
@@ -14111,6 +17415,16 @@ export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
 };
 export type GetEnvironmentsOfWorkspaceApiArg = {
@@ -15323,6 +18637,19 @@ export const {
   useLazyGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
   useLazyGetFeaturesByOrganizationQuery,
+  useGetOrganizationSmtpEnvironmentQuery,
+  useLazyGetOrganizationSmtpEnvironmentQuery,
+  useDeleteOrganizationSmtpEnvironmentMutation,
+  useGetOrganizationSmtpConfigurationQuery,
+  useLazyGetOrganizationSmtpConfigurationQuery,
+  useCreateOrganizationSmtpConfigurationMutation,
+  useUpdateOrganizationSmtpConfigurationMutation,
+  useRotateOrganizationSmtpCredentialMutation,
+  useSetOrganizationSmtpEnablementMutation,
+  useTestOrganizationSmtpConfigurationMutation,
+  useGetOrganizationSmtpDomainVerificationQuery,
+  useLazyGetOrganizationSmtpDomainVerificationQuery,
+  useVerifyOrganizationSmtpDomainMutation,
   useSubmitSupportRequestMutation,
   useGetSystemVersionQuery,
   useLazyGetSystemVersionQuery,
@@ -15371,6 +18698,9 @@ export const {
   useLazyGetOrgQuery,
   useDeleteOrgMutation,
   useUpdateOrgMutation,
+  useGetChildOrgsQuery,
+  useLazyGetChildOrgsQuery,
+  useCreateChildOrgMutation,
   useGetOrgPreferencesQuery,
   useLazyGetOrgPreferencesQuery,
   useAddTeamToOrgMutation,
@@ -15459,6 +18789,54 @@ export const {
   useLazyGetAcademyAdminRegistrationsQuery,
   useGetCertificateByIdQuery,
   useLazyGetCertificateByIdQuery,
+  useListBlowhornBindingsQuery,
+  useLazyListBlowhornBindingsQuery,
+  useBindBlowhornBindingMutation,
+  useUnbindBlowhornBindingMutation,
+  useListBlowhornContentQuery,
+  useLazyListBlowhornContentQuery,
+  useInsertBlowhornContentMutation,
+  useGetBlowhornContentQuery,
+  useLazyGetBlowhornContentQuery,
+  useUpdateBlowhornContentMutation,
+  useDeleteBlowhornContentMutation,
+  useListBlowhornDestinationsQuery,
+  useLazyListBlowhornDestinationsQuery,
+  useUpsertBlowhornDestinationMutation,
+  useGetBlowhornDestinationQuery,
+  useLazyGetBlowhornDestinationQuery,
+  useGetBlowhornHealthQuery,
+  useLazyGetBlowhornHealthQuery,
+  useListBlowhornLedgerQuery,
+  useLazyListBlowhornLedgerQuery,
+  useRecordBlowhornLedgerEntryMutation,
+  useGetBlowhornLedgerEntryQuery,
+  useLazyGetBlowhornLedgerEntryQuery,
+  useDeleteBlowhornLedgerEntryMutation,
+  useClaimIfAbsentBlowhornLedgerEntryMutation,
+  useListBlowhornContactsQuery,
+  useLazyListBlowhornContactsQuery,
+  useUpsertBlowhornContactMutation,
+  useListBlowhornMenteesQuery,
+  useLazyListBlowhornMenteesQuery,
+  useUpsertBlowhornMenteeMutation,
+  useDeleteBlowhornMenteeMutation,
+  useRecordAndDropBlowhornMenteeMutation,
+  useListBlowhornProfilesQuery,
+  useLazyListBlowhornProfilesQuery,
+  useUpsertBlowhornProfileMutation,
+  useGetBlowhornProfileBySubjectQuery,
+  useLazyGetBlowhornProfileBySubjectQuery,
+  useGetBlowhornProfileQuery,
+  useLazyGetBlowhornProfileQuery,
+  useUpdateBlowhornProfileMutation,
+  useDeleteBlowhornProfileMutation,
+  useListBlowhornRunRecordsQuery,
+  useLazyListBlowhornRunRecordsQuery,
+  useAppendBlowhornRunRecordMutation,
+  useListBlowhornAnalyticsQuery,
+  useLazyListBlowhornAnalyticsQuery,
+  useRecordBlowhornAnalyticsMutation,
   useGetConnectionsQuery,
   useLazyGetConnectionsQuery,
   useRegisterConnectionMutation,
@@ -15555,6 +18933,22 @@ export const {
   useDenySignupRequestMutation,
   useGetSignupRequestNotificationQuery,
   useLazyGetSignupRequestNotificationQuery,
+  useListJobLeasesQuery,
+  useLazyListJobLeasesQuery,
+  useCreateJobLeaseMutation,
+  useClaimJobLeaseMutation,
+  useGetSchedulePauseQuery,
+  useLazyGetSchedulePauseQuery,
+  useSetSchedulePauseMutation,
+  useClearSchedulePauseMutation,
+  useGetJobLeaseQuery,
+  useLazyGetJobLeaseQuery,
+  useUpdateJobLeaseMutation,
+  useDeleteJobLeaseMutation,
+  useRenewJobLeaseMutation,
+  useReleaseJobLeaseMutation,
+  usePauseJobLeaseMutation,
+  useResumeJobLeaseMutation,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,
@@ -15578,6 +18972,9 @@ export const {
   useLazyGetPlansQuery,
   useGetSubscriptionsQuery,
   useLazyGetSubscriptionsQuery,
+  useUpsertSubscriptionMutation,
+  useGetSubscriptionByIdQuery,
+  useLazyGetSubscriptionByIdQuery,
   useCancelSubscriptionMutation,
   useCreateSubscriptionMutation,
   useUpgradeSubscriptionMutation,

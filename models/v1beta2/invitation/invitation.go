@@ -6,9 +6,9 @@ package invitation
 import (
 	"time"
 
+	"github.com/gofrs/uuid"
 	"github.com/lib/pq"
 	"github.com/meshery/schemas/models/core"
-	"github.com/gofrs/uuid"
 )
 
 // Defines values for InvitationStatus.

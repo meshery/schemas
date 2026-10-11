@@ -82,7 +82,7 @@ type MesheryViewWithLocation struct {
 	DeletedAt core.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 
 	// Filters Filter configuration for this view.
-	Filters core.Map               `db:"filters" json:"filters,omitempty" yaml:"filters,omitempty"`
+	Filters core.Map       `db:"filters" json:"filters,omitempty" yaml:"filters,omitempty"`
 	ID      core.GeneralId `db:"id" json:"id" yaml:"id"`
 
 	// Metadata Metadata associated with the view.

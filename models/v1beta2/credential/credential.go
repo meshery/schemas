@@ -20,6 +20,9 @@ type Credential struct {
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	UserId core.Uuid `db:"owner" json:"userId" yaml:"userId"`
 
+	// OrgOwner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrgOwner *core.Uuid `db:"org_owner" json:"orgOwner,omitempty" yaml:"orgOwner,omitempty"`
+
 	// Type Credential type (e.g. token, basic, AWS).
 	Type string `db:"type" json:"type" yaml:"type"`
 
@@ -61,6 +64,9 @@ type CredentialPayload struct {
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	UserId *core.Uuid `json:"userId,omitempty" yaml:"userId,omitempty"`
+
+	// OrgOwner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrgOwner *core.Uuid `json:"orgOwner,omitempty" yaml:"orgOwner,omitempty"`
 
 	// Type Credential type (e.g. token, basic, AWS).
 	Type string `json:"type" yaml:"type"`

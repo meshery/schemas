@@ -36,6 +36,7 @@ const config = require("./lib/config");
 const paths = require("./lib/paths");
 const { commandExists } = require("./lib/exec");
 const { writeGeneratedHelperFile } = require("./lib/generated-go-helpers");
+const { formatGoFile, requireGofmt } = require("./lib/gofmt");
 
 /**
  * Add YAML struct tags alongside JSON ones in generated Go file
@@ -1515,7 +1516,14 @@ async function generateGoModels(pkg) {
     ensureRequiredImports(outputPath);
     validateGeneratedDbTags(outputPath, inputPath);
     validateGeneratedJsonTags(outputPath, inputPath);
-    writeGeneratedHelperFile(pkg, outputDir);
+    // The post-processing steps above rewrite lines in place, which leaves
+    // struct tag columns and import grouping non-canonical. gofmt is the last
+    // step so committed output is always gofmt-clean as generated.
+    formatGoFile(outputPath);
+    const helperPath = writeGeneratedHelperFile(pkg, outputDir);
+    if (helperPath) {
+      formatGoFile(helperPath);
+    }
 
     logger.success(`Generated: ${paths.relativePath(outputPath)}`);
   } catch (err) {
@@ -1542,6 +1550,8 @@ function checkPrerequisites() {
     process.exit(1);
   }
 
+  // Generated Go must be gofmt-clean as generated.
+  requireGofmt(logger);
 }
 
 /**

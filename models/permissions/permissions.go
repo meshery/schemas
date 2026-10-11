@@ -2,11 +2,11 @@
 // This file is generated from permissions.csv - DO NOT EDIT MANUALLY.
 // To regenerate, run: node build/generate-permission-golang.js
 package permissions
+
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "bfd819819315ab0192b6f930378760de4b79ecd8acdc4741e72b846d7e7207e2"
-
+const IndexID = "f3b782e7396cf230d10ee3e64db1338eb5a44430619bd26b4f84b0e8214894f2"
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -201,9 +201,6 @@ var (
 	// ExtensibilitySwaggerIntegration - No description available
 	ExtensibilitySwaggerIntegration = PermissionKey(uuid.Must(uuid.FromString("045f4c47-95d7-4ee7-923e-b069faa75640")))
 
-	// ExtensibilityNamespacedCustomResolvers - No description available
-	ExtensibilityNamespacedCustomResolvers = PermissionKey(uuid.Must(uuid.FromString("192cd281-234a-4127-b8a8-3e6f10d9e730")))
-
 	// ExtensibilityAdapters - Extend Meshery's capabilities behind a gRPC interface for Model registration and operation invocation
 	ExtensibilityAdapters = PermissionKey(uuid.Must(uuid.FromString("65150884-c617-4aa4-bb0f-09dd0532bb83")))
 
@@ -303,10 +300,10 @@ var (
 	// IdentityAccessManagementMesheryAsAnIdp - Own and control the user accounts of your enterprise members through your identity provider (IdP).
 	IdentityAccessManagementMesheryAsAnIdp = PermissionKey(uuid.Must(uuid.FromString("0b3313eb-5c77-4dba-9074-122cfb01bf55")))
 
-	// IdentityAccessManagementViewUserPublicProfile - See public user profile details, public activities and public resources. 
+	// IdentityAccessManagementViewUserPublicProfile - See public user profile details, public activities and public resources.
 	IdentityAccessManagementViewUserPublicProfile = PermissionKey(uuid.Must(uuid.FromString("daded1e9-ff0f-4259-86ac-e168fd5565d4")))
 
-	// IdentityAccessManagementViewUserSettings - See private user profile details, private activities and private resources. 
+	// IdentityAccessManagementViewUserSettings - See private user profile details, private activities and private resources.
 	IdentityAccessManagementViewUserSettings = PermissionKey(uuid.Must(uuid.FromString("e00cae57-6dc6-41ac-b174-f3b01b4adce0")))
 
 	// IdentityAccessManagementViewAllUsers - See all teams within an organization. See all members of all teams.
@@ -414,8 +411,8 @@ var (
 	// IdentityAccessManagementDomainRoutingAndRemoval - Assigned domains direct user traffic to organizations; clearing the field removes the assignment.
 	IdentityAccessManagementDomainRoutingAndRemoval = PermissionKey(uuid.Must(uuid.FromString("88fc2f27-f9b2-42c8-99b5-e36389398796")))
 
-	// IdentityAccessManagementManageRecogntions - Create, update , delete and manage recogntions awarded by your organization
-	IdentityAccessManagementManageRecogntions = PermissionKey(uuid.Must(uuid.FromString("0a887b7f-b6c2-4a33-b080-bec9c3894d0c")))
+	// IdentityAccessManagementManageRecognitions - Create, update , delete and manage recogntions awarded by your organization
+	IdentityAccessManagementManageRecognitions = PermissionKey(uuid.Must(uuid.FromString("0a887b7f-b6c2-4a33-b080-bec9c3894d0c")))
 
 	// IdentityAccessManagementManageInvitations - Create, update , delete and manage invitations to your organization
 	IdentityAccessManagementManageInvitations = PermissionKey(uuid.Must(uuid.FromString("0204fb47-b120-4074-83db-984d595d9f69")))
@@ -566,6 +563,21 @@ var (
 
 	// MesherySystemResetDatabase - Reset Meshery database
 	MesherySystemResetDatabase = PermissionKey(uuid.Must(uuid.FromString("84fc402c-f33e-4a21-a0e3-e14f9e20b125")))
+
+	// MesherySystemImportModel - Import a model into the capabilities registry
+	MesherySystemImportModel = PermissionKey(uuid.Must(uuid.FromString("9e412481-744f-4676-bb1c-f40ce9e6c8f8")))
+
+	// MesherySystemCreateModel - Create a new model in the capabilities registry
+	MesherySystemCreateModel = PermissionKey(uuid.Must(uuid.FromString("272a1166-a023-43e8-9e27-2cd8054115bb")))
+
+	// MesherySystemCreateRelationship - Create a new relationship definition in the capabilities registry
+	MesherySystemCreateRelationship = PermissionKey(uuid.Must(uuid.FromString("60609c21-88b1-4913-8102-5d9d0fa90953")))
+
+	// MesherySystemViewControllersConfig - View server-wide defaults for Meshery Operator MeshSync and Broker
+	MesherySystemViewControllersConfig = PermissionKey(uuid.Must(uuid.FromString("278e5f2f-6eca-4e26-864b-44d4246f3c19")))
+
+	// MesherySystemEditControllersConfig - Edit and save server-wide defaults for Meshery Operator Meshsync and Broker
+	MesherySystemEditControllersConfig = PermissionKey(uuid.Must(uuid.FromString("4ea3ffab-dced-4358-b138-b583d90f0451")))
 
 	// KanvasPlaybackServiceTransactionsScrubOverTheHistoryOfChangesToYourDeployments - No description available
 	KanvasPlaybackServiceTransactionsScrubOverTheHistoryOfChangesToYourDeployments = PermissionKey(uuid.Must(uuid.FromString("83784db9-bb58-4e15-aede-cbac7d01f431")))
@@ -800,9 +812,6 @@ var (
 
 	// KanvasViewMetricsInVisualizer - View real-time resource metrics in Kanvas Operator
 	KanvasViewMetricsInVisualizer = PermissionKey(uuid.Must(uuid.FromString("2988a366-a743-48e7-9946-daff9b2ab0a1")))
-
-	// KanvasPerformConformanceTest - Perform a conformance test in Kanvas Operator
-	KanvasPerformConformanceTest = PermissionKey(uuid.Must(uuid.FromString("901ca054-0656-4db5-8d58-d618e0b82b39")))
 
 	// KanvasStreamContainerLogs - Stream container logs in Kanvas Operator
 	KanvasStreamContainerLogs = PermissionKey(uuid.Must(uuid.FromString("c1ff0f0d-95b5-4765-8c64-d77af99e5d4f")))
@@ -1107,7 +1116,7 @@ var (
 	// WorkspaceManagementAssignConnectionsToEnvironment - Add new connections to environments
 	WorkspaceManagementAssignConnectionsToEnvironment = PermissionKey(uuid.Must(uuid.FromString("52cbe0b8-9aa7-4605-8eed-aa37e595adbb")))
 
-	// WorkspaceManagementRemoveConnectionsFromEnvironment - Remove connections from environment, 
+	// WorkspaceManagementRemoveConnectionsFromEnvironment - Remove connections from environment,
 	WorkspaceManagementRemoveConnectionsFromEnvironment = PermissionKey(uuid.Must(uuid.FromString("65648682-e47f-43d7-a5ad-dc042803f951")))
 
 	// WorkspaceManagementViewProjects - View all of your projects
@@ -1353,4 +1362,48 @@ var (
 	// ChaosManagementAsDaemonsets - No description available
 	ChaosManagementAsDaemonsets = PermissionKey(uuid.Must(uuid.FromString("b73d71ec-f5b2-4d0b-83de-6e2dccff5041")))
 
+	// BlowhornManagementViewJobLeases - List and inspect shared job leases, including claim and pause state.
+	BlowhornManagementViewJobLeases = PermissionKey(uuid.Must(uuid.FromString("eafc0d41-c847-4d09-bef5-dff136c418f1")))
+
+	// BlowhornManagementManageJobLeases - Create, update, delete, claim, renew, release, pause and resume shared job leases.
+	BlowhornManagementManageJobLeases = PermissionKey(uuid.Must(uuid.FromString("6babb477-6b2f-4789-8ed4-b213c0aeeea6")))
+
+	// BlowhornManagementViewBlowhornProfiles - List and inspect Blowhorn profiles.
+	BlowhornManagementViewBlowhornProfiles = PermissionKey(uuid.Must(uuid.FromString("9fed5304-30d2-4dc1-a7e2-9c30ea920f20")))
+
+	// BlowhornManagementManageBlowhornProfiles - Create, update and delete Blowhorn profiles.
+	BlowhornManagementManageBlowhornProfiles = PermissionKey(uuid.Must(uuid.FromString("67c4a558-d5d5-4749-a968-c3a2ac622148")))
+
+	// BlowhornManagementViewBlowhornContent - List and inspect Blowhorn content rows.
+	BlowhornManagementViewBlowhornContent = PermissionKey(uuid.Must(uuid.FromString("7cae4770-04b7-4deb-a1dd-9f4564235f43")))
+
+	// BlowhornManagementManageBlowhornContent - Insert, update and delete Blowhorn content rows.
+	BlowhornManagementManageBlowhornContent = PermissionKey(uuid.Must(uuid.FromString("a2b188fe-68aa-4e9a-8d40-604cf9831159")))
+
+	// BlowhornManagementViewBlowhornDestinations - List and inspect Blowhorn destinations.
+	BlowhornManagementViewBlowhornDestinations = PermissionKey(uuid.Must(uuid.FromString("5997dfed-fb70-48de-a2a0-0da6da3c2541")))
+
+	// BlowhornManagementManageBlowhornDestinations - Create and update Blowhorn destinations.
+	BlowhornManagementManageBlowhornDestinations = PermissionKey(uuid.Must(uuid.FromString("255aad27-4341-47a4-a54b-8c09280fb0f8")))
+
+	// BlowhornManagementViewBlowhornBindings - List and inspect Blowhorn host bindings.
+	BlowhornManagementViewBlowhornBindings = PermissionKey(uuid.Must(uuid.FromString("6f4228c8-3b84-4272-bc8a-7885feaf8230")))
+
+	// BlowhornManagementManageBlowhornBindings - Bind and unbind Blowhorn profiles on hosts.
+	BlowhornManagementManageBlowhornBindings = PermissionKey(uuid.Must(uuid.FromString("004edc34-eeaa-4169-bd97-5f64dc2397e4")))
+
+	// BlowhornManagementViewBlowhornLedger - List and inspect Blowhorn ledger entries, contacts and mentees.
+	BlowhornManagementViewBlowhornLedger = PermissionKey(uuid.Must(uuid.FromString("bb73ba87-86d3-4674-982f-4b2f09cabe4f")))
+
+	// BlowhornManagementManageBlowhornLedger - Record, claim and delete Blowhorn ledger entries, contacts and mentees.
+	BlowhornManagementManageBlowhornLedger = PermissionKey(uuid.Must(uuid.FromString("e777954a-79eb-4e68-9688-b5d16f520766")))
+
+	// BlowhornManagementViewBlowhornRuns - List and inspect Blowhorn run records and analytics.
+	BlowhornManagementViewBlowhornRuns = PermissionKey(uuid.Must(uuid.FromString("ab48c577-83bc-4f46-b9ba-75f9b079f681")))
+
+	// BlowhornManagementManageBlowhornRuns - Append Blowhorn run records and record analytics rollups.
+	BlowhornManagementManageBlowhornRuns = PermissionKey(uuid.Must(uuid.FromString("c6dbe8f1-be04-4b44-a247-fd56564646dc")))
+
+	// BlowhornManagementViewBlowhornHealth - Read the Blowhorn contract version and organization binding status.
+	BlowhornManagementViewBlowhornHealth = PermissionKey(uuid.Must(uuid.FromString("0b51f710-4047-4311-9164-54cd658424cd")))
 )

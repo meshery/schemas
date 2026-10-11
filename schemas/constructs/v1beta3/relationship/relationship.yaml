@@ -35,7 +35,14 @@ properties:
       yaml: "version"
       json: "version"
   kind:
-    description: "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships."
+    description: |
+      Kind of the Relationship. Enum: hierarchical, edge, sibling.
+
+      hierarchical: parent-child containment, nesting, or inheritance. from is the child; to is the parent.
+      edge: a connection between peers (network, mount, permission, reference, and similar).
+      sibling: schema-native encoding for peer grouping such as tagsets. In-tree Kubernetes models instead encode tagsets as kind=hierarchical, type=sibling, subType=matchlabels. Do not mix the two encodings in one model.
+
+      Learn more at https://docs.meshery.io/concepts/logical/relationships.
     type: string
     enum:
       - hierarchical
@@ -47,7 +54,12 @@ properties:
       json: "kind"
 
   type:
-    description: Classification of relationships. Used to group relationships similar in nature.
+    description: |
+      Classification of relationships. Open string (not an enum). Used with kind and subType to select the visual paradigm and evaluation policy.
+
+      Canonical values: parent (with kind=hierarchical); binding (assigns, mounts, or entitles); non-binding (real link that does not provision the attachment); sibling (in-tree tagsets with kind=hierarchical); matchlabels (schema-native tagsets with kind=sibling).
+
+      Copy an established kind/type/subType combination rather than inventing a type. See docs/relationship-definition-taxonomy.md.
     type: string
     x-go-name: RelationshipType
     x-go-type-skip-optional-pointer: true
@@ -60,7 +72,12 @@ properties:
 
   # Canonical v1beta3 wire: camelCase. Not DB-backed in this construct.
   subType:
-    description: Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship.
+    description: |
+      Most granular unit of relationship classification. Open string. Combined with kind and type, uniquely identifies the visual paradigm.
+
+      Canonical values: inventory, alias, wallet, matchlabels, tagsets, reference, network, firewall, permission, mount, annotation.
+
+      badge is a visual-paradigm name only; there is no in-tree encoding. Do not invent subType=badge without a visualization and evaluation policy. See docs/relationship-definition-taxonomy.md.
     type: string
     x-go-type-skip-optional-pointer: true
     x-order: 10

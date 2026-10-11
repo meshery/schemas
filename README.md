@@ -143,7 +143,14 @@ schemas/
     rtk/                            # RTK Query client configurations
       cloud.ts
       meshery.ts
-  
+
+  python/                           # Python source and generated files
+    generated/                      # Auto-generated distribution (commit regenerated output when a bundled pilot spec changes)
+      pyproject.toml                # Hand-maintained scaffold (hatchling, meshery-schemas)
+      src/meshery_schemas/
+        <construct>/                # Generated client per pilot construct
+    tests/                          # Hand-maintained pytest suites
+
   dist/                             # Built distribution (do NOT commit)
     index.js, index.d.ts
     cloudApi.js, mesheryApi.js
@@ -490,6 +497,7 @@ Meshery supports **automated code generation** from schemas for:
 * **TypeScript Types**: Interfaces and type definitions → `typescript/generated/<version>/<package>/<Package>.d.ts`
 * **TypeScript Schemas**: OpenAPI schemas as const JS objects → `typescript/generated/<version>/<package>/<Package>Schema.ts`
 * **RTK Query**: Clients generated from OpenAPI for use with Redux → `typescript/rtk/`
+* **Python**: Typed clients generated from OpenAPI (pilot: key construct) → `python/generated/` (`meshery-schemas` distribution)
 * **JSON/YAML**: Templates with defaults and resolved references.
 
 ### TypeScript Schema Exports
@@ -948,7 +956,7 @@ schemas/constructs/          (OpenAPI YAML source files)
 
 ### Go Generation Pipeline
 
-`build/generate-golang.js` runs a 10-stage pipeline per package. The pipeline generates, transforms, and validates Go structs.
+`build/generate-golang.js` runs an 11-stage pipeline per package. The pipeline generates, transforms, and validates Go structs.
 
 | Stage | Function | What it does |
 | --- | --- | --- |
@@ -962,6 +970,7 @@ schemas/constructs/          (OpenAPI YAML source files)
 | 8 | `ensureRequiredImports()` | Adds missing Go imports (e.g., `uuid`) when inlined `x-go-type` requires them |
 | 9 | `validateGeneratedDbTags()` | Verifies every `db:` tag declared in the schema is present in generated Go |
 | 10 | `validateGeneratedJsonTags()` | Verifies every `json:` tag in generated Go matches the schema property name |
+| 11 | `formatGoFile()` | Runs `gofmt -w` on the finished file so generated Go is gofmt-clean as generated |
 
 The **property name is the single source of truth** for the json wire format. oapi-codegen reads it verbatim (stage 1), and `validateGeneratedJsonTags` confirms it survived the pipeline unchanged (stage 10).
 

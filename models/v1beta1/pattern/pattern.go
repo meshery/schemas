@@ -64,16 +64,16 @@ type MesheryFilter map[string]interface{}
 // MesheryPattern defines model for MesheryPattern.
 type MesheryPattern struct {
 	CatalogData *catalogv1beta1.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
-	CreatedAt   core.Time         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	ID          core.Id           `json:"id,omitempty" yaml:"id,omitempty"`
-	Location    core.MapObject    `json:"location,omitempty" yaml:"location,omitempty"`
-	Name        core.Text         `json:"name,omitempty" yaml:"name,omitempty"`
+	CreatedAt   core.Time                   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID          core.Id                     `json:"id,omitempty" yaml:"id,omitempty"`
+	Location    core.MapObject              `json:"location,omitempty" yaml:"location,omitempty"`
+	Name        core.Text                   `json:"name,omitempty" yaml:"name,omitempty"`
 
 	// PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
-	PatternFile *PatternFile      `json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
-	UpdatedAt   core.Time `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	UserId      core.Id   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
-	Visibility  core.Text `json:"visibility,omitempty" yaml:"visibility,omitempty"`
+	PatternFile *PatternFile `json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
+	UpdatedAt   core.Time    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UserId      core.Id      `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Visibility  core.Text    `json:"visibility,omitempty" yaml:"visibility,omitempty"`
 }
 
 // MesheryPatternDeleteRequestBody defines model for MesheryPatternDeleteRequestBody.
@@ -118,11 +118,11 @@ type MesheryPatternPage struct {
 
 // MesheryPatternRequestBody defines model for MesheryPatternRequestBody.
 type MesheryPatternRequestBody struct {
-	Name        *string               `json:"name,omitempty" yaml:"name,omitempty"`
-	Path        core.Text     `json:"path,omitempty" yaml:"path,omitempty"`
-	PatternData *MesheryPattern       `json:"patternData,omitempty" yaml:"patternData,omitempty"`
-	Save        *bool                 `json:"save,omitempty" yaml:"save,omitempty"`
-	Url         core.Endpoint `json:"url,omitempty" yaml:"url,omitempty"`
+	Name        *string         `json:"name,omitempty" yaml:"name,omitempty"`
+	Path        core.Text       `json:"path,omitempty" yaml:"path,omitempty"`
+	PatternData *MesheryPattern `json:"patternData,omitempty" yaml:"patternData,omitempty"`
+	Save        *bool           `json:"save,omitempty" yaml:"save,omitempty"`
+	Url         core.Endpoint   `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
 // PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
@@ -137,8 +137,8 @@ type PatternFile struct {
 	SchemaVersion core.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
 
 	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
-	Version  core.SemverString `json:"version" yaml:"version"`
-	Metadata *PatternFile_Metadata     `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Version  core.SemverString     `json:"version" yaml:"version"`
+	Metadata *PatternFile_Metadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
 	// Components A list of one or more component declarations.
 	Components []*component.ComponentDefinition `json:"components" yaml:"components"`

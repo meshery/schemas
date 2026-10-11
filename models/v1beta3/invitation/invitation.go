@@ -6,10 +6,10 @@ package invitation
 import (
 	"time"
 
+	"github.com/gofrs/uuid"
 	"github.com/lib/pq"
 	"github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-	"github.com/gofrs/uuid"
 )
 
 // Defines values for InvitationStatus.
@@ -161,7 +161,7 @@ type SignupData struct {
 	TaskID *string `db:"task_id" json:"taskId,omitempty" yaml:"taskId,omitempty"`
 
 	// TaskLink Link to the tracking task created for this request.
-	TaskLink  *string           `db:"task_link" json:"taskLink,omitempty" yaml:"taskLink,omitempty"`
+	TaskLink  *string   `db:"task_link" json:"taskLink,omitempty" yaml:"taskLink,omitempty"`
 	UpdatedAt core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 }
 

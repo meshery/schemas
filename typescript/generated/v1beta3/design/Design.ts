@@ -1456,12 +1456,13 @@ export interface components {
                                  *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                                  *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                                  *     remove: Removes a value.
+                                 *     replace: Replaces the value at the target location.
                                  *     copy: Copies a value from one location to another.
                                  *     move: Moves a value from one location to another.
                                  *     test: Tests that a value at the target location is equal to a specified value.
                                  * @enum {string}
                                  */
-                                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                                 /** @description JSON ref to value from where patch should be applied. */
                                 mutatorRef?: string[][];
                                 mutatedRef?: string[][];
@@ -1547,12 +1548,13 @@ export interface components {
                                  *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                                  *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                                  *     remove: Removes a value.
+                                 *     replace: Replaces the value at the target location.
                                  *     copy: Copies a value from one location to another.
                                  *     move: Moves a value from one location to another.
                                  *     test: Tests that a value at the target location is equal to a specified value.
                                  * @enum {string}
                                  */
-                                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                                 /** @description JSON ref to value from where patch should be applied. */
                                 mutatorRef?: string[][];
                                 mutatedRef?: string[][];
@@ -1641,12 +1643,13 @@ export interface components {
                                  *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                                  *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                                  *     remove: Removes a value.
+                                 *     replace: Replaces the value at the target location.
                                  *     copy: Copies a value from one location to another.
                                  *     move: Moves a value from one location to another.
                                  *     test: Tests that a value at the target location is equal to a specified value.
                                  * @enum {string}
                                  */
-                                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                                 /** @description JSON ref to value from where patch should be applied. */
                                 mutatorRef?: string[][];
                                 mutatedRef?: string[][];
@@ -1732,12 +1735,13 @@ export interface components {
                                  *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
                                  *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
                                  *     remove: Removes a value.
+                                 *     replace: Replaces the value at the target location.
                                  *     copy: Copies a value from one location to another.
                                  *     move: Moves a value from one location to another.
                                  *     test: Tests that a value at the target location is equal to a specified value.
                                  * @enum {string}
                                  */
-                                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "replace" | "copy" | "move" | "test";
                                 /** @description JSON ref to value from where patch should be applied. */
                                 mutatorRef?: string[][];
                                 mutatedRef?: string[][];
@@ -1969,7 +1973,7 @@ export interface components {
                 roleNames?: string[];
                 /** @description Teams the user belongs to with role information */
                 teams?: {
-                    /** @description Team memberships for the user with their assigned roles. */
+                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                     teamsWithRoles?: {
                         /**
                          * Format: uuid
@@ -2006,13 +2010,13 @@ export interface components {
                         deletedAt?: string | null;
                         /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                         roleNames: string[];
-                    }[];
-                    /** @description Total number of team memberships returned for the user. */
-                    totalCount?: number;
+                    }[] | null;
+                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                    totalCount?: number | null;
                 };
                 /** @description Organizations the user belongs to with role information */
                 organizations?: {
-                    /** @description Organization memberships for the user with their assigned roles. */
+                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                     organizationsWithRoles?: {
                         /**
                          * Format: uuid
@@ -2049,9 +2053,9 @@ export interface components {
                         deletedAt?: string | null;
                         /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                         roleNames: string[];
-                    }[];
-                    /** @description Total number of organization memberships returned for the user. */
-                    totalCount?: number;
+                    }[] | null;
+                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                    totalCount?: number | null;
                 };
             } | null;
             /** @description Optional structured location metadata (branch, host, path, ...). */
@@ -2341,7 +2345,7 @@ export interface components {
                     roleNames?: string[];
                     /** @description Teams the user belongs to with role information */
                     teams?: {
-                        /** @description Team memberships for the user with their assigned roles. */
+                        /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                         teamsWithRoles?: {
                             /**
                              * Format: uuid
@@ -2378,13 +2382,13 @@ export interface components {
                             deletedAt?: string | null;
                             /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                             roleNames: string[];
-                        }[];
-                        /** @description Total number of team memberships returned for the user. */
-                        totalCount?: number;
+                        }[] | null;
+                        /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
                     };
                     /** @description Organizations the user belongs to with role information */
                     organizations?: {
-                        /** @description Organization memberships for the user with their assigned roles. */
+                        /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                         organizationsWithRoles?: {
                             /**
                              * Format: uuid
@@ -2421,9 +2425,9 @@ export interface components {
                             deletedAt?: string | null;
                             /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                             roleNames: string[];
-                        }[];
-                        /** @description Total number of organization memberships returned for the user. */
-                        totalCount?: number;
+                        }[] | null;
+                        /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
                     };
                 } | null;
                 /** @description Optional structured location metadata (branch, host, path, ...). */
@@ -2959,7 +2963,7 @@ export interface components {
                     roleNames?: string[];
                     /** @description Teams the user belongs to with role information */
                     teams?: {
-                        /** @description Team memberships for the user with their assigned roles. */
+                        /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                         teamsWithRoles?: {
                             /**
                              * Format: uuid
@@ -2996,13 +3000,13 @@ export interface components {
                             deletedAt?: string | null;
                             /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                             roleNames: string[];
-                        }[];
-                        /** @description Total number of team memberships returned for the user. */
-                        totalCount?: number;
+                        }[] | null;
+                        /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
                     };
                     /** @description Organizations the user belongs to with role information */
                     organizations?: {
-                        /** @description Organization memberships for the user with their assigned roles. */
+                        /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                         organizationsWithRoles?: {
                             /**
                              * Format: uuid
@@ -3039,9 +3043,9 @@ export interface components {
                             deletedAt?: string | null;
                             /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                             roleNames: string[];
-                        }[];
-                        /** @description Total number of organization memberships returned for the user. */
-                        totalCount?: number;
+                        }[] | null;
+                        /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
                     };
                 } | null;
                 /** @description Optional structured location metadata (branch, host, path, ...). */
@@ -3420,7 +3424,7 @@ export interface components {
                 roleNames?: string[];
                 /** @description Teams the user belongs to with role information */
                 teams?: {
-                    /** @description Team memberships for the user with their assigned roles. */
+                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                     teamsWithRoles?: {
                         /**
                          * Format: uuid
@@ -3457,13 +3461,13 @@ export interface components {
                         deletedAt?: string | null;
                         /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                         roleNames: string[];
-                    }[];
-                    /** @description Total number of team memberships returned for the user. */
-                    totalCount?: number;
+                    }[] | null;
+                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                    totalCount?: number | null;
                 };
                 /** @description Organizations the user belongs to with role information */
                 organizations?: {
-                    /** @description Organization memberships for the user with their assigned roles. */
+                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                     organizationsWithRoles?: {
                         /**
                          * Format: uuid
@@ -3500,9 +3504,9 @@ export interface components {
                         deletedAt?: string | null;
                         /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                         roleNames: string[];
-                    }[];
-                    /** @description Total number of organization memberships returned for the user. */
-                    totalCount?: number;
+                    }[] | null;
+                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                    totalCount?: number | null;
                 };
             } | null;
             /**
@@ -3741,7 +3745,7 @@ export interface components {
                     roleNames?: string[];
                     /** @description Teams the user belongs to with role information */
                     teams?: {
-                        /** @description Team memberships for the user with their assigned roles. */
+                        /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                         teamsWithRoles?: {
                             /**
                              * Format: uuid
@@ -3778,13 +3782,13 @@ export interface components {
                             deletedAt?: string | null;
                             /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                             roleNames: string[];
-                        }[];
-                        /** @description Total number of team memberships returned for the user. */
-                        totalCount?: number;
+                        }[] | null;
+                        /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
                     };
                     /** @description Organizations the user belongs to with role information */
                     organizations?: {
-                        /** @description Organization memberships for the user with their assigned roles. */
+                        /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                         organizationsWithRoles?: {
                             /**
                              * Format: uuid
@@ -3821,9 +3825,9 @@ export interface components {
                             deletedAt?: string | null;
                             /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                             roleNames: string[];
-                        }[];
-                        /** @description Total number of organization memberships returned for the user. */
-                        totalCount?: number;
+                        }[] | null;
+                        /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
                     };
                 } | null;
                 /**
@@ -4254,7 +4258,7 @@ export interface operations {
                                 roleNames?: string[];
                                 /** @description Teams the user belongs to with role information */
                                 teams?: {
-                                    /** @description Team memberships for the user with their assigned roles. */
+                                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                     teamsWithRoles?: {
                                         /**
                                          * Format: uuid
@@ -4291,13 +4295,13 @@ export interface operations {
                                         deletedAt?: string | null;
                                         /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                         roleNames: string[];
-                                    }[];
-                                    /** @description Total number of team memberships returned for the user. */
-                                    totalCount?: number;
+                                    }[] | null;
+                                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
                                 };
                                 /** @description Organizations the user belongs to with role information */
                                 organizations?: {
-                                    /** @description Organization memberships for the user with their assigned roles. */
+                                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                     organizationsWithRoles?: {
                                         /**
                                          * Format: uuid
@@ -4334,9 +4338,9 @@ export interface operations {
                                         deletedAt?: string | null;
                                         /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                         roleNames: string[];
-                                    }[];
-                                    /** @description Total number of organization memberships returned for the user. */
-                                    totalCount?: number;
+                                    }[] | null;
+                                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
                                 };
                             } | null;
                             /** @description Optional structured location metadata (branch, host, path, ...). */
@@ -4735,7 +4739,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -4772,13 +4776,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -4815,9 +4819,9 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         } | null;
                         /** @description Optional structured location metadata (branch, host, path, ...). */
@@ -5210,7 +5214,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -5247,13 +5251,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -5290,9 +5294,9 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         } | null;
                         /** @description Optional structured location metadata (branch, host, path, ...). */
@@ -5670,7 +5674,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -5707,13 +5711,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -5750,9 +5754,9 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         } | null;
                         /** @description Optional structured location metadata (branch, host, path, ...). */
@@ -6227,7 +6231,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -6264,13 +6268,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -6307,9 +6311,9 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         } | null;
                         /** @description Optional structured location metadata (branch, host, path, ...). */
@@ -6660,7 +6664,7 @@ export interface operations {
                                 roleNames?: string[];
                                 /** @description Teams the user belongs to with role information */
                                 teams?: {
-                                    /** @description Team memberships for the user with their assigned roles. */
+                                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                     teamsWithRoles?: {
                                         /**
                                          * Format: uuid
@@ -6697,13 +6701,13 @@ export interface operations {
                                         deletedAt?: string | null;
                                         /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                         roleNames: string[];
-                                    }[];
-                                    /** @description Total number of team memberships returned for the user. */
-                                    totalCount?: number;
+                                    }[] | null;
+                                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
                                 };
                                 /** @description Organizations the user belongs to with role information */
                                 organizations?: {
-                                    /** @description Organization memberships for the user with their assigned roles. */
+                                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                     organizationsWithRoles?: {
                                         /**
                                          * Format: uuid
@@ -6740,9 +6744,9 @@ export interface operations {
                                         deletedAt?: string | null;
                                         /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                         roleNames: string[];
-                                    }[];
-                                    /** @description Total number of organization memberships returned for the user. */
-                                    totalCount?: number;
+                                    }[] | null;
+                                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
                                 };
                             } | null;
                             /** @description Optional structured location metadata (branch, host, path, ...). */
@@ -7144,7 +7148,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -7181,13 +7185,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -7224,9 +7228,9 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         } | null;
                         /**
@@ -7526,7 +7530,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -7563,13 +7567,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -7606,9 +7610,9 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         } | null;
                         /**
@@ -8301,7 +8305,7 @@ export interface operations {
                                 roleNames?: string[];
                                 /** @description Teams the user belongs to with role information */
                                 teams?: {
-                                    /** @description Team memberships for the user with their assigned roles. */
+                                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                     teamsWithRoles?: {
                                         /**
                                          * Format: uuid
@@ -8338,13 +8342,13 @@ export interface operations {
                                         deletedAt?: string | null;
                                         /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                         roleNames: string[];
-                                    }[];
-                                    /** @description Total number of team memberships returned for the user. */
-                                    totalCount?: number;
+                                    }[] | null;
+                                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
                                 };
                                 /** @description Organizations the user belongs to with role information */
                                 organizations?: {
-                                    /** @description Organization memberships for the user with their assigned roles. */
+                                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                     organizationsWithRoles?: {
                                         /**
                                          * Format: uuid
@@ -8381,9 +8385,9 @@ export interface operations {
                                         deletedAt?: string | null;
                                         /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                         roleNames: string[];
-                                    }[];
-                                    /** @description Total number of organization memberships returned for the user. */
-                                    totalCount?: number;
+                                    }[] | null;
+                                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
                                 };
                             } | null;
                             /**

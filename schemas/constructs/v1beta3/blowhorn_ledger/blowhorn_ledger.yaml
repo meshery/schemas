@@ -1,0 +1,87 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Blowhorn Ledger Entry Schema
+description: |
+  Server-returned Blowhorn ledger entry as persisted by meshery-cloud.
+  Ledger entries form ledger-discriminated idempotent sets keyed by
+  (ledger, key): recording the same pair replays idempotently, and
+  claim-if-absent takes the entry for a holder exactly once.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - ledger
+  - entryKey
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated Blowhorn ledger entry ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  ledger:
+    type: string
+    description: Ledger discriminator naming the idempotent set.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: ledger
+    x-order: 3
+  entryKey:
+    type: string
+    description: Key within the ledger. Unique per ledger.
+    minLength: 1
+    maxLength: 1024
+    x-go-name: EntryKey
+    x-oapi-codegen-extra-tags:
+      db: entry_key
+    x-order: 4
+  value:
+    type: object
+    description: Entry value, stored as a JSON blob.
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: value
+    x-order: 5
+  claimedBy:
+    type: string
+    description: Holder that claimed the entry, if any. Set only by claim-if-absent.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: claimed_by
+    x-order: 6
+  claimedAt:
+    type: string
+    format: date-time
+    description: Time the entry was claimed, if any. Set only by claim-if-absent.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: claimed_at
+    x-order: 7
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of Blowhorn ledger entry creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 8
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last Blowhorn ledger entry modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 9

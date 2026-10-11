@@ -6,8 +6,8 @@ package badge
 import (
 	"time"
 
-	core "github.com/meshery/schemas/models/core"
 	"github.com/gofrs/uuid"
+	core "github.com/meshery/schemas/models/core"
 )
 
 // Badge Badge entity — a named recognition issued within an organization.

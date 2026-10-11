@@ -25,7 +25,7 @@ type Team struct {
 	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
 
 	// Metadata Additional metadata for the team
-	Metadata  core.Map          `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Metadata  core.Map  `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 	UpdatedAt core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 
@@ -36,7 +36,7 @@ type Team struct {
 // TeamMember A user who is a prospective or existing team member. Returned by the "list users in team" endpoint. `joinedAt` is the first canonicalised projection field — other user fields (`id`, `firstName`, `lastName`, `email`, `avatarUrl`) continue to flow through `additionalProperties` pending migration of the user schema to the canonical-casing contract. See meshery/schemas#832 for the per-field roadmap.
 type TeamMember struct {
 	// JoinedAt SQL null Timestamp to handle null values of time.
-	JoinedAt             core.NullTime  `db:"joined_at" json:"joinedAt" yaml:"joinedAt,omitempty"`
+	JoinedAt             core.NullTime          `db:"joined_at" json:"joinedAt" yaml:"joinedAt,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
@@ -76,7 +76,7 @@ type TeamPayload struct {
 
 	// Metadata Additional client-supplied metadata for the team.
 	Metadata *map[string]interface{} `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-	Name     core.Text       `json:"name" yaml:"name"`
+	Name     core.Text               `json:"name" yaml:"name"`
 
 	// NotifyTeamUpdate Whether to notify team members when the team is created or updated.
 	NotifyTeamUpdate *bool `json:"notifyTeamUpdate,omitempty" yaml:"notifyTeamUpdate,omitempty"`

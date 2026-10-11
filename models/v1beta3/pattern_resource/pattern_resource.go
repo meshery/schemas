@@ -38,7 +38,7 @@ type MesheryPatternResource struct {
 
 	// Deleted Soft-delete marker. Server-managed; rows are flagged rather than
 	// removed so the design engine can reconcile prior provisions.
-	Deleted   bool              `json:"deleted" yaml:"deleted"`
+	Deleted   bool      `json:"deleted" yaml:"deleted"`
 	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 	UpdatedAt core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 }

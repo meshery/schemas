@@ -84,7 +84,7 @@ const RelationshipSchema: Record<string, unknown> = {
             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
           },
           "kind": {
-            "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
+            "description": "Kind of the Relationship. Enum: hierarchical, edge, sibling.\n\nhierarchical: parent-child containment, nesting, or inheritance. from is the child; to is the parent.\nedge: a connection between peers (network, mount, permission, reference, and similar).\nsibling: schema-native encoding for peer grouping such as tagsets. In-tree Kubernetes models instead encode tagsets as kind=hierarchical, type=sibling, subType=matchlabels. Do not mix the two encodings in one model.\n\nLearn more at https://docs.meshery.io/concepts/logical/relationships.\n",
             "type": "string",
             "enum": [
               "hierarchical",
@@ -98,7 +98,7 @@ const RelationshipSchema: Record<string, unknown> = {
             }
           },
           "type": {
-            "description": "Classification of relationships. Used to group relationships similar in nature.",
+            "description": "Classification of relationships. Open string (not an enum). Used with kind and subType to select the visual paradigm and evaluation policy.\n\nCanonical values: parent (with kind=hierarchical); binding (assigns, mounts, or entitles); non-binding (real link that does not provision the attachment); sibling (in-tree tagsets with kind=hierarchical); matchlabels (schema-native tagsets with kind=sibling).\n\nCopy an established kind/type/subType combination rather than inventing a type. See docs/relationship-definition-taxonomy.md.\n",
             "type": "string",
             "x-go-name": "RelationshipType",
             "x-go-type-skip-optional-pointer": true,
@@ -111,7 +111,7 @@ const RelationshipSchema: Record<string, unknown> = {
             "maxLength": 255
           },
           "subType": {
-            "description": "Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship.",
+            "description": "Most granular unit of relationship classification. Open string. Combined with kind and type, uniquely identifies the visual paradigm.\n\nCanonical values: inventory, alias, wallet, matchlabels, tagsets, reference, network, firewall, permission, mount, annotation.\n\nbadge is a visual-paradigm name only; there is no in-tree encoding. Do not invent subType=badge without a visualization and evaluation policy. See docs/relationship-definition-taxonomy.md.\n",
             "type": "string",
             "x-go-type-skip-optional-pointer": true,
             "x-order": 10,
@@ -854,7 +854,7 @@ const RelationshipSchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "from": {
-                      "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+                      "description": "Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many).",
                       "type": "array",
                       "items": {
                         "x-go-type": "SelectorItem",
@@ -937,13 +937,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatorRef,omitempty"
                                       },
                                       "type": "array",
-                                      "description": "JSON ref to value from where patch should be applied.",
+                                      "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                        "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                       }
                                     },
                                     "mutatedRef": {
@@ -951,12 +951,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatedRef,omitempty"
                                       },
                                       "type": "array",
+                                      "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                        "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                       }
                                     }
                                   }
@@ -1001,13 +1002,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatorRef,omitempty"
                                       },
                                       "type": "array",
-                                      "description": "JSON ref to value from where patch should be applied.",
+                                      "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                        "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                       }
                                     },
                                     "mutatedRef": {
@@ -1015,12 +1016,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatedRef,omitempty"
                                       },
                                       "type": "array",
+                                      "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                        "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                       }
                                     }
                                   }
@@ -1145,7 +1147,7 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "patch"
                             },
                             "type": "object",
-                            "description": "Patch configuration for the selector",
+                            "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                             "x-go-name": "RelationshipDefinitionSelectorsPatch",
                             "properties": {
                               "patchStrategy": {
@@ -1153,12 +1155,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "patchStrategy,omitempty"
                                 },
                                 "type": "string",
-                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                                 "enum": [
                                   "merge",
                                   "strategic",
                                   "add",
                                   "remove",
+                                  "replace",
                                   "copy",
                                   "move",
                                   "test"
@@ -1169,13 +1172,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatorRef,omitempty"
                                 },
                                 "type": "array",
-                                "description": "JSON ref to value from where patch should be applied.",
+                                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                 }
                               },
                               "mutatedRef": {
@@ -1183,12 +1186,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatedRef,omitempty"
                                 },
                                 "type": "array",
+                                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                 }
                               }
                             }
@@ -1200,7 +1204,7 @@ const RelationshipSchema: Record<string, unknown> = {
                       }
                     },
                     "to": {
-                      "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+                      "description": "Destination side of the selector. For kind=hierarchical, to is the parent.",
                       "type": "array",
                       "items": {
                         "x-go-type": "SelectorItem",
@@ -1283,13 +1287,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatorRef,omitempty"
                                       },
                                       "type": "array",
-                                      "description": "JSON ref to value from where patch should be applied.",
+                                      "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                        "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                       }
                                     },
                                     "mutatedRef": {
@@ -1297,12 +1301,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatedRef,omitempty"
                                       },
                                       "type": "array",
+                                      "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                        "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                       }
                                     }
                                   }
@@ -1347,13 +1352,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatorRef,omitempty"
                                       },
                                       "type": "array",
-                                      "description": "JSON ref to value from where patch should be applied.",
+                                      "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                        "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                       }
                                     },
                                     "mutatedRef": {
@@ -1361,12 +1366,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatedRef,omitempty"
                                       },
                                       "type": "array",
+                                      "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                        "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                       }
                                     }
                                   }
@@ -1491,7 +1497,7 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "patch"
                             },
                             "type": "object",
-                            "description": "Patch configuration for the selector",
+                            "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                             "x-go-name": "RelationshipDefinitionSelectorsPatch",
                             "properties": {
                               "patchStrategy": {
@@ -1499,12 +1505,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "patchStrategy,omitempty"
                                 },
                                 "type": "string",
-                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                                 "enum": [
                                   "merge",
                                   "strategic",
                                   "add",
                                   "remove",
+                                  "replace",
                                   "copy",
                                   "move",
                                   "test"
@@ -1515,13 +1522,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatorRef,omitempty"
                                 },
                                 "type": "array",
-                                "description": "JSON ref to value from where patch should be applied.",
+                                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                 }
                               },
                               "mutatedRef": {
@@ -1529,12 +1536,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatedRef,omitempty"
                                 },
                                 "type": "array",
+                                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                 }
                               }
                             }
@@ -1560,7 +1568,7 @@ const RelationshipSchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "from": {
-                      "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+                      "description": "Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many).",
                       "type": "array",
                       "items": {
                         "x-go-type": "SelectorItem",
@@ -1643,13 +1651,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatorRef,omitempty"
                                       },
                                       "type": "array",
-                                      "description": "JSON ref to value from where patch should be applied.",
+                                      "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                        "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                       }
                                     },
                                     "mutatedRef": {
@@ -1657,12 +1665,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatedRef,omitempty"
                                       },
                                       "type": "array",
+                                      "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                        "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                       }
                                     }
                                   }
@@ -1707,13 +1716,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatorRef,omitempty"
                                       },
                                       "type": "array",
-                                      "description": "JSON ref to value from where patch should be applied.",
+                                      "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                        "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                       }
                                     },
                                     "mutatedRef": {
@@ -1721,12 +1730,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatedRef,omitempty"
                                       },
                                       "type": "array",
+                                      "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                        "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                       }
                                     }
                                   }
@@ -1851,7 +1861,7 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "patch"
                             },
                             "type": "object",
-                            "description": "Patch configuration for the selector",
+                            "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                             "x-go-name": "RelationshipDefinitionSelectorsPatch",
                             "properties": {
                               "patchStrategy": {
@@ -1859,12 +1869,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "patchStrategy,omitempty"
                                 },
                                 "type": "string",
-                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                                 "enum": [
                                   "merge",
                                   "strategic",
                                   "add",
                                   "remove",
+                                  "replace",
                                   "copy",
                                   "move",
                                   "test"
@@ -1875,13 +1886,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatorRef,omitempty"
                                 },
                                 "type": "array",
-                                "description": "JSON ref to value from where patch should be applied.",
+                                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                 }
                               },
                               "mutatedRef": {
@@ -1889,12 +1900,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatedRef,omitempty"
                                 },
                                 "type": "array",
+                                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                 }
                               }
                             }
@@ -1906,7 +1918,7 @@ const RelationshipSchema: Record<string, unknown> = {
                       }
                     },
                     "to": {
-                      "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+                      "description": "Destination side of the selector. For kind=hierarchical, to is the parent.",
                       "type": "array",
                       "items": {
                         "x-go-type": "SelectorItem",
@@ -1989,13 +2001,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatorRef,omitempty"
                                       },
                                       "type": "array",
-                                      "description": "JSON ref to value from where patch should be applied.",
+                                      "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                        "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                       }
                                     },
                                     "mutatedRef": {
@@ -2003,12 +2015,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatedRef,omitempty"
                                       },
                                       "type": "array",
+                                      "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                        "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                       }
                                     }
                                   }
@@ -2053,13 +2066,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatorRef,omitempty"
                                       },
                                       "type": "array",
-                                      "description": "JSON ref to value from where patch should be applied.",
+                                      "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                        "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                       }
                                     },
                                     "mutatedRef": {
@@ -2067,12 +2080,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                         "json": "mutatedRef,omitempty"
                                       },
                                       "type": "array",
+                                      "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                       "items": {
                                         "type": "array",
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                        "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                       }
                                     }
                                   }
@@ -2197,7 +2211,7 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "patch"
                             },
                             "type": "object",
-                            "description": "Patch configuration for the selector",
+                            "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                             "x-go-name": "RelationshipDefinitionSelectorsPatch",
                             "properties": {
                               "patchStrategy": {
@@ -2205,12 +2219,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "patchStrategy,omitempty"
                                 },
                                 "type": "string",
-                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                                 "enum": [
                                   "merge",
                                   "strategic",
                                   "add",
                                   "remove",
+                                  "replace",
                                   "copy",
                                   "move",
                                   "test"
@@ -2221,13 +2236,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatorRef,omitempty"
                                 },
                                 "type": "array",
-                                "description": "JSON ref to value from where patch should be applied.",
+                                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                 }
                               },
                               "mutatedRef": {
@@ -2235,12 +2250,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatedRef,omitempty"
                                 },
                                 "type": "array",
+                                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                 }
                               }
                             }
@@ -2260,33 +2276,35 @@ const RelationshipSchema: Record<string, unknown> = {
       },
       "MutatorRef": {
         "type": "array",
-        "description": "JSON ref to value from where patch should be applied.",
+        "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
         "items": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+          "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
         }
       },
       "MutatedRef": {
         "type": "array",
+        "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
         "items": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+          "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
         }
       },
       "RelationshipDefinitionSelectorsPatchStrategy": {
         "type": "string",
-        "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+        "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
         "enum": [
           "merge",
           "strategic",
           "add",
           "remove",
+          "replace",
           "copy",
           "move",
           "test"
@@ -2294,7 +2312,7 @@ const RelationshipSchema: Record<string, unknown> = {
       },
       "RelationshipDefinitionSelectorsPatch": {
         "type": "object",
-        "description": "Patch configuration for the selector",
+        "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
         "x-go-name": "RelationshipDefinitionSelectorsPatch",
         "properties": {
           "patchStrategy": {
@@ -2302,12 +2320,13 @@ const RelationshipSchema: Record<string, unknown> = {
               "json": "patchStrategy,omitempty"
             },
             "type": "string",
-            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
             "enum": [
               "merge",
               "strategic",
               "add",
               "remove",
+              "replace",
               "copy",
               "move",
               "test"
@@ -2318,13 +2337,13 @@ const RelationshipSchema: Record<string, unknown> = {
               "json": "mutatorRef,omitempty"
             },
             "type": "array",
-            "description": "JSON ref to value from where patch should be applied.",
+            "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
             "items": {
               "type": "array",
               "items": {
                 "type": "string"
               },
-              "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+              "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
             }
           },
           "mutatedRef": {
@@ -2332,12 +2351,13 @@ const RelationshipSchema: Record<string, unknown> = {
               "json": "mutatedRef,omitempty"
             },
             "type": "array",
+            "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
             "items": {
               "type": "array",
               "items": {
                 "type": "string"
               },
-              "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+              "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
             }
           }
         }
@@ -2374,13 +2394,13 @@ const RelationshipSchema: Record<string, unknown> = {
               "json": "mutatorRef,omitempty"
             },
             "type": "array",
-            "description": "JSON ref to value from where patch should be applied.",
+            "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
             "items": {
               "type": "array",
               "items": {
                 "type": "string"
               },
-              "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+              "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
             }
           },
           "mutatedRef": {
@@ -2388,12 +2408,13 @@ const RelationshipSchema: Record<string, unknown> = {
               "json": "mutatedRef,omitempty"
             },
             "type": "array",
+            "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
             "items": {
               "type": "array",
               "items": {
                 "type": "string"
               },
-              "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+              "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
             }
           }
         }
@@ -2450,13 +2471,13 @@ const RelationshipSchema: Record<string, unknown> = {
                     "json": "mutatorRef,omitempty"
                   },
                   "type": "array",
-                  "description": "JSON ref to value from where patch should be applied.",
+                  "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                   "items": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     },
-                    "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                    "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                   }
                 },
                 "mutatedRef": {
@@ -2464,12 +2485,13 @@ const RelationshipSchema: Record<string, unknown> = {
                     "json": "mutatedRef,omitempty"
                   },
                   "type": "array",
+                  "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                   "items": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     },
-                    "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                    "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                   }
                 }
               }
@@ -2514,13 +2536,13 @@ const RelationshipSchema: Record<string, unknown> = {
                     "json": "mutatorRef,omitempty"
                   },
                   "type": "array",
-                  "description": "JSON ref to value from where patch should be applied.",
+                  "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                   "items": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     },
-                    "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                    "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                   }
                 },
                 "mutatedRef": {
@@ -2528,12 +2550,13 @@ const RelationshipSchema: Record<string, unknown> = {
                     "json": "mutatedRef,omitempty"
                   },
                   "type": "array",
+                  "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                   "items": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     },
-                    "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                    "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                   }
                 }
               }
@@ -2628,13 +2651,13 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "mutatorRef,omitempty"
                       },
                       "type": "array",
-                      "description": "JSON ref to value from where patch should be applied.",
+                      "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                       "items": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         },
-                        "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                        "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                       }
                     },
                     "mutatedRef": {
@@ -2642,12 +2665,13 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "mutatedRef,omitempty"
                       },
                       "type": "array",
+                      "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                       "items": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         },
-                        "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                        "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                       }
                     }
                   }
@@ -2692,13 +2716,13 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "mutatorRef,omitempty"
                       },
                       "type": "array",
-                      "description": "JSON ref to value from where patch should be applied.",
+                      "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                       "items": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         },
-                        "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                        "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                       }
                     },
                     "mutatedRef": {
@@ -2706,12 +2730,13 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "mutatedRef,omitempty"
                       },
                       "type": "array",
+                      "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                       "items": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         },
-                        "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                        "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                       }
                     }
                   }
@@ -2836,7 +2861,7 @@ const RelationshipSchema: Record<string, unknown> = {
               "json": "patch"
             },
             "type": "object",
-            "description": "Patch configuration for the selector",
+            "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
             "x-go-name": "RelationshipDefinitionSelectorsPatch",
             "properties": {
               "patchStrategy": {
@@ -2844,12 +2869,13 @@ const RelationshipSchema: Record<string, unknown> = {
                   "json": "patchStrategy,omitempty"
                 },
                 "type": "string",
-                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                 "enum": [
                   "merge",
                   "strategic",
                   "add",
                   "remove",
+                  "replace",
                   "copy",
                   "move",
                   "test"
@@ -2860,13 +2886,13 @@ const RelationshipSchema: Record<string, unknown> = {
                   "json": "mutatorRef,omitempty"
                 },
                 "type": "array",
-                "description": "JSON ref to value from where patch should be applied.",
+                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                 "items": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                 }
               },
               "mutatedRef": {
@@ -2874,12 +2900,13 @@ const RelationshipSchema: Record<string, unknown> = {
                   "json": "mutatedRef,omitempty"
                 },
                 "type": "array",
+                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                 "items": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                 }
               }
             }
@@ -2895,7 +2922,7 @@ const RelationshipSchema: Record<string, unknown> = {
         ],
         "properties": {
           "from": {
-            "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+            "description": "Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many).",
             "type": "array",
             "items": {
               "x-go-type": "SelectorItem",
@@ -2978,13 +3005,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatorRef,omitempty"
                             },
                             "type": "array",
-                            "description": "JSON ref to value from where patch should be applied.",
+                            "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                              "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                             }
                           },
                           "mutatedRef": {
@@ -2992,12 +3019,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatedRef,omitempty"
                             },
                             "type": "array",
+                            "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                              "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                             }
                           }
                         }
@@ -3042,13 +3070,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatorRef,omitempty"
                             },
                             "type": "array",
-                            "description": "JSON ref to value from where patch should be applied.",
+                            "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                              "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                             }
                           },
                           "mutatedRef": {
@@ -3056,12 +3084,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatedRef,omitempty"
                             },
                             "type": "array",
+                            "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                              "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                             }
                           }
                         }
@@ -3186,7 +3215,7 @@ const RelationshipSchema: Record<string, unknown> = {
                     "json": "patch"
                   },
                   "type": "object",
-                  "description": "Patch configuration for the selector",
+                  "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                   "x-go-name": "RelationshipDefinitionSelectorsPatch",
                   "properties": {
                     "patchStrategy": {
@@ -3194,12 +3223,13 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "patchStrategy,omitempty"
                       },
                       "type": "string",
-                      "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                      "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                       "enum": [
                         "merge",
                         "strategic",
                         "add",
                         "remove",
+                        "replace",
                         "copy",
                         "move",
                         "test"
@@ -3210,13 +3240,13 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "mutatorRef,omitempty"
                       },
                       "type": "array",
-                      "description": "JSON ref to value from where patch should be applied.",
+                      "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                       "items": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         },
-                        "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                        "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                       }
                     },
                     "mutatedRef": {
@@ -3224,12 +3254,13 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "mutatedRef,omitempty"
                       },
                       "type": "array",
+                      "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                       "items": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         },
-                        "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                        "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                       }
                     }
                   }
@@ -3241,7 +3272,7 @@ const RelationshipSchema: Record<string, unknown> = {
             }
           },
           "to": {
-            "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+            "description": "Destination side of the selector. For kind=hierarchical, to is the parent.",
             "type": "array",
             "items": {
               "x-go-type": "SelectorItem",
@@ -3324,13 +3355,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatorRef,omitempty"
                             },
                             "type": "array",
-                            "description": "JSON ref to value from where patch should be applied.",
+                            "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                              "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                             }
                           },
                           "mutatedRef": {
@@ -3338,12 +3369,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatedRef,omitempty"
                             },
                             "type": "array",
+                            "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                              "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                             }
                           }
                         }
@@ -3388,13 +3420,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatorRef,omitempty"
                             },
                             "type": "array",
-                            "description": "JSON ref to value from where patch should be applied.",
+                            "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                              "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                             }
                           },
                           "mutatedRef": {
@@ -3402,12 +3434,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatedRef,omitempty"
                             },
                             "type": "array",
+                            "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                              "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                             }
                           }
                         }
@@ -3532,7 +3565,7 @@ const RelationshipSchema: Record<string, unknown> = {
                     "json": "patch"
                   },
                   "type": "object",
-                  "description": "Patch configuration for the selector",
+                  "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                   "x-go-name": "RelationshipDefinitionSelectorsPatch",
                   "properties": {
                     "patchStrategy": {
@@ -3540,12 +3573,13 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "patchStrategy,omitempty"
                       },
                       "type": "string",
-                      "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                      "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                       "enum": [
                         "merge",
                         "strategic",
                         "add",
                         "remove",
+                        "replace",
                         "copy",
                         "move",
                         "test"
@@ -3556,13 +3590,13 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "mutatorRef,omitempty"
                       },
                       "type": "array",
-                      "description": "JSON ref to value from where patch should be applied.",
+                      "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                       "items": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         },
-                        "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                        "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                       }
                     },
                     "mutatedRef": {
@@ -3570,12 +3604,13 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "mutatedRef,omitempty"
                       },
                       "type": "array",
+                      "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                       "items": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         },
-                        "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                        "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                       }
                     }
                   }
@@ -3608,7 +3643,7 @@ const RelationshipSchema: Record<string, unknown> = {
             ],
             "properties": {
               "from": {
-                "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+                "description": "Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many).",
                 "type": "array",
                 "items": {
                   "x-go-type": "SelectorItem",
@@ -3691,13 +3726,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatorRef,omitempty"
                                 },
                                 "type": "array",
-                                "description": "JSON ref to value from where patch should be applied.",
+                                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                 }
                               },
                               "mutatedRef": {
@@ -3705,12 +3740,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatedRef,omitempty"
                                 },
                                 "type": "array",
+                                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                 }
                               }
                             }
@@ -3755,13 +3791,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatorRef,omitempty"
                                 },
                                 "type": "array",
-                                "description": "JSON ref to value from where patch should be applied.",
+                                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                 }
                               },
                               "mutatedRef": {
@@ -3769,12 +3805,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatedRef,omitempty"
                                 },
                                 "type": "array",
+                                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                 }
                               }
                             }
@@ -3899,7 +3936,7 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "patch"
                       },
                       "type": "object",
-                      "description": "Patch configuration for the selector",
+                      "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                       "x-go-name": "RelationshipDefinitionSelectorsPatch",
                       "properties": {
                         "patchStrategy": {
@@ -3907,12 +3944,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "patchStrategy,omitempty"
                           },
                           "type": "string",
-                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                           "enum": [
                             "merge",
                             "strategic",
                             "add",
                             "remove",
+                            "replace",
                             "copy",
                             "move",
                             "test"
@@ -3923,13 +3961,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "mutatorRef,omitempty"
                           },
                           "type": "array",
-                          "description": "JSON ref to value from where patch should be applied.",
+                          "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                           "items": {
                             "type": "array",
                             "items": {
                               "type": "string"
                             },
-                            "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                            "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                           }
                         },
                         "mutatedRef": {
@@ -3937,12 +3975,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "mutatedRef,omitempty"
                           },
                           "type": "array",
+                          "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                           "items": {
                             "type": "array",
                             "items": {
                               "type": "string"
                             },
-                            "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                            "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                           }
                         }
                       }
@@ -3954,7 +3993,7 @@ const RelationshipSchema: Record<string, unknown> = {
                 }
               },
               "to": {
-                "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+                "description": "Destination side of the selector. For kind=hierarchical, to is the parent.",
                 "type": "array",
                 "items": {
                   "x-go-type": "SelectorItem",
@@ -4037,13 +4076,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatorRef,omitempty"
                                 },
                                 "type": "array",
-                                "description": "JSON ref to value from where patch should be applied.",
+                                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                 }
                               },
                               "mutatedRef": {
@@ -4051,12 +4090,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatedRef,omitempty"
                                 },
                                 "type": "array",
+                                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                 }
                               }
                             }
@@ -4101,13 +4141,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatorRef,omitempty"
                                 },
                                 "type": "array",
-                                "description": "JSON ref to value from where patch should be applied.",
+                                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                 }
                               },
                               "mutatedRef": {
@@ -4115,12 +4155,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatedRef,omitempty"
                                 },
                                 "type": "array",
+                                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                 }
                               }
                             }
@@ -4245,7 +4286,7 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "patch"
                       },
                       "type": "object",
-                      "description": "Patch configuration for the selector",
+                      "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                       "x-go-name": "RelationshipDefinitionSelectorsPatch",
                       "properties": {
                         "patchStrategy": {
@@ -4253,12 +4294,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "patchStrategy,omitempty"
                           },
                           "type": "string",
-                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                           "enum": [
                             "merge",
                             "strategic",
                             "add",
                             "remove",
+                            "replace",
                             "copy",
                             "move",
                             "test"
@@ -4269,13 +4311,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "mutatorRef,omitempty"
                           },
                           "type": "array",
-                          "description": "JSON ref to value from where patch should be applied.",
+                          "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                           "items": {
                             "type": "array",
                             "items": {
                               "type": "string"
                             },
-                            "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                            "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                           }
                         },
                         "mutatedRef": {
@@ -4283,12 +4325,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "mutatedRef,omitempty"
                           },
                           "type": "array",
+                          "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                           "items": {
                             "type": "array",
                             "items": {
                               "type": "string"
                             },
-                            "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                            "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                           }
                         }
                       }
@@ -4314,7 +4357,7 @@ const RelationshipSchema: Record<string, unknown> = {
             ],
             "properties": {
               "from": {
-                "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+                "description": "Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many).",
                 "type": "array",
                 "items": {
                   "x-go-type": "SelectorItem",
@@ -4397,13 +4440,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatorRef,omitempty"
                                 },
                                 "type": "array",
-                                "description": "JSON ref to value from where patch should be applied.",
+                                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                 }
                               },
                               "mutatedRef": {
@@ -4411,12 +4454,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatedRef,omitempty"
                                 },
                                 "type": "array",
+                                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                 }
                               }
                             }
@@ -4461,13 +4505,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatorRef,omitempty"
                                 },
                                 "type": "array",
-                                "description": "JSON ref to value from where patch should be applied.",
+                                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                 }
                               },
                               "mutatedRef": {
@@ -4475,12 +4519,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatedRef,omitempty"
                                 },
                                 "type": "array",
+                                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                 }
                               }
                             }
@@ -4605,7 +4650,7 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "patch"
                       },
                       "type": "object",
-                      "description": "Patch configuration for the selector",
+                      "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                       "x-go-name": "RelationshipDefinitionSelectorsPatch",
                       "properties": {
                         "patchStrategy": {
@@ -4613,12 +4658,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "patchStrategy,omitempty"
                           },
                           "type": "string",
-                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                           "enum": [
                             "merge",
                             "strategic",
                             "add",
                             "remove",
+                            "replace",
                             "copy",
                             "move",
                             "test"
@@ -4629,13 +4675,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "mutatorRef,omitempty"
                           },
                           "type": "array",
-                          "description": "JSON ref to value from where patch should be applied.",
+                          "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                           "items": {
                             "type": "array",
                             "items": {
                               "type": "string"
                             },
-                            "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                            "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                           }
                         },
                         "mutatedRef": {
@@ -4643,12 +4689,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "mutatedRef,omitempty"
                           },
                           "type": "array",
+                          "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                           "items": {
                             "type": "array",
                             "items": {
                               "type": "string"
                             },
-                            "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                            "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                           }
                         }
                       }
@@ -4660,7 +4707,7 @@ const RelationshipSchema: Record<string, unknown> = {
                 }
               },
               "to": {
-                "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+                "description": "Destination side of the selector. For kind=hierarchical, to is the parent.",
                 "type": "array",
                 "items": {
                   "x-go-type": "SelectorItem",
@@ -4743,13 +4790,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatorRef,omitempty"
                                 },
                                 "type": "array",
-                                "description": "JSON ref to value from where patch should be applied.",
+                                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                 }
                               },
                               "mutatedRef": {
@@ -4757,12 +4804,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatedRef,omitempty"
                                 },
                                 "type": "array",
+                                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                 }
                               }
                             }
@@ -4807,13 +4855,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatorRef,omitempty"
                                 },
                                 "type": "array",
-                                "description": "JSON ref to value from where patch should be applied.",
+                                "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                  "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                 }
                               },
                               "mutatedRef": {
@@ -4821,12 +4869,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "mutatedRef,omitempty"
                                 },
                                 "type": "array",
+                                "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                 "items": {
                                   "type": "array",
                                   "items": {
                                     "type": "string"
                                   },
-                                  "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                  "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                 }
                               }
                             }
@@ -4951,7 +5000,7 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "patch"
                       },
                       "type": "object",
-                      "description": "Patch configuration for the selector",
+                      "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                       "x-go-name": "RelationshipDefinitionSelectorsPatch",
                       "properties": {
                         "patchStrategy": {
@@ -4959,12 +5008,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "patchStrategy,omitempty"
                           },
                           "type": "string",
-                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                           "enum": [
                             "merge",
                             "strategic",
                             "add",
                             "remove",
+                            "replace",
                             "copy",
                             "move",
                             "test"
@@ -4975,13 +5025,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "mutatorRef,omitempty"
                           },
                           "type": "array",
-                          "description": "JSON ref to value from where patch should be applied.",
+                          "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                           "items": {
                             "type": "array",
                             "items": {
                               "type": "string"
                             },
-                            "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                            "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                           }
                         },
                         "mutatedRef": {
@@ -4989,12 +5039,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "mutatedRef,omitempty"
                           },
                           "type": "array",
+                          "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                           "items": {
                             "type": "array",
                             "items": {
                               "type": "string"
                             },
-                            "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                            "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                           }
                         }
                       }
@@ -5036,7 +5087,7 @@ const RelationshipSchema: Record<string, unknown> = {
               ],
               "properties": {
                 "from": {
-                  "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+                  "description": "Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many).",
                   "type": "array",
                   "items": {
                     "x-go-type": "SelectorItem",
@@ -5119,13 +5170,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatorRef,omitempty"
                                   },
                                   "type": "array",
-                                  "description": "JSON ref to value from where patch should be applied.",
+                                  "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                    "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                   }
                                 },
                                 "mutatedRef": {
@@ -5133,12 +5184,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatedRef,omitempty"
                                   },
                                   "type": "array",
+                                  "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                    "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                   }
                                 }
                               }
@@ -5183,13 +5235,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatorRef,omitempty"
                                   },
                                   "type": "array",
-                                  "description": "JSON ref to value from where patch should be applied.",
+                                  "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                    "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                   }
                                 },
                                 "mutatedRef": {
@@ -5197,12 +5249,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatedRef,omitempty"
                                   },
                                   "type": "array",
+                                  "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                    "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                   }
                                 }
                               }
@@ -5327,7 +5380,7 @@ const RelationshipSchema: Record<string, unknown> = {
                           "json": "patch"
                         },
                         "type": "object",
-                        "description": "Patch configuration for the selector",
+                        "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                         "x-go-name": "RelationshipDefinitionSelectorsPatch",
                         "properties": {
                           "patchStrategy": {
@@ -5335,12 +5388,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "patchStrategy,omitempty"
                             },
                             "type": "string",
-                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                             "enum": [
                               "merge",
                               "strategic",
                               "add",
                               "remove",
+                              "replace",
                               "copy",
                               "move",
                               "test"
@@ -5351,13 +5405,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatorRef,omitempty"
                             },
                             "type": "array",
-                            "description": "JSON ref to value from where patch should be applied.",
+                            "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                              "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                             }
                           },
                           "mutatedRef": {
@@ -5365,12 +5419,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatedRef,omitempty"
                             },
                             "type": "array",
+                            "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                              "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                             }
                           }
                         }
@@ -5382,7 +5437,7 @@ const RelationshipSchema: Record<string, unknown> = {
                   }
                 },
                 "to": {
-                  "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+                  "description": "Destination side of the selector. For kind=hierarchical, to is the parent.",
                   "type": "array",
                   "items": {
                     "x-go-type": "SelectorItem",
@@ -5465,13 +5520,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatorRef,omitempty"
                                   },
                                   "type": "array",
-                                  "description": "JSON ref to value from where patch should be applied.",
+                                  "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                    "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                   }
                                 },
                                 "mutatedRef": {
@@ -5479,12 +5534,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatedRef,omitempty"
                                   },
                                   "type": "array",
+                                  "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                    "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                   }
                                 }
                               }
@@ -5529,13 +5585,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatorRef,omitempty"
                                   },
                                   "type": "array",
-                                  "description": "JSON ref to value from where patch should be applied.",
+                                  "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                    "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                   }
                                 },
                                 "mutatedRef": {
@@ -5543,12 +5599,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatedRef,omitempty"
                                   },
                                   "type": "array",
+                                  "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                    "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                   }
                                 }
                               }
@@ -5673,7 +5730,7 @@ const RelationshipSchema: Record<string, unknown> = {
                           "json": "patch"
                         },
                         "type": "object",
-                        "description": "Patch configuration for the selector",
+                        "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                         "x-go-name": "RelationshipDefinitionSelectorsPatch",
                         "properties": {
                           "patchStrategy": {
@@ -5681,12 +5738,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "patchStrategy,omitempty"
                             },
                             "type": "string",
-                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                             "enum": [
                               "merge",
                               "strategic",
                               "add",
                               "remove",
+                              "replace",
                               "copy",
                               "move",
                               "test"
@@ -5697,13 +5755,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatorRef,omitempty"
                             },
                             "type": "array",
-                            "description": "JSON ref to value from where patch should be applied.",
+                            "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                              "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                             }
                           },
                           "mutatedRef": {
@@ -5711,12 +5769,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatedRef,omitempty"
                             },
                             "type": "array",
+                            "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                              "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                             }
                           }
                         }
@@ -5742,7 +5801,7 @@ const RelationshipSchema: Record<string, unknown> = {
               ],
               "properties": {
                 "from": {
-                  "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+                  "description": "Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many).",
                   "type": "array",
                   "items": {
                     "x-go-type": "SelectorItem",
@@ -5825,13 +5884,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatorRef,omitempty"
                                   },
                                   "type": "array",
-                                  "description": "JSON ref to value from where patch should be applied.",
+                                  "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                    "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                   }
                                 },
                                 "mutatedRef": {
@@ -5839,12 +5898,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatedRef,omitempty"
                                   },
                                   "type": "array",
+                                  "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                    "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                   }
                                 }
                               }
@@ -5889,13 +5949,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatorRef,omitempty"
                                   },
                                   "type": "array",
-                                  "description": "JSON ref to value from where patch should be applied.",
+                                  "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                    "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                   }
                                 },
                                 "mutatedRef": {
@@ -5903,12 +5963,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatedRef,omitempty"
                                   },
                                   "type": "array",
+                                  "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                    "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                   }
                                 }
                               }
@@ -6033,7 +6094,7 @@ const RelationshipSchema: Record<string, unknown> = {
                           "json": "patch"
                         },
                         "type": "object",
-                        "description": "Patch configuration for the selector",
+                        "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                         "x-go-name": "RelationshipDefinitionSelectorsPatch",
                         "properties": {
                           "patchStrategy": {
@@ -6041,12 +6102,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "patchStrategy,omitempty"
                             },
                             "type": "string",
-                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                             "enum": [
                               "merge",
                               "strategic",
                               "add",
                               "remove",
+                              "replace",
                               "copy",
                               "move",
                               "test"
@@ -6057,13 +6119,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatorRef,omitempty"
                             },
                             "type": "array",
-                            "description": "JSON ref to value from where patch should be applied.",
+                            "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                              "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                             }
                           },
                           "mutatedRef": {
@@ -6071,12 +6133,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatedRef,omitempty"
                             },
                             "type": "array",
+                            "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                              "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                             }
                           }
                         }
@@ -6088,7 +6151,7 @@ const RelationshipSchema: Record<string, unknown> = {
                   }
                 },
                 "to": {
-                  "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
+                  "description": "Destination side of the selector. For kind=hierarchical, to is the parent.",
                   "type": "array",
                   "items": {
                     "x-go-type": "SelectorItem",
@@ -6171,13 +6234,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatorRef,omitempty"
                                   },
                                   "type": "array",
-                                  "description": "JSON ref to value from where patch should be applied.",
+                                  "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                    "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                   }
                                 },
                                 "mutatedRef": {
@@ -6185,12 +6248,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatedRef,omitempty"
                                   },
                                   "type": "array",
+                                  "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                    "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                   }
                                 }
                               }
@@ -6235,13 +6299,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatorRef,omitempty"
                                   },
                                   "type": "array",
-                                  "description": "JSON ref to value from where patch should be applied.",
+                                  "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                                    "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                                   }
                                 },
                                 "mutatedRef": {
@@ -6249,12 +6313,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                     "json": "mutatedRef,omitempty"
                                   },
                                   "type": "array",
+                                  "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                                   "items": {
                                     "type": "array",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                                    "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                                   }
                                 }
                               }
@@ -6379,7 +6444,7 @@ const RelationshipSchema: Record<string, unknown> = {
                           "json": "patch"
                         },
                         "type": "object",
-                        "description": "Patch configuration for the selector",
+                        "description": "Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.\n",
                         "x-go-name": "RelationshipDefinitionSelectorsPatch",
                         "properties": {
                           "patchStrategy": {
@@ -6387,12 +6452,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "patchStrategy,omitempty"
                             },
                             "type": "string",
-                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                             "enum": [
                               "merge",
                               "strategic",
                               "add",
                               "remove",
+                              "replace",
                               "copy",
                               "move",
                               "test"
@@ -6403,13 +6469,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatorRef,omitempty"
                             },
                             "type": "array",
-                            "description": "JSON ref to value from where patch should be applied.",
+                            "description": "Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.\n\nThe pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.\n\nExample: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. \"_\" may mark only the first array position in a path.\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                              "description": "One path as an array of string segments, e.g. [configuration, metadata, name]."
                             }
                           },
                           "mutatedRef": {
@@ -6417,12 +6483,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "mutatedRef,omitempty"
                             },
                             "type": "array",
+                            "description": "Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.\n\nmutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).\n",
                             "items": {
                               "type": "array",
                               "items": {
                                 "type": "string"
                               },
-                              "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                              "description": "One path as an array of string segments, e.g. [configuration, spec, containers, _, name]."
                             }
                           }
                         }

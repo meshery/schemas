@@ -118,7 +118,19 @@ components:
             json: deletedAt
     EnvironmentPayload:
       type: object
-      description: Payload for creating or updating an environment.
+      description: >-
+        Payload for creating or updating an environment. Carries only the
+        client-settable fields. Server-owned fields are deliberately absent:
+        `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the
+        server assigns them, and `purpose` because permission to create an
+        environment must not confer the ability to designate it
+        administrative. Excluding it here is a codegen guarantee rather than
+        access control: the registrant connection inlines the full environment
+        entity, so `purpose` still reaches the `registerRegistryComponent` and
+        `registerRegistryRelationship` request types, and every consumer must
+        refuse it on input whatever surface it arrives on. Do not add
+        `purpose` here - see
+        https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
       required:
         - name
         - organizationId
