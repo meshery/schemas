@@ -201,9 +201,9 @@ components:
         connections:
           type: array
           items:
-            type: object
-            additionalProperties: true
+            $ref: "../connection/connection.yaml"
           description: The connections of the environmentconnectionspage.
+
 
     EnvironmentConnectionMappingPage:
       type: object

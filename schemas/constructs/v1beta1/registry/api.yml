@@ -1172,10 +1172,13 @@ components:
             policies:
               type: array
               items:
-                type: object
-                description: A registered policy definition.
-                additionalProperties: true
+                $ref: "#/components/schemas/RegistryPolicy"
               description: The policies matching the query.
+
+    RegistryPolicy:
+      type: object
+      description: A registered policy definition.
+      additionalProperties: true
 
     RegistryRegistrant:
       description: >-
@@ -1303,20 +1306,24 @@ components:
           type: array
           items:
             type: object
+            description: Free-form summary map entries of components successfully imported containing model, category, metadata, displayName, and version.
             additionalProperties: true
           description: Components successfully imported.
         successfulRelationships:
           type: array
           items:
             type: object
+            description: Free-form summary map entries of relationships successfully imported containing model, metadata, displayName, and version.
             additionalProperties: true
           description: Relationships successfully imported.
         successfulModels:
           type: array
           items:
             type: object
+            description: Free-form summary map entries of models successfully imported containing model, metadata, displayName, and version.
             additionalProperties: true
           description: Models successfully imported.
+
         unsuccessfulComponentNames:
           type: array
           items: {}
