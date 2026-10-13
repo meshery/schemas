@@ -269,7 +269,7 @@ export interface components {
              * @description Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach.
              * @enum {string}
              */
-            lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
+            lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "auth_mechanism_unsupported" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
             /**
              * @description Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057.
              * @default 0
@@ -412,7 +412,7 @@ export interface components {
              * @description What happened. `delivered` means the server accepted the message; every other value names the stage that refused it.
              * @enum {string}
              */
-            outcome: "delivered" | "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
+            outcome: "delivered" | "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "auth_mechanism_unsupported" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
             /** @description Human-readable summary of the outcome, drawn from a fixed set of phrasings. */
             message?: string;
             /**
@@ -924,7 +924,7 @@ export interface operations {
                          * @description Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach.
                          * @enum {string}
                          */
-                        lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
+                        lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "auth_mechanism_unsupported" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
                         /**
                          * @description Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057.
                          * @default 0
@@ -1137,7 +1137,7 @@ export interface operations {
                          * @description Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach.
                          * @enum {string}
                          */
-                        lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
+                        lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "auth_mechanism_unsupported" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
                         /**
                          * @description Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057.
                          * @default 0
@@ -1366,7 +1366,7 @@ export interface operations {
                          * @description Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach.
                          * @enum {string}
                          */
-                        lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
+                        lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "auth_mechanism_unsupported" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
                         /**
                          * @description Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057.
                          * @default 0
@@ -1552,7 +1552,7 @@ export interface operations {
                          * @description Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach.
                          * @enum {string}
                          */
-                        lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
+                        lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "auth_mechanism_unsupported" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
                         /**
                          * @description Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057.
                          * @default 0
@@ -1738,7 +1738,7 @@ export interface operations {
                          * @description Classification of the last failure. Always a classification, never the remote server's own message: the set is closed on purpose, because reporting a remote server's text back to a caller would turn a refusal into an oracle for what the network can reach.
                          * @enum {string}
                          */
-                        lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
+                        lastFailureReason?: "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "auth_mechanism_unsupported" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
                         /**
                          * @description Count of delivery attempts that have failed since the last success, reset to zero by a success. It is a RECORD and nothing more: no threshold reads it, and reaching any particular value does not itself stop a persistently unreachable server being dialled. A consumer must not treat a non-zero count as protection already in place. The circuit breaker that would consume this count - and which needs a threshold, a reset policy, and a decision about its interaction with `fallbackToProvider`, where an open circuit with fallback off drops account-verification and password-recovery mail - is planned under meshery-cloud#6057.
                          * @default 0
@@ -1856,7 +1856,7 @@ export interface operations {
                          * @description What happened. `delivered` means the server accepted the message; every other value names the stage that refused it.
                          * @enum {string}
                          */
-                        outcome: "delivered" | "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
+                        outcome: "delivered" | "blocked_target" | "connect_refused" | "connect_timeout" | "tls_failed" | "starttls_unsupported" | "auth_rejected" | "auth_mechanism_unsupported" | "relay_rejected_sender" | "relay_rejected_recipient" | "delivery_failed" | "credential_unreadable";
                         /** @description Human-readable summary of the outcome, drawn from a fixed set of phrasings. */
                         message?: string;
                         /**
