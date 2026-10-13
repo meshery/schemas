@@ -28,6 +28,18 @@ components:
       $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
     401:
       $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    403:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/403"
+    EnvironmentPurposeForbidden:
+      description: >-
+        Refusal to operate on an environment whose purpose is not user.
+        This concerns the target's designation rather than the caller's
+        identity; the same caller remains authorized for this route on
+        other environments in the same organization.
+      content:
+        text/plain:
+          schema:
+            type: string
     404:
       $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
     500:
@@ -366,6 +378,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/EnvironmentPurposeForbidden"
         "404":
           $ref: "#/components/responses/404"
         "500":
