@@ -12,6 +12,12 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for InvitationAcceptanceOutcome.
+const (
+	ChildOrganization InvitationAcceptanceOutcome = "child_organization"
+	DirectMembership  InvitationAcceptanceOutcome = "direct_membership"
+)
+
 // Defines values for InvitationStatus.
 const (
 	Disabled InvitationStatus = "disabled"
@@ -20,6 +26,9 @@ const (
 
 // Invitation Invitation entity schema.
 type Invitation struct {
+	// AcceptanceOutcome Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user.
+	AcceptanceOutcome *InvitationAcceptanceOutcome `db:"acceptance_outcome" json:"acceptanceOutcome" yaml:"acceptanceOutcome,omitempty"`
+
 	// AcceptedBy List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.
 	AcceptedBy pq.StringArray `db:"accepted_by" json:"acceptedBy" yaml:"acceptedBy"`
 
@@ -69,8 +78,14 @@ type Invitation struct {
 	UpdatedAt time.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 }
 
+// InvitationAcceptanceOutcome Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user.
+type InvitationAcceptanceOutcome string
+
 // InvitationPayload Payload for creating or updating an invitation.
 type InvitationPayload struct {
+	// AcceptanceOutcome Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user.
+	AcceptanceOutcome *InvitationAcceptanceOutcome `db:"acceptance_outcome" json:"acceptanceOutcome,omitempty" yaml:"acceptanceOutcome,omitempty"`
+
 	// Description Description of the invitation.
 	Description string `json:"description" yaml:"description"`
 

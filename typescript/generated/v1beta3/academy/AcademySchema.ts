@@ -4219,6 +4219,20 @@ const AcademySchema: Record<string, unknown> = {
                                 "description": "Team identifier the invited user is added to on acceptance."
                               }
                             },
+                            "acceptanceOutcome": {
+                              "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named \"My Organization\" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                              "x-go-type": "InvitationAcceptanceOutcome",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "acceptance_outcome",
+                                "json": "acceptanceOutcome"
+                              },
+                              "type": "string",
+                              "enum": [
+                                "direct_membership",
+                                "child_organization"
+                              ],
+                              "default": "direct_membership"
+                            },
                             "status": {
                               "description": "Activation status of the invitation.",
                               "x-go-type": "InvitationStatus",
@@ -4988,6 +5002,20 @@ const AcademySchema: Record<string, unknown> = {
                                 "type": "string",
                                 "description": "Team identifier the invited user is added to on acceptance."
                               }
+                            },
+                            "acceptanceOutcome": {
+                              "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named \"My Organization\" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                              "x-go-type": "InvitationAcceptanceOutcome",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "acceptance_outcome",
+                                "json": "acceptanceOutcome"
+                              },
+                              "type": "string",
+                              "enum": [
+                                "direct_membership",
+                                "child_organization"
+                              ],
+                              "default": "direct_membership"
                             },
                             "status": {
                               "description": "Activation status of the invitation.",
@@ -10986,6 +11014,20 @@ const AcademySchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Team identifier the invited user is added to on acceptance."
                     }
+                  },
+                  "acceptanceOutcome": {
+                    "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named \"My Organization\" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
+                    "x-go-type": "InvitationAcceptanceOutcome",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "acceptance_outcome",
+                      "json": "acceptanceOutcome"
+                    },
+                    "type": "string",
+                    "enum": [
+                      "direct_membership",
+                      "child_organization"
+                    ],
+                    "default": "direct_membership"
                   },
                   "status": {
                     "description": "Activation status of the invitation.",

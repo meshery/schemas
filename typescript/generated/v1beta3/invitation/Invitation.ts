@@ -200,6 +200,12 @@ export interface components {
                 /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
                 teams: string[];
                 /**
+                 * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                 * @default direct_membership
+                 * @enum {string}
+                 */
+                acceptanceOutcome: "direct_membership" | "child_organization";
+                /**
                  * @description Activation status of the invitation.
                  * @enum {string}
                  */
@@ -417,6 +423,12 @@ export interface components {
             /** @description Teams that the user will be added to when accepting the invitation. */
             teams: string[];
             /**
+             * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+             * @default direct_membership
+             * @enum {string}
+             */
+            acceptanceOutcome: "direct_membership" | "child_organization";
+            /**
              * @description Activation status of the invitation.
              * @enum {string}
              */
@@ -427,6 +439,12 @@ export interface components {
          * @enum {string}
          */
         InvitationStatus: "enabled" | "disabled";
+        /**
+         * @description Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user.
+         * @default direct_membership
+         * @enum {string}
+         */
+        InvitationAcceptanceOutcome: "direct_membership" | "child_organization";
         /** @description Invitation entity schema. */
         Invitation: {
             /**
@@ -465,6 +483,12 @@ export interface components {
             roles: string[];
             /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
             teams: string[];
+            /**
+             * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+             * @default direct_membership
+             * @enum {string}
+             */
+            acceptanceOutcome: "direct_membership" | "child_organization";
             /**
              * @description Activation status of the invitation.
              * @enum {string}
@@ -624,6 +648,12 @@ export interface operations {
                         /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
                         teams: string[];
                         /**
+                         * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                         * @default direct_membership
+                         * @enum {string}
+                         */
+                        acceptanceOutcome: "direct_membership" | "child_organization";
+                        /**
                          * @description Activation status of the invitation.
                          * @enum {string}
                          */
@@ -732,6 +762,12 @@ export interface operations {
                     /** @description Teams that the user will be added to when accepting the invitation. */
                     teams: string[];
                     /**
+                     * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                     * @default direct_membership
+                     * @enum {string}
+                     */
+                    acceptanceOutcome?: "direct_membership" | "child_organization";
+                    /**
                      * @description Activation status of the invitation.
                      * @enum {string}
                      */
@@ -783,6 +819,12 @@ export interface operations {
                         roles: string[];
                         /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
                         teams: string[];
+                        /**
+                         * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                         * @default direct_membership
+                         * @enum {string}
+                         */
+                        acceptanceOutcome: "direct_membership" | "child_organization";
                         /**
                          * @description Activation status of the invitation.
                          * @enum {string}
@@ -982,6 +1024,12 @@ export interface operations {
                             /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
                             teams: string[];
                             /**
+                             * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                             * @default direct_membership
+                             * @enum {string}
+                             */
+                            acceptanceOutcome: "direct_membership" | "child_organization";
+                            /**
                              * @description Activation status of the invitation.
                              * @enum {string}
                              */
@@ -1079,6 +1127,12 @@ export interface operations {
                     /** @description Teams that the user will be added to when accepting the invitation. */
                     teams: string[];
                     /**
+                     * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                     * @default direct_membership
+                     * @enum {string}
+                     */
+                    acceptanceOutcome?: "direct_membership" | "child_organization";
+                    /**
                      * @description Activation status of the invitation.
                      * @enum {string}
                      */
@@ -1130,6 +1184,12 @@ export interface operations {
                         roles: string[];
                         /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
                         teams: string[];
+                        /**
+                         * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                         * @default direct_membership
+                         * @enum {string}
+                         */
+                        acceptanceOutcome: "direct_membership" | "child_organization";
                         /**
                          * @description Activation status of the invitation.
                          * @enum {string}
@@ -1246,6 +1306,12 @@ export interface operations {
                         roles: string[];
                         /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
                         teams: string[];
+                        /**
+                         * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                         * @default direct_membership
+                         * @enum {string}
+                         */
+                        acceptanceOutcome: "direct_membership" | "child_organization";
                         /**
                          * @description Activation status of the invitation.
                          * @enum {string}
