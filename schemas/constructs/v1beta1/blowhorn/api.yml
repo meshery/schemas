@@ -1,0 +1,113 @@
+openapi: 3.0.0
+info:
+  title: Blowhorn API
+  description: >-
+    Layer5 Cloud routes that Blowhorn's desktop app and CLI call over HTTPS with a
+    user API token, in place of a direct database connection. This first operation
+    is the health check every Blowhorn client runs before using any other Blowhorn
+    route: it reports the contract version and whether the caller belongs to the
+    organization it names.
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+
+tags:
+  - name: Blowhorn
+    description: Blowhorn store routes served by Layer5 Cloud.
+
+paths:
+  /api/blowhorn/health:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Blowhorn
+      summary: Check Blowhorn's connection to Layer5 Cloud
+      description: >-
+        Returns the Blowhorn contract version this server implements and, when
+        `orgId` is given, whether the authenticated user is a live member of that
+        organization. Clients compare `contractVersion` with the version they were
+        built against and refuse to continue on a major mismatch.
+      operationId: getBlowhornHealth
+      parameters:
+        - name: orgId
+          in: query
+          description: Organization the client intends to act in.
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Blowhorn health
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornHealth"
+        "400":
+          description: The `orgId` query parameter is not a UUID.
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          description: Internal server error
+
+components:
+  responses:
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    BlowhornHealth:
+      type: object
+      description: Blowhorn contract version and the caller's organization binding.
+      additionalProperties: false
+      required:
+        - status
+        - contractVersion
+        - userId
+      properties:
+        status:
+          type: string
+          description: Overall health of the Blowhorn routes on this server.
+          enum:
+            - ok
+            - degraded
+        contractVersion:
+          type: string
+          description: Semantic version of the Blowhorn route contract this server implements.
+          maxLength: 32
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        userId:
+          type: string
+          format: uuid
+          description: The authenticated user the token belongs to.
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+        orgId:
+          type: string
+          format: uuid
+          description: The organization named in the request, echoed back. Absent when none was named.
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-oapi-codegen-extra-tags:
+            json: "orgId,omitempty"
+        orgMember:
+          type: boolean
+          description: Whether the authenticated user is a live member of `orgId`. Absent when no organization was named.
+          x-oapi-codegen-extra-tags:
+            json: "orgMember,omitempty"
