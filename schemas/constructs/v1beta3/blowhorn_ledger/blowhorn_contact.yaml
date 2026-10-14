@@ -1,0 +1,80 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Blowhorn Contact Schema
+description: |
+  Server-returned Blowhorn contact as persisted by meshery-cloud. Contacts
+  are upserted per platform handle and back the credential-less platform
+  opt-in rows.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - platform
+  - handle
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated Blowhorn contact ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  platform:
+    type: string
+    description: Platform the contact belongs to (e.g. linkedin, github).
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: platform
+    x-order: 3
+  handle:
+    type: string
+    description: Platform-side handle identifying the contact. Unique per platform within the organization.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: handle
+    x-order: 4
+  displayName:
+    type: string
+    description: Human-readable contact name.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: display_name
+    x-order: 5
+  profileUrl:
+    type: string
+    description: Platform-side profile URL for the contact.
+    maxLength: 1024
+    x-oapi-codegen-extra-tags:
+      db: profile_url
+    x-order: 6
+  metadata:
+    type: object
+    description: Contact metadata, stored as a JSON blob.
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: metadata
+    x-order: 7
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of Blowhorn contact creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 8
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last Blowhorn contact modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 9

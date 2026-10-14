@@ -11,6 +11,7 @@ import (
 // Defines values for EnvironmentPurpose.
 const (
 	EnvironmentPurposeAdministrative EnvironmentPurpose = "administrative"
+	EnvironmentPurposeBlowhorn       EnvironmentPurpose = "blowhorn"
 	EnvironmentPurposeUser           EnvironmentPurpose = "user"
 )
 
@@ -46,7 +47,7 @@ type Environment struct {
 	// DeletedAt SQL null Timestamp to handle null values of time.
 	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt,omitempty"`
 
-	// Purpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+	// Purpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
 	//
 	// Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
 	//
@@ -58,7 +59,7 @@ type Environment struct {
 	Purpose EnvironmentPurpose `db:"purpose" gorm:"not null;default:user" json:"purpose,omitempty" yaml:"purpose,omitempty"`
 }
 
-// EnvironmentPurpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+// EnvironmentPurpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
 //
 // Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
 //

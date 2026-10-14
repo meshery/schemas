@@ -93,7 +93,7 @@ func TestEnvironmentEntityPurposeShape(t *testing.T) {
 	}
 
 	gotEnum := stringSliceOf(mustLookup(t, purpose, "enum"))
-	wantEnum := []string{"user", "administrative"}
+	wantEnum := []string{"user", "administrative", "blowhorn"}
 	if strings.Join(gotEnum, ",") != strings.Join(wantEnum, ",") {
 		t.Errorf("purpose enum = %v, want %v in that order - x-enum-varnames is "+
 			"positional, so reordering silently renames the generated constants",

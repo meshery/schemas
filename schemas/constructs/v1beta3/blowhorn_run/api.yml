@@ -1,0 +1,345 @@
+openapi: 3.0.0
+info:
+  title: BlowhornRun
+  description: |
+    OpenAPI schema for the Blowhorn run ledger - idempotent appends of
+    run records plus analytics rollups.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: blowhornRuns
+    description: Operations related to Blowhorn run records and analytics.
+
+paths:
+  /api/blowhorn/runs:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornRuns
+      summary: List Blowhorn run records
+      operationId: listBlowhornRunRecords
+      description: Returns a paginated list of Blowhorn run records in the organization of the authenticated session.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: runId
+          in: query
+          required: false
+          description: Filter by run identifier.
+          schema:
+            type: string
+        - name: kind
+          in: query
+          required: false
+          description: Filter by record kind.
+          schema:
+            type: string
+        - name: profile
+          in: query
+          required: false
+          description: Filter by profile subject.
+          schema:
+            type: string
+        - name: platform
+          in: query
+          required: false
+          description: Filter by platform (e.g. linkedin).
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blowhorn run records page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornRunRecordPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornRuns
+      summary: Append Blowhorn run record
+      operationId: appendBlowhornRunRecord
+      description: |
+        Appends a run record to the ledger, replaying idempotently on the
+        (runId, kind, ts, profile, platform) tuple: replaying an existing
+        tuple returns the stored record unchanged. Ownership is derived
+        from the authenticated session; any client-supplied owner is
+        ignored.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlowhornRunRecordPayload"
+      responses:
+        "200":
+          description: Blowhorn run record appended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornRunRecord"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/blowhorn/analytics:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornRuns
+      summary: List Blowhorn analytics
+      operationId: listBlowhornAnalytics
+      description: Returns a paginated list of Blowhorn analytics rollups in the organization of the authenticated session.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: scope
+          in: query
+          required: false
+          description: Filter by aggregation scope.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blowhorn analytics page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornAnalyticsPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornRuns
+      summary: Record Blowhorn analytics
+      operationId: recordBlowhornAnalytics
+      description: |
+        Records an analytics rollup, replacing the stored metrics for the
+        (scope, window) pair. Ownership is derived from the authenticated
+        session; any client-supplied owner is ignored.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlowhornAnalyticsPayload"
+      responses:
+        "200":
+          description: Blowhorn analytics recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornAnalytics"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer [REDACTED]
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      name: pageSize
+      in: query
+      description: Number of items per page (canonical camelCase form).
+      schema:
+        type: integer
+        minimum: 1
+    pagesize:
+      name: pagesize
+      in: query
+      description: |
+        Number of items per page. Deprecated alias of pageSize;
+        canonical `pageSize` wins when both are present.
+      deprecated: true
+      schema:
+        type: integer
+        minimum: 1
+    search:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
+
+  schemas:
+    BlowhornRunRecord:
+      $ref: "./blowhorn_run.yaml"
+
+    BlowhornAnalytics:
+      $ref: "./blowhorn_analytics.yaml"
+
+    BlowhornRunRecordPayload:
+      type: object
+      description: |
+        Payload for appending a Blowhorn run record. Contains only
+        client-settable fields; the owning `organizationId` (derived from
+        the authenticated session) and the server-generated `createdAt` /
+        `updatedAt` timestamps are intentionally excluded.
+      required:
+        - runId
+        - kind
+        - ts
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Existing Blowhorn run record ID; omit on append.
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        runId:
+          type: string
+          description: Run identifier grouping the records of one execution.
+          minLength: 1
+          maxLength: 255
+          x-go-name: RunID
+        kind:
+          type: string
+          description: Record kind within the run.
+          minLength: 1
+          maxLength: 255
+        ts:
+          type: string
+          format: date-time
+          description: Event time of the record within the run. Part of the idempotency tuple.
+        profile:
+          type: string
+          description: Subject of the profile the record concerns.
+          maxLength: 255
+        platform:
+          type: string
+          description: Platform the record concerns (e.g. linkedin).
+          maxLength: 255
+        data:
+          type: object
+          description: Record values, stored as a JSON blob.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+
+    BlowhornAnalyticsPayload:
+      type: object
+      description: |
+        Payload for recording a Blowhorn analytics rollup. Contains only
+        client-settable fields; the owning `organizationId` (derived from
+        the authenticated session) and the server-generated `createdAt` /
+        `updatedAt` timestamps are intentionally excluded.
+      required:
+        - scope
+        - metrics
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Existing Blowhorn analytics ID for updates; omit on record.
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        scope:
+          type: string
+          description: Aggregation scope (e.g. profile subject or organization-wide rollup name).
+          minLength: 1
+          maxLength: 255
+        window:
+          type: string
+          description: Aggregation window the metrics cover (e.g. day, week).
+          maxLength: 255
+        metrics:
+          type: object
+          description: Aggregated metrics, stored as a JSON blob.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+        computedAt:
+          type: string
+          format: date-time
+          description: Time the metrics were computed.
+
+    BlowhornRunRecordPage:
+      type: object
+      description: Paginated collection of Blowhorn run records.
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        blowhornRunRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlowhornRunRecord"
+            x-go-type: BlowhornRunRecord
+          description: Blowhorn run records included on this page of results.
+
+    BlowhornAnalyticsPage:
+      type: object
+      description: Paginated collection of Blowhorn analytics rollups.
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        blowhornAnalytics:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlowhornAnalytics"
+            x-go-type: BlowhornAnalytics
+          description: Blowhorn analytics rollups included on this page of results.

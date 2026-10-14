@@ -1,0 +1,51 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Schedule Pause Schema
+description: |
+  Server-returned organization-wide schedule pause. While a pause row
+  exists for an organization, none of its job lease rows is claimed unless
+  the claim carries the operator override. Absence of a row means
+  unpaused; there is at most one live row per organization.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated schedule pause ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Organization the pause applies to. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  reason:
+    type: string
+    description: Operator reason for pausing the organization schedule.
+    x-oapi-codegen-extra-tags:
+      db: reason
+    x-order: 3
+  pausedBy:
+    type: string
+    description: Identity that set the pause. Server-managed.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: paused_by
+    x-order: 4
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of schedule pause creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 5
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last schedule pause modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 6

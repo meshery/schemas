@@ -15,6 +15,55 @@
     "extension": true
   },
   {
+    "construct": "blowhorn_binding",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/blowhorn_binding/blowhorn_binding.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "blowhorn_content",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/blowhorn_content/blowhorn_content.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "blowhorn_destination",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/blowhorn_destination/blowhorn_destination.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "blowhorn_health",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/blowhorn_health/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "blowhorn_ledger",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/blowhorn_ledger/blowhorn_ledger.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "blowhorn_profile",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/blowhorn_profile/blowhorn_profile.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "blowhorn_run",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/blowhorn_run/blowhorn_run.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "capability",
     "version": "v1beta1",
     "href": "/schemas/constructs/v1beta1/capability/capability.yaml",
@@ -128,6 +177,13 @@
     "construct": "invitation",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/invitation/invitation.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "job_lease",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/job_lease/job_lease.yaml",
     "core": false,
     "extension": true
   },

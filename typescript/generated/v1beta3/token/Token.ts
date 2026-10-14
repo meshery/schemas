@@ -220,7 +220,7 @@ export interface components {
         isOauth: boolean;
         /** @description Name of the token. */
         name: string;
-        /** @description Purpose for which the token is generated. */
+        /** @description Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
         purpose: string;
     };
     requestBodies: never;
@@ -234,6 +234,8 @@ export interface operations {
             query?: {
                 /** @description Whether to retrieve OAuth-backed sessions instead of API tokens. */
                 isOauth?: boolean;
+                /** @description Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
+                purpose?: string;
                 /** @description Get responses by page */
                 page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
@@ -330,7 +332,7 @@ export interface operations {
             query: {
                 /** @description Name of the token. */
                 name: string;
-                /** @description Purpose for which the token is generated. */
+                /** @description Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
                 purpose?: string;
             };
             header?: never;

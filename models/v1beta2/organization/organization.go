@@ -67,6 +67,32 @@ type CarouselSlide struct {
 	Title string `json:"title" yaml:"title"`
 }
 
+// ChildOrganization Direct child organization as listed under its parent. A deliberately narrow projection of the organization record: it carries no owner, metadata, invite id, or members, because every holder of View Organizations in the parent can read this list and those fields are not part of what the parent is entitled to see. parentId, when present, is the id of the parent organization named in the request path.
+type ChildOrganization struct {
+	Country     Text `json:"country,omitempty" yaml:"country,omitempty"`
+	CreatedAt   Time `json:"createdAt" yaml:"createdAt"`
+	Description Text `json:"description,omitempty" yaml:"description,omitempty"`
+	Domain      Text `json:"domain,omitempty" yaml:"domain,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID   UUID `json:"id" yaml:"id"`
+	Name Text `json:"name" yaml:"name"`
+
+	// ParentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ParentID  *UUID `json:"parentId,omitempty" yaml:"parentId,omitempty"`
+	Region    Text  `json:"region,omitempty" yaml:"region,omitempty"`
+	UpdatedAt Time  `json:"updatedAt" yaml:"updatedAt"`
+}
+
+// ChildOrganizationsPage Page of the direct child organizations of one parent. Carries only the organizations list and the total count; it is not the OrganizationsPage wrapper, whose AvailableOrganization rows expose owner and metadata.
+type ChildOrganizationsPage struct {
+	// Organizations Direct child organizations in this page.
+	Organizations []ChildOrganization `json:"organizations" yaml:"organizations"`
+
+	// TotalCount Total number of live direct children across all pages.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
 // DashboardPrefs Preferences specific to dashboard behavior.
 type DashboardPrefs map[string]interface{}
 

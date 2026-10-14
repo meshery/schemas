@@ -10,6 +10,7 @@ quota: 0
 acceptedBy: []
 roles: []
 teams: []
+acceptanceOutcome: direct_membership
 status: ''
 createdAt: ''
 updatedAt: ''

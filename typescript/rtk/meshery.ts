@@ -693,6 +693,24 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Organization_Organizations"],
       }),
+      getChildOrgs: build.query<GetChildOrgsApiResponse, GetChildOrgsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Organization_Organizations"],
+      }),
+      createChildOrg: build.mutation<CreateChildOrgApiResponse, CreateChildOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
       getOrgPreferences: build.query<GetOrgPreferencesApiResponse, GetOrgPreferencesApiArg>({
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/preferences` }),
         providesTags: ["Organization_Organizations"],
@@ -9342,7 +9360,7 @@ export type RegisterRegistryComponentApiArg = {
         updatedAt?: string;
         /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
         deletedAt?: string | null;
-        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
                 
                 Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                 
@@ -9351,7 +9369,7 @@ export type RegisterRegistryComponentApiArg = {
                 Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                 
                 The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-        purpose?: "user" | "administrative";
+        purpose?: "user" | "administrative" | "blowhorn";
       }[];
       /** Specifies the version of the schema used for the definition. */
       schemaVersion: string;
@@ -10200,7 +10218,7 @@ export type RegisterRegistryRelationshipApiArg = {
         updatedAt?: string;
         /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
         deletedAt?: string | null;
-        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
                 
                 Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                 
@@ -10209,7 +10227,7 @@ export type RegisterRegistryRelationshipApiArg = {
                 Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                 
                 The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-        purpose?: "user" | "administrative";
+        purpose?: "user" | "administrative" | "blowhorn";
       }[];
       /** Specifies the version of the schema used for the definition. */
       schemaVersion: string;
@@ -12229,6 +12247,267 @@ export type UpdateOrgApiArg = {
     };
   };
 };
+export type GetChildOrgsApiResponse = /** status 200 Direct child organizations of the parent organization */ {
+  /** Direct child organizations in this page. */
+  organizations: {
+    /** Organization ID of the child. */
+    id: string;
+    /** Name of the child organization. */
+    name: string;
+    /** Description of the child organization. */
+    description?: string;
+    /** Country of the child organization. */
+    country?: string;
+    /** Region of the child organization. */
+    region?: string;
+    /** Custom domain assigned to the child organization, when configured. */
+    domain?: string;
+    /** ID of the parent organization. Stamped at creation and never changed; absent only on a top-level organization, which this listing never returns. */
+    parentId?: string;
+    /** Timestamp when the child organization was created. */
+    createdAt: string;
+    /** Timestamp when the child organization was last updated. */
+    updatedAt: string;
+  }[];
+  /** Total number of live direct children across all pages. */
+  totalCount: number;
+};
+export type GetChildOrgsApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Zero-based index of the result page to return. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+};
+export type CreateChildOrgApiResponse =
+  /** status 201 Single-organization page response for the created child organization */ {
+    /** Zero-based page index returned in this response. */
+    page?: number;
+    /** Maximum number of items returned on each page. */
+    pageSize?: number;
+    /** Total number of items across all pages. */
+    totalCount?: number;
+    /** Organizations returned in this single-item page wrapper. */
+    organizations?: {
+      /** Organization ID. */
+      id?: string;
+      /** Name of the organization. */
+      name?: string;
+      /** Description of the organization. */
+      description?: string;
+      /** Country of the organization. */
+      country?: string;
+      /** Region of the organization. */
+      region?: string;
+      /** Custom domain assigned to the organization, when configured. */
+      domain?: string;
+      /** Display name of the organization owner. */
+      owner?: string;
+      /** Free-form metadata associated with an organization, including preferences. */
+      metadata?: {
+        /** Organization-level user experience preferences. */
+        preferences: {
+          /** UI theme configured for an organization. */
+          theme: {
+            /** Theme identifier. */
+            id: string;
+            /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+            logo: {
+              /** Image asset anchored to a named location within an organization theme. */
+              desktopView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              mobileView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              darkDesktopView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              darkMobileView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+            };
+            /** Arbitrary theme variables keyed by name. */
+            vars?: {
+              [key: string]: any;
+            };
+          };
+          /** Preferences specific to dashboard behavior. */
+          dashboard: {
+            [key: string]: any;
+          };
+          /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+          authBranding?: {
+            /** Ordered slides rendered in the auth-page feature carousel. */
+            carousel?: {
+              /** URL of the slide image asset. */
+              imageUrl: string;
+              /** Slide title. */
+              title: string;
+              /** Slide description text. */
+              description: string;
+            }[];
+            /** FAQ entries rendered on the auth pages. */
+            faqs?: {
+              /** The question text. */
+              question: string;
+              /** The answer text. */
+              answer: string;
+            }[];
+          };
+          /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+          links?: {
+            /** URL of the organization's Terms of Service page. */
+            termsOfService?: string;
+            /** URL of the organization's Privacy Policy page. */
+            privacy?: string;
+            /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+            support?: {
+              [key: string]: string;
+            };
+            /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+            social?: {
+              /** URL of the organization's LinkedIn profile. */
+              linkedin?: string;
+              /** URL of the organization's X (formerly Twitter) profile. */
+              x?: string;
+              /** URL of the organization's YouTube channel. */
+              youtube?: string;
+            };
+          };
+          /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+          showAuthCarousel?: boolean;
+        };
+      };
+      /** Timestamp when the organization was created. */
+      createdAt?: string;
+      /** Timestamp when the organization was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the organization was soft-deleted. */
+      deletedAt?: string;
+    }[];
+  };
+export type CreateChildOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Body for creating or updating an organization */
+  body: {
+    /** Name of the organization. */
+    name?: string;
+    /** Country of the organization. */
+    country?: string;
+    /** Region of the organization. */
+    region?: string;
+    /** Description of the organization. */
+    description?: string;
+    /** Indicates whether organization members should be notified of this update. */
+    notifyOrgUpdate?: boolean;
+    /** Organization-level user experience preferences. */
+    preferences?: {
+      /** UI theme configured for an organization. */
+      theme: {
+        /** Theme identifier. */
+        id: string;
+        /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+        logo: {
+          /** Image asset anchored to a named location within an organization theme. */
+          desktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          mobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkDesktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkMobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+        };
+        /** Arbitrary theme variables keyed by name. */
+        vars?: {
+          [key: string]: any;
+        };
+      };
+      /** Preferences specific to dashboard behavior. */
+      dashboard: {
+        [key: string]: any;
+      };
+      /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+      authBranding?: {
+        /** Ordered slides rendered in the auth-page feature carousel. */
+        carousel?: {
+          /** URL of the slide image asset. */
+          imageUrl: string;
+          /** Slide title. */
+          title: string;
+          /** Slide description text. */
+          description: string;
+        }[];
+        /** FAQ entries rendered on the auth pages. */
+        faqs?: {
+          /** The question text. */
+          question: string;
+          /** The answer text. */
+          answer: string;
+        }[];
+      };
+      /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+      links?: {
+        /** URL of the organization's Terms of Service page. */
+        termsOfService?: string;
+        /** URL of the organization's Privacy Policy page. */
+        privacy?: string;
+        /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+        support?: {
+          [key: string]: string;
+        };
+        /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        social?: {
+          /** URL of the organization's LinkedIn profile. */
+          linkedin?: string;
+          /** URL of the organization's X (formerly Twitter) profile. */
+          x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
+        };
+      };
+      /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+      showAuthCarousel?: boolean;
+    };
+  };
+};
 export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata, including preferences */ {
   /** Organization-level user experience preferences. */
   preferences: {
@@ -13274,7 +13553,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
-      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
             
             Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
             
@@ -13283,7 +13562,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
             Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
             
             The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-      purpose?: "user" | "administrative";
+      purpose?: "user" | "administrative" | "blowhorn";
     }[];
     /** Specifies the version of the schema used for the definition. */
     schemaVersion: string;
@@ -13591,7 +13870,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -13600,7 +13879,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -14099,7 +14378,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -14108,7 +14387,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -14378,7 +14657,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -14387,7 +14666,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -14844,7 +15123,7 @@ export type PerformConnectionActionApiResponse =
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
-      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -14853,7 +15132,7 @@ export type PerformConnectionActionApiResponse =
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-      purpose?: "user" | "administrative";
+      purpose?: "user" | "administrative" | "blowhorn";
     }[];
     /** Specifies the version of the schema used for the definition. */
     schemaVersion: string;
@@ -15723,7 +16002,7 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   updatedAt?: string;
   /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
   deletedAt?: string | null;
-  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
     
     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
     
@@ -15732,7 +16011,7 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
     
     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-  purpose?: "user" | "administrative";
+  purpose?: "user" | "administrative" | "blowhorn";
 };
 export type CreateEnvironmentApiArg = {
   /** Body for creating environment */
@@ -15774,7 +16053,7 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -15783,7 +16062,7 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
 };
 export type GetEnvironmentsApiArg = {
@@ -15829,7 +16108,7 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -15838,7 +16117,7 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
 };
 export type GetEnvironmentByIdApiArg = {
@@ -15876,7 +16155,7 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -15885,7 +16164,7 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
 };
 export type UpdateEnvironmentApiArg = {
@@ -16694,7 +16973,7 @@ export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -16703,7 +16982,7 @@ export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments 
         Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
+    purpose?: "user" | "administrative" | "blowhorn";
   }[];
 };
 export type GetEnvironmentsOfWorkspaceApiArg = {
@@ -18013,6 +18292,9 @@ export const {
   useLazyGetOrgQuery,
   useDeleteOrgMutation,
   useUpdateOrgMutation,
+  useGetChildOrgsQuery,
+  useLazyGetChildOrgsQuery,
+  useCreateChildOrgMutation,
   useGetOrgPreferencesQuery,
   useLazyGetOrgPreferencesQuery,
   useAddTeamToOrgMutation,

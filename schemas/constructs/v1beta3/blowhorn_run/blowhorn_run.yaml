@@ -1,0 +1,107 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Blowhorn Run Record Schema
+description: |
+  Server-returned Blowhorn run record as persisted by meshery-cloud. Run
+  records form an append-only ledger: appends replay idempotently on the
+  (runId, kind, ts, profile, platform) tuple. The local spool stays on the
+  machine; only the append crosses the API. Writers also emit Cloud events
+  so the organization audit trail sees publishes without a second read
+  path.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - runId
+  - kind
+  - ts
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated Blowhorn run record ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  runId:
+    type: string
+    description: Run identifier grouping the records of one execution.
+    minLength: 1
+    maxLength: 255
+    x-go-name: RunID
+    x-oapi-codegen-extra-tags:
+      db: run_id
+    x-order: 3
+  kind:
+    type: string
+    description: Record kind within the run.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: kind
+    x-order: 4
+  ts:
+    type: string
+    format: date-time
+    description: Event time of the record within the run. Part of the idempotency tuple.
+    x-go-type: time.Time
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: ts
+    x-order: 5
+  profile:
+    type: string
+    description: Subject of the profile the record concerns.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: profile
+    x-order: 6
+  platform:
+    type: string
+    description: Platform the record concerns (e.g. linkedin).
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: platform
+    x-order: 7
+  data:
+    type: object
+    description: Record values, stored as a JSON blob.
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: data
+    x-order: 8
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of Blowhorn run record creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 9
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last Blowhorn run record modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 10
+  deletedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the Blowhorn run record was soft-deleted.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
+    x-order: 11
