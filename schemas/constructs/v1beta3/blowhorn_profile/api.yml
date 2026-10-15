@@ -2,8 +2,10 @@ openapi: 3.0.0
 info:
   title: BlowhornProfile
   description: |
-    OpenAPI schema for Blowhorn profiles - subject-to-slug records with
-    free-form attributes, scoped by organization and keyed by subject.
+    OpenAPI schema for Blowhorn profile settings - the Blowhorn-specific
+    slug and attributes for an existing Layer5 user, scoped by organization.
+    Identity and organization membership are not modelled here; resolve them
+    through the existing identity user and organization operations.
   version: v1beta3
   contact:
     name: Meshery Maintainers
@@ -73,37 +75,6 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
-
-  /api/blowhorn/profiles/by-subject:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - blowhornProfiles
-      summary: Get Blowhorn profile by subject
-      operationId: getBlowhornProfileBySubject
-      description: Returns the Blowhorn profile keyed by the given subject within the organization of the authenticated session.
-      parameters:
-        - name: subject
-          in: query
-          required: true
-          description: Subject the profile is keyed by.
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Blowhorn profile response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BlowhornProfile"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
@@ -241,7 +212,7 @@ components:
         from the authenticated session) and the server-generated
         `createdAt` / `updatedAt` timestamps are intentionally excluded.
       required:
-        - subject
+        - userId
         - slug
       properties:
         id:
@@ -249,11 +220,10 @@ components:
           description: Existing Blowhorn profile ID for updates; omit on create.
           x-oapi-codegen-extra-tags:
             json: "id,omitempty"
-        subject:
-          type: string
-          description: Subject the profile is keyed by.
-          minLength: 1
-          maxLength: 255
+        userId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: ID of the existing Layer5 user the profile settings belong to.
+          x-go-name: UserID
         slug:
           type: string
           description: Unique slug for the profile within the organization. Renames are guarded server-side.

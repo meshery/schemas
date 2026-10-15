@@ -1,18 +1,18 @@
 $schema: http://json-schema.org/draft-07/schema#
 title: Blowhorn Profile Schema
 description: |
-  Server-returned Blowhorn profile as persisted by meshery-cloud. A profile
-  binds a subject to a slug with free-form attributes, scoped by
-  organization and keyed by subject. Subject-to-slug resolution stays
-  Blowhorn-side; organization, user and team identity are reused from the
-  existing constructs. Profiles soft-delete, and renames are guarded
+  Server-returned Blowhorn profile settings as persisted by meshery-cloud.
+  A profile holds only the Blowhorn-specific slug and free-form attributes
+  for an existing Layer5 user, scoped by organization and keyed by userId.
+  User identity and organization membership are reused from the existing
+  identity constructs and are not re-modelled here. Profiles soft-delete, and renames are guarded
   server-side.
 type: object
 additionalProperties: false
 required:
   - id
   - organizationId
-  - subject
+  - userId
   - slug
   - createdAt
   - updatedAt
@@ -28,13 +28,12 @@ properties:
     x-oapi-codegen-extra-tags:
       db: organization_id
     x-order: 2
-  subject:
-    type: string
-    description: Subject the profile is keyed by.
-    minLength: 1
-    maxLength: 255
+  userId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: ID of the existing Layer5 user the profile settings belong to.
+    x-go-name: UserID
     x-oapi-codegen-extra-tags:
-      db: subject
+      db: user_id
     x-order: 3
   slug:
     type: string
