@@ -7,11 +7,11 @@ import (
 	core "github.com/meshery/schemas/models/core"
 )
 
-// BlowhornProfile Server-returned Blowhorn profile as persisted by meshery-cloud. A profile
-// binds a subject to a slug with free-form attributes, scoped by
-// organization and keyed by subject. Subject-to-slug resolution stays
-// Blowhorn-side; organization, user and team identity are reused from the
-// existing constructs. Profiles soft-delete, and renames are guarded
+// BlowhornProfile Server-returned Blowhorn profile settings as persisted by meshery-cloud.
+// A profile holds only the Blowhorn-specific slug and free-form attributes
+// for an existing Layer5 user, scoped by organization and keyed by userId.
+// User identity and organization membership are reused from the existing
+// identity constructs and are not re-modelled here. Profiles soft-delete, and renames are guarded
 // server-side.
 type BlowhornProfile struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -20,8 +20,8 @@ type BlowhornProfile struct {
 	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	OrganizationID core.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`
 
-	// Subject Subject the profile is keyed by.
-	Subject string `db:"subject" json:"subject" yaml:"subject"`
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID core.Uuid `db:"user_id" json:"userId" yaml:"userId"`
 
 	// Slug Unique slug for the profile within the organization. Renames are guarded server-side.
 	Slug string `db:"slug" json:"slug" yaml:"slug"`
@@ -64,8 +64,8 @@ type BlowhornProfilePayload struct {
 	// Slug Unique slug for the profile within the organization. Renames are guarded server-side.
 	Slug string `json:"slug" yaml:"slug"`
 
-	// Subject Subject the profile is keyed by.
-	Subject string `json:"subject" yaml:"subject"`
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID core.Uuid `json:"userId" yaml:"userId"`
 }
 
 // BlowhornProfileId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.

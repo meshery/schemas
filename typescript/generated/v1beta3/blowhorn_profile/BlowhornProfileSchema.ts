@@ -7,7 +7,7 @@ const BlowhornProfileSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "BlowhornProfile",
-    "description": "OpenAPI schema for Blowhorn profiles - subject-to-slug records with\nfree-form attributes, scoped by organization and keyed by subject.\n",
+    "description": "OpenAPI schema for Blowhorn profile settings - the Blowhorn-specific\nslug and attributes for an existing Layer5 user, scoped by organization.\nIdentity and organization membership are not modelled here; resolve them\nthrough the existing identity user and organization operations.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -118,13 +118,13 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                         "x-go-type": "BlowhornProfile",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "title": "Blowhorn Profile Schema",
-                        "description": "Server-returned Blowhorn profile as persisted by meshery-cloud. A profile\nbinds a subject to a slug with free-form attributes, scoped by\norganization and keyed by subject. Subject-to-slug resolution stays\nBlowhorn-side; organization, user and team identity are reused from the\nexisting constructs. Profiles soft-delete, and renames are guarded\nserver-side.\n",
+                        "description": "Server-returned Blowhorn profile settings as persisted by meshery-cloud.\nA profile holds only the Blowhorn-specific slug and free-form attributes\nfor an existing Layer5 user, scoped by organization and keyed by userId.\nUser identity and organization membership are reused from the existing\nidentity constructs and are not re-modelled here. Profiles soft-delete, and renames are guarded\nserver-side.\n",
                         "type": "object",
                         "additionalProperties": false,
                         "required": [
                           "id",
                           "organizationId",
-                          "subject",
+                          "userId",
                           "slug",
                           "createdAt",
                           "updatedAt"
@@ -154,15 +154,19 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
-                          "subject": {
-                            "type": "string",
-                            "description": "Subject the profile is keyed by.",
-                            "minLength": 1,
-                            "maxLength": 255,
+                          "userId": {
+                            "description": "ID of the existing Layer5 user the profile settings belong to.",
+                            "x-go-name": "UserID",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "subject"
+                              "db": "user_id"
                             },
-                            "x-order": 3
+                            "x-order": 3,
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
                           "slug": {
                             "type": "string",
@@ -273,7 +277,7 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                 "type": "object",
                 "description": "Payload for creating or updating a Blowhorn profile. Contains\nonly client-settable fields; the owning `organizationId` (derived\nfrom the authenticated session) and the server-generated\n`createdAt` / `updatedAt` timestamps are intentionally excluded.\n",
                 "required": [
-                  "subject",
+                  "userId",
                   "slug"
                 ],
                 "properties": {
@@ -289,11 +293,15 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                       "path": "github.com/gofrs/uuid"
                     }
                   },
-                  "subject": {
+                  "userId": {
+                    "description": "ID of the existing Layer5 user the profile settings belong to.",
+                    "x-go-name": "UserID",
                     "type": "string",
-                    "description": "Subject the profile is keyed by.",
-                    "minLength": 1,
-                    "maxLength": 255
+                    "format": "uuid",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
                   },
                   "slug": {
                     "type": "string",
@@ -324,13 +332,13 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Blowhorn Profile Schema",
-                  "description": "Server-returned Blowhorn profile as persisted by meshery-cloud. A profile\nbinds a subject to a slug with free-form attributes, scoped by\norganization and keyed by subject. Subject-to-slug resolution stays\nBlowhorn-side; organization, user and team identity are reused from the\nexisting constructs. Profiles soft-delete, and renames are guarded\nserver-side.\n",
+                  "description": "Server-returned Blowhorn profile settings as persisted by meshery-cloud.\nA profile holds only the Blowhorn-specific slug and free-form attributes\nfor an existing Layer5 user, scoped by organization and keyed by userId.\nUser identity and organization membership are reused from the existing\nidentity constructs and are not re-modelled here. Profiles soft-delete, and renames are guarded\nserver-side.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
                     "id",
                     "organizationId",
-                    "subject",
+                    "userId",
                     "slug",
                     "createdAt",
                     "updatedAt"
@@ -360,15 +368,19 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "subject": {
-                      "type": "string",
-                      "description": "Subject the profile is keyed by.",
-                      "minLength": 1,
-                      "maxLength": 255,
+                    "userId": {
+                      "description": "ID of the existing Layer5 user the profile settings belong to.",
+                      "x-go-name": "UserID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "subject"
+                        "db": "user_id"
                       },
-                      "x-order": 3
+                      "x-order": 3,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "slug": {
                       "type": "string",
@@ -447,190 +459,6 @@ const BlowhornProfileSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/blowhorn/profiles/by-subject": {
-      "get": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "blowhornProfiles"
-        ],
-        "summary": "Get Blowhorn profile by subject",
-        "operationId": "getBlowhornProfileBySubject",
-        "description": "Returns the Blowhorn profile keyed by the given subject within the organization of the authenticated session.",
-        "parameters": [
-          {
-            "name": "subject",
-            "in": "query",
-            "required": true,
-            "description": "Subject the profile is keyed by.",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Blowhorn profile response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$schema": "http://json-schema.org/draft-07/schema#",
-                  "title": "Blowhorn Profile Schema",
-                  "description": "Server-returned Blowhorn profile as persisted by meshery-cloud. A profile\nbinds a subject to a slug with free-form attributes, scoped by\norganization and keyed by subject. Subject-to-slug resolution stays\nBlowhorn-side; organization, user and team identity are reused from the\nexisting constructs. Profiles soft-delete, and renames are guarded\nserver-side.\n",
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "id",
-                    "organizationId",
-                    "subject",
-                    "slug",
-                    "createdAt",
-                    "updatedAt"
-                  ],
-                  "properties": {
-                    "id": {
-                      "description": "Server-generated Blowhorn profile ID.",
-                      "x-order": 1,
-                      "type": "string",
-                      "format": "uuid",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      }
-                    },
-                    "organizationId": {
-                      "description": "Owning organization ID. Derived from the authenticated session, never client-settable.",
-                      "x-go-name": "OrganizationID",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "organization_id"
-                      },
-                      "x-order": 2,
-                      "type": "string",
-                      "format": "uuid",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      }
-                    },
-                    "subject": {
-                      "type": "string",
-                      "description": "Subject the profile is keyed by.",
-                      "minLength": 1,
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "subject"
-                      },
-                      "x-order": 3
-                    },
-                    "slug": {
-                      "type": "string",
-                      "description": "Unique slug for the profile within the organization. Renames are guarded server-side.",
-                      "minLength": 1,
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "slug"
-                      },
-                      "x-order": 4
-                    },
-                    "attributes": {
-                      "type": "object",
-                      "description": "Free-form profile attributes, stored as a JSON blob.",
-                      "x-go-type": "core.Map",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-go-type-skip-optional-pointer": true,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "attributes"
-                      },
-                      "x-order": 5
-                    },
-                    "createdAt": {
-                      "description": "Timestamp of Blowhorn profile creation.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at"
-                      },
-                      "x-order": 6,
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "updatedAt": {
-                      "description": "Timestamp of last Blowhorn profile modification.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at"
-                      },
-                      "x-order": 7,
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "deletedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Timestamp when the Blowhorn profile was soft-deleted.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at",
-                        "json": "deletedAt,omitempty"
-                      },
-                      "x-order": 8
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Result not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -687,13 +515,13 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Blowhorn Profile Schema",
-                  "description": "Server-returned Blowhorn profile as persisted by meshery-cloud. A profile\nbinds a subject to a slug with free-form attributes, scoped by\norganization and keyed by subject. Subject-to-slug resolution stays\nBlowhorn-side; organization, user and team identity are reused from the\nexisting constructs. Profiles soft-delete, and renames are guarded\nserver-side.\n",
+                  "description": "Server-returned Blowhorn profile settings as persisted by meshery-cloud.\nA profile holds only the Blowhorn-specific slug and free-form attributes\nfor an existing Layer5 user, scoped by organization and keyed by userId.\nUser identity and organization membership are reused from the existing\nidentity constructs and are not re-modelled here. Profiles soft-delete, and renames are guarded\nserver-side.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
                     "id",
                     "organizationId",
-                    "subject",
+                    "userId",
                     "slug",
                     "createdAt",
                     "updatedAt"
@@ -723,15 +551,19 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "subject": {
-                      "type": "string",
-                      "description": "Subject the profile is keyed by.",
-                      "minLength": 1,
-                      "maxLength": 255,
+                    "userId": {
+                      "description": "ID of the existing Layer5 user the profile settings belong to.",
+                      "x-go-name": "UserID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "subject"
+                        "db": "user_id"
                       },
-                      "x-order": 3
+                      "x-order": 3,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "slug": {
                       "type": "string",
@@ -875,7 +707,7 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                 "type": "object",
                 "description": "Payload for creating or updating a Blowhorn profile. Contains\nonly client-settable fields; the owning `organizationId` (derived\nfrom the authenticated session) and the server-generated\n`createdAt` / `updatedAt` timestamps are intentionally excluded.\n",
                 "required": [
-                  "subject",
+                  "userId",
                   "slug"
                 ],
                 "properties": {
@@ -891,11 +723,15 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                       "path": "github.com/gofrs/uuid"
                     }
                   },
-                  "subject": {
+                  "userId": {
+                    "description": "ID of the existing Layer5 user the profile settings belong to.",
+                    "x-go-name": "UserID",
                     "type": "string",
-                    "description": "Subject the profile is keyed by.",
-                    "minLength": 1,
-                    "maxLength": 255
+                    "format": "uuid",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
                   },
                   "slug": {
                     "type": "string",
@@ -926,13 +762,13 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Blowhorn Profile Schema",
-                  "description": "Server-returned Blowhorn profile as persisted by meshery-cloud. A profile\nbinds a subject to a slug with free-form attributes, scoped by\norganization and keyed by subject. Subject-to-slug resolution stays\nBlowhorn-side; organization, user and team identity are reused from the\nexisting constructs. Profiles soft-delete, and renames are guarded\nserver-side.\n",
+                  "description": "Server-returned Blowhorn profile settings as persisted by meshery-cloud.\nA profile holds only the Blowhorn-specific slug and free-form attributes\nfor an existing Layer5 user, scoped by organization and keyed by userId.\nUser identity and organization membership are reused from the existing\nidentity constructs and are not re-modelled here. Profiles soft-delete, and renames are guarded\nserver-side.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
                     "id",
                     "organizationId",
-                    "subject",
+                    "userId",
                     "slug",
                     "createdAt",
                     "updatedAt"
@@ -962,15 +798,19 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "subject": {
-                      "type": "string",
-                      "description": "Subject the profile is keyed by.",
-                      "minLength": 1,
-                      "maxLength": 255,
+                    "userId": {
+                      "description": "ID of the existing Layer5 user the profile settings belong to.",
+                      "x-go-name": "UserID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "subject"
+                        "db": "user_id"
                       },
-                      "x-order": 3
+                      "x-order": 3,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "slug": {
                       "type": "string",
@@ -1259,13 +1099,13 @@ const BlowhornProfileSchema: Record<string, unknown> = {
       "BlowhornProfile": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Blowhorn Profile Schema",
-        "description": "Server-returned Blowhorn profile as persisted by meshery-cloud. A profile\nbinds a subject to a slug with free-form attributes, scoped by\norganization and keyed by subject. Subject-to-slug resolution stays\nBlowhorn-side; organization, user and team identity are reused from the\nexisting constructs. Profiles soft-delete, and renames are guarded\nserver-side.\n",
+        "description": "Server-returned Blowhorn profile settings as persisted by meshery-cloud.\nA profile holds only the Blowhorn-specific slug and free-form attributes\nfor an existing Layer5 user, scoped by organization and keyed by userId.\nUser identity and organization membership are reused from the existing\nidentity constructs and are not re-modelled here. Profiles soft-delete, and renames are guarded\nserver-side.\n",
         "type": "object",
         "additionalProperties": false,
         "required": [
           "id",
           "organizationId",
-          "subject",
+          "userId",
           "slug",
           "createdAt",
           "updatedAt"
@@ -1295,15 +1135,19 @@ const BlowhornProfileSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             }
           },
-          "subject": {
-            "type": "string",
-            "description": "Subject the profile is keyed by.",
-            "minLength": 1,
-            "maxLength": 255,
+          "userId": {
+            "description": "ID of the existing Layer5 user the profile settings belong to.",
+            "x-go-name": "UserID",
             "x-oapi-codegen-extra-tags": {
-              "db": "subject"
+              "db": "user_id"
             },
-            "x-order": 3
+            "x-order": 3,
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
           },
           "slug": {
             "type": "string",
@@ -1371,7 +1215,7 @@ const BlowhornProfileSchema: Record<string, unknown> = {
         "type": "object",
         "description": "Payload for creating or updating a Blowhorn profile. Contains\nonly client-settable fields; the owning `organizationId` (derived\nfrom the authenticated session) and the server-generated\n`createdAt` / `updatedAt` timestamps are intentionally excluded.\n",
         "required": [
-          "subject",
+          "userId",
           "slug"
         ],
         "properties": {
@@ -1387,11 +1231,15 @@ const BlowhornProfileSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             }
           },
-          "subject": {
+          "userId": {
+            "description": "ID of the existing Layer5 user the profile settings belong to.",
+            "x-go-name": "UserID",
             "type": "string",
-            "description": "Subject the profile is keyed by.",
-            "minLength": 1,
-            "maxLength": 255
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
           },
           "slug": {
             "type": "string",
@@ -1436,13 +1284,13 @@ const BlowhornProfileSchema: Record<string, unknown> = {
               "x-go-type": "BlowhornProfile",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "title": "Blowhorn Profile Schema",
-              "description": "Server-returned Blowhorn profile as persisted by meshery-cloud. A profile\nbinds a subject to a slug with free-form attributes, scoped by\norganization and keyed by subject. Subject-to-slug resolution stays\nBlowhorn-side; organization, user and team identity are reused from the\nexisting constructs. Profiles soft-delete, and renames are guarded\nserver-side.\n",
+              "description": "Server-returned Blowhorn profile settings as persisted by meshery-cloud.\nA profile holds only the Blowhorn-specific slug and free-form attributes\nfor an existing Layer5 user, scoped by organization and keyed by userId.\nUser identity and organization membership are reused from the existing\nidentity constructs and are not re-modelled here. Profiles soft-delete, and renames are guarded\nserver-side.\n",
               "type": "object",
               "additionalProperties": false,
               "required": [
                 "id",
                 "organizationId",
-                "subject",
+                "userId",
                 "slug",
                 "createdAt",
                 "updatedAt"
@@ -1472,15 +1320,19 @@ const BlowhornProfileSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   }
                 },
-                "subject": {
-                  "type": "string",
-                  "description": "Subject the profile is keyed by.",
-                  "minLength": 1,
-                  "maxLength": 255,
+                "userId": {
+                  "description": "ID of the existing Layer5 user the profile settings belong to.",
+                  "x-go-name": "UserID",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "subject"
+                    "db": "user_id"
                   },
-                  "x-order": 3
+                  "x-order": 3,
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 },
                 "slug": {
                   "type": "string",

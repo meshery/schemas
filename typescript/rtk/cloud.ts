@@ -19,11 +19,9 @@ export const addTagTypes = [
   "Academy_API_Academy",
   "BlowhornBinding_blowhornBindings",
   "BlowhornContent_blowhornContent",
-  "BlowhornDestination_blowhornDestinations",
   "BlowhornHealth_blowhornHealth",
   "BlowhornLedger_blowhornLedger",
   "BlowhornProfile_blowhornProfiles",
-  "BlowhornRun_blowhornRuns",
   "Connection_API_Connections",
   "Connection_API_ConnectionDefinitions",
   "Design_designs",
@@ -914,28 +912,6 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/blowhorn/content/${queryArg.blowhornContentId}`, method: "DELETE" }),
         invalidatesTags: ["BlowhornContent_blowhornContent"],
       }),
-      listBlowhornDestinations: build.query<ListBlowhornDestinationsApiResponse, ListBlowhornDestinationsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/destinations`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            platform: queryArg?.platform,
-          },
-        }),
-        providesTags: ["BlowhornDestination_blowhornDestinations"],
-      }),
-      upsertBlowhornDestination: build.mutation<UpsertBlowhornDestinationApiResponse, UpsertBlowhornDestinationApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/destinations`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["BlowhornDestination_blowhornDestinations"],
-      }),
-      getBlowhornDestination: build.query<GetBlowhornDestinationApiResponse, GetBlowhornDestinationApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/destinations/${queryArg.blowhornDestinationId}` }),
-        providesTags: ["BlowhornDestination_blowhornDestinations"],
-      }),
       getBlowhornHealth: build.query<GetBlowhornHealthApiResponse, GetBlowhornHealthApiArg>({
         query: () => ({ url: `/api/blowhorn/health` }),
         providesTags: ["BlowhornHealth_blowhornHealth"],
@@ -1044,18 +1020,6 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/blowhorn/profiles`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
       }),
-      getBlowhornProfileBySubject: build.query<
-        GetBlowhornProfileBySubjectApiResponse,
-        GetBlowhornProfileBySubjectApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/profiles/by-subject`,
-          params: {
-            subject: queryArg?.subject,
-          },
-        }),
-        providesTags: ["BlowhornProfile_blowhornProfiles"],
-      }),
       getBlowhornProfile: build.query<GetBlowhornProfileApiResponse, GetBlowhornProfileApiArg>({
         query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}` }),
         providesTags: ["BlowhornProfile_blowhornProfiles"],
@@ -1071,45 +1035,6 @@ const injectedRtkApi = api
       deleteBlowhornProfile: build.mutation<DeleteBlowhornProfileApiResponse, DeleteBlowhornProfileApiArg>({
         query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}`, method: "DELETE" }),
         invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
-      }),
-      listBlowhornRunRecords: build.query<ListBlowhornRunRecordsApiResponse, ListBlowhornRunRecordsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/runs`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            runId: queryArg?.runId,
-            kind: queryArg?.kind,
-            profile: queryArg?.profile,
-            platform: queryArg?.platform,
-          },
-        }),
-        providesTags: ["BlowhornRun_blowhornRuns"],
-      }),
-      appendBlowhornRunRecord: build.mutation<AppendBlowhornRunRecordApiResponse, AppendBlowhornRunRecordApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/runs`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["BlowhornRun_blowhornRuns"],
-      }),
-      listBlowhornAnalytics: build.query<ListBlowhornAnalyticsApiResponse, ListBlowhornAnalyticsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/analytics`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            scope: queryArg?.scope,
-          },
-        }),
-        providesTags: ["BlowhornRun_blowhornRuns"],
-      }),
-      recordBlowhornAnalytics: build.mutation<RecordBlowhornAnalyticsApiResponse, RecordBlowhornAnalyticsApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/analytics`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["BlowhornRun_blowhornRuns"],
       }),
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
         query: (queryArg) => ({
@@ -8633,109 +8558,6 @@ export type DeleteBlowhornContentApiArg = {
   /** Blowhorn content ID */
   blowhornContentId: string;
 };
-export type ListBlowhornDestinationsApiResponse = /** status 200 Blowhorn destinations page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** Blowhorn destinations included on this page of results. */
-  blowhornDestinations?: {
-    /** Server-generated Blowhorn destination ID. */
-    id: string;
-    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-    organizationId: string;
-    /** Human-readable destination name. */
-    name?: string;
-    /** Target platform for the destination (e.g. linkedin). */
-    platform: string;
-    /** Platform-side publishing target (page, group or channel identifier). */
-    target?: string;
-    /** Destination settings, stored as a JSON blob. */
-    settings?: object;
-    /** Timestamp of Blowhorn destination creation. */
-    createdAt: string;
-    /** Timestamp of last Blowhorn destination modification. */
-    updatedAt: string;
-    /** Timestamp when the Blowhorn destination was soft-deleted. */
-    deletedAt?: string | null;
-  }[];
-};
-export type ListBlowhornDestinationsApiArg = {
-  /** Get responses by page */
-  page?: number;
-  /** Number of items per page (canonical camelCase form). */
-  pageSize?: number;
-  /** Number of items per page. Deprecated alias of pageSize;
-    canonical `pageSize` wins when both are present.
-     */
-  pagesize?: number;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Filter by target platform (e.g. linkedin). */
-  platform?: string;
-};
-export type UpsertBlowhornDestinationApiResponse = /** status 200 Blowhorn destination saved */ {
-  /** Server-generated Blowhorn destination ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Human-readable destination name. */
-  name?: string;
-  /** Target platform for the destination (e.g. linkedin). */
-  platform: string;
-  /** Platform-side publishing target (page, group or channel identifier). */
-  target?: string;
-  /** Destination settings, stored as a JSON blob. */
-  settings?: object;
-  /** Timestamp of Blowhorn destination creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn destination modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn destination was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type UpsertBlowhornDestinationApiArg = {
-  body: {
-    /** Existing Blowhorn destination ID for updates; omit on create. */
-    id?: string;
-    /** Human-readable destination name. */
-    name?: string;
-    /** Target platform for the destination (e.g. linkedin). */
-    platform: string;
-    /** Platform-side publishing target (page, group or channel identifier). */
-    target?: string;
-    /** Destination settings, stored as a JSON blob. */
-    settings?: object;
-  };
-};
-export type GetBlowhornDestinationApiResponse = /** status 200 Blowhorn destination response */ {
-  /** Server-generated Blowhorn destination ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Human-readable destination name. */
-  name?: string;
-  /** Target platform for the destination (e.g. linkedin). */
-  platform: string;
-  /** Platform-side publishing target (page, group or channel identifier). */
-  target?: string;
-  /** Destination settings, stored as a JSON blob. */
-  settings?: object;
-  /** Timestamp of Blowhorn destination creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn destination modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn destination was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type GetBlowhornDestinationApiArg = {
-  /** Blowhorn destination ID */
-  blowhornDestinationId: string;
-};
 export type GetBlowhornHealthApiResponse = /** status 200 Blowhorn health response */ {
   /** Frozen Blowhorn contract version the server speaks. */
   contractVersion: string;
@@ -9077,8 +8899,8 @@ export type ListBlowhornProfilesApiResponse = /** status 200 Blowhorn profiles p
     id: string;
     /** Owning organization ID. Derived from the authenticated session, never client-settable. */
     organizationId: string;
-    /** Subject the profile is keyed by. */
-    subject: string;
+    /** ID of the existing Layer5 user the profile settings belong to. */
+    userId: string;
     /** Unique slug for the profile within the organization. Renames are guarded server-side. */
     slug: string;
     /** Free-form profile attributes, stored as a JSON blob. */
@@ -9110,8 +8932,8 @@ export type UpsertBlowhornProfileApiResponse = /** status 200 Blowhorn profile s
   id: string;
   /** Owning organization ID. Derived from the authenticated session, never client-settable. */
   organizationId: string;
-  /** Subject the profile is keyed by. */
-  subject: string;
+  /** ID of the existing Layer5 user the profile settings belong to. */
+  userId: string;
   /** Unique slug for the profile within the organization. Renames are guarded server-side. */
   slug: string;
   /** Free-form profile attributes, stored as a JSON blob. */
@@ -9127,43 +8949,21 @@ export type UpsertBlowhornProfileApiArg = {
   body: {
     /** Existing Blowhorn profile ID for updates; omit on create. */
     id?: string;
-    /** Subject the profile is keyed by. */
-    subject: string;
+    /** ID of the existing Layer5 user the profile settings belong to. */
+    userId: string;
     /** Unique slug for the profile within the organization. Renames are guarded server-side. */
     slug: string;
     /** Free-form profile attributes, stored as a JSON blob. */
     attributes?: object;
   };
 };
-export type GetBlowhornProfileBySubjectApiResponse = /** status 200 Blowhorn profile response */ {
-  /** Server-generated Blowhorn profile ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Subject the profile is keyed by. */
-  subject: string;
-  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-  slug: string;
-  /** Free-form profile attributes, stored as a JSON blob. */
-  attributes?: object;
-  /** Timestamp of Blowhorn profile creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn profile modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn profile was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type GetBlowhornProfileBySubjectApiArg = {
-  /** Subject the profile is keyed by. */
-  subject: string;
-};
 export type GetBlowhornProfileApiResponse = /** status 200 Blowhorn profile response */ {
   /** Server-generated Blowhorn profile ID. */
   id: string;
   /** Owning organization ID. Derived from the authenticated session, never client-settable. */
   organizationId: string;
-  /** Subject the profile is keyed by. */
-  subject: string;
+  /** ID of the existing Layer5 user the profile settings belong to. */
+  userId: string;
   /** Unique slug for the profile within the organization. Renames are guarded server-side. */
   slug: string;
   /** Free-form profile attributes, stored as a JSON blob. */
@@ -9184,8 +8984,8 @@ export type UpdateBlowhornProfileApiResponse = /** status 200 Blowhorn profile u
   id: string;
   /** Owning organization ID. Derived from the authenticated session, never client-settable. */
   organizationId: string;
-  /** Subject the profile is keyed by. */
-  subject: string;
+  /** ID of the existing Layer5 user the profile settings belong to. */
+  userId: string;
   /** Unique slug for the profile within the organization. Renames are guarded server-side. */
   slug: string;
   /** Free-form profile attributes, stored as a JSON blob. */
@@ -9203,8 +9003,8 @@ export type UpdateBlowhornProfileApiArg = {
   body: {
     /** Existing Blowhorn profile ID for updates; omit on create. */
     id?: string;
-    /** Subject the profile is keyed by. */
-    subject: string;
+    /** ID of the existing Layer5 user the profile settings belong to. */
+    userId: string;
     /** Unique slug for the profile within the organization. Renames are guarded server-side. */
     slug: string;
     /** Free-form profile attributes, stored as a JSON blob. */
@@ -9215,178 +9015,6 @@ export type DeleteBlowhornProfileApiResponse = unknown;
 export type DeleteBlowhornProfileApiArg = {
   /** Blowhorn profile ID */
   blowhornProfileId: string;
-};
-export type ListBlowhornRunRecordsApiResponse = /** status 200 Blowhorn run records page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** Blowhorn run records included on this page of results. */
-  blowhornRunRecords?: {
-    /** Server-generated Blowhorn run record ID. */
-    id: string;
-    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-    organizationId: string;
-    /** Run identifier grouping the records of one execution. */
-    runId: string;
-    /** Record kind within the run. */
-    kind: string;
-    /** Event time of the record within the run. Part of the idempotency tuple. */
-    ts: string;
-    /** Subject of the profile the record concerns. */
-    profile?: string;
-    /** Platform the record concerns (e.g. linkedin). */
-    platform?: string;
-    /** Record values, stored as a JSON blob. */
-    data?: object;
-    /** Timestamp of Blowhorn run record creation. */
-    createdAt: string;
-    /** Timestamp of last Blowhorn run record modification. */
-    updatedAt: string;
-    /** Timestamp when the Blowhorn run record was soft-deleted. */
-    deletedAt?: string | null;
-  }[];
-};
-export type ListBlowhornRunRecordsApiArg = {
-  /** Get responses by page */
-  page?: number;
-  /** Number of items per page (canonical camelCase form). */
-  pageSize?: number;
-  /** Number of items per page. Deprecated alias of pageSize;
-    canonical `pageSize` wins when both are present.
-     */
-  pagesize?: number;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Filter by run identifier. */
-  runId?: string;
-  /** Filter by record kind. */
-  kind?: string;
-  /** Filter by profile subject. */
-  profile?: string;
-  /** Filter by platform (e.g. linkedin). */
-  platform?: string;
-};
-export type AppendBlowhornRunRecordApiResponse = /** status 200 Blowhorn run record appended */ {
-  /** Server-generated Blowhorn run record ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Run identifier grouping the records of one execution. */
-  runId: string;
-  /** Record kind within the run. */
-  kind: string;
-  /** Event time of the record within the run. Part of the idempotency tuple. */
-  ts: string;
-  /** Subject of the profile the record concerns. */
-  profile?: string;
-  /** Platform the record concerns (e.g. linkedin). */
-  platform?: string;
-  /** Record values, stored as a JSON blob. */
-  data?: object;
-  /** Timestamp of Blowhorn run record creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn run record modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn run record was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type AppendBlowhornRunRecordApiArg = {
-  body: {
-    /** Existing Blowhorn run record ID; omit on append. */
-    id?: string;
-    /** Run identifier grouping the records of one execution. */
-    runId: string;
-    /** Record kind within the run. */
-    kind: string;
-    /** Event time of the record within the run. Part of the idempotency tuple. */
-    ts: string;
-    /** Subject of the profile the record concerns. */
-    profile?: string;
-    /** Platform the record concerns (e.g. linkedin). */
-    platform?: string;
-    /** Record values, stored as a JSON blob. */
-    data?: object;
-  };
-};
-export type ListBlowhornAnalyticsApiResponse = /** status 200 Blowhorn analytics page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** Blowhorn analytics rollups included on this page of results. */
-  blowhornAnalytics?: {
-    /** Server-generated Blowhorn analytics ID. */
-    id: string;
-    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-    organizationId: string;
-    /** Aggregation scope (e.g. profile subject or organization-wide rollup name). */
-    scope: string;
-    /** Aggregation window the metrics cover (e.g. day, week). */
-    window?: string;
-    /** Aggregated metrics, stored as a JSON blob. */
-    metrics: object;
-    /** Time the metrics were computed. */
-    computedAt?: string | null;
-    /** Timestamp of Blowhorn analytics creation. */
-    createdAt: string;
-    /** Timestamp of last Blowhorn analytics modification. */
-    updatedAt: string;
-  }[];
-};
-export type ListBlowhornAnalyticsApiArg = {
-  /** Get responses by page */
-  page?: number;
-  /** Number of items per page (canonical camelCase form). */
-  pageSize?: number;
-  /** Number of items per page. Deprecated alias of pageSize;
-    canonical `pageSize` wins when both are present.
-     */
-  pagesize?: number;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Filter by aggregation scope. */
-  scope?: string;
-};
-export type RecordBlowhornAnalyticsApiResponse = /** status 200 Blowhorn analytics recorded */ {
-  /** Server-generated Blowhorn analytics ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Aggregation scope (e.g. profile subject or organization-wide rollup name). */
-  scope: string;
-  /** Aggregation window the metrics cover (e.g. day, week). */
-  window?: string;
-  /** Aggregated metrics, stored as a JSON blob. */
-  metrics: object;
-  /** Time the metrics were computed. */
-  computedAt?: string | null;
-  /** Timestamp of Blowhorn analytics creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn analytics modification. */
-  updatedAt: string;
-};
-export type RecordBlowhornAnalyticsApiArg = {
-  body: {
-    /** Existing Blowhorn analytics ID for updates; omit on record. */
-    id?: string;
-    /** Aggregation scope (e.g. profile subject or organization-wide rollup name). */
-    scope: string;
-    /** Aggregation window the metrics cover (e.g. day, week). */
-    window?: string;
-    /** Aggregated metrics, stored as a JSON blob. */
-    metrics: object;
-    /** Time the metrics were computed. */
-    computedAt?: string;
-  };
 };
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
   /** List of connections on this page */
@@ -18824,11 +18452,6 @@ export const {
   useLazyGetBlowhornContentQuery,
   useUpdateBlowhornContentMutation,
   useDeleteBlowhornContentMutation,
-  useListBlowhornDestinationsQuery,
-  useLazyListBlowhornDestinationsQuery,
-  useUpsertBlowhornDestinationMutation,
-  useGetBlowhornDestinationQuery,
-  useLazyGetBlowhornDestinationQuery,
   useGetBlowhornHealthQuery,
   useLazyGetBlowhornHealthQuery,
   useListBlowhornLedgerQuery,
@@ -18849,18 +18472,10 @@ export const {
   useListBlowhornProfilesQuery,
   useLazyListBlowhornProfilesQuery,
   useUpsertBlowhornProfileMutation,
-  useGetBlowhornProfileBySubjectQuery,
-  useLazyGetBlowhornProfileBySubjectQuery,
   useGetBlowhornProfileQuery,
   useLazyGetBlowhornProfileQuery,
   useUpdateBlowhornProfileMutation,
   useDeleteBlowhornProfileMutation,
-  useListBlowhornRunRecordsQuery,
-  useLazyListBlowhornRunRecordsQuery,
-  useAppendBlowhornRunRecordMutation,
-  useListBlowhornAnalyticsQuery,
-  useLazyListBlowhornAnalyticsQuery,
-  useRecordBlowhornAnalyticsMutation,
   useGetConnectionsQuery,
   useLazyGetConnectionsQuery,
   useRegisterConnectionMutation,

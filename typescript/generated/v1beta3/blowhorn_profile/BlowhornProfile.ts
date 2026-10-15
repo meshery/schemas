@@ -31,26 +31,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/blowhorn/profiles/by-subject": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Blowhorn profile by subject
-         * @description Returns the Blowhorn profile keyed by the given subject within the organization of the authenticated session.
-         */
-        get: operations["getBlowhornProfileBySubject"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/blowhorn/profiles/{blowhornProfileId}": {
         parameters: {
             query?: never;
@@ -82,11 +62,11 @@ export interface components {
     schemas: {
         /**
          * Blowhorn Profile Schema
-         * @description Server-returned Blowhorn profile as persisted by meshery-cloud. A profile
-         *     binds a subject to a slug with free-form attributes, scoped by
-         *     organization and keyed by subject. Subject-to-slug resolution stays
-         *     Blowhorn-side; organization, user and team identity are reused from the
-         *     existing constructs. Profiles soft-delete, and renames are guarded
+         * @description Server-returned Blowhorn profile settings as persisted by meshery-cloud.
+         *     A profile holds only the Blowhorn-specific slug and free-form attributes
+         *     for an existing Layer5 user, scoped by organization and keyed by userId.
+         *     User identity and organization membership are reused from the existing
+         *     identity constructs and are not re-modelled here. Profiles soft-delete, and renames are guarded
          *     server-side.
          */
         BlowhornProfile: {
@@ -100,8 +80,11 @@ export interface components {
              * @description Owning organization ID. Derived from the authenticated session, never client-settable.
              */
             organizationId: string;
-            /** @description Subject the profile is keyed by. */
-            subject: string;
+            /**
+             * Format: uuid
+             * @description ID of the existing Layer5 user the profile settings belong to.
+             */
+            userId: string;
             /** @description Unique slug for the profile within the organization. Renames are guarded server-side. */
             slug: string;
             /** @description Free-form profile attributes, stored as a JSON blob. */
@@ -134,8 +117,11 @@ export interface components {
              * @description Existing Blowhorn profile ID for updates; omit on create.
              */
             id?: string;
-            /** @description Subject the profile is keyed by. */
-            subject: string;
+            /**
+             * Format: uuid
+             * @description ID of the existing Layer5 user the profile settings belong to.
+             */
+            userId: string;
             /** @description Unique slug for the profile within the organization. Renames are guarded server-side. */
             slug: string;
             /** @description Free-form profile attributes, stored as a JSON blob. */
@@ -161,8 +147,11 @@ export interface components {
                  * @description Owning organization ID. Derived from the authenticated session, never client-settable.
                  */
                 organizationId: string;
-                /** @description Subject the profile is keyed by. */
-                subject: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the existing Layer5 user the profile settings belong to.
+                 */
+                userId: string;
                 /** @description Unique slug for the profile within the organization. Renames are guarded server-side. */
                 slug: string;
                 /** @description Free-form profile attributes, stored as a JSON blob. */
@@ -296,8 +285,11 @@ export interface operations {
                              * @description Owning organization ID. Derived from the authenticated session, never client-settable.
                              */
                             organizationId: string;
-                            /** @description Subject the profile is keyed by. */
-                            subject: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the existing Layer5 user the profile settings belong to.
+                             */
+                            userId: string;
                             /** @description Unique slug for the profile within the organization. Renames are guarded server-side. */
                             slug: string;
                             /** @description Free-form profile attributes, stored as a JSON blob. */
@@ -356,8 +348,11 @@ export interface operations {
                      * @description Existing Blowhorn profile ID for updates; omit on create.
                      */
                     id?: string;
-                    /** @description Subject the profile is keyed by. */
-                    subject: string;
+                    /**
+                     * Format: uuid
+                     * @description ID of the existing Layer5 user the profile settings belong to.
+                     */
+                    userId: string;
                     /** @description Unique slug for the profile within the organization. Renames are guarded server-side. */
                     slug: string;
                     /** @description Free-form profile attributes, stored as a JSON blob. */
@@ -383,8 +378,11 @@ export interface operations {
                          * @description Owning organization ID. Derived from the authenticated session, never client-settable.
                          */
                         organizationId: string;
-                        /** @description Subject the profile is keyed by. */
-                        subject: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the existing Layer5 user the profile settings belong to.
+                         */
+                        userId: string;
                         /** @description Unique slug for the profile within the organization. Renames are guarded server-side. */
                         slug: string;
                         /** @description Free-form profile attributes, stored as a JSON blob. */
@@ -418,97 +416,6 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getBlowhornProfileBySubject: {
-        parameters: {
-            query: {
-                /** @description Subject the profile is keyed by. */
-                subject: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Blowhorn profile response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Server-generated Blowhorn profile ID.
-                         */
-                        id: string;
-                        /**
-                         * Format: uuid
-                         * @description Owning organization ID. Derived from the authenticated session, never client-settable.
-                         */
-                        organizationId: string;
-                        /** @description Subject the profile is keyed by. */
-                        subject: string;
-                        /** @description Unique slug for the profile within the organization. Renames are guarded server-side. */
-                        slug: string;
-                        /** @description Free-form profile attributes, stored as a JSON blob. */
-                        attributes?: Record<string, never>;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of Blowhorn profile creation.
-                         */
-                        createdAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of last Blowhorn profile modification.
-                         */
-                        updatedAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the Blowhorn profile was soft-deleted.
-                         */
-                        deletedAt?: string | null;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -556,8 +463,11 @@ export interface operations {
                          * @description Owning organization ID. Derived from the authenticated session, never client-settable.
                          */
                         organizationId: string;
-                        /** @description Subject the profile is keyed by. */
-                        subject: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the existing Layer5 user the profile settings belong to.
+                         */
+                        userId: string;
                         /** @description Unique slug for the profile within the organization. Renames are guarded server-side. */
                         slug: string;
                         /** @description Free-form profile attributes, stored as a JSON blob. */
@@ -636,8 +546,11 @@ export interface operations {
                      * @description Existing Blowhorn profile ID for updates; omit on create.
                      */
                     id?: string;
-                    /** @description Subject the profile is keyed by. */
-                    subject: string;
+                    /**
+                     * Format: uuid
+                     * @description ID of the existing Layer5 user the profile settings belong to.
+                     */
+                    userId: string;
                     /** @description Unique slug for the profile within the organization. Renames are guarded server-side. */
                     slug: string;
                     /** @description Free-form profile attributes, stored as a JSON blob. */
@@ -663,8 +576,11 @@ export interface operations {
                          * @description Owning organization ID. Derived from the authenticated session, never client-settable.
                          */
                         organizationId: string;
-                        /** @description Subject the profile is keyed by. */
-                        subject: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the existing Layer5 user the profile settings belong to.
+                         */
+                        userId: string;
                         /** @description Unique slug for the profile within the organization. Renames are guarded server-side. */
                         slug: string;
                         /** @description Free-form profile attributes, stored as a JSON blob. */
