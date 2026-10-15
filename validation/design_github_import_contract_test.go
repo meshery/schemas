@@ -57,7 +57,7 @@ var githubImportOperations = []githubImportOperation{
 		operationID:   "importGithubRepository",
 		requestBody:   "#/components/schemas/GithubImportPayload",
 		successSchema: "#/components/schemas/GithubImportResponse",
-		responseCodes: []string{"200", "400", "401", "404", "500"},
+		responseCodes: []string{"200", "400", "401", "403", "404", "500", "502"},
 	},
 }
 
@@ -153,8 +153,8 @@ func TestGithubImportPayloadContract(t *testing.T) {
 	if got := sequenceStrings(mustValue(onExisting, "enum")); !reflect.DeepEqual(got, []string{"update", "skip", "new"}) {
 		t.Errorf("onExisting enum = %v, want [update skip new]", got)
 	}
-	if got := mustValue(onExisting, "default"); got != "update" {
-		t.Errorf("onExisting default = %v, want \"update\" (import is idempotent by default)", got)
+	if got := mustValue(onExisting, "default"); got != "skip" {
+		t.Errorf("onExisting default = %v, want \"skip\" (a request that omits it must never overwrite an existing design)", got)
 	}
 
 	if got := mustLookup(t, payload, "properties", "paths", "items", "$ref"); got != "#/components/schemas/GithubImportPath" {
@@ -195,7 +195,7 @@ func TestGithubImportResponseContract(t *testing.T) {
 
 	coreDoc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), coreV1beta2Spec))
 	if _, err := lookupPath(coreDoc, "components", "responses", "502"); err != nil {
-		t.Errorf("the shared 502 response refreshPatternFromSource references is not defined in v1beta2 core: %v", err)
+		t.Errorf("the shared 502 response refreshPatternFromSource and importGithubRepository reference is not defined in v1beta2 core: %v", err)
 	}
 }
 

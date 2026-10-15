@@ -370,12 +370,16 @@ paths:
       description: >
         Returns the designs owned by the GitHub connection's owner whose
         `location.type` is `github` - every design imported (or refreshed)
-        from GitHub - newest first. `location` carries `host`
-        (github.com/<owner>/<repo>), `path` and `branch` (empty = the
-        repository's default branch). `patternFile` and `sourceContent` are
-        not projected. The caller must own the connection, or hold the
-        all-organizations scope that lets it list the connection
-        (`GET /api/integrations/connections` rule); otherwise 404.
+        from GitHub - newest first. The inventory is owner-wide, not scoped
+        to the connection: Meshery Cloud keeps one GitHub App connection per
+        user, and the connection only authorizes the read. Use `repository`
+        to narrow it. `location` carries `host` (github.com/<owner>/<repo>),
+        `path` and `branch` (empty = the repository's default branch).
+        `patternFile` and `sourceContent` are not projected. Only the
+        connection's owner may list it, as only a design's owner may refresh
+        it: a caller who does not own the connection gets 404 regardless of
+        any all-organizations scope, with the same body as "no such
+        connection", so private designs are never listed to another user.
       parameters:
         - $ref: "#/components/parameters/connectionId"
         - name: repository
@@ -417,7 +421,9 @@ paths:
         (owner, location.type, location.host, location.path, location.branch)
         already identifies one of the caller's designs is handled per
         `onExisting`. `connectionId` must name the caller's own live GitHub
-        connection (404 otherwise).
+        connection (404 otherwise). `403` means the GitHub App is not
+        installed on (has no access to) the repository; `502` means GitHub
+        could not be reached or rejected the request.
       parameters:
         - $ref: "#/components/parameters/connectionId"
       requestBody:
@@ -437,10 +443,14 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
+        "502":
+          $ref: "#/components/responses/502"
 
   /api/catalog/content/{type}:
     get:
@@ -1263,15 +1273,16 @@ components:
           type: string
           description: >
             What to do with a selected file that already identifies one of the
-            caller's designs. `update` refreshes that design in place under the
-            same ID (idempotent import); `skip` leaves it untouched and reports
-            it in `skippedPaths` ("import new only"); `new` imports it again as
-            an additional design.
+            caller's designs. `skip` (the default, "import new only") leaves it
+            untouched and reports it in `skippedPaths`, so a request that omits
+            `onExisting` never overwrites an existing design; `update` refreshes
+            that design in place under the same ID (idempotent import); `new`
+            imports it again as an additional design.
           enum:
             - update
             - skip
             - new
-          default: update
+          default: skip
           # oapi-codegen only prefixes enum constants on collision; without
           # explicit varnames it leaks bare `Update`, `Skip`, `New` into the
           # Go package.
