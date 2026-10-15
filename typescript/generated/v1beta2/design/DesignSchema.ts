@@ -35501,6 +35501,7 @@ const DesignSchema: Record<string, unknown> = {
         ],
         "summary": "Share a resource",
         "operationId": "handleResourceShare",
+        "description": "Grants access to the actors listed in grantAccess, revokes access from the actors listed in revokeAccess, and optionally notifies the affected actors. Both lists are carried on a single request so a caller can grant and revoke in the same call.\n\nThis one operation spans multiple resource types (design, filter, view), chosen at call time by resourceType, so the generated RTK Query client cannot auto-invalidate the affected resource's list cache the way a single-resource-type operation would: RTK Query cache tags are static per operation, derived from this operation's own OpenAPI tag, not from a runtime path parameter. A caller of the generated mutation must invalidate or refetch the relevant resource list itself after a successful share.",
         "parameters": [
           {
             "name": "resourceType",
@@ -35525,7 +35526,105 @@ const DesignSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "additionalProperties": true
+                "additionalProperties": false,
+                "description": "Request body for POST /api/resource/{resourceType}/share/{resourceId}. Every field is required because the only confirmed-correct client, layer5io/sistent's ShareModal via meshery/meshery's createAndRevokeResourceAccessRecord mutation, always sends all three; a request missing one has not been verified against the server's actual decode behavior for a missing key, only for a differently-named one, which the server accepts and silently drops.",
+                "required": [
+                  "grantAccess",
+                  "revokeAccess",
+                  "notifyUsers"
+                ],
+                "properties": {
+                  "grantAccess": {
+                    "type": "array",
+                    "description": "Actors to grant access to. May be empty.",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
+                      "required": [
+                        "actorId",
+                        "actorType"
+                      ],
+                      "properties": {
+                        "actorId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ActorId",
+                          "x-oapi-codegen-extra-tags": {
+                            "json": "actorId"
+                          }
+                        },
+                        "actorType": {
+                          "type": "string",
+                          "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
+                          "example": "user",
+                          "x-go-name": "ActorType",
+                          "x-oapi-codegen-extra-tags": {
+                            "json": "actorType"
+                          }
+                        }
+                      }
+                    },
+                    "x-go-name": "GrantAccess",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "grantAccess"
+                    }
+                  },
+                  "revokeAccess": {
+                    "type": "array",
+                    "description": "Actors to revoke access from. May be empty.",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
+                      "required": [
+                        "actorId",
+                        "actorType"
+                      ],
+                      "properties": {
+                        "actorId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ActorId",
+                          "x-oapi-codegen-extra-tags": {
+                            "json": "actorId"
+                          }
+                        },
+                        "actorType": {
+                          "type": "string",
+                          "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
+                          "example": "user",
+                          "x-go-name": "ActorType",
+                          "x-oapi-codegen-extra-tags": {
+                            "json": "actorType"
+                          }
+                        }
+                      }
+                    },
+                    "x-go-name": "RevokeAccess",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "revokeAccess"
+                    }
+                  },
+                  "notifyUsers": {
+                    "type": "boolean",
+                    "description": "Whether to notify the affected actors of the change.",
+                    "x-go-name": "NotifyUsers",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "notifyUsers"
+                    }
+                  }
+                }
               }
             }
           }
@@ -35537,7 +35636,8 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "additionalProperties": true,
+                  "description": "Response body for POST /api/resource/{resourceType}/share/{resourceId}. Left untyped: nothing available (issue #1144, the confirmed-correct client) confirms the real response shape, only that the server answers 200 with the request correctly applied."
                 }
               }
             }
@@ -60210,9 +60310,145 @@ const DesignSchema: Record<string, unknown> = {
         "type": "object",
         "additionalProperties": true
       },
+      "Actor": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
+        "required": [
+          "actorId",
+          "actorType"
+        ],
+        "properties": {
+          "actorId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "ActorId",
+            "x-oapi-codegen-extra-tags": {
+              "json": "actorId"
+            }
+          },
+          "actorType": {
+            "type": "string",
+            "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
+            "example": "user",
+            "x-go-name": "ActorType",
+            "x-oapi-codegen-extra-tags": {
+              "json": "actorType"
+            }
+          }
+        }
+      },
+      "ResourceAccessMappingPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Request body for POST /api/resource/{resourceType}/share/{resourceId}. Every field is required because the only confirmed-correct client, layer5io/sistent's ShareModal via meshery/meshery's createAndRevokeResourceAccessRecord mutation, always sends all three; a request missing one has not been verified against the server's actual decode behavior for a missing key, only for a differently-named one, which the server accepts and silently drops.",
+        "required": [
+          "grantAccess",
+          "revokeAccess",
+          "notifyUsers"
+        ],
+        "properties": {
+          "grantAccess": {
+            "type": "array",
+            "description": "Actors to grant access to. May be empty.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
+              "required": [
+                "actorId",
+                "actorType"
+              ],
+              "properties": {
+                "actorId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "ActorId",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "actorId"
+                  }
+                },
+                "actorType": {
+                  "type": "string",
+                  "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
+                  "example": "user",
+                  "x-go-name": "ActorType",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "actorType"
+                  }
+                }
+              }
+            },
+            "x-go-name": "GrantAccess",
+            "x-oapi-codegen-extra-tags": {
+              "json": "grantAccess"
+            }
+          },
+          "revokeAccess": {
+            "type": "array",
+            "description": "Actors to revoke access from. May be empty.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
+              "required": [
+                "actorId",
+                "actorType"
+              ],
+              "properties": {
+                "actorId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "ActorId",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "actorId"
+                  }
+                },
+                "actorType": {
+                  "type": "string",
+                  "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
+                  "example": "user",
+                  "x-go-name": "ActorType",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "actorType"
+                  }
+                }
+              }
+            },
+            "x-go-name": "RevokeAccess",
+            "x-oapi-codegen-extra-tags": {
+              "json": "revokeAccess"
+            }
+          },
+          "notifyUsers": {
+            "type": "boolean",
+            "description": "Whether to notify the affected actors of the change.",
+            "x-go-name": "NotifyUsers",
+            "x-oapi-codegen-extra-tags": {
+              "json": "notifyUsers"
+            }
+          }
+        }
+      },
       "ResourceAccessMapping": {
         "type": "object",
-        "additionalProperties": true
+        "additionalProperties": true,
+        "description": "Response body for POST /api/resource/{resourceType}/share/{resourceId}. Left untyped: nothing available (issue #1144, the confirmed-correct client) confirms the real response shape, only that the server answers 200 with the request correctly applied."
       },
       "ResourceAccessActorsResponse": {
         "type": "object",
@@ -60288,7 +60524,105 @@ const DesignSchema: Record<string, unknown> = {
           "application/json": {
             "schema": {
               "type": "object",
-              "additionalProperties": true
+              "additionalProperties": false,
+              "description": "Request body for POST /api/resource/{resourceType}/share/{resourceId}. Every field is required because the only confirmed-correct client, layer5io/sistent's ShareModal via meshery/meshery's createAndRevokeResourceAccessRecord mutation, always sends all three; a request missing one has not been verified against the server's actual decode behavior for a missing key, only for a differently-named one, which the server accepts and silently drops.",
+              "required": [
+                "grantAccess",
+                "revokeAccess",
+                "notifyUsers"
+              ],
+              "properties": {
+                "grantAccess": {
+                  "type": "array",
+                  "description": "Actors to grant access to. May be empty.",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
+                    "required": [
+                      "actorId",
+                      "actorType"
+                    ],
+                    "properties": {
+                      "actorId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        },
+                        "x-go-name": "ActorId",
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "actorId"
+                        }
+                      },
+                      "actorType": {
+                        "type": "string",
+                        "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
+                        "example": "user",
+                        "x-go-name": "ActorType",
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "actorType"
+                        }
+                      }
+                    }
+                  },
+                  "x-go-name": "GrantAccess",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "grantAccess"
+                  }
+                },
+                "revokeAccess": {
+                  "type": "array",
+                  "description": "Actors to revoke access from. May be empty.",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "description": "One grant or revoke target in a ResourceAccessMappingPayload.",
+                    "required": [
+                      "actorId",
+                      "actorType"
+                    ],
+                    "properties": {
+                      "actorId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        },
+                        "x-go-name": "ActorId",
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "actorId"
+                        }
+                      },
+                      "actorType": {
+                        "type": "string",
+                        "description": "Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.",
+                        "example": "user",
+                        "x-go-name": "ActorType",
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "actorType"
+                        }
+                      }
+                    }
+                  },
+                  "x-go-name": "RevokeAccess",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "revokeAccess"
+                  }
+                },
+                "notifyUsers": {
+                  "type": "boolean",
+                  "description": "Whether to notify the affected actors of the change.",
+                  "x-go-name": "NotifyUsers",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "notifyUsers"
+                  }
+                }
+              }
             }
           }
         }

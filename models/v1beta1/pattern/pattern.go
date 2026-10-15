@@ -20,6 +20,15 @@ type DesignPreferences struct {
 	Layers map[string]interface{} `json:"layers" yaml:"layers"`
 }
 
+// Actor One grant or revoke target in a ResourceAccessMappingPayload.
+type Actor struct {
+	// ActorId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ActorId core.Uuid `json:"actorId" yaml:"actorId"`
+
+	// ActorType Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.
+	ActorType string `json:"actorType" yaml:"actorType"`
+}
+
 // CatalogContentClass defines model for CatalogContentClass.
 type CatalogContentClass struct {
 	Class                *string                `json:"class,omitempty" yaml:"class,omitempty"`
@@ -162,8 +171,20 @@ type ResourceAccessActorsResponse struct {
 	Users *[]map[string]interface{} `json:"users,omitempty" yaml:"users,omitempty"`
 }
 
-// ResourceAccessMapping defines model for ResourceAccessMapping.
+// ResourceAccessMapping Response body for POST /api/resource/{resourceType}/share/{resourceId}. Left untyped: nothing available (issue #1144, the confirmed-correct client) confirms the real response shape, only that the server answers 200 with the request correctly applied.
 type ResourceAccessMapping map[string]interface{}
+
+// ResourceAccessMappingPayload Request body for POST /api/resource/{resourceType}/share/{resourceId}. Every field is required because the only confirmed-correct client, layer5io/sistent's ShareModal via meshery/meshery's createAndRevokeResourceAccessRecord mutation, always sends all three; a request missing one has not been verified against the server's actual decode behavior for a missing key, only for a differently-named one, which the server accepts and silently drops.
+type ResourceAccessMappingPayload struct {
+	// GrantAccess Actors to grant access to. May be empty.
+	GrantAccess []Actor `json:"grantAccess" yaml:"grantAccess"`
+
+	// NotifyUsers Whether to notify the affected actors of the change.
+	NotifyUsers bool `json:"notifyUsers" yaml:"notifyUsers"`
+
+	// RevokeAccess Actors to revoke access from. May be empty.
+	RevokeAccess []Actor `json:"revokeAccess" yaml:"revokeAccess"`
+}
 
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type Id = core.Uuid
@@ -183,8 +204,8 @@ type Search = string
 // CatalogContentPayload defines model for catalogContentPayload.
 type CatalogContentPayload map[string]interface{}
 
-// ResourceSharePayload defines model for resourceSharePayload.
-type ResourceSharePayload map[string]interface{}
+// ResourceSharePayload Request body for POST /api/resource/{resourceType}/share/{resourceId}. Every field is required because the only confirmed-correct client, layer5io/sistent's ShareModal via meshery/meshery's createAndRevokeResourceAccessRecord mutation, always sends all three; a request missing one has not been verified against the server's actual decode behavior for a missing key, only for a differently-named one, which the server accepts and silently drops.
+type ResourceSharePayload = ResourceAccessMappingPayload
 
 // Getter for additional properties for CatalogContentClass. Returns the specified
 // element and whether it was found

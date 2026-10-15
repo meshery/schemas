@@ -323,7 +323,12 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Share a resource */
+        /**
+         * Share a resource
+         * @description Grants access to the actors listed in grantAccess, revokes access from the actors listed in revokeAccess, and optionally notifies the affected actors. Both lists are carried on a single request so a caller can grant and revoke in the same call.
+         *
+         *     This one operation spans multiple resource types (design, filter, view), chosen at call time by resourceType, so the generated RTK Query client cannot auto-invalidate the affected resource's list cache the way a single-resource-type operation would: RTK Query cache tags are static per operation, derived from this operation's own OpenAPI tag, not from a runtime path parameter. A caller of the generated mutation must invalidate or refetch the relevant resource list itself after a successful share.
+         */
         post: operations["handleResourceShare"];
         delete?: never;
         options?: never;
@@ -7571,6 +7576,51 @@ export interface components {
         MesheryFilter: {
             [key: string]: unknown;
         };
+        /** @description One grant or revoke target in a ResourceAccessMappingPayload. */
+        Actor: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            actorId: string;
+            /**
+             * @description Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.
+             * @example user
+             */
+            actorType: string;
+        };
+        /** @description Request body for POST /api/resource/{resourceType}/share/{resourceId}. Every field is required because the only confirmed-correct client, layer5io/sistent's ShareModal via meshery/meshery's createAndRevokeResourceAccessRecord mutation, always sends all three; a request missing one has not been verified against the server's actual decode behavior for a missing key, only for a differently-named one, which the server accepts and silently drops. */
+        ResourceAccessMappingPayload: {
+            /** @description Actors to grant access to. May be empty. */
+            grantAccess: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                actorId: string;
+                /**
+                 * @description Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.
+                 * @example user
+                 */
+                actorType: string;
+            }[];
+            /** @description Actors to revoke access from. May be empty. */
+            revokeAccess: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                actorId: string;
+                /**
+                 * @description Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.
+                 * @example user
+                 */
+                actorType: string;
+            }[];
+            /** @description Whether to notify the affected actors of the change. */
+            notifyUsers: boolean;
+        };
+        /** @description Response body for POST /api/resource/{resourceType}/share/{resourceId}. Left untyped: nothing available (issue #1144, the confirmed-correct client) confirms the real response shape, only that the server answers 200 with the request correctly applied. */
         ResourceAccessMapping: {
             [key: string]: unknown;
         };
@@ -7641,7 +7691,34 @@ export interface components {
         resourceSharePayload: {
             content: {
                 "application/json": {
-                    [key: string]: unknown;
+                    /** @description Actors to grant access to. May be empty. */
+                    grantAccess: {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        actorId: string;
+                        /**
+                         * @description Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.
+                         * @example user
+                         */
+                        actorType: string;
+                    }[];
+                    /** @description Actors to revoke access from. May be empty. */
+                    revokeAccess: {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        actorId: string;
+                        /**
+                         * @description Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.
+                         * @example user
+                         */
+                        actorType: string;
+                    }[];
+                    /** @description Whether to notify the affected actors of the change. */
+                    notifyUsers: boolean;
                 };
             };
         };
@@ -18844,7 +18921,34 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    [key: string]: unknown;
+                    /** @description Actors to grant access to. May be empty. */
+                    grantAccess: {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        actorId: string;
+                        /**
+                         * @description Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.
+                         * @example user
+                         */
+                        actorType: string;
+                    }[];
+                    /** @description Actors to revoke access from. May be empty. */
+                    revokeAccess: {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        actorId: string;
+                        /**
+                         * @description Kind of actor. Every known client sends user; the server field is a plain string with no enforced enum, so this is modelled as an open string rather than an enum of one value that would reject a legitimate future actor type before the server itself does.
+                         * @example user
+                         */
+                        actorType: string;
+                    }[];
+                    /** @description Whether to notify the affected actors of the change. */
+                    notifyUsers: boolean;
                 };
             };
         };
