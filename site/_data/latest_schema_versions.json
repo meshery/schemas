@@ -29,13 +29,6 @@
     "extension": true
   },
   {
-    "construct": "blowhorn_destination",
-    "version": "v1beta3",
-    "href": "/schemas/constructs/v1beta3/blowhorn_destination/blowhorn_destination.yaml",
-    "core": false,
-    "extension": true
-  },
-  {
     "construct": "blowhorn_health",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/blowhorn_health/api.yml",
@@ -53,13 +46,6 @@
     "construct": "blowhorn_profile",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/blowhorn_profile/blowhorn_profile.yaml",
-    "core": false,
-    "extension": true
-  },
-  {
-    "construct": "blowhorn_run",
-    "version": "v1beta3",
-    "href": "/schemas/constructs/v1beta3/blowhorn_run/blowhorn_run.yaml",
     "core": false,
     "extension": true
   },
