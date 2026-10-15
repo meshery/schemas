@@ -54,6 +54,12 @@ Use **201** (not 200) for `POST` endpoints that exclusively create a new resourc
 
 Response descriptions and response message text must not include the word `successfully`. Use neutral wording such as `Connection deleted`, `Webhook processed`, or `Plans response`.
 
+Error responses are shared: `schemas/constructs/v1beta2/core/api.yml#/components/responses` defines
+`400`, `401`, `403`, `404`, `409`, `500` and `502` (bad gateway - an upstream service such as
+GitHub could not be reached or rejected the request). Reference them - directly, or through an
+alias under the construct's own `components/responses` as the v1beta3 design construct does -
+rather than redefining an error response inline.
+
 ## Resource grouping and path structure
 
 Endpoints are grouped into logical categories under `/api`:
@@ -103,3 +109,20 @@ genuinely registers them on the bare router outside the `/api` group. Match the 
 add `/api` reflexively.
 
 Most `/api/system/` operations are Meshery-only (`x-internal: ["meshery"]`); they act on the running Meshery server instance itself rather than on a user-facing logical construct. Existing shared exceptions must be annotated truthfully, such as public version metadata exposed by both Meshery and Meshery Cloud. Some pre-existing `/api/system/*` paths use singular nouns (e.g. `/api/system/database`) and embed verbs (e.g. `/api/system/database/reset`); these predate the canonical kebab-case-plural convention and are documented as-implemented. New `/api/system/*` paths should still follow the canonical conventions.
+
+### A construct is an RTK cache-tag boundary
+
+The path prefix says which area serves an operation; the construct an operation is declared in
+decides which RTK Query cache it joins. The bundler prefixes every operation tag with its
+construct's `info.title` (`prefixTags` in `build/bundle-openapi.js`), so a `designs` tag in the
+`Design` construct becomes the `Design_designs` cache tag, and the generated hooks provide and
+invalidate only that prefixed tag. Constructs with different titles therefore never share a cache
+tag, whatever their operations are tagged.
+
+So declare an operation in the construct whose cache it must stay coherent with, even when its
+path lives under another category. The GitHub import operations of the v1beta3 design construct
+are the worked example: `getGithubImportedDesigns` and `importGithubRepository` are served under
+`/api/integrations/github/`, but they list and write designs, so they are declared in
+`v1beta3/design` with the `designs` tag. An import or a `refreshPatternFromSource` then refetches
+every design list, and a `deletePattern` refetches the imported-designs inventory, with no
+consumer-side tag wiring. `validation/design_github_import_contract_test.go` pins that placement.
