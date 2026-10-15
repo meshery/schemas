@@ -123,6 +123,11 @@ So declare an operation in the construct whose cache it must stay coherent with,
 path lives under another category. The GitHub import operations of the v1beta3 design construct
 are the worked example: `getGithubImportedDesigns` and `importGithubRepository` are served under
 `/api/integrations/github/`, but they list and write designs, so they are declared in
-`v1beta3/design` with the `designs` tag. An import or a `refreshPatternFromSource` then refetches
-every design list, and a `deletePattern` refetches the imported-designs inventory, with no
-consumer-side tag wiring. `validation/design_github_import_contract_test.go` pins that placement.
+`v1beta3/design` with the `designs` tag. An import, a `refreshPatternFromSource` or an
+`updatePatternSource` (source remap) then refetches every design list, and a `deletePattern`
+refetches the imported-designs inventory, with no consumer-side tag wiring.
+
+The tag picks the cache within a construct, so an operation that must stay out of it takes its own
+tag. `getGithubRepositoryBranches` sits beside the import operations in `v1beta3/design` but reads
+only GitHub, so it is tagged `github` (`Design_github`): a design write does not refetch the branch
+list. `validation/design_github_import_contract_test.go` pins each operation's tag.
