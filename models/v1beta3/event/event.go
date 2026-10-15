@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	core "github.com/meshery/schemas/models/core"
+	"github.com/meshery/schemas/models/core"
 )
 
 // BulkDeleteRequest Payload for bulk-deleting events by ID.
@@ -43,6 +43,40 @@ type BulkUpdateStatusResponse struct {
 type ErrorResponse struct {
 	// Error Human-readable error message.
 	Error *string `json:"error,omitempty" yaml:"error,omitempty"`
+}
+
+// Event One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields.
+type Event struct {
+	ActedUpon core.Id `db:"acted_upon" json:"actedUpon" yaml:"actedUpon"`
+
+	// Action Action taken on the resource, for example `import`.
+	Action string `db:"action" json:"action" yaml:"action"`
+
+	// Category Resource kind the operation was invoked on, for example `pattern`.
+	Category  string    `db:"category" json:"category" yaml:"category"`
+	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
+
+	// Description Human-readable summary of what happened.
+	Description string  `db:"description" json:"description" yaml:"description"`
+	ID          core.Id `db:"id" json:"id" yaml:"id"`
+
+	// Metadata Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+	Metadata    core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+	OperationID core.Id  `db:"operation_id" json:"operationId" yaml:"operationId"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// Severity Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+	Severity string `db:"severity" json:"severity" yaml:"severity"`
+
+	// Status Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
+	Status    string        `db:"status" json:"status" yaml:"status"`
+	SystemID  core.SystemId `db:"system_id" json:"systemId" yaml:"systemId"`
+	UpdatedAt core.Time     `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 }
 
 // EventPayload Payload for creating a new event.

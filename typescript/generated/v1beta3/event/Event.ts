@@ -258,6 +258,63 @@ export interface components {
              */
             createdAt?: string;
         };
+        /** @description One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields. */
+        Event: {
+            /**
+             * Format: uuid
+             * @description Event ID.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description ID of the entity on which the event was performed.
+             */
+            actedUpon: string;
+            /** @description Action taken on the resource, for example `import`. */
+            action: string;
+            /** @description Resource kind the operation was invoked on, for example `pattern`. */
+            category: string;
+            /** @description Human-readable summary of what happened. */
+            description: string;
+            /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. */
+            metadata: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Format: uuid
+             * @description ID correlating the events one operation emitted.
+             */
+            operationId: string;
+            /** @description Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values. */
+            severity: string;
+            /** @description Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values. */
+            status: string;
+            /**
+             * Format: uuid
+             * @description ID of the system instance that emitted the event.
+             */
+            systemId: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            owner?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the event was recorded.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the event was last updated.
+             */
+            updatedAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the event was soft-deleted; omitted when it was not.
+             */
+            deletedAt?: string | null;
+        };
         /** @description Paginated list of events. */
         EventsPage: {
             /** @description Zero-based page index returned in this response. */

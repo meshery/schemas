@@ -724,6 +724,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Bad gateway - an upstream service the operation depends on could not be reached or rejected the request */
+        502: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
     };
     parameters: {
         /** @description Unique identifier */

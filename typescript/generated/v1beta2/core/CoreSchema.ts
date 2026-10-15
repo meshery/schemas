@@ -2105,6 +2105,16 @@ const CoreSchema: Record<string, unknown> = {
             }
           }
         }
+      },
+      "502": {
+        "description": "Bad gateway - an upstream service the operation depends on could not be reached or rejected the request",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
       }
     }
   }

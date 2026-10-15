@@ -1566,6 +1566,179 @@ const EventSchema: Record<string, unknown> = {
           "action"
         ]
       },
+      "Event": {
+        "type": "object",
+        "description": "One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields.\n",
+        "required": [
+          "id",
+          "actedUpon",
+          "action",
+          "category",
+          "description",
+          "metadata",
+          "operationId",
+          "severity",
+          "status",
+          "systemId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "description": "Event ID.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "actedUpon": {
+            "description": "ID of the entity on which the event was performed.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "acted_upon"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "action": {
+            "type": "string",
+            "description": "Action taken on the resource, for example `import`.",
+            "maxLength": 500,
+            "x-oapi-codegen-extra-tags": {
+              "db": "action"
+            }
+          },
+          "category": {
+            "type": "string",
+            "description": "Resource kind the operation was invoked on, for example `pattern`.",
+            "maxLength": 500,
+            "x-oapi-codegen-extra-tags": {
+              "db": "category"
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable summary of what happened.",
+            "maxLength": 5000,
+            "x-oapi-codegen-extra-tags": {
+              "db": "description"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none.\n",
+            "additionalProperties": true,
+            "nullable": true,
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "metadata"
+            }
+          },
+          "operationId": {
+            "description": "ID correlating the events one operation emitted.",
+            "x-go-name": "OperationID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "operation_id"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "severity": {
+            "type": "string",
+            "description": "Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.\n",
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "db": "severity"
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.\n",
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "db": "status"
+            }
+          },
+          "systemId": {
+            "description": "ID of the system instance that emitted the event.",
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "system_id"
+            },
+            "x-go-name": "SystemID",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "owner": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner"
+            }
+          },
+          "createdAt": {
+            "description": "Timestamp when the event was recorded.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updatedAt": {
+            "description": "Timestamp when the event was last updated.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "deletedAt": {
+            "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at"
+            },
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "x-go-type-skip-optional-pointer": true
+          }
+        }
+      },
       "EventsPage": {
         "type": "object",
         "description": "Paginated list of events.",
