@@ -884,6 +884,21 @@ type Type = string
 // Userid defines model for userid.
 type Userid = string
 
+// MeshKitError403 defines model for MeshKitError403.
+type MeshKitError403 struct {
+	// Code MeshKit error code.
+	Code string `json:"code" yaml:"code"`
+
+	// Error User-facing error message; MeshKit ShortDescription when present.
+	Error           string    `json:"error" yaml:"error"`
+	LongDescription *[]string `json:"longDescription,omitempty" yaml:"longDescription,omitempty"`
+	ProbableCause   *[]string `json:"probableCause,omitempty" yaml:"probableCause,omitempty"`
+
+	// Severity MeshKit error severity.
+	Severity             string    `json:"severity" yaml:"severity"`
+	SuggestedRemediation *[]string `json:"suggestedRemediation,omitempty" yaml:"suggestedRemediation,omitempty"`
+}
+
 // Getter for additional properties for ComponentStyles. Returns the specified
 // element and whether it was found
 func (a ComponentStyles) Get(fieldName string) (value interface{}, found bool) {
