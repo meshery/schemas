@@ -249,6 +249,66 @@ type DeletePatternModel struct {
 	Name meshcore.Text `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+// DesignSourceBindingPayload The GitHub file a design is bound to - what `refreshPatternFromSource` re-reads.
+type DesignSourceBindingPayload struct {
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionId meshcore.Uuid `json:"connectionId" yaml:"connectionId"`
+
+	// Host Repository as `github.com/<owner>/<repo>` - the same form `location.host` stores.
+	Host string `json:"host" yaml:"host"`
+
+	// Path Repository-relative path of a file (not a directory), with no leading slash.
+	Path string `json:"path" yaml:"path"`
+
+	// Ref Branch or tag the binding tracks, stored as `location.branch`. Empty or omitted means the repository's default branch.
+	Ref *string `json:"ref,omitempty" yaml:"ref,omitempty"`
+}
+
+// DesignSourceLocation The keys of a design's `location` (a MapObject on MesheryPattern) when the design is bound to a GitHub source. Written by `importGithubRepository`, `refreshPatternFromSource` and `updatePatternSource`. A design created by an upload or a URL import retains no source - it carries no `github` location and cannot be refreshed until it is bound to one.
+type DesignSourceLocation struct {
+	// Branch Ref the binding tracks (a branch or tag name). Empty means the repository's default branch.
+	Branch *string `json:"branch,omitempty" yaml:"branch,omitempty"`
+
+	// CommitSha The commit the design's stored content was last read from, by an import or a refresh. Absent when the content was not read from the current binding - after a remap without a refresh, or for a design imported before commits were recorded. Compare it with the head of `branch` to tell whether the source has drifted.
+	CommitSha *string `json:"commitSha,omitempty" yaml:"commitSha,omitempty"`
+
+	// Host Repository as `github.com/<owner>/<repo>`.
+	Host *string `json:"host,omitempty" yaml:"host,omitempty"`
+
+	// Path Repository-relative path of the source file.
+	Path *string `json:"path,omitempty" yaml:"path,omitempty"`
+
+	// Type Source kind; `github` for a design bound to a GitHub file.
+	Type                 *string                `json:"type,omitempty" yaml:"type,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+}
+
+// GithubBranch One branch of a GitHub repository.
+type GithubBranch struct {
+	// CommitSha Commit at the head of the branch.
+	CommitSha string `json:"commitSha" yaml:"commitSha"`
+
+	// Name Branch name.
+	Name string `json:"name" yaml:"name"`
+}
+
+// GithubBranchPage A page of a repository's branches. GitHub does not report a total, so the page says whether another follows instead of carrying a count.
+type GithubBranchPage struct {
+	Branches []GithubBranch `json:"branches" yaml:"branches"`
+
+	// DefaultBranch The repository's default branch.
+	DefaultBranch string `json:"defaultBranch" yaml:"defaultBranch"`
+
+	// HasMore True when another page of branches follows.
+	HasMore bool `json:"hasMore" yaml:"hasMore"`
+
+	// Page Zero-based page index served.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Page size served.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+}
+
 // GithubImportPath One selected file or directory in the repository tree.
 type GithubImportPath struct {
 	// Entry The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored.
@@ -594,6 +654,134 @@ func (a CatalogContentClass) MarshalJSON() ([]byte, error) {
 		object["description"], err = json.Marshal(a.Description)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'description': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
+
+// Getter for additional properties for DesignSourceLocation. Returns the specified
+// element and whether it was found
+func (a DesignSourceLocation) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for DesignSourceLocation
+func (a *DesignSourceLocation) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for DesignSourceLocation to handle AdditionalProperties
+func (a *DesignSourceLocation) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["branch"]; found {
+		err = json.Unmarshal(raw, &a.Branch)
+		if err != nil {
+			return fmt.Errorf("error reading 'branch': %w", err)
+		}
+		delete(object, "branch")
+	}
+
+	if raw, found := object["commitSha"]; found {
+		err = json.Unmarshal(raw, &a.CommitSha)
+		if err != nil {
+			return fmt.Errorf("error reading 'commitSha': %w", err)
+		}
+		delete(object, "commitSha")
+	}
+
+	if raw, found := object["host"]; found {
+		err = json.Unmarshal(raw, &a.Host)
+		if err != nil {
+			return fmt.Errorf("error reading 'host': %w", err)
+		}
+		delete(object, "host")
+	}
+
+	if raw, found := object["path"]; found {
+		err = json.Unmarshal(raw, &a.Path)
+		if err != nil {
+			return fmt.Errorf("error reading 'path': %w", err)
+		}
+		delete(object, "path")
+	}
+
+	if raw, found := object["type"]; found {
+		err = json.Unmarshal(raw, &a.Type)
+		if err != nil {
+			return fmt.Errorf("error reading 'type': %w", err)
+		}
+		delete(object, "type")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for DesignSourceLocation to handle AdditionalProperties
+func (a DesignSourceLocation) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Branch != nil {
+		object["branch"], err = json.Marshal(a.Branch)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'branch': %w", err)
+		}
+	}
+
+	if a.CommitSha != nil {
+		object["commitSha"], err = json.Marshal(a.CommitSha)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'commitSha': %w", err)
+		}
+	}
+
+	if a.Host != nil {
+		object["host"], err = json.Marshal(a.Host)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'host': %w", err)
+		}
+	}
+
+	if a.Path != nil {
+		object["path"], err = json.Marshal(a.Path)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'path': %w", err)
+		}
+	}
+
+	if a.Type != nil {
+		object["type"], err = json.Marshal(a.Type)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'type': %w", err)
 		}
 	}
 

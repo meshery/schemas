@@ -15928,7 +15928,8 @@ export type ImportDesignApiResponse =
         totalCount?: number | null;
       };
     } | null;
-    /** Optional structured location metadata (branch, host, path, ...). */
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
     location?: {
       [key: string]: string;
     };

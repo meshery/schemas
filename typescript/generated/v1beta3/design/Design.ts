@@ -146,13 +146,33 @@ export interface paths {
         put?: never;
         /**
          * Refresh design from its source
-         * @description Re-fetches the source file recorded in the design's `location` (`type: github`, `host: github.com/<owner>/<repo>`, `path`, optional `branch`; an empty branch means the repository's default branch), re-identifies it, and rewrites the design's content in place under the same design ID. A Meshery Design source replaces `patternFile`; any other source type (Helm Chart, Kubernetes Manifest, Docker Compose) replaces `sourceContent` and clears `patternFile`, so Meshery reconverts it the next time the design is opened - exactly the state a first import leaves. Only the design's owner may refresh it. No request body. Denials: `404` answers both "no such design" and "not the caller's design" with the same body by design, so the route is not an existence oracle; `403` means the GitHub App is not installed on (has no access to) the design's repository; `409` means the design has no refreshable source (`location.type` is not `github`, or `host`/`path` is missing) or its source path no longer resolves to an importable file; `502` means GitHub could not be reached or rejected the request.
+         * @description Re-fetches the source file recorded in the design's `location` (`type: github`, `host: github.com/<owner>/<repo>`, `path`, optional `branch`; an empty branch means the repository's default branch), re-identifies it, and rewrites the design's content in place under the same design ID. A Meshery Design source replaces `patternFile`; any other source type (Helm Chart, Kubernetes Manifest, Docker Compose) replaces `sourceContent` and clears `patternFile`, so Meshery reconverts it the next time the design is opened - exactly the state a first import leaves. Only the design's owner may refresh it. No request body. Denials: `404` answers both "no such design" and "not the caller's design" with the same body by design, so the route is not an existence oracle; `403` means the caller has no GitHub App installation with access to the design's repository; `409` means the design has no refreshable source (`location.type` is not `github`, or `host`/`path` is missing) or its source path no longer resolves to an importable file; `502` means GitHub could not be reached or rejected the request. The server resolves the tracked ref to a commit, reads the file at that commit, and records it in `location.commitSha`.
          */
         post: operations["refreshPatternFromSource"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/content/patterns/{designId}/source": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Remap a design's GitHub source
+         * @description Re-points the design's source binding - the GitHub file its `location` records and `refreshPatternFromSource` re-reads - at another repository, path or ref. The design's content is not changed: call `refreshPatternFromSource` afterwards to replace it from the new source. The server resolves `ref` to a commit and confirms that `path` names an importable file at that commit before it writes anything, so a binding that a refresh could not read is never stored. It writes `location` as `type: github`, `host`, `path` and `branch` (= `ref`). When the binding changes, `location.commitSha` is removed, because the stored content was not read from the new source; it is kept when the request names the binding the design already has. A design with no GitHub source (an upload or URL import) may be bound to one; it becomes refreshable. Only the design's owner may remap it. Denials: `404` answers "no such design", "not the caller's design" and "connectionId is not the caller's own live GitHub connection" with the same body, so the route is not an existence oracle; `403` means the caller has no GitHub App installation with access to the repository; `409` means `ref` does not resolve to a commit, or `path` does not name an importable file at it (missing, a directory, or not a supported format); `502` means GitHub could not be reached or rejected the request.
+         */
+        patch: operations["updatePatternSource"];
         trace?: never;
     };
     "/api/pattern/import": {
@@ -203,9 +223,29 @@ export interface paths {
         put?: never;
         /**
          * Import files from a GitHub repository as designs
-         * @description Imports the selected files (a selected directory is walked recursively) from one repository reachable through the caller's GitHub App connection. Matching is idempotent: a file whose (owner, location.type, location.host, location.path, location.branch) already identifies one of the caller's designs is handled per `onExisting`. `connectionId` must name the caller's own live GitHub connection (404 otherwise). `403` means the GitHub App is not installed on (has no access to) the repository; `502` means GitHub could not be reached or rejected the request.
+         * @description Imports the selected files (a selected directory is walked recursively) from one repository reachable through the caller's GitHub App connection. Matching is idempotent: a file whose (owner, location.type, location.host, location.path, location.branch) already identifies one of the caller's designs is handled per `onExisting`. `connectionId` must name the caller's own live GitHub connection (404 otherwise). `403` means the caller has no GitHub App installation with access to the repository; `502` means GitHub could not be reached or rejected the request. Each imported or updated design records the commit its file was read at in `location.commitSha`.
          */
         post: operations["importGithubRepository"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integrations/github/branches/{connectionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List a repository's branches
+         * @description Lists the branches of one repository reachable through the caller's GitHub App connection, with the repository's default branch, so a client can offer the refs a design's source can track. Branch order is GitHub's. `connectionId` must name the caller's own live GitHub connection (404 otherwise, with the same body as "no such connection"). `403` means the caller has no GitHub App installation with access to the repository; `502` means GitHub could not be reached or rejected the request.
+         */
+        get: operations["getGithubRepositoryBranches"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2118,7 +2158,7 @@ export interface components {
                     totalCount?: number | null;
                 };
             } | null;
-            /** @description Optional structured location metadata (branch, host, path, ...). */
+            /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
             location?: {
                 [key: string]: string;
             };
@@ -2490,7 +2530,7 @@ export interface components {
                         totalCount?: number | null;
                     };
                 } | null;
-                /** @description Optional structured location metadata (branch, host, path, ...). */
+                /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                 location?: {
                     [key: string]: string;
                 };
@@ -3140,7 +3180,7 @@ export interface components {
                         totalCount?: number | null;
                     };
                 } | null;
-                /** @description Optional structured location metadata (branch, host, path, ...). */
+                /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                 location?: {
                     [key: string]: string;
                 };
@@ -3258,6 +3298,59 @@ export interface components {
                  */
                 deletedAt?: string | null;
             }[];
+        };
+        /** @description The GitHub file a design is bound to - what `refreshPatternFromSource` re-reads. */
+        DesignSourceBindingPayload: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            connectionId: string;
+            /** @description Repository as `github.com/<owner>/<repo>` - the same form `location.host` stores. */
+            host: string;
+            /** @description Repository-relative path of a file (not a directory), with no leading slash. */
+            path: string;
+            /** @description Branch or tag the binding tracks, stored as `location.branch`. Empty or omitted means the repository's default branch. */
+            ref?: string;
+        };
+        /** @description The keys of a design's `location` (a MapObject on MesheryPattern) when the design is bound to a GitHub source. Written by `importGithubRepository`, `refreshPatternFromSource` and `updatePatternSource`. A design created by an upload or a URL import retains no source - it carries no `github` location and cannot be refreshed until it is bound to one. */
+        DesignSourceLocation: {
+            /** @description Source kind; `github` for a design bound to a GitHub file. */
+            type?: string;
+            /** @description Repository as `github.com/<owner>/<repo>`. */
+            host?: string;
+            /** @description Repository-relative path of the source file. */
+            path?: string;
+            /** @description Ref the binding tracks (a branch or tag name). Empty means the repository's default branch. */
+            branch?: string;
+            /** @description The commit the design's stored content was last read from, by an import or a refresh. Absent when the content was not read from the current binding - after a remap without a refresh, or for a design imported before commits were recorded. Compare it with the head of `branch` to tell whether the source has drifted. */
+            commitSha?: string;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description One branch of a GitHub repository. */
+        GithubBranch: {
+            /** @description Branch name. */
+            name: string;
+            /** @description Commit at the head of the branch. */
+            commitSha: string;
+        };
+        /** @description A page of a repository's branches. GitHub does not report a total, so the page says whether another follows instead of carrying a count. */
+        GithubBranchPage: {
+            /** @description The repository's default branch. */
+            defaultBranch: string;
+            branches: {
+                /** @description Branch name. */
+                name: string;
+                /** @description Commit at the head of the branch. */
+                commitSha: string;
+            }[];
+            /** @description Zero-based page index served. */
+            page: number;
+            /** @description Page size served. */
+            pageSize: number;
+            /** @description True when another page of branches follows. */
+            hasMore: boolean;
         };
         /** @description Design-level preferences */
         DesignPreferences: {
@@ -3582,7 +3675,7 @@ export interface components {
                         totalCount?: number | null;
                     };
                 } | null;
-                /** @description Optional structured location metadata (branch, host, path, ...). */
+                /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                 location?: {
                     [key: string]: string;
                 };
@@ -4906,7 +4999,7 @@ export interface operations {
                                     totalCount?: number | null;
                                 };
                             } | null;
-                            /** @description Optional structured location metadata (branch, host, path, ...). */
+                            /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                             location?: {
                                 [key: string]: string;
                             };
@@ -5387,7 +5480,7 @@ export interface operations {
                                 totalCount?: number | null;
                             };
                         } | null;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                         location?: {
                             [key: string]: string;
                         };
@@ -5862,7 +5955,7 @@ export interface operations {
                                 totalCount?: number | null;
                             };
                         } | null;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                         location?: {
                             [key: string]: string;
                         };
@@ -6322,7 +6415,7 @@ export interface operations {
                                 totalCount?: number | null;
                             };
                         } | null;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                         location?: {
                             [key: string]: string;
                         };
@@ -6854,7 +6947,471 @@ export interface operations {
                                 totalCount?: number | null;
                             };
                         } | null;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
+                        location?: {
+                            [key: string]: string;
+                        };
+                        /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                        patternFile?: string;
+                        /**
+                         * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+                         * @enum {string}
+                         */
+                        visibility?: "private" | "public" | "published";
+                        /**
+                         * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                         * @enum {string|null}
+                         */
+                        designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                        /**
+                         * Format: byte
+                         * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                         */
+                        sourceContent?: string | null;
+                        /**
+                         * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        viewCount: number;
+                        /**
+                         * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        downloadCount: number;
+                        /**
+                         * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        cloneCount: number;
+                        /**
+                         * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        deploymentCount: number;
+                        /**
+                         * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        shareCount: number;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of design creation.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of last design modification.
+                         */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Publish request already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Bad gateway - an upstream service the operation depends on could not be reached or rejected the request */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updatePatternSource: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Design (Pattern) ID */
+                designId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    connectionId: string;
+                    /** @description Repository as `github.com/<owner>/<repo>` - the same form `location.host` stores. */
+                    host: string;
+                    /** @description Repository-relative path of a file (not a directory), with no leading slash. */
+                    path: string;
+                    /** @description Branch or tag the binding tracks, stored as `location.branch`. Empty or omitted means the repository's default branch. */
+                    ref?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Source binding updated. `sourceContent` and `patternFile` are omitted from the response body, as on refresh and import. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Server-generated design ID.
+                         */
+                        id?: string;
+                        /** @description Human-readable design name. */
+                        name?: string;
+                        /** @description Catalog metadata attached to the design when published. */
+                        catalogData?: {
+                            /** @description Tracks the specific content version that has been made available in the Catalog. */
+                            publishedVersion?: string;
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                            class?: string & ("official" | "verified" | "reference architecture");
+                            /**
+                             * Model
+                             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                             */
+                            compatibility: "kubernetes"[];
+                            /**
+                             * Caveats and Considerations
+                             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                             */
+                            patternCaveats: string;
+                            /**
+                             * Description
+                             * @description Purpose of the design along with its intended and unintended uses.
+                             */
+                            patternInfo: string;
+                            /**
+                             * Type
+                             * @description Categorization of the type of design or operational flow depicted in this design.
+                             * @default Deployment
+                             * @enum {string}
+                             */
+                            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                            /** @description Contains reference to the dark and light mode snapshots of the design. */
+                            snapshotURL?: string[];
+                        };
+                        /**
+                         * Format: uuid
+                         * @description Owning user ID.
+                         */
+                        userId?: string;
+                        /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                        user?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /**
+                             * @deprecated
+                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             */
+                            userId: string;
+                            /**
+                             * @description Authentication provider (e.g., Google, Github)
+                             * @example [
+                             *       "local",
+                             *       "github",
+                             *       "google",
+                             *       "twitter"
+                             *     ]
+                             */
+                            provider: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email: string;
+                            /** @description User's first name */
+                            firstName: string;
+                            /** @description User's last name */
+                            lastName: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatarUrl?: string;
+                            /**
+                             * @description User account status
+                             * @enum {string}
+                             */
+                            status: "active" | "inactive" | "pending" | "anonymous";
+                            /**
+                             * @description User's biography or description
+                             * @default
+                             */
+                            bio: string;
+                            /** @description User's country information stored as JSONB */
+                            country?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User's region information stored as JSONB */
+                            region?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User preferences stored as JSONB */
+                            preferences?: {
+                                /** @description The mesh adapters of the preference. */
+                                meshAdapters?: Record<string, never>[];
+                                grafana?: {
+                                    /** @description Grafana URL for the user configuration. */
+                                    grafanaUrl?: string;
+                                    /** @description Grafana API key for the user configuration. */
+                                    grafanaApiKey?: string;
+                                    /** @description Selected Grafana board configurations for the user. */
+                                    selectedBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                prometheus?: {
+                                    /** @description The prometheus URL of the prometheus. */
+                                    prometheusUrl?: string;
+                                    /** @description The selected prometheus boards configs of the prometheus. */
+                                    selectedPrometheusBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                loadTestPrefs?: {
+                                    /** @description Concurrent requests */
+                                    c?: number;
+                                    /** @description Queries per second */
+                                    qps?: number;
+                                    /** @description Duration */
+                                    t?: string;
+                                    /** @description Load generator */
+                                    gen?: string;
+                                };
+                                /** @description The anonymous usage stats of the preference. */
+                                anonymousUsageStats: boolean;
+                                /** @description The anonymous perf results of the preference. */
+                                anonymousPerfResults: boolean;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of when the resource was last updated.
+                                 */
+                                updatedAt: string;
+                                /** @description The dashboard preferences of the preference. */
+                                dashboardPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: uuid
+                                 * @description ID of the associated selectedOrganization.
+                                 */
+                                selectedOrganizationId: string;
+                                /** @description The selected workspace for organizations of the preference. */
+                                selectedWorkspaceForOrganizations: {
+                                    [key: string]: string;
+                                };
+                                /** @description The users extension preferences of the preference. */
+                                usersExtensionPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The remote provider preferences of the preference. */
+                                remoteProviderPreferences: {
+                                    [key: string]: unknown;
+                                };
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when user accepted terms and conditions
+                             */
+                            acceptedTermsAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's first login
+                             */
+                            firstLoginTime?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's most recent login
+                             */
+                            lastLoginTime: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was last updated
+                             */
+                            updatedAt: string;
+                            /** @description Various online profiles associated with the user account */
+                            socials?: {
+                                /** @description The site of the social. */
+                                site: string;
+                                /**
+                                 * Format: uri
+                                 * @description The link of the social.
+                                 */
+                                link: string;
+                            }[];
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deletedAt: string | null;
+                            /**
+                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+                             * @example [
+                             *       "organization admin",
+                             *       "user"
+                             *     ]
+                             */
+                            roleNames?: string[];
+                            /** @description Teams the user belongs to with role information */
+                            teams?: {
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+                                teamsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the team.
+                                     */
+                                    id: string;
+                                    /** @description Name of the team. */
+                                    name: string;
+                                    /** @description Human readable description of the team. */
+                                    description?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the team owner.
+                                     */
+                                    owner?: string;
+                                    /** @description Free-form metadata associated with the team. */
+                                    metadata?: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
+                            };
+                            /** @description Organizations the user belongs to with role information */
+                            organizations?: {
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+                                organizationsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the organization.
+                                     */
+                                    id: string;
+                                    /** @description Name of the organization. */
+                                    name: string;
+                                    /** @description Human readable description of the organization. */
+                                    description?: string;
+                                    /** @description Country associated with the organization. */
+                                    country?: string;
+                                    /** @description Region associated with the organization. */
+                                    region?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the organization owner.
+                                     */
+                                    owner?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
+                            };
+                        } | null;
+                        /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                         location?: {
                             [key: string]: string;
                         };
@@ -7327,7 +7884,7 @@ export interface operations {
                                 totalCount?: number | null;
                             };
                         } | null;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                         location?: {
                             [key: string]: string;
                         };
@@ -7750,7 +8307,7 @@ export interface operations {
                                     totalCount?: number | null;
                                 };
                             } | null;
-                            /** @description Optional structured location metadata (branch, host, path, ...). */
+                            /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                             location?: {
                                 [key: string]: string;
                             };
@@ -8204,7 +8761,7 @@ export interface operations {
                                     totalCount?: number | null;
                                 };
                             } | null;
-                            /** @description Optional structured location metadata (branch, host, path, ...). */
+                            /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                             location?: {
                                 [key: string]: string;
                             };
@@ -8322,6 +8879,105 @@ export interface operations {
                              */
                             deletedAt?: string | null;
                         }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Bad gateway - an upstream service the operation depends on could not be reached or rejected the request */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getGithubRepositoryBranches: {
+        parameters: {
+            query: {
+                /** @description Repository as `<owner>/<repo>` (case-insensitive). */
+                repository: string;
+                /** @description Get responses by page */
+                page?: number;
+                /** @description Number of items per page (canonical camelCase form). */
+                pageSize?: number;
+            };
+            header?: never;
+            path: {
+                /** @description ID of a GitHub App connection. */
+                connectionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Repository branches page. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The repository's default branch. */
+                        defaultBranch: string;
+                        branches: {
+                            /** @description Branch name. */
+                            name: string;
+                            /** @description Commit at the head of the branch. */
+                            commitSha: string;
+                        }[];
+                        /** @description Zero-based page index served. */
+                        page: number;
+                        /** @description Page size served. */
+                        pageSize: number;
+                        /** @description True when another page of branches follows. */
+                        hasMore: boolean;
                     };
                 };
             };
@@ -8730,7 +9386,7 @@ export interface operations {
                                     totalCount?: number | null;
                                 };
                             } | null;
-                            /** @description Optional structured location metadata (branch, host, path, ...). */
+                            /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                             location?: {
                                 [key: string]: string;
                             };
