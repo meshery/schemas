@@ -63,20 +63,20 @@ func checkRule14(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
 			raw, ok := op.Extensions["x-internal"]
 			if !ok {
 				out = append(out, Violation{File: filePath,
-					Message: fmt.Sprintf(`%s — x-internal is required on every operation. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
+					Message:  fmt.Sprintf(`%s — x-internal is required on every operation. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
 					Severity: SeverityBlocking, RuleNumber: 14})
 				continue
 			}
 			arr, ok := raw.([]any)
 			if !ok {
 				out = append(out, Violation{File: filePath,
-					Message: fmt.Sprintf(`%s — x-internal must be an array (e.g. ["cloud"]).`, label),
+					Message:  fmt.Sprintf(`%s — x-internal must be an array (e.g. ["cloud"]).`, label),
 					Severity: SeverityBlocking, RuleNumber: 14})
 				continue
 			}
 			if len(arr) == 0 {
 				out = append(out, Violation{File: filePath,
-					Message: fmt.Sprintf(`%s — x-internal must contain at least one tag. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
+					Message:  fmt.Sprintf(`%s — x-internal must contain at least one tag. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
 					Severity: SeverityBlocking, RuleNumber: 14})
 				continue
 			}
@@ -84,11 +84,11 @@ func checkRule14(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
 				s, ok := tag.(string)
 				if !ok {
 					out = append(out, Violation{File: filePath,
-						Message: fmt.Sprintf(`%s — x-internal array values must be strings.`, label),
+						Message:  fmt.Sprintf(`%s — x-internal array values must be strings.`, label),
 						Severity: SeverityBlocking, RuleNumber: 14})
 				} else if !validInternalTags[s] {
 					out = append(out, Violation{File: filePath,
-						Message: fmt.Sprintf(`%s — x-internal value %q is invalid. Must be "cloud" or "meshery".`, label, s),
+						Message:  fmt.Sprintf(`%s — x-internal value %q is invalid. Must be "cloud" or "meshery".`, label, s),
 						Severity: SeverityBlocking, RuleNumber: 14})
 				}
 			}

@@ -483,13 +483,13 @@ func getExtraTag(extensions map[string]any, tagName string) string {
 //
 // Casing families (see classifyCasingFamily for the full taxonomy):
 //   - camel     - starts lowercase, contains at least one uppercase, no
-//                 consecutive-uppercase acronym run (`userId`, `orgId`).
+//     consecutive-uppercase acronym run (`userId`, `orgId`).
 //   - snake     - contains an underscore (`user_id`, `created_at`).
 //   - screaming - all-uppercase, or contains a 2+ consecutive-uppercase
-//                 acronym token (`ID`, `URL`, `orgID`, `pageURL`).
+//     acronym token (`ID`, `URL`, `orgID`, `pageURL`).
 //   - lowercase - single-word all-lowercase, no underscore, no uppercase
-//                 (`id`, `name`, `metadata`). Agnostic bucket: does NOT
-//                 count toward the mixed-family trigger.
+//     (`id`, `name`, `metadata`). Agnostic bucket: does NOT
+//     count toward the mixed-family trigger.
 //
 // Pure-camel and pure-snake structs both pass - a fully-legacy-snake
 // struct is caught by Rule 6 independently. The rule fires only when
@@ -651,20 +651,20 @@ func collectCasingFamilies(schema *openapi3.Schema, families map[string][]string
 // identifier. The buckets used by Rule 45 are:
 //
 //   - "camel"     - camelCase (starts lowercase, at least one uppercase,
-//                   no consecutive uppercase acronym). Example: "userId".
+//     no consecutive uppercase acronym). Example: "userId".
 //   - "snake"     - contains an underscore. Example: "user_id".
 //   - "screaming" - entirely uppercase, OR contains a 2+ consecutive-
-//                   uppercase acronym token (e.g. "ID" in "orgID",
-//                   "URL" in "pageURL", "HPA" in "HPAReplicas").
+//     uppercase acronym token (e.g. "ID" in "orgID",
+//     "URL" in "pageURL", "HPA" in "HPAReplicas").
 //   - "lowercase" - all-lowercase single word with no underscore. This
-//                   is an agnostic bucket: `id`, `name`, `owner`,
-//                   `metadata`, `status` - identifiers that are the
-//                   canonical single-word form for both camel and snake
-//                   traditions. Rule 45 treats this bucket as
-//                   non-conflicting: it does not count as "the camel
-//                   half of a snake/camel mix", because a legacy-snake
-//                   struct that uses `id` alongside `user_id` is not a
-//                   partial migration.
+//     is an agnostic bucket: `id`, `name`, `owner`,
+//     `metadata`, `status` - identifiers that are the
+//     canonical single-word form for both camel and snake
+//     traditions. Rule 45 treats this bucket as
+//     non-conflicting: it does not count as "the camel
+//     half of a snake/camel mix", because a legacy-snake
+//     struct that uses `id` alongside `user_id` is not a
+//     partial migration.
 //   - "other"     - empty input or a form that doesn't fit any bucket.
 func classifyCasingFamily(name string) string {
 	if name == "" {
