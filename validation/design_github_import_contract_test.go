@@ -3,19 +3,26 @@ package validation
 import (
 	"path/filepath"
 	"reflect"
+	"regexp"
+	"slices"
 	"sort"
 	"testing"
 )
 
-// The GitHub import contract (layer5io/meshery-cloud#6118) is three operations
-// Meshery Cloud serves and its UI consumes through the generated cloudApi hooks:
+// The GitHub import contract (layer5io/meshery-cloud#6118, #6119) is the
+// operations Meshery Cloud serves and its UI consumes through the generated
+// cloudApi hooks:
 //
 //   - refreshPatternFromSource (POST /api/content/patterns/refresh/{designId})
 //     rewrites a design in place from the GitHub file its `location` records;
+//   - updatePatternSource (PATCH /api/content/patterns/{designId}/source)
+//     re-points that binding at another repository, path or ref;
 //   - getGithubImportedDesigns (GET /api/integrations/github/designs/{connectionId})
 //     lists the designs imported from GitHub, derived from `location`;
 //   - importGithubRepository (POST /api/integrations/github/import/{connectionId})
-//     imports selected files, handling already-imported ones per `onExisting`.
+//     imports selected files, handling already-imported ones per `onExisting`;
+//   - getGithubRepositoryBranches (GET /api/integrations/github/branches/{connectionId})
+//     lists the refs a design's source binding can track.
 //
 // These tests pin the operation IDs, field names, enum values and status codes
 // the Cloud server and UI are coded against, so a rename cannot slip through as
@@ -34,6 +41,7 @@ type githubImportOperation struct {
 	requestBody   string // $ref of the JSON request body; empty when there is none
 	successSchema string // $ref of the 200 application/json schema
 	responseCodes []string
+	tag           string // the operation's only tag, which names its RTK cache tag
 }
 
 var githubImportOperations = []githubImportOperation{
@@ -43,6 +51,16 @@ var githubImportOperations = []githubImportOperation{
 		operationID:   "refreshPatternFromSource",
 		successSchema: "#/components/schemas/MesheryPattern",
 		responseCodes: []string{"200", "400", "401", "403", "404", "409", "500", "502"},
+		tag:           "designs",
+	},
+	{
+		path:          "/api/content/patterns/{designId}/source",
+		method:        "patch",
+		operationID:   "updatePatternSource",
+		requestBody:   "#/components/schemas/DesignSourceBindingPayload",
+		successSchema: "#/components/schemas/MesheryPattern",
+		responseCodes: []string{"200", "400", "401", "403", "404", "409", "500", "502"},
+		tag:           "designs",
 	},
 	{
 		path:          "/api/integrations/github/designs/{connectionId}",
@@ -50,6 +68,7 @@ var githubImportOperations = []githubImportOperation{
 		operationID:   "getGithubImportedDesigns",
 		successSchema: "#/components/schemas/MesheryPatternPage",
 		responseCodes: []string{"200", "400", "401", "404", "500"},
+		tag:           "designs",
 	},
 	{
 		path:          "/api/integrations/github/import/{connectionId}",
@@ -58,6 +77,15 @@ var githubImportOperations = []githubImportOperation{
 		requestBody:   "#/components/schemas/GithubImportPayload",
 		successSchema: "#/components/schemas/GithubImportResponse",
 		responseCodes: []string{"200", "400", "401", "403", "404", "500", "502"},
+		tag:           "designs",
+	},
+	{
+		path:          "/api/integrations/github/branches/{connectionId}",
+		method:        "get",
+		operationID:   "getGithubRepositoryBranches",
+		successSchema: "#/components/schemas/GithubBranchPage",
+		responseCodes: []string{"200", "400", "401", "403", "404", "500", "502"},
+		tag:           "github",
 	},
 }
 
@@ -114,30 +142,129 @@ func TestGithubImportOperationsContract(t *testing.T) {
 
 // RTK cache tags are the declaring construct's info.title joined to the
 // operation's tag (build/bundle-openapi.js prefixTags), so `designs` here is the
-// `Design_designs` tag. The GitHub operations live in the design construct so
-// they share it with getPatterns and deletePattern: an import or a refresh
-// refetches every design list, and a delete or refresh refetches the
-// imported-designs inventory. Moving them to their own construct would silently
-// give them a different tag and break that cache coherence.
-func TestGithubImportOperationsShareTheDesignsCacheTag(t *testing.T) {
+// `Design_designs` tag. The GitHub operations that read or write designs live in
+// the design construct so they share it with getPatterns and deletePattern: an
+// import, a refresh or a remap refetches every design list, and a delete,
+// refresh or remap refetches the imported-designs inventory. Moving them to
+// their own construct would silently give them a different tag and break that
+// cache coherence. The branch list reads only GitHub, so it carries `github`
+// (`Design_github`) and a design write never refetches it.
+func TestGithubImportOperationsCacheTags(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), designV1beta3Spec))
 
 	if got := mustLookup(t, doc, "info", "title"); got != "Design" {
 		t.Fatalf("design construct info.title = %v, want \"Design\" (it names the generated Design_designs cache tag)", got)
 	}
 
-	sharing := []struct{ path, method string }{
+	for _, op := range []struct{ path, method string }{
 		{"/api/content/patterns", "get"},
 		{"/api/content/patterns/{designId}", "delete"},
-	}
-	for _, op := range githubImportOperations {
-		sharing = append(sharing, struct{ path, method string }{op.path, op.method})
-	}
-
-	for _, op := range sharing {
+	} {
 		if !operationHasTag(mustLookup(t, doc, "paths", op.path, op.method), "designs") {
 			t.Errorf("%s %s is not tagged `designs`, so it does not share the Design_designs cache tag", op.method, op.path)
 		}
+	}
+
+	for _, op := range githubImportOperations {
+		got := sequenceStrings(mustValue(mustLookup(t, doc, "paths", op.path, op.method), "tags"))
+		if !reflect.DeepEqual(got, []string{op.tag}) {
+			t.Errorf("%s tags = %v, want [%s] (its only tag names the cache it provides and invalidates)", op.operationID, got, op.tag)
+		}
+	}
+
+	var declared []string
+	for _, tag := range mustValue(doc, "tags").([]any) {
+		declared = append(declared, mustValue(tag, "name").(string))
+	}
+	for _, op := range githubImportOperations {
+		if !slices.Contains(declared, op.tag) {
+			t.Errorf("%s uses tag %q, which the design construct's top-level tags do not declare (declared: %v)", op.operationID, op.tag, declared)
+		}
+	}
+}
+
+// commitShaPattern is a full SHA-1 (40) or SHA-256 (64) lowercase hex object
+// name - never an abbreviated one, which can turn ambiguous as a repository grows.
+const commitShaPattern = "^[0-9a-f]{40}([0-9a-f]{24})?$"
+
+func TestDesignSourceBindingPayloadContract(t *testing.T) {
+	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), designV1beta3Spec))
+	payload := mustLookup(t, doc, "components", "schemas", "DesignSourceBindingPayload")
+
+	if got := sequenceStrings(mustValue(payload, "required")); !reflect.DeepEqual(got, []string{"connectionId", "host", "path"}) {
+		t.Errorf("DesignSourceBindingPayload required = %v, want [connectionId host path] (an omitted ref means the default branch)", got)
+	}
+
+	properties := mustValue(payload, "properties")
+	if got, want := sortedMappingKeys(properties), []string{"connectionId", "host", "path", "ref"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("DesignSourceBindingPayload properties = %v, want %v", got, want)
+	}
+	if got := mustLookup(t, properties, "connectionId", "$ref"); got != "../../v1beta2/core/api.yml#/components/schemas/Uuid" {
+		t.Errorf("connectionId $ref = %v, want the v1beta2 core Uuid", got)
+	}
+
+	host := regexp.MustCompile(mustLookup(t, properties, "host", "pattern").(string))
+	for _, value := range []string{"github.com/meshery/meshery", "github.com/layer5io/meshery-cloud", "github.com/a/b.c_d-e"} {
+		if !host.MatchString(value) {
+			t.Errorf("host pattern rejects %q, the form location.host stores", value)
+		}
+	}
+	for _, value := range []string{"meshery/meshery", "https://github.com/meshery/meshery", "github.com/meshery", "github.com/meshery/meshery/tree/master", "gitlab.com/meshery/meshery", "github.com/-meshery/meshery"} {
+		if host.MatchString(value) {
+			t.Errorf("host pattern accepts %q, which is not github.com/<owner>/<repo>", value)
+		}
+	}
+}
+
+func TestDesignSourceLocationContract(t *testing.T) {
+	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), designV1beta3Spec))
+	location := mustLookup(t, doc, "components", "schemas", "DesignSourceLocation")
+
+	properties := mustValue(location, "properties")
+	if got, want := sortedMappingKeys(properties), []string{"branch", "commitSha", "host", "path", "type"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("DesignSourceLocation properties = %v, want %v", got, want)
+	}
+	if _, hasRequired := mappingValue(location, "required"); hasRequired {
+		t.Errorf("DesignSourceLocation declares required keys; every key is optional (commitSha is absent after a remap, and upload or URL designs carry none)")
+	}
+	if got := mustValue(location, "additionalProperties"); got != true {
+		t.Errorf("DesignSourceLocation additionalProperties = %v, want true (location is an open MapObject other writers add keys to)", got)
+	}
+	if got := mustLookup(t, properties, "commitSha", "pattern"); got != commitShaPattern {
+		t.Errorf("location.commitSha pattern = %v, want %q", got, commitShaPattern)
+	}
+
+	// location stays an untyped MapObject on MesheryPattern: retyping it to
+	// DesignSourceLocation would change the generated Go field for every
+	// consumer that writes the column, including Meshery Server.
+	if got := mustLookup(t, doc, "components", "schemas", "MesheryPattern", "properties", "location", "$ref"); got != "../../v1beta2/core/api.yml#/components/schemas/MapObject" {
+		t.Errorf("MesheryPattern.location $ref = %v, want the v1beta2 core MapObject", got)
+	}
+}
+
+func TestGithubBranchPageContract(t *testing.T) {
+	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), designV1beta3Spec))
+	page := mustLookup(t, doc, "components", "schemas", "GithubBranchPage")
+
+	wantRequired := []string{"branches", "defaultBranch", "hasMore", "page", "pageSize"}
+	gotRequired := sequenceStrings(mustValue(page, "required"))
+	sort.Strings(gotRequired)
+	if !reflect.DeepEqual(gotRequired, wantRequired) {
+		t.Errorf("GithubBranchPage required = %v, want %v", gotRequired, wantRequired)
+	}
+	if got := sortedMappingKeys(mustValue(page, "properties")); !reflect.DeepEqual(got, wantRequired) {
+		t.Errorf("GithubBranchPage properties = %v, want %v (GitHub reports no total, so the page carries no count)", got, wantRequired)
+	}
+	if got := mustLookup(t, page, "properties", "branches", "items", "$ref"); got != "#/components/schemas/GithubBranch" {
+		t.Errorf("GithubBranchPage.branches items $ref = %v, want GithubBranch", got)
+	}
+
+	branch := mustLookup(t, doc, "components", "schemas", "GithubBranch")
+	if got := sequenceStrings(mustValue(branch, "required")); !reflect.DeepEqual(got, []string{"name", "commitSha"}) {
+		t.Errorf("GithubBranch required = %v, want [name commitSha]", got)
+	}
+	if got := mustLookup(t, branch, "properties", "commitSha", "pattern"); got != commitShaPattern {
+		t.Errorf("GithubBranch.commitSha pattern = %v, want %q", got, commitShaPattern)
 	}
 }
 

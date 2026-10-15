@@ -41,33 +41,33 @@ func loadAPISpecRaw(filePath string) (map[string]any, error) {
 // (e.g., design.yaml). These are JSON Schema objects without an OpenAPI
 // envelope, so kin-openapi's loader rejects them. We load them with yaml.v3.
 type entitySchema struct {
-	Type                 string                    `yaml:"type"`
-	AdditionalProperties *bool                     `yaml:"additionalProperties"`
-	Properties           map[string]*propertyDef   `yaml:"properties"`
-	Required             []string                  `yaml:"required"`
-	Extensions           map[string]any            `yaml:"-"`
-	raw                  map[string]any            // raw YAML for extension access
+	Type                 string                  `yaml:"type"`
+	AdditionalProperties *bool                   `yaml:"additionalProperties"`
+	Properties           map[string]*propertyDef `yaml:"properties"`
+	Required             []string                `yaml:"required"`
+	Extensions           map[string]any          `yaml:"-"`
+	raw                  map[string]any          // raw YAML for extension access
 }
 
 // propertyDef is a minimal representation of a schema property for entity files.
 type propertyDef struct {
-	Type        string            `yaml:"type"`
-	Ref         string            `yaml:"$ref"`
-	Description string            `yaml:"description"`
-	Format      string            `yaml:"format"`
-	Enum        []any             `yaml:"enum"`
-	MinLength   *int              `yaml:"minLength"`
-	MaxLength   *int              `yaml:"maxLength"`
-	Pattern     string            `yaml:"pattern"`
-	Minimum     *float64          `yaml:"minimum"`
-	Maximum     *float64          `yaml:"maximum"`
-	Const       any               `yaml:"const"`
-	AllOf       []map[string]any  `yaml:"allOf"`
-	AnyOf       []map[string]any  `yaml:"anyOf"`
-	OneOf       []map[string]any  `yaml:"oneOf"`
-	Items       *propertyDef      `yaml:"items"`
+	Type        string                  `yaml:"type"`
+	Ref         string                  `yaml:"$ref"`
+	Description string                  `yaml:"description"`
+	Format      string                  `yaml:"format"`
+	Enum        []any                   `yaml:"enum"`
+	MinLength   *int                    `yaml:"minLength"`
+	MaxLength   *int                    `yaml:"maxLength"`
+	Pattern     string                  `yaml:"pattern"`
+	Minimum     *float64                `yaml:"minimum"`
+	Maximum     *float64                `yaml:"maximum"`
+	Const       any                     `yaml:"const"`
+	AllOf       []map[string]any        `yaml:"allOf"`
+	AnyOf       []map[string]any        `yaml:"anyOf"`
+	OneOf       []map[string]any        `yaml:"oneOf"`
+	Items       *propertyDef            `yaml:"items"`
 	Properties  map[string]*propertyDef `yaml:"properties"`
-	Extensions  map[string]any    `yaml:"-"`
+	Extensions  map[string]any          `yaml:"-"`
 	raw         map[string]any
 }
 

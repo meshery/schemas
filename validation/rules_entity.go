@@ -57,7 +57,7 @@ func checkRule18(relDir, constructDir, constructName string, _ AuditOptions) []V
 	for _, e := range entries {
 		if strings.Contains(e.Name(), "_template") {
 			out = append(out, Violation{File: relDir,
-				Message: fmt.Sprintf(`Construct %q has template file(s) at root level: %s. Move to templates/ subdirectory.`, constructName, e.Name()),
+				Message:  fmt.Sprintf(`Construct %q has template file(s) at root level: %s. Move to templates/ subdirectory.`, constructName, e.Name()),
 				Severity: SeverityBlocking, RuleNumber: 18})
 		}
 	}
