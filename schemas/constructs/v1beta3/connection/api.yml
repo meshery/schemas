@@ -172,6 +172,157 @@ paths:
         "401":
           $ref: "#/components/responses/401"
 
+  /api/integrations/connections/{connectionKind}/details:
+    get:
+      x-internal: ["meshery"]
+      operationId: getConnectionDetails
+      summary: Get connection details
+      description: Get kind-specific connection details for a repository URL.
+      parameters:
+        - $ref: "#/components/parameters/connectionKind"
+        - name: id
+          in: query
+          required: true
+          description: Repository URL used to resolve the connection details.
+          schema:
+            type: string
+            maxLength: 2048
+      responses:
+        "200":
+          description: Connection details
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{connectionKind}/verify:
+    post:
+      x-internal: ["meshery"]
+      operationId: verifyConnectionURL
+      summary: Verify a connection URL
+      description: Verify that a repository URL can be reached for the requested connection kind.
+      parameters:
+        - $ref: "#/components/parameters/connectionKind"
+        - name: id
+          in: query
+          required: true
+          description: Repository URL to verify.
+          schema:
+            type: string
+            maxLength: 2048
+      responses:
+        "200":
+          description: Connection URL verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{connectionKind}/metadata:
+    post:
+      x-internal: ["meshery"]
+      operationId: connectionMetaData
+      summary: Get connection metadata
+      description: Resolve kind-specific metadata for a connection.
+      parameters:
+        - $ref: "#/components/parameters/connectionKind"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfigureConnectionPayload"
+      responses:
+        "200":
+          description: Connection metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{connectionKind}/configure:
+    post:
+      x-internal: ["meshery"]
+      operationId: configureConnection
+      summary: Configure a connection
+      description: Configure a connection for the requested kind.
+      parameters:
+        - $ref: "#/components/parameters/connectionKind"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateConnectionStatusPayload"
+      responses:
+        "200":
+          description: Configured connection
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{kind}/status:
+    put:
+      x-internal: ["meshery"]
+      tags:
+        - Connections
+      operationId: updateConnectionStatus
+      summary: Update connection status
+      description: Update the status of a connection kind.
+      parameters:
+        - name: kind
+          in: path
+          required: true
+          description: Connection kind.
+          schema:
+            type: string
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Connection status updated
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/integrations/connections/{connectionId}:
     get:
       x-internal: ["cloud", "meshery"]
@@ -949,6 +1100,16 @@ components:
             - embedded
           x-oapi-codegen-extra-tags:
             json: "mode,omitempty"
+
+    ConfigureConnectionPayload:
+      type: object
+      description: Kind-specific payload used to configure a connection.
+      additionalProperties: true
+
+    UpdateConnectionStatusPayload:
+      type: object
+      description: Kind-specific payload used to update a connection status.
+      additionalProperties: true
 
     ConnectionPayload:
       type: object
