@@ -171,6 +171,46 @@ test("dereferenceOpenapiSpec resolves a construct api.yml in-process", async () 
   assert.ok(document.components.schemas.KeyPage);
 });
 
+test("catalog schemas, read responses, and requests share the declared contentClass enum", async () => {
+  const projectRoot = config.getProjectRoot();
+  const enumValues = ["official", "verified", "project", "community"];
+  const catalogSpecs = await Promise.all(
+    ["v1alpha2", "v1beta1", "v1beta2"].map((version) =>
+      dereferenceOpenapiSpec(
+        path.join(projectRoot, `schemas/constructs/${version}/catalog/api.yml`),
+      ),
+    ),
+  );
+  const designSpec = await dereferenceOpenapiSpec(
+    path.join(projectRoot, "schemas/constructs/v1beta3/design/api.yml"),
+  );
+  const workspaceSpec = await dereferenceOpenapiSpec(
+    path.join(projectRoot, "schemas/constructs/v1beta3/workspace/api.yml"),
+  );
+
+  const catalogPattern =
+    designSpec.components.schemas.CatalogContentPage.properties.patterns.items;
+  const workspaceDesign =
+    workspaceSpec.components.schemas.MesheryDesignPage.properties.designs.items;
+  const catalogRequest = designSpec.components.schemas.CatalogRequest;
+
+  for (const catalogSpec of catalogSpecs) {
+    const catalogData = catalogSpec.components.schemas.CatalogData;
+    assert.equal(Object.hasOwn(catalogData.properties, "class"), false);
+    assert.deepEqual(catalogData.properties.contentClass.enum, enumValues);
+  }
+
+  for (const catalogData of [
+    catalogPattern.properties.catalogData,
+    workspaceDesign.properties.catalogData,
+  ]) {
+    assert.equal(Object.hasOwn(catalogData.properties, "class"), false);
+    assert.deepEqual(catalogData.properties.contentClass.enum, enumValues);
+  }
+
+  assert.deepEqual(catalogRequest.properties.contentClass.allOf[0].enum, enumValues);
+});
+
 test("filterOpenapiByTag applies consumer-specific base metadata", () => {
   const doc = {
     openapi: "3.0.0",
