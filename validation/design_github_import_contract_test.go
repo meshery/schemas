@@ -41,7 +41,8 @@ type githubImportOperation struct {
 	requestBody   string // $ref of the JSON request body; empty when there is none
 	successSchema string // $ref of the 200 application/json schema
 	responseCodes []string
-	tag           string // the operation's only tag, which names its RTK cache tag
+	meshkitCodes  []string // error codes answered as a MeshKit JSON body (MeshkitError<code>)
+	tag           string   // the operation's only tag, which names its RTK cache tag
 }
 
 var githubImportOperations = []githubImportOperation{
@@ -51,6 +52,7 @@ var githubImportOperations = []githubImportOperation{
 		operationID:   "refreshPatternFromSource",
 		successSchema: "#/components/schemas/MesheryPattern",
 		responseCodes: []string{"200", "400", "401", "403", "404", "409", "500", "502"},
+		meshkitCodes:  []string{"403", "502"},
 		tag:           "designs",
 	},
 	{
@@ -60,6 +62,7 @@ var githubImportOperations = []githubImportOperation{
 		requestBody:   "#/components/schemas/DesignSourceBindingPayload",
 		successSchema: "#/components/schemas/MesheryPattern",
 		responseCodes: []string{"200", "400", "401", "403", "404", "409", "500", "502"},
+		meshkitCodes:  []string{"403", "502"},
 		tag:           "designs",
 	},
 	{
@@ -77,6 +80,7 @@ var githubImportOperations = []githubImportOperation{
 		requestBody:   "#/components/schemas/GithubImportPayload",
 		successSchema: "#/components/schemas/GithubImportResponse",
 		responseCodes: []string{"200", "400", "401", "403", "404", "500", "502"},
+		meshkitCodes:  []string{"403", "502"},
 		tag:           "designs",
 	},
 	{
@@ -85,6 +89,7 @@ var githubImportOperations = []githubImportOperation{
 		operationID:   "getGithubRepositoryBranches",
 		successSchema: "#/components/schemas/GithubBranchPage",
 		responseCodes: []string{"200", "400", "401", "403", "404", "500", "502"},
+		meshkitCodes:  []string{"403", "502"},
 		tag:           "github",
 	},
 }
@@ -127,12 +132,16 @@ func TestGithubImportOperationsContract(t *testing.T) {
 			// Every error response must resolve, so a status the Cloud server
 			// answers with is never a dangling reference.
 			for _, code := range op.responseCodes[1:] {
+				name := code
+				if slices.Contains(op.meshkitCodes, code) {
+					name = "MeshkitError" + code
+				}
 				ref, _ := mappingValue(mustValue(responses, code), "$ref")
-				if ref != "#/components/responses/"+code {
-					t.Errorf("%s %s response $ref = %v, want the construct's shared #/components/responses/%s", op.operationID, code, ref, code)
+				if ref != "#/components/responses/"+name {
+					t.Errorf("%s %s response $ref = %v, want the construct's shared #/components/responses/%s", op.operationID, code, ref, name)
 					continue
 				}
-				if _, err := lookupPath(doc, "components", "responses", code); err != nil {
+				if _, err := lookupPath(doc, "components", "responses", name); err != nil {
 					t.Errorf("%s %s response does not resolve: %v", op.operationID, code, err)
 				}
 			}
@@ -321,8 +330,8 @@ func TestGithubImportResponseContract(t *testing.T) {
 	}
 
 	coreDoc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), coreV1beta2Spec))
-	if _, err := lookupPath(coreDoc, "components", "responses", "502"); err != nil {
-		t.Errorf("the shared 502 response refreshPatternFromSource and importGithubRepository reference is not defined in v1beta2 core: %v", err)
+	if _, err := lookupPath(coreDoc, "components", "responses", "MeshkitError502"); err != nil {
+		t.Errorf("the shared MeshkitError502 response refreshPatternFromSource and importGithubRepository reference is not defined in v1beta2 core: %v", err)
 	}
 }
 

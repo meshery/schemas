@@ -287,8 +287,17 @@ paths:
         Only the design's owner may refresh it. No request body.
         Denials: `404` answers both "no such design" and "not the caller's
         design" with the same body by design, so the route is not an existence
-        oracle; `403` means the caller has no GitHub App installation with
-        access to the design's repository; `409` means the design has no
+        oracle;
+        `403` means the repository is not reachable through one of the
+        caller's verified GitHub App installations - the installations GitHub
+        lists for the caller's own GitHub account when they authorize the App.
+        The refusal is deliberately uniform: the App not being installed on
+        the repository's account and its being installed there for someone
+        else answer the same body, so the route does not reveal where the App
+        is installed. A `403` whose `code` is `meshery_cloud-3381` means the
+        caller's GitHub connection predates verification and must be
+        re-authorized (see `startGithubAuthorization`) before it can be used;
+        `409` means the design has no
         refreshable source (`location.type` is not `github`, or `host`/`path`
         is missing) or its source path no longer resolves to an importable
         file; `502` means GitHub could not be reached or rejected the request.
@@ -310,7 +319,7 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "403":
-          $ref: "#/components/responses/403"
+          $ref: "#/components/responses/MeshkitError403"
         "404":
           $ref: "#/components/responses/404"
         "409":
@@ -318,7 +327,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/content/patterns/{designId}/source:
     patch:
@@ -343,8 +352,16 @@ paths:
         Only the design's owner may remap it.
         Denials: `404` answers "no such design", "not the caller's design" and
         "connectionId is not the caller's own live GitHub connection" with the
-        same body, so the route is not an existence oracle; `403` means the
-        caller has no GitHub App installation with access to the repository;
+        same body, so the route is not an existence oracle;
+        `403` means the repository is not reachable through one of the
+        caller's verified GitHub App installations - the installations GitHub
+        lists for the caller's own GitHub account when they authorize the App.
+        The refusal is deliberately uniform: the App not being installed on
+        the repository's account and its being installed there for someone
+        else answer the same body, so the route does not reveal where the App
+        is installed. A `403` whose `code` is `meshery_cloud-3381` means the
+        caller's GitHub connection predates verification and must be
+        re-authorized (see `startGithubAuthorization`) before it can be used;
         `409` means `ref` does not resolve to a commit, or `path` does not name
         an importable file at it (missing, a directory, or not a supported
         format); `502` means GitHub could not be reached or rejected the
@@ -371,7 +388,7 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "403":
-          $ref: "#/components/responses/403"
+          $ref: "#/components/responses/MeshkitError403"
         "404":
           $ref: "#/components/responses/404"
         "409":
@@ -379,7 +396,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/pattern/import:
     post:
@@ -489,8 +506,17 @@ paths:
         (owner, location.type, location.host, location.path, location.branch)
         already identifies one of the caller's designs is handled per
         `onExisting`. `connectionId` must name the caller's own live GitHub
-        connection (404 otherwise). `403` means the caller has no GitHub App
-        installation with access to the repository; `502` means GitHub could
+        connection (404 otherwise).
+        `403` means the repository is not reachable through one of the
+        caller's verified GitHub App installations - the installations GitHub
+        lists for the caller's own GitHub account when they authorize the App.
+        The refusal is deliberately uniform: the App not being installed on
+        the repository's account and its being installed there for someone
+        else answer the same body, so the route does not reveal where the App
+        is installed. A `403` whose `code` is `meshery_cloud-3381` means the
+        caller's GitHub connection predates verification and must be
+        re-authorized (see `startGithubAuthorization`) before it can be used;
+        `502` means GitHub could
         not be reached or rejected the request. Each imported or updated
         design records the commit its file was read at in
         `location.commitSha`.
@@ -514,13 +540,13 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "403":
-          $ref: "#/components/responses/403"
+          $ref: "#/components/responses/MeshkitError403"
         "404":
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/integrations/github/branches/{connectionId}:
     get:
@@ -535,8 +561,17 @@ paths:
         client can offer the refs a design's source can track. Branch order
         is GitHub's. `connectionId` must name the caller's own live GitHub
         connection (404 otherwise, with the same body as "no such
-        connection"). `403` means the caller has no GitHub App installation
-        with access to the repository; `502` means GitHub could not be
+        connection").
+        `403` means the repository is not reachable through one of the
+        caller's verified GitHub App installations - the installations GitHub
+        lists for the caller's own GitHub account when they authorize the App.
+        The refusal is deliberately uniform: the App not being installed on
+        the repository's account and its being installed there for someone
+        else answer the same body, so the route does not reveal where the App
+        is installed. A `403` whose `code` is `meshery_cloud-3381` means the
+        caller's GitHub connection predates verification and must be
+        re-authorized (see `startGithubAuthorization`) before it can be used;
+        `502` means GitHub could not be
         reached or rejected the request.
       parameters:
         - $ref: "#/components/parameters/connectionId"
@@ -562,13 +597,13 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "403":
-          $ref: "#/components/responses/403"
+          $ref: "#/components/responses/MeshkitError403"
         "404":
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/catalog/content/{type}:
     get:
@@ -926,16 +961,16 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/400"
     401:
       $ref: "../../v1beta2/core/api.yml#/components/responses/401"
-    403:
-      $ref: "../../v1beta2/core/api.yml#/components/responses/403"
     404:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
     409:
       $ref: "../../v1beta2/core/api.yml#/components/responses/409"
     500:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
-    502:
-      $ref: "../../v1beta2/core/api.yml#/components/responses/502"
+    MeshkitError403:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError403"
+    MeshkitError502:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError502"
 
   parameters:
     designId:
