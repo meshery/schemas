@@ -930,9 +930,9 @@ components:
       description: >-
         A MeshKit error answered as a JSON body. `error` is the sentence the
         caller is shown; MeshKit's long description is never serialized. Use
-        the `MeshkitError400`, `MeshkitError403`, `MeshkitError404` and
-        `MeshkitError500` responses for an operation whose server answers its
-        refusals this way.
+        the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`,
+        `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses
+        for an operation whose server answers its refusals this way.
       required:
         - error
       additionalProperties: false
@@ -1219,8 +1219,20 @@ components:
         application/json:
           schema:
             $ref: "../../v1beta2/core/api.yml#/components/schemas/MeshkitError"
+    MeshkitError409:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/MeshkitError"
     MeshkitError500:
       description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/MeshkitError"
+    MeshkitError502:
+      description: Bad gateway - an upstream service the operation depends on could not be reached or rejected the request
       content:
         application/json:
           schema:

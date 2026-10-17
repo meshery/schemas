@@ -43,9 +43,13 @@ paths:
         account and GitHub confirms the installation it opens on still exists.
         `403` (code `meshery_cloud-3381`) means the connection must be
         re-authorized (`startGithubAuthorization` with `flow=authorize`).
-        `404` means the caller has no GitHub connection, or GitHub reports its
-        installation removed - in which case the connection is deleted. `502`
-        means GitHub could not confirm either way; the connection is kept.
+        When GitHub reports the installation the connection opens on removed,
+        that installation is dropped and the connection re-points at its next
+        verified installation, which is checked in turn: `200` when one
+        remains. `404` means the caller has no GitHub connection, or no
+        verified installation remains - in which case the connection is
+        deleted. `502` means GitHub could not confirm either way; the
+        connection is kept.
       responses:
         "200":
           description: The connection is verified and its installation exists. No body.
@@ -58,7 +62,7 @@ paths:
         "500":
           $ref: "#/components/responses/MeshkitError500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/integrations/github:
     get:
@@ -93,7 +97,7 @@ paths:
         "500":
           $ref: "#/components/responses/MeshkitError500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/integrations/github/scan:
     get:
@@ -135,7 +139,7 @@ paths:
         "500":
           $ref: "#/components/responses/MeshkitError500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/integrations/github/verify/{owner}/{repo}:
     post:
@@ -171,7 +175,7 @@ paths:
         "500":
           $ref: "#/components/responses/MeshkitError500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/integrations/github/install:
     post:
@@ -213,7 +217,7 @@ paths:
         "500":
           $ref: "#/components/responses/MeshkitError500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/integrations/github/authorize:
     get:
@@ -287,8 +291,6 @@ components:
   responses:
     401:
       $ref: "../../v1beta2/core/api.yml#/components/responses/401"
-    502:
-      $ref: "../../v1beta2/core/api.yml#/components/responses/502"
     MeshkitError400:
       $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError400"
     MeshkitError403:
@@ -297,6 +299,8 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError404"
     MeshkitError500:
       $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError500"
+    MeshkitError502:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError502"
 
   parameters:
     page:

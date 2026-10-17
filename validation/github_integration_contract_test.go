@@ -1,10 +1,14 @@
 package validation
 
 import (
+	"maps"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
+
+	"github.com/getkin/kin-openapi/openapi3"
 )
 
 // The GitHub integration contract: every operation acts only through the
@@ -88,19 +92,20 @@ var githubIntegrationOperations = []githubIntegrationOperation{
 	},
 }
 
-// Meshery Cloud answers 400/403/404/500 from these routes as a MeshKit JSON
-// body; 401 and 502 keep the shared core responses.
+// Meshery Cloud answers 400/403/404/500/502 from these routes as a MeshKit
+// JSON body; 401 keeps the shared core response.
 var githubIntegrationErrorResponse = map[string]string{
 	"400": "#/components/responses/MeshkitError400",
 	"401": "#/components/responses/401",
 	"403": "#/components/responses/MeshkitError403",
 	"404": "#/components/responses/MeshkitError404",
 	"500": "#/components/responses/MeshkitError500",
-	"502": "#/components/responses/502",
+	"502": "#/components/responses/MeshkitError502",
 }
 
 func TestGithubIntegrationOperationsContract(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), githubV1beta3Spec))
+	spec := mustLoadAPISpec(t, githubV1beta3Spec)
 
 	if got := mustLookup(t, doc, "info", "title"); got != "GitHub" {
 		t.Errorf("github construct info.title = %v, want \"GitHub\" (it names the generated GitHub_github cache tag)", got)
@@ -154,6 +159,9 @@ func TestGithubIntegrationOperationsContract(t *testing.T) {
 					}
 					if _, err := lookupPath(doc, "components", "responses", strings.TrimPrefix(want, "#/components/responses/")); err != nil {
 						t.Errorf("%s %s response does not resolve: %v", op.operationID, code, err)
+					}
+					if code != "401" {
+						assertMeshkitErrorBody(t, spec, op.path, op.method, code)
 					}
 					continue
 				}
@@ -264,12 +272,12 @@ func TestGithubIntegrationSchemas(t *testing.T) {
 	}
 }
 
-// The four design operations that reach GitHub share one 403 meaning: the
-// repository is not reachable through the caller's verified installations,
-// answered uniformly, plus the re-authorization 403 a pre-verification
-// connection gets.
-func TestDesignGithubOperationsDescribeVerifiedInstallation403(t *testing.T) {
-	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), designV1beta3Spec))
+// The four design operations that reach GitHub refuse an unreachable
+// repository (403, including the re-authorization code meshery_cloud-3381) and
+// a GitHub failure (502) the way Meshery Cloud writes them: as a MeshKit JSON
+// error body.
+func TestDesignGithubOperationsAnswerMeshkitErrorBodies(t *testing.T) {
+	spec := mustLoadAPISpec(t, designV1beta3Spec)
 
 	for _, op := range []struct{ path, method string }{
 		{"/api/content/patterns/refresh/{designId}", "post"},
@@ -277,31 +285,18 @@ func TestDesignGithubOperationsDescribeVerifiedInstallation403(t *testing.T) {
 		{"/api/integrations/github/import/{connectionId}", "post"},
 		{"/api/integrations/github/branches/{connectionId}", "get"},
 	} {
-		operation := mustLookup(t, doc, "paths", op.path, op.method)
-		description := strings.Join(strings.Fields(mustValue(operation, "description").(string)), " ")
-		for _, want := range []string{
-			"`403` means the repository is not reachable through one of the caller's verified GitHub App installations",
-			"The refusal is deliberately uniform",
-			"`meshery_cloud-3381`",
-			"`startGithubAuthorization`",
-		} {
-			if !strings.Contains(description, want) {
-				t.Errorf("%s %s description lacks %q", op.method, op.path, want)
-			}
-		}
-		if strings.Contains(description, "has no GitHub App installation with access") {
-			t.Errorf("%s %s still carries the superseded 403 wording", op.method, op.path)
-		}
-		if _, ok := mappingValue(mustValue(operation, "responses"), "403"); !ok {
-			t.Errorf("%s %s must keep declaring 403", op.method, op.path)
+		for _, code := range []string{"403", "502"} {
+			assertMeshkitErrorBody(t, spec, op.path, op.method, code)
 		}
 	}
 }
 
 // registerConnection and updateConnection refuse a write that would give a
-// connection the GitHub App connection's reserved identity with 409.
+// connection the GitHub App connection's reserved identity with a 409 whose
+// MeshKit JSON body carries code meshery_cloud-3397.
 func TestConnectionWritesDeclareReservedIdentity409(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), connectionV1beta3Spec))
+	spec := mustLoadAPISpec(t, connectionV1beta3Spec)
 
 	for _, op := range []struct {
 		path, method, operationID string
@@ -314,22 +309,10 @@ func TestConnectionWritesDeclareReservedIdentity409(t *testing.T) {
 		if got := mustValue(operation, "operationId"); got != op.operationID {
 			t.Errorf("%s %s operationId = %v, want %q", op.method, op.path, got, op.operationID)
 		}
-		responses := mustValue(operation, "responses")
-		if got := sortedMappingKeys(responses); !reflect.DeepEqual(got, op.codes) {
+		if got := sortedMappingKeys(mustValue(operation, "responses")); !reflect.DeepEqual(got, op.codes) {
 			t.Errorf("%s responses = %v, want %v", op.operationID, got, op.codes)
 		}
-		if ref, _ := mappingValue(mustValue(responses, "409"), "$ref"); ref != "#/components/responses/409" {
-			t.Errorf("%s 409 $ref = %v, want #/components/responses/409", op.operationID, ref)
-		}
-		description := strings.Join(strings.Fields(mustValue(operation, "description").(string)), " ")
-		for _, want := range []string{"`meshery_cloud-3397`", "name `GitHub App`, sub_type `git`"} {
-			if !strings.Contains(description, want) {
-				t.Errorf("%s description lacks %q", op.operationID, want)
-			}
-		}
-	}
-	if _, err := lookupPath(doc, "components", "responses", "409"); err != nil {
-		t.Errorf("connection construct must declare a shared 409 response: %v", err)
+		assertMeshkitErrorBody(t, spec, op.path, op.method, "409")
 	}
 }
 
@@ -399,7 +382,7 @@ func TestMeshkitErrorContract(t *testing.T) {
 		t.Errorf("MeshkitError.severity enum = %v", got)
 	}
 
-	for _, code := range []string{"400", "403", "404", "500"} {
+	for _, code := range []string{"400", "403", "404", "409", "500", "502"} {
 		ref := mustLookup(t, v1beta2, "components", "responses", "MeshkitError"+code, "content", "application/json", "schema", "$ref")
 		if ref != "../../v1beta2/core/api.yml#/components/schemas/MeshkitError" {
 			t.Errorf("MeshkitError%s schema $ref = %v, want the external form (consumers' Go aliases resolve it to core.MeshkitError)", code, ref)
@@ -408,5 +391,49 @@ func TestMeshkitErrorContract(t *testing.T) {
 		if got := mustLookup(t, v1beta2, "components", "responses", code, "content", "text/plain", "schema", "type"); got != "string" {
 			t.Errorf("core %s response body = %v, want text/plain string", code, got)
 		}
+	}
+}
+
+func mustLoadAPISpec(t *testing.T, relPath string) *openapi3.T {
+	t.Helper()
+	spec, err := loadAPISpec(filepath.Join(repoRootDir(t), relPath))
+	if err != nil {
+		t.Fatalf("load %s: %v", relPath, err)
+	}
+	return spec
+}
+
+// assertMeshkitErrorBody resolves an operation's response through every $ref,
+// as the code generators' OpenAPI loader does, and asserts the only body it
+// declares is the MeshkitError JSON schema.
+func assertMeshkitErrorBody(t *testing.T, spec *openapi3.T, path, method, code string) {
+	t.Helper()
+	item := spec.Paths.Value(path)
+	if item == nil {
+		t.Errorf("%s is not declared", path)
+		return
+	}
+	operation := item.GetOperation(strings.ToUpper(method))
+	if operation == nil {
+		t.Errorf("%s %s is not declared", method, path)
+		return
+	}
+	response := operation.Responses.Value(code)
+	if response == nil || response.Value == nil {
+		t.Errorf("%s %s does not declare %s", method, path, code)
+		return
+	}
+	content := response.Value.Content
+	if got := slices.Sorted(maps.Keys(content)); !reflect.DeepEqual(got, []string{"application/json"}) {
+		t.Errorf("%s %s %s media types = %v, want [application/json]", method, path, code, got)
+		return
+	}
+	schema := content.Get("application/json").Schema
+	if schema == nil || schema.Value == nil || !strings.HasSuffix(schema.Ref, "v1beta2/core/api.yml#/components/schemas/MeshkitError") {
+		t.Errorf("%s %s %s body does not resolve to v1beta2/core MeshkitError", method, path, code)
+		return
+	}
+	if got := slices.Sorted(maps.Keys(schema.Value.Properties)); !reflect.DeepEqual(got, []string{"code", "error", "probableCause", "severity", "suggestedRemediation"}) {
+		t.Errorf("%s %s %s body properties = %v, want MeshkitError's", method, path, code, got)
 	}
 }

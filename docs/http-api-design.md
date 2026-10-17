@@ -60,20 +60,23 @@ GitHub could not be reached or rejected the request). Reference them - directly,
 alias under the construct's own `components/responses` as the v1beta3 design construct does -
 rather than redefining an error response inline. The one exception is a shared response whose
 description is wrong for the operation: the shared `409` reads "Publish request already exists",
-so a construct whose conflict means something else (`job_lease`, `connection`) declares its own
-`409` with the same `text/plain` body and a description that names its conflict.
+so a construct whose conflict means something else (`job_lease`) declares its own `409` with the
+same `text/plain` body and a description that names its conflict.
 
 Those shared responses declare a `text/plain` body. An operation whose server answers its refusals
 as a MeshKit JSON error body - `{error, code, severity, probableCause, suggestedRemediation}`, as
 Meshery Cloud does from its GitHub integration, invitation-write and events-aggregate routes -
-references `MeshkitError400`, `MeshkitError403`, `MeshkitError404` or `MeshkitError500` instead,
-which carry the `MeshkitError` schema as `application/json`. The plain-text responses stay as they
+references `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`,
+`MeshkitError500` or `MeshkitError502` instead, which carry the `MeshkitError` schema as
+`application/json`. The four design operations that reach GitHub use `MeshkitError403` and
+`MeshkitError502` for those two refusals, and `registerConnection`/`updateConnection` use
+`MeshkitError409`. The plain-text responses stay as they
 are, so no existing operation's contract changes. Two generator constraints shape these:
 
 - Every `$ref` to a `v1beta2/core` schema generates a Go reference into the unversioned
   `models/core` package, which is generated from `v1alpha1/core`. `MeshkitError` is therefore
   mirrored, identically, in `v1alpha1/core`, as `MapObject` and `Endpoint` are.
-- Inside `v1beta2/core`, the `MeshkitError4xx/500` responses write their schema `$ref` in the
+- Inside `v1beta2/core`, the `MeshkitError*` responses write their schema `$ref` in the
   external form (`../../v1beta2/core/api.yml#/components/schemas/MeshkitError`). Written as a local
   `#/...` ref, a consumer that aliases the response would generate an unqualified `MeshkitError`
   its own package does not define.

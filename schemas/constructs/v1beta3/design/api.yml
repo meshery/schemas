@@ -319,7 +319,7 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "403":
-          $ref: "#/components/responses/403"
+          $ref: "#/components/responses/MeshkitError403"
         "404":
           $ref: "#/components/responses/404"
         "409":
@@ -327,7 +327,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/content/patterns/{designId}/source:
     patch:
@@ -388,7 +388,7 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "403":
-          $ref: "#/components/responses/403"
+          $ref: "#/components/responses/MeshkitError403"
         "404":
           $ref: "#/components/responses/404"
         "409":
@@ -396,7 +396,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/pattern/import:
     post:
@@ -540,13 +540,13 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "403":
-          $ref: "#/components/responses/403"
+          $ref: "#/components/responses/MeshkitError403"
         "404":
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/integrations/github/branches/{connectionId}:
     get:
@@ -597,13 +597,13 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "403":
-          $ref: "#/components/responses/403"
+          $ref: "#/components/responses/MeshkitError403"
         "404":
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
         "502":
-          $ref: "#/components/responses/502"
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/catalog/content/{type}:
     get:
@@ -961,16 +961,16 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/400"
     401:
       $ref: "../../v1beta2/core/api.yml#/components/responses/401"
-    403:
-      $ref: "../../v1beta2/core/api.yml#/components/responses/403"
     404:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
     409:
       $ref: "../../v1beta2/core/api.yml#/components/responses/409"
     500:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
-    502:
-      $ref: "../../v1beta2/core/api.yml#/components/responses/502"
+    MeshkitError403:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError403"
+    MeshkitError502:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError502"
 
   parameters:
     designId:
