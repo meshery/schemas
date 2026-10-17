@@ -1932,6 +1932,36 @@ const injectedRtkApi = api
         }),
         providesTags: ["token_tokens"],
       }),
+      getNativeClientAuthorization: build.query<
+        GetNativeClientAuthorizationApiResponse,
+        GetNativeClientAuthorizationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/identity/native/authorize`,
+          params: {
+            clientName: queryArg?.clientName,
+            port: queryArg?.port,
+            codeChallenge: queryArg?.codeChallenge,
+            codeChallengeMethod: queryArg?.codeChallengeMethod,
+            state: queryArg?.state,
+          },
+        }),
+        providesTags: ["token_tokens"],
+      }),
+      approveNativeClientAuthorization: build.mutation<
+        ApproveNativeClientAuthorizationApiResponse,
+        ApproveNativeClientAuthorizationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/identity/native/authorize`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
+      }),
+      exchangeNativeAuthorizationCode: build.mutation<
+        ExchangeNativeAuthorizationCodeApiResponse,
+        ExchangeNativeAuthorizationCodeApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/identity/native/token`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
+      }),
       getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
         query: (queryArg) => ({
           url: `/api/users`,
@@ -17735,7 +17765,7 @@ export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
 export type GetUserTokensApiArg = {
   /** Whether to retrieve OAuth-backed sessions instead of API tokens. */
   isOauth?: boolean;
-  /** Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
+  /** Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list. */
   purpose?: string;
   /** Get responses by page */
   page?: number;
@@ -17782,7 +17812,7 @@ export type GenerateTokenApiResponse = /** status 201 Token generated */ {
 export type GenerateTokenApiArg = {
   /** Name of the token. */
   name: string;
-  /** Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
+  /** Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list. */
   purpose?: string;
 };
 export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
@@ -17882,6 +17912,64 @@ export type IssueIndefiniteLifetimeTokenApiArg = {
   userId: string;
   /** Authentication provider to associate with the indefinite token. */
   provider: string;
+};
+export type GetNativeClientAuthorizationApiResponse = unknown;
+export type GetNativeClientAuthorizationApiArg = {
+  /** Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token. */
+  clientName: string;
+  /** Port on 127.0.0.1 where the native client listens for the callback. */
+  port: number;
+  /** PKCE code challenge, BASE64URL(SHA256(codeVerifier)) without padding. */
+  codeChallenge: string;
+  /** PKCE challenge method. Only S256 is accepted. */
+  codeChallengeMethod: "S256";
+  /** Opaque value from the native client, returned unchanged on the callback. */
+  state: string;
+};
+export type ApproveNativeClientAuthorizationApiResponse = unknown;
+export type ApproveNativeClientAuthorizationApiArg = {
+  body: {
+    /** Display name of the native client. */
+    clientName: string;
+    /** Port on 127.0.0.1 for the callback. */
+    port: number;
+    /** PKCE S256 code challenge. */
+    codeChallenge: string;
+    /** PKCE challenge method. */
+    codeChallengeMethod: "S256";
+    /** Opaque client state returned on the callback. */
+    state: string;
+  };
+};
+export type ExchangeNativeAuthorizationCodeApiResponse = /** status 201 API token minted for the native client */ {
+  /** Unique identifier for the token. */
+  id: string;
+  /** UUID of the user who owns the token. */
+  owner: string;
+  /** Authentication provider associated with the token. */
+  provider: string;
+  /** Access token value. */
+  accessToken: string;
+  /** Refresh token value when applicable. */
+  refreshToken?: string;
+  /** Human-readable token name. */
+  name: string;
+  /** Purpose for which the token was created. */
+  purpose: string;
+  /** Whether this entry represents an OAuth session. */
+  isOauth: boolean;
+  /** Timestamp when the token was created. */
+  createdAt: string;
+  /** Timestamp when the token was last updated. */
+  updatedAt: string;
+};
+export type ExchangeNativeAuthorizationCodeApiArg = {
+  body: {
+    /** Single-use authorization code from the loopback callback. */
+    code: string;
+    /** PKCE code verifier (RFC 7636, 43 to 128 unreserved characters). */
+    codeVerifier: string;
+  };
 };
 export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
   /** Current page number of the result set. */
@@ -19815,6 +19903,10 @@ export const {
   useLazyDownloadTokenQuery,
   useIssueIndefiniteLifetimeTokenQuery,
   useLazyIssueIndefiniteLifetimeTokenQuery,
+  useGetNativeClientAuthorizationQuery,
+  useLazyGetNativeClientAuthorizationQuery,
+  useApproveNativeClientAuthorizationMutation,
+  useExchangeNativeAuthorizationCodeMutation,
   useGetUsersQuery,
   useLazyGetUsersQuery,
   useSearchUsersQuery,
