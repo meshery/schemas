@@ -194,6 +194,18 @@ export interface components {
              */
             organizationId: string;
         };
+        /** @description Partial update for an environment. Every property is optional; an omitted property retains its stored value. organizationId is accepted for symmetry with the create payload but is not actually mutable - see its own description - so omitting it is the normal case. */
+        EnvironmentUpdatePayload: {
+            /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
+            name?: string;
+            /** @description An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
+            description?: string;
+            /**
+             * Format: uuid
+             * @description The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.
+             */
+            organizationId?: string;
+        };
         /** @description Paginated list of environments. */
         EnvironmentPage: {
             /** @description Zero-based page index returned in this response. */
@@ -391,7 +403,7 @@ export interface components {
         orgIdQuery: string;
     };
     requestBodies: {
-        /** @description Body for creating environment */
+        /** @description Body for creating an environment */
         environmentPayload: {
             content: {
                 "application/json": {
@@ -404,6 +416,22 @@ export interface components {
                      * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
                      */
                     organizationId: string;
+                };
+            };
+        };
+        /** @description Body for partially updating an environment. Omitted properties retain their stored value. */
+        environmentUpdatePayload: {
+            content: {
+                "application/json": {
+                    /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
+                    name?: string;
+                    /** @description An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
+                    description?: string;
+                    /**
+                     * Format: uuid
+                     * @description The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.
+                     */
+                    organizationId?: string;
                 };
             };
         };
@@ -546,7 +574,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        /** @description Body for creating environment */
+        /** @description Body for creating an environment */
         requestBody: {
             content: {
                 "application/json": {
@@ -808,19 +836,19 @@ export interface operations {
             };
             cookie?: never;
         };
-        /** @description Body for creating environment */
+        /** @description Body for partially updating an environment. Omitted properties retain their stored value. */
         requestBody: {
             content: {
                 "application/json": {
                     /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
-                    name: string;
+                    name?: string;
                     /** @description An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
                     description?: string;
                     /**
                      * Format: uuid
-                     * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
+                     * @description The organization cannot be changed after creation. Accepted here only so a client that already has this value does not have to strip it before sending a partial update.
                      */
-                    organizationId: string;
+                    organizationId?: string;
                 };
             };
         };
