@@ -6,7 +6,7 @@ kind: {}
 type: ''
 subType: ''
 key: ''
-entityState: {}
+entityState: []
 status: enabled
 metadata: {}
 
