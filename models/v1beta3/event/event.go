@@ -219,6 +219,9 @@ type Search = string
 // WorkspaceId defines model for workspaceId.
 type WorkspaceId = core.WorkspaceId
 
+// CoreMeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError403 = core.MeshkitError
+
 // Getter for additional properties for EventPayload. Returns the specified
 // element and whether it was found
 func (a EventPayload) Get(fieldName string) (value interface{}, found bool) {

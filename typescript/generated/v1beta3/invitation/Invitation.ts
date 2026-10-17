@@ -557,6 +557,98 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Invalid request body or request param */
+        MeshkitError400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Forbidden */
+        MeshkitError403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Result not found */
+        MeshkitError404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Internal server error */
+        MeshkitError500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
     };
     parameters: {
         /** @description The ID of the organization. */
@@ -854,7 +946,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */
@@ -872,7 +978,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Result not found */
@@ -881,7 +1001,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -890,7 +1024,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
         };
@@ -1219,7 +1367,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */
@@ -1237,7 +1399,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -1246,7 +1422,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
         };

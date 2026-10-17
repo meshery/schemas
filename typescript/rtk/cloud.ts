@@ -29,6 +29,7 @@ export const addTagTypes = [
   "Environment_environments",
   "Events_events",
   "Filter_filters",
+  "GitHub_github",
   "Invitation_Invitation",
   "JobLease_jobLeases",
   "PatternResource_patternResources",
@@ -1523,6 +1524,79 @@ const injectedRtkApi = api
       getFilterFile: build.query<GetFilterFileApiResponse, GetFilterFileApiArg>({
         query: (queryArg) => ({ url: `/api/content/filters/download/${queryArg.filterId}` }),
         providesTags: ["Filter_filters"],
+      }),
+      getGithubAppStatus: build.query<GetGithubAppStatusApiResponse, GetGithubAppStatusApiArg>({
+        query: () => ({ url: `/api/integrations/github/status` }),
+        providesTags: ["GitHub_github"],
+      }),
+      getGithubInstallationRepositories: build.query<
+        GetGithubInstallationRepositoriesApiResponse,
+        GetGithubInstallationRepositoriesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/github`,
+          params: {
+            id: queryArg?.id,
+            page: queryArg?.page,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
+      scanGithubRepository: build.query<ScanGithubRepositoryApiResponse, ScanGithubRepositoryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/scan`,
+          params: {
+            name: queryArg?.name,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
+      verifyGithubRepositoryWorkflow: build.mutation<
+        VerifyGithubRepositoryWorkflowApiResponse,
+        VerifyGithubRepositoryWorkflowApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/verify/${queryArg.owner}/${queryArg.repo}`,
+          method: "POST",
+          params: {
+            id: queryArg?.id,
+          },
+        }),
+        invalidatesTags: ["GitHub_github"],
+      }),
+      installGithubWorkflow: build.mutation<InstallGithubWorkflowApiResponse, InstallGithubWorkflowApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/install`,
+          method: "POST",
+          body: queryArg.body,
+          params: {
+            id: queryArg?.id,
+          },
+        }),
+        invalidatesTags: ["GitHub_github"],
+      }),
+      startGithubAuthorization: build.query<StartGithubAuthorizationApiResponse, StartGithubAuthorizationApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/authorize`,
+          params: {
+            flow: queryArg?.flow,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
+      githubAppCallback: build.query<GithubAppCallbackApiResponse, GithubAppCallbackApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/callback`,
+          params: {
+            state: queryArg?.state,
+            code: queryArg?.code,
+            installation_id: queryArg?.installationId,
+            setup_action: queryArg?.setupAction,
+          },
+        }),
+        providesTags: ["GitHub_github"],
       }),
       getInvitation: build.query<GetInvitationApiResponse, GetInvitationApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}` }),
@@ -15631,6 +15705,107 @@ export type GetFilterFileApiArg = {
   /** Filter ID */
   filterId: string;
 };
+export type GetGithubAppStatusApiResponse = unknown;
+export type GetGithubAppStatusApiArg = void;
+export type GetGithubInstallationRepositoriesApiResponse =
+  /** status 200 One page of the installation's repositories. */ {
+    [key: string]: any;
+  };
+export type GetGithubInstallationRepositoriesApiArg = {
+  /** GitHub App installation id; must be one of the caller's verified installations. */
+  id: string;
+  /** Get responses by page */
+  page?: number;
+};
+export type ScanGithubRepositoryApiResponse = /** status 200 Tree page. */
+  | {
+      /** Identifier of the tree item, for the UI's tree view. */
+      id?: string;
+      /** Display name of the file or directory. */
+      label?: string;
+      /** Kind of the tree item, such as a file or a directory. */
+      type?: string;
+      /** GitHub's tree entry for the item, passed through as GitHub returns it. */
+      entry?: {
+        [key: string]: any;
+      };
+      /** The items under a directory, each shaped as a `GithubRepositoryTreeItem`. */
+      children?: {
+        [key: string]: any;
+      }[];
+    }[]
+  | /** status 206 Tree page of a tree that has further pages. */ {
+      /** Identifier of the tree item, for the UI's tree view. */
+      id?: string;
+      /** Display name of the file or directory. */
+      label?: string;
+      /** Kind of the tree item, such as a file or a directory. */
+      type?: string;
+      /** GitHub's tree entry for the item, passed through as GitHub returns it. */
+      entry?: {
+        [key: string]: any;
+      };
+      /** The items under a directory, each shaped as a `GithubRepositoryTreeItem`. */
+      children?: {
+        [key: string]: any;
+      }[];
+    }[];
+export type ScanGithubRepositoryApiArg = {
+  /** Repository as `<owner>/<repo>`. */
+  name: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+};
+export type VerifyGithubRepositoryWorkflowApiResponse = /** status 200 Workflow presence. */ {
+  /** `ok` when no workflow is present; `error` when one is (`fileUrl` names it) or the check failed (`error` says why). */
+  status: "ok" | "error";
+  /** URL of the workflow file already present. */
+  fileUrl?: string;
+  /** Why the repository cannot take the workflow. */
+  error?: string;
+};
+export type VerifyGithubRepositoryWorkflowApiArg = {
+  /** Login of the account that owns the repository. */
+  owner: string;
+  /** Repository name, without its owner. */
+  repo: string;
+  /** Ignored. Accepted for compatibility; the server resolves the installation itself. */
+  id?: string;
+};
+export type InstallGithubWorkflowApiResponse = /** status 200 One entry per requested repository. */ {
+  [key: string]: {
+    /** HTTP-style status of the repository's outcome; `400` for a malformed repository identifier. */
+    code?: number;
+    /** The outcome, in words. */
+    description?: string;
+  };
+}[];
+export type InstallGithubWorkflowApiArg = {
+  /** Ignored. Accepted for compatibility; the server resolves the installation itself. */
+  id?: string;
+  body: {
+    /** Repositories as `<owner>/<repo>`. */
+    repositories: string[];
+  };
+};
+export type StartGithubAuthorizationApiResponse = unknown;
+export type StartGithubAuthorizationApiArg = {
+  /** `install` sends the browser to the GitHub App's installation page; `authorize` sends it to GitHub's user-authorization page for the App. */
+  flow: "install" | "authorize";
+};
+export type GithubAppCallbackApiResponse = unknown;
+export type GithubAppCallbackApiArg = {
+  /** The single-use state `startGithubAuthorization` issued. */
+  state: string;
+  /** GitHub's one-time authorization code. */
+  code?: string;
+  /** The installation GitHub names on return (GitHub's parameter name). It is stored only when it is one of the installations GitHub lists for the authorizing account. */
+  installationId?: string;
+  /** GitHub's setup action (GitHub's parameter name). */
+  setupAction?: "install" | "update" | "request";
+};
 export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   /** Unique identifier for the invitation, also used as the invitation code. */
   id: string;
@@ -19832,6 +20007,18 @@ export const {
   useCloneFilterMutation,
   useGetFilterFileQuery,
   useLazyGetFilterFileQuery,
+  useGetGithubAppStatusQuery,
+  useLazyGetGithubAppStatusQuery,
+  useGetGithubInstallationRepositoriesQuery,
+  useLazyGetGithubInstallationRepositoriesQuery,
+  useScanGithubRepositoryQuery,
+  useLazyScanGithubRepositoryQuery,
+  useVerifyGithubRepositoryWorkflowMutation,
+  useInstallGithubWorkflowMutation,
+  useStartGithubAuthorizationQuery,
+  useLazyStartGithubAuthorizationQuery,
+  useGithubAppCallbackQuery,
+  useLazyGithubAppCallbackQuery,
   useGetInvitationQuery,
   useLazyGetInvitationQuery,
   useDeleteInvitationMutation,
