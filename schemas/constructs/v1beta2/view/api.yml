@@ -206,9 +206,50 @@ components:
 
     ViewPayload:
       type: object
-      description: Payload for creating or updating a view.
+      description: Payload for creating a view.
       required:
         - name
+      properties:
+        name:
+          type: string
+          description: Display name of the view.
+          maxLength: 255
+          minLength: 1
+          x-oapi-codegen-extra-tags:
+            json: "name,omitempty"
+        filters:
+          type: object
+          description: Filter configuration for this view.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "filters,omitempty"
+        visibility:
+          type: string
+          description: Visibility level of the view.
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "visibility,omitempty"
+        metadata:
+          type: object
+          description: Metadata associated with the view.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "metadata,omitempty"
+
+    ViewUpdatePayload:
+      type: object
+      description: >
+        Partial update for a view. Every property is optional; an omitted
+        property retains its stored value. A supplied name still cannot be
+        empty.
       properties:
         name:
           type: string
@@ -316,12 +357,19 @@ components:
 
   requestBodies:
     viewPayload:
-      description: Body for creating or updating a view
+      description: Body for creating a view
       required: true
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ViewPayload"
+    viewUpdatePayload:
+      description: Body for partially updating a view. Omitted properties retain their stored value.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ViewUpdatePayload"
     contentSharePayload:
       description: Body for sharing a view with recipients by email.
       required: true
@@ -463,7 +511,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/viewId"
       requestBody:
-        $ref: "#/components/requestBodies/viewPayload"
+        $ref: "#/components/requestBodies/viewUpdatePayload"
       responses:
         "200":
           description: Updated view
