@@ -925,6 +925,45 @@ components:
         - docker-compose
         - k8s-kustomize
 
+    MeshkitError:
+      type: object
+      description: >-
+        A MeshKit error answered as a JSON body. `error` is the sentence the
+        caller is shown; MeshKit's long description is never serialized. Use
+        the `MeshkitError400`, `MeshkitError403`, `MeshkitError404` and
+        `MeshkitError500` responses for an operation whose server answers its
+        refusals this way.
+      required:
+        - error
+      additionalProperties: false
+      properties:
+        error:
+          type: string
+          minLength: 1
+          description: The sentence the caller is shown.
+        code:
+          type: string
+          minLength: 1
+          description: MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error.
+        severity:
+          type: string
+          description: MeshKit severity name. Omitted when MeshKit reports none.
+          enum:
+            - emergency
+            - alert
+            - critical
+            - fatal
+        probableCause:
+          type: array
+          description: MeshKit's probable causes of the error.
+          items:
+            type: string
+        suggestedRemediation:
+          type: array
+          description: MeshKit's suggested remediations for the error.
+          items:
+            type: string
+
   parameters:
     id:
       name: id
@@ -1157,3 +1196,32 @@ components:
         text/plain:
           schema:
             type: string
+    # JSON error responses for operations whose server answers refusals as a
+    # MeshKit error body. The schema $ref is written in its external form on
+    # purpose: an operation in another construct that $refs one of these
+    # responses then generates a Go alias of core.MeshkitError rather than an
+    # unqualified MeshkitError its own package does not define.
+    MeshkitError400:
+      description: Invalid request body or request param
+      content:
+        application/json:
+          schema:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/MeshkitError"
+    MeshkitError403:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/MeshkitError"
+    MeshkitError404:
+      description: Result not found
+      content:
+        application/json:
+          schema:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/MeshkitError"
+    MeshkitError500:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/MeshkitError"

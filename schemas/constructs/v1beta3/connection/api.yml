@@ -86,7 +86,11 @@ paths:
         - Connections
       operationId: registerConnection
       summary: Register a new connection
-      description: Register a new connection with credentials
+      description: >
+        Register a new connection with credentials. Meshery Cloud reserves the
+        GitHub App connection's identity (name `GitHub App`, sub_type `git`):
+        only its GitHub authorization flow creates that connection, so a
+        request naming it is refused with `409` (code `meshery_cloud-3397`).
       requestBody:
         required: true
         content:
@@ -104,6 +108,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "409":
+          $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
 
@@ -202,7 +208,15 @@ paths:
         - Connections
       operationId: updateConnection
       summary: Update a connection
-      description: Update an existing connection
+      description: >
+        Update an existing connection. Meshery Cloud refuses (`409`, code
+        `meshery_cloud-3397`) an edit that would give a connection the GitHub
+        App connection's identity (name `GitHub App`, sub_type `git`). On the
+        GitHub App connection itself, the server-written metadata keys
+        `installations`, `installationId` and `installationsVerifiedAt` are
+        carried forward from the stored row: a client edit can neither set nor
+        erase them (other metadata keys are written as sent). Their shape is
+        `GithubConnectionMetadata` in the v1beta3 `github` construct.
       parameters:
         - $ref: "#/components/parameters/connectionId"
       requestBody:
@@ -224,6 +238,8 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
 
@@ -521,6 +537,15 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/401"
     404:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    409:
+      description: >-
+        Conflict - the write would give a connection an identity the provider
+        reserves (on Meshery Cloud, the GitHub App connection's name `GitHub
+        App` with sub_type `git`).
+      content:
+        text/plain:
+          schema:
+            type: string
     500:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
 
