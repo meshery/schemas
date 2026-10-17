@@ -198,7 +198,7 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/NativeAuthorizationRequest'
+              $ref: '#/components/schemas/NativeAuthorizationPayload'
       responses:
         '302':
           description: Redirect to the loopback callback carrying code and state
@@ -207,7 +207,7 @@ paths:
         '401':
           $ref: '#/components/responses/401'
         '403':
-          description: The approval was not a same-origin form post
+          $ref: '#/components/responses/403'
         '500':
           $ref: '#/components/responses/500'
   /api/identity/native/token:
@@ -232,7 +232,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NativeCodeExchangeRequest'
+              $ref: '#/components/schemas/NativeCodeExchangePayload'
       responses:
         '201':
           description: API token minted for the native client
@@ -257,6 +257,8 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/responses/400
     401:
       $ref: ../../v1beta2/core/api.yml#/components/responses/401
+    403:
+      $ref: ../../v1beta2/core/api.yml#/components/responses/403
     404:
       $ref: ../../v1beta2/core/api.yml#/components/responses/404
     500:
@@ -377,7 +379,7 @@ components:
   schemas:
     UserToken:
       $ref: ./token.yaml
-    NativeAuthorizationRequest:
+    NativeAuthorizationPayload:
       type: object
       description: Consent form fields for approving a native client sign-in.
       required:
@@ -415,7 +417,7 @@ components:
           minLength: 8
           maxLength: 512
           x-order: 5
-    NativeCodeExchangeRequest:
+    NativeCodeExchangePayload:
       type: object
       additionalProperties: false
       description: Redeems a native client authorization code with its PKCE verifier.

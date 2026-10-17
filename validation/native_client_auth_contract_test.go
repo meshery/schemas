@@ -42,19 +42,19 @@ func TestNativeClientAuthContract(t *testing.T) {
 	if got := mustLookup(t, exchange, "responses", "201", "content", "application/json", "schema", "$ref"); got != "#/components/schemas/UserToken" {
 		t.Errorf("exchange 201 schema = %v, want UserToken", got)
 	}
-	if got := mustLookup(t, exchange, "requestBody", "content", "application/json", "schema", "$ref"); got != "#/components/schemas/NativeCodeExchangeRequest" {
-		t.Errorf("exchange requestBody = %v, want NativeCodeExchangeRequest", got)
+	if got := mustLookup(t, exchange, "requestBody", "content", "application/json", "schema", "$ref"); got != "#/components/schemas/NativeCodeExchangePayload" {
+		t.Errorf("exchange requestBody = %v, want NativeCodeExchangePayload", got)
 	}
 	approve := mustLookup(t, doc, "paths", "/api/identity/native/authorize", "post")
-	if got := mustLookup(t, approve, "requestBody", "content", "application/x-www-form-urlencoded", "schema", "$ref"); got != "#/components/schemas/NativeAuthorizationRequest" {
-		t.Errorf("approve requestBody = %v, want NativeAuthorizationRequest", got)
+	if got := mustLookup(t, approve, "requestBody", "content", "application/x-www-form-urlencoded", "schema", "$ref"); got != "#/components/schemas/NativeAuthorizationPayload" {
+		t.Errorf("approve requestBody = %v, want NativeAuthorizationPayload", got)
 	}
 	if _, ok := mappingValue(mustValue(approve, "responses"), "302"); !ok {
 		t.Errorf("approveNativeClientAuthorization must respond 302")
 	}
 
 	schemas := mustLookup(t, doc, "components", "schemas")
-	props := mustLookup(t, schemas, "NativeAuthorizationRequest", "properties")
+	props := mustLookup(t, schemas, "NativeAuthorizationPayload", "properties")
 
 	if got := sequenceStrings(mustLookup(t, props, "codeChallengeMethod", "enum")); !reflect.DeepEqual(got, []string{"S256"}) {
 		t.Errorf("codeChallengeMethod enum = %v, want [S256]", got)
@@ -68,7 +68,7 @@ func TestNativeClientAuthContract(t *testing.T) {
 	// only: no redirect URI or host field may exist.
 	for _, name := range []string{"redirectUri", "redirectUrl", "host", "callback"} {
 		if _, has := mappingValue(props, name); has {
-			t.Errorf("NativeAuthorizationRequest must not carry %q", name)
+			t.Errorf("NativeAuthorizationPayload must not carry %q", name)
 		}
 	}
 	for _, schema := range []any{mustLookup(t, doc, "components", "parameters", "nativePort", "schema"), mustLookup(t, props, "port")} {
@@ -77,11 +77,11 @@ func TestNativeClientAuthContract(t *testing.T) {
 		}
 	}
 
-	exch := mustLookup(t, schemas, "NativeCodeExchangeRequest")
+	exch := mustLookup(t, schemas, "NativeCodeExchangePayload")
 	if got := sequenceStrings(mustValue(exch, "required")); !reflect.DeepEqual(got, []string{"code", "codeVerifier"}) {
-		t.Errorf("NativeCodeExchangeRequest required = %v, want [code codeVerifier]", got)
+		t.Errorf("NativeCodeExchangePayload required = %v, want [code codeVerifier]", got)
 	}
 	if mustValue(exch, "additionalProperties") != false {
-		t.Errorf("NativeCodeExchangeRequest must set additionalProperties: false (deviceName was dropped)")
+		t.Errorf("NativeCodeExchangePayload must set additionalProperties: false (deviceName was dropped)")
 	}
 }
