@@ -41,8 +41,9 @@ paths:
         Checks the caller's GitHub App connection. A connection is usable only
         when its installations were verified against the caller's own GitHub
         account and GitHub confirms the installation it opens on still exists.
-        `403` (code `meshery_cloud-3381`) means the connection must be
-        re-authorized (`startGithubAuthorization` with `flow=authorize`).
+        `403` with a MeshKit error saying the connection must be re-authorized
+        means it predates verification; re-authorize it with
+        `startGithubAuthorization` (`flow=authorize`).
         When GitHub reports the installation the connection opens on removed,
         that installation is dropped and the connection re-points at its next
         verified installation, which is checked in turn: `200` when one

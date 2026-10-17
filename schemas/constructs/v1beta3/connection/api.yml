@@ -90,7 +90,8 @@ paths:
         Register a new connection with credentials. Meshery Cloud reserves the
         GitHub App connection's identity (name `GitHub App`, sub_type `git`):
         only its GitHub authorization flow creates that connection, so a
-        request naming it is refused with `409` (code `meshery_cloud-3397`).
+        request naming it is refused with a `409` MeshKit error that names the
+        reserved GitHub App connection identity.
       requestBody:
         required: true
         content:
@@ -209,8 +210,8 @@ paths:
       operationId: updateConnection
       summary: Update a connection
       description: >
-        Update an existing connection. Meshery Cloud refuses (`409`, code
-        `meshery_cloud-3397`) an edit that would give a connection the GitHub
+        Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit
+        error naming the reserved identity, an edit that would give a connection the GitHub
         App connection's identity (name `GitHub App`, sub_type `git`). On the
         GitHub App connection itself, the server-written metadata keys
         `installations`, `installationId` and `installationsVerifiedAt` are
