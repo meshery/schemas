@@ -5,6 +5,11 @@ info:
     OpenAPI schema for Blowhorn content rows - fingerprinted content
     values keyed by owning profile and row number, with conditional
     updates.
+    Organization scope: every operation acts only in the organization the
+    session resolved to (X-Current-Orgid, then the user's selected
+    organization), and only when the caller is a live member of it. A
+    caller who is not a member receives the same 404 as an unknown id, so
+    the existence of another organization's rows is never disclosed.
   version: v1beta3
   contact:
     name: Meshery Maintainers
@@ -50,6 +55,8 @@ paths:
                 $ref: "#/components/schemas/BlowhornContentPage"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
     post:
@@ -80,6 +87,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
