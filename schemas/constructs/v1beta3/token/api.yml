@@ -106,7 +106,7 @@ paths:
       - tokens
       summary: Download token
       operationId: downloadToken
-      description: Downloads a specific token by its ID for use as a local credential file (e.g. mesheryctl's auth.json). Gated by the Download Token permission and recorded as a distinct audit event from viewing or listing tokens.
+      description: Downloads a specific token by its ID for use as a local credential file (e.g. a CLI auth file). Gated by the Download Token permission and recorded as a distinct audit event from viewing or listing tokens.
       parameters:
       - $ref: '#/components/parameters/tokenId'
       responses:
