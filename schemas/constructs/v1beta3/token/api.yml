@@ -106,7 +106,7 @@ paths:
       - tokens
       summary: Download token
       operationId: downloadToken
-      description: Downloads a specific token by its ID for use as a local credential file (e.g. mesheryctl's auth.json). Gated by the Download Token permission and recorded as a distinct audit event from viewing or listing tokens.
+      description: Downloads a specific token by its ID for use as a local credential file (e.g. a CLI auth file). Gated by the Download Token permission and recorded as a distinct audit event from viewing or listing tokens.
       parameters:
       - $ref: '#/components/parameters/tokenId'
       responses:
@@ -147,6 +147,105 @@ paths:
           $ref: '#/components/responses/401'
         '500':
           $ref: '#/components/responses/500'
+  /api/identity/native/authorize:
+    get:
+      x-internal:
+      - cloud
+      tags:
+      - tokens
+      summary: Show native client sign-in consent
+      operationId: getNativeClientAuthorization
+      description: >-
+        Browser-facing step of the native client sign-in flow (RFC 8252 loopback
+        redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in
+        user, never URL credentials. Validates the request and renders a consent
+        page that asks the user to allow the named local client to act on their
+        behalf. Nothing is issued by this call.
+      parameters:
+      - $ref: '#/components/parameters/nativeClientName'
+      - $ref: '#/components/parameters/nativePort'
+      - $ref: '#/components/parameters/nativeCodeChallenge'
+      - $ref: '#/components/parameters/nativeCodeChallengeMethod'
+      - $ref: '#/components/parameters/nativeState'
+      responses:
+        '200':
+          description: Consent page
+          content:
+            text/html:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+    post:
+      x-internal:
+      - cloud
+      tags:
+      - tokens
+      summary: Approve native client sign-in
+      operationId: approveNativeClientAuthorization
+      description: >-
+        Submitted by the consent page with the same parameters as the GET, as a
+        same-origin form post. Stores a single-use authorization code that
+        expires after 60 seconds, bound to the user, the client name and the
+        PKCE code challenge, then redirects the browser to
+        http://127.0.0.1:{port}/callback with code and state query parameters.
+        Only the 127.0.0.1 loopback IP literal is ever used as the redirect host;
+        no token or cookie is placed in the redirect.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NativeAuthorizationPayload'
+      responses:
+        '302':
+          description: Redirect to the loopback callback carrying code and state
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+  /api/identity/native/token:
+    post:
+      x-internal:
+      - cloud
+      tags:
+      - tokens
+      summary: Exchange native client authorization code
+      operationId: exchangeNativeAuthorizationCode
+      description: >-
+        Redeems a single-use authorization code from the native client sign-in
+        flow. The caller proves possession of the PKCE code verifier
+        (BASE64URL(SHA256(codeVerifier)) must equal the stored S256 challenge).
+        The code is consumed on the first redemption attempt, whether or not the
+        verifier matches. On success an API token is minted for the user with
+        name and purpose set to the client name. This call is authenticated by
+        the code and verifier, not by a session.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NativeCodeExchangePayload'
+      responses:
+        '201':
+          description: API token minted for the native client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserToken'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
 components:
   securitySchemes:
     jwt:
@@ -158,6 +257,8 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/responses/400
     401:
       $ref: ../../v1beta2/core/api.yml#/components/responses/401
+    403:
+      $ref: ../../v1beta2/core/api.yml#/components/responses/403
     404:
       $ref: ../../v1beta2/core/api.yml#/components/responses/404
     500:
@@ -228,13 +329,113 @@ components:
     purpose:
       name: purpose
       in: query
-      description: Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens).
+      description: Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list.
       schema:
         type: string
         maxLength: 500
+    nativeClientName:
+      name: clientName
+      in: query
+      description: Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token.
+      required: true
+      schema:
+        type: string
+        pattern: ^[A-Za-z0-9][A-Za-z0-9 ._-]{0,62}$
+    nativePort:
+      name: port
+      in: query
+      description: Port on 127.0.0.1 where the native client listens for the callback.
+      required: true
+      schema:
+        type: integer
+        minimum: 1024
+        maximum: 65535
+    nativeCodeChallenge:
+      name: codeChallenge
+      in: query
+      description: PKCE code challenge, BASE64URL(SHA256(codeVerifier)) without padding.
+      required: true
+      schema:
+        type: string
+        pattern: ^[A-Za-z0-9_-]{43}$
+    nativeCodeChallengeMethod:
+      name: codeChallengeMethod
+      in: query
+      description: PKCE challenge method. Only S256 is accepted.
+      required: true
+      schema:
+        type: string
+        enum:
+        - S256
+    nativeState:
+      name: state
+      in: query
+      description: Opaque value from the native client, returned unchanged on the callback.
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 512
   schemas:
     UserToken:
       $ref: ./token.yaml
+    NativeAuthorizationPayload:
+      type: object
+      description: Consent form fields for approving a native client sign-in.
+      required:
+      - clientName
+      - port
+      - codeChallenge
+      - codeChallengeMethod
+      - state
+      properties:
+        clientName:
+          type: string
+          description: Display name of the native client.
+          pattern: ^[A-Za-z0-9][A-Za-z0-9 ._-]{0,62}$
+          x-order: 1
+        port:
+          type: integer
+          description: Port on 127.0.0.1 for the callback.
+          minimum: 1024
+          maximum: 65535
+          x-order: 2
+        codeChallenge:
+          type: string
+          description: PKCE S256 code challenge.
+          pattern: ^[A-Za-z0-9_-]{43}$
+          x-order: 3
+        codeChallengeMethod:
+          type: string
+          description: PKCE challenge method.
+          enum:
+          - S256
+          x-order: 4
+        state:
+          type: string
+          description: Opaque client state returned on the callback.
+          minLength: 8
+          maxLength: 512
+          x-order: 5
+    NativeCodeExchangePayload:
+      type: object
+      additionalProperties: false
+      description: Redeems a native client authorization code with its PKCE verifier.
+      required:
+      - code
+      - codeVerifier
+      properties:
+        code:
+          type: string
+          description: Single-use authorization code from the loopback callback.
+          minLength: 1
+          maxLength: 128
+          x-order: 1
+        codeVerifier:
+          type: string
+          description: PKCE code verifier (RFC 7636, 43 to 128 unreserved characters).
+          pattern: ^[A-Za-z0-9._~-]{43,128}$
+          x-order: 2
     TokenPage:
       type: object
       description: A paginated list of tokens.
