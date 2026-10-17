@@ -131,3 +131,23 @@ The tag picks the cache within a construct, so an operation that must stay out o
 tag. `getGithubRepositoryBranches` sits beside the import operations in `v1beta3/design` but reads
 only GitHub, so it is tagged `github` (`Design_github`): a design write does not refetch the branch
 list. `validation/design_github_import_contract_test.go` pins each operation's tag.
+
+## Native client sign-in (loopback + PKCE)
+
+Local native clients (CLIs, desktop agents) sign in with the RFC 8252 loopback
+pattern bound by RFC 7636 PKCE, defined in `v1beta3/token`:
+
+1. `GET /api/identity/native/authorize` (session cookie required) validates
+   `clientName`, `port`, `codeChallenge`, `codeChallengeMethod=S256` and `state`
+   and renders a consent page. Nothing is issued.
+2. The consent form posts (same origin) to `POST /api/identity/native/authorize`,
+   which stores a single-use code (60 second TTL) bound to the user, client name
+   and challenge, then redirects to
+   `http://127.0.0.1:{port}/callback?code=...&state=...`. The redirect host is
+   always the 127.0.0.1 literal; no token is in the URL.
+3. The client calls `POST /api/identity/native/token` with `code` and
+   `codeVerifier`. The code is consumed on the first redemption attempt; on a
+   verifier match an API token is minted with `name` and `purpose` set to the
+   client name.
+
+The construct is client-agnostic: no client is named in the schema.
