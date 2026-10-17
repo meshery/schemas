@@ -70,11 +70,13 @@ references `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitErro
 `MeshkitError500` or `MeshkitError502` instead, which carry the `MeshkitError` schema as
 `application/json`. The four design operations that reach GitHub use `MeshkitError403` and
 `MeshkitError502` for those two refusals, and `registerConnection`/`updateConnection` use
-`MeshkitError409`. For those four design operations - `refreshPatternFromSource`,
-`updatePatternSource`, `importGithubRepository` and `getGithubRepositoryBranches` - this changed an
-existing contract: their `403` and `502` bodies moved from `text/plain` to the MeshKit JSON error
-body. The connection `409` was a new response. Every other operation keeps its plain-text shared
-responses. Descriptions name a MeshKit refusal by its meaning, never by its numeric `code`: codes
+`MeshkitError409`. Two existing contracts changed when these were introduced: the `403` and `502`
+bodies of the four design operations - `refreshPatternFromSource`, `updatePatternSource`,
+`importGithubRepository` and `getGithubRepositoryBranches` - and the `400`, `403` and `500` bodies
+of `createInvitation` and `updateInvitation` (plus `updateInvitation`'s `404`) moved from `text/plain` to the MeshKit JSON
+error body. The rest were new responses: the connection `409`, the `getEventsAggregate` `403`, and
+the MeshKit refusals of the new `v1beta3/github` operations. Every other error response, including the
+shared `401`, keeps its plain-text body. Descriptions name a MeshKit refusal by its meaning, never by its numeric `code`: codes
 are the emitting service's internal allocation and are renumbered. Two generator constraints shape these:
 
 - Every `$ref` to a `v1beta2/core` schema generates a Go reference into the unversioned
