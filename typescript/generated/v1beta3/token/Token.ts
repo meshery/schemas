@@ -178,6 +178,13 @@ export interface components {
             /** @description PKCE code verifier (RFC 7636, 43 to 128 unreserved characters). */
             codeVerifier: string;
         };
+        /** @description Query parameters of the loopback redirect that approveNativeClientAuthorization answers with, http://127.0.0.1:{port}/callback?code=...&state=... The code is single-use and expires after 60 seconds; no token is ever placed in the URL. The native client compares state with the one it sent before redeeming the code at /api/identity/native/token. */
+        NativeAuthorizationCallback: {
+            /** @description Single-use authorization code, redeemed with the PKCE code verifier. */
+            code: string;
+            /** @description The state the native client sent to the consent page, unchanged. */
+            state: string;
+        };
         /** @description A paginated list of tokens. */
         TokenPage: {
             /** @description Tokens returned on the current page. */
@@ -852,9 +859,11 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Redirect to the loopback callback carrying code and state */
+            /** @description Redirect to the loopback callback carrying code and state. The callback's query parameters are described by NativeAuthorizationCallback. */
             302: {
                 headers: {
+                    /** @description http://127.0.0.1:{port}/callback?code=...&state=..., whose query is a NativeAuthorizationCallback. */
+                    Location: string;
                     [name: string]: unknown;
                 };
                 content?: never;

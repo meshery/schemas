@@ -19,6 +19,15 @@ const (
 	NativeCodeChallengeMethodS256 NativeCodeChallengeMethod = "S256"
 )
 
+// NativeAuthorizationCallback Query parameters of the loopback redirect that approveNativeClientAuthorization answers with, http://127.0.0.1:{port}/callback?code=...&state=... The code is single-use and expires after 60 seconds; no token is ever placed in the URL. The native client compares state with the one it sent before redeeming the code at /api/identity/native/token.
+type NativeAuthorizationCallback struct {
+	// Code Single-use authorization code, redeemed with the PKCE code verifier.
+	Code string `json:"code" yaml:"code"`
+
+	// State The state the native client sent to the consent page, unchanged.
+	State string `json:"state" yaml:"state"`
+}
+
 // NativeAuthorizationPayload Consent form fields for approving a native client sign-in.
 type NativeAuthorizationPayload struct {
 	// ClientName Display name of the native client.
