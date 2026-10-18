@@ -207,6 +207,7 @@ paths:
             NativeAuthorizationCallback.
           headers:
             Location:
+              required: true
               description: >-
                 http://127.0.0.1:{port}/callback?code=...&state=..., whose query
                 is a NativeAuthorizationCallback.
