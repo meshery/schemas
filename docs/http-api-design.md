@@ -70,8 +70,14 @@ references `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitErro
 `MeshkitError500` or `MeshkitError502` instead, which carry the `MeshkitError` schema as
 `application/json`. The four design operations that reach GitHub use `MeshkitError403` and
 `MeshkitError502` for those two refusals, and `registerConnection`/`updateConnection` use
-`MeshkitError409`. The plain-text responses stay as they
-are, so no existing operation's contract changes. Two generator constraints shape these:
+`MeshkitError409`. Two existing contracts changed when these were introduced: the `403` and `502`
+bodies of the four design operations - `refreshPatternFromSource`, `updatePatternSource`,
+`importGithubRepository` and `getGithubRepositoryBranches` - and the `400`, `403` and `500` bodies
+of `createInvitation` and `updateInvitation` (plus `updateInvitation`'s `404`) moved from `text/plain` to the MeshKit JSON
+error body. The rest were new responses: the connection `409`, the `getEventsAggregate` `403`, and
+the MeshKit refusals of the new `v1beta3/github` operations. Every other error response, including the
+shared `401`, keeps its plain-text body. Descriptions name a MeshKit refusal by its meaning, never by its numeric `code`: codes
+are the emitting service's internal allocation and are renumbered. Two generator constraints shape these:
 
 - Every `$ref` to a `v1beta2/core` schema generates a Go reference into the unversioned
   `models/core` package, which is generated from `v1alpha1/core`. `MeshkitError` is therefore
@@ -171,15 +177,15 @@ authorize the App, which the server stores on the caller's GitHub connection
 
 - A repository or installation the caller cannot reach that way is refused with one uniform `403`,
   whether the App is not installed on the repository's account or is installed there for someone
-  else, so no route reveals where the App is installed. A `403` with code `meshery_cloud-3381`
-  means the connection predates verification and must be re-authorized.
+  else, so no route reveals where the App is installed. A distinct `403`, whose MeshKit
+  error says the connection must be re-authorized, means the connection predates verification.
 - The authorization trip starts at `startGithubAuthorization` (`GET
   /api/integrations/github/authorize?flow=install|authorize`), which issues a single-use state the
   callback (`githubAppCallback`) must present; the UI never links to GitHub directly. Both are
   browser navigations answering `302`, not data calls. The callback's `installation_id` and
   `setup_action` query parameters keep GitHub's names, the one deliberate exception to camelCase
   query parameters in the construct.
-- `registerConnection` and `updateConnection` refuse (`409`, code `meshery_cloud-3397`) a write
+- `registerConnection` and `updateConnection` refuse with a `409` MeshKit error a write
   that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type
   `git`), and an edit of that connection cannot set or erase its server-written installation keys.
 

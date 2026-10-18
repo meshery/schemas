@@ -294,9 +294,9 @@ paths:
         The refusal is deliberately uniform: the App not being installed on
         the repository's account and its being installed there for someone
         else answer the same body, so the route does not reveal where the App
-        is installed. A `403` whose `code` is `meshery_cloud-3381` means the
-        caller's GitHub connection predates verification and must be
-        re-authorized (see `startGithubAuthorization`) before it can be used;
+        is installed. A distinct `403` whose MeshKit error asks for re-authorization means
+        the caller's GitHub connection predates verification; re-authorize it
+        (see `startGithubAuthorization`) before use;
         `409` means the design has no
         refreshable source (`location.type` is not `github`, or `host`/`path`
         is missing) or its source path no longer resolves to an importable
@@ -359,9 +359,9 @@ paths:
         The refusal is deliberately uniform: the App not being installed on
         the repository's account and its being installed there for someone
         else answer the same body, so the route does not reveal where the App
-        is installed. A `403` whose `code` is `meshery_cloud-3381` means the
-        caller's GitHub connection predates verification and must be
-        re-authorized (see `startGithubAuthorization`) before it can be used;
+        is installed. A distinct `403` whose MeshKit error asks for re-authorization means
+        the caller's GitHub connection predates verification; re-authorize it
+        (see `startGithubAuthorization`) before use;
         `409` means `ref` does not resolve to a commit, or `path` does not name
         an importable file at it (missing, a directory, or not a supported
         format); `502` means GitHub could not be reached or rejected the
@@ -513,9 +513,9 @@ paths:
         The refusal is deliberately uniform: the App not being installed on
         the repository's account and its being installed there for someone
         else answer the same body, so the route does not reveal where the App
-        is installed. A `403` whose `code` is `meshery_cloud-3381` means the
-        caller's GitHub connection predates verification and must be
-        re-authorized (see `startGithubAuthorization`) before it can be used;
+        is installed. A distinct `403` whose MeshKit error asks for re-authorization means
+        the caller's GitHub connection predates verification; re-authorize it
+        (see `startGithubAuthorization`) before use;
         `502` means GitHub could
         not be reached or rejected the request. Each imported or updated
         design records the commit its file was read at in
@@ -568,9 +568,9 @@ paths:
         The refusal is deliberately uniform: the App not being installed on
         the repository's account and its being installed there for someone
         else answer the same body, so the route does not reveal where the App
-        is installed. A `403` whose `code` is `meshery_cloud-3381` means the
-        caller's GitHub connection predates verification and must be
-        re-authorized (see `startGithubAuthorization`) before it can be used;
+        is installed. A distinct `403` whose MeshKit error asks for re-authorization means
+        the caller's GitHub connection predates verification; re-authorize it
+        (see `startGithubAuthorization`) before use;
         `502` means GitHub could not be
         reached or rejected the request.
       parameters:

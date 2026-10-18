@@ -273,7 +273,7 @@ func TestGithubIntegrationSchemas(t *testing.T) {
 }
 
 // The four design operations that reach GitHub refuse an unreachable
-// repository (403, including the re-authorization code meshery_cloud-3381) and
+// repository (403, including the refusal that asks for re-authorization) and
 // a GitHub failure (502) the way Meshery Cloud writes them: as a MeshKit JSON
 // error body.
 func TestDesignGithubOperationsAnswerMeshkitErrorBodies(t *testing.T) {
@@ -293,7 +293,7 @@ func TestDesignGithubOperationsAnswerMeshkitErrorBodies(t *testing.T) {
 
 // registerConnection and updateConnection refuse a write that would give a
 // connection the GitHub App connection's reserved identity with a 409 whose
-// MeshKit JSON body carries code meshery_cloud-3397.
+// body is a MeshKit JSON error.
 func TestConnectionWritesDeclareReservedIdentity409(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), connectionV1beta3Spec))
 	spec := mustLoadAPISpec(t, connectionV1beta3Spec)
