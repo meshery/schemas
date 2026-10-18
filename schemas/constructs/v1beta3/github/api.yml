@@ -112,10 +112,12 @@ paths:
         The repository must be reachable through one of the caller's verified
         GitHub App installations; otherwise the request is refused with the
         same uniform `403` as `importGithubRepository`, which does not reveal
-        where the App is installed. `206` answers a page of a tree that has
-        further pages.
+        where the App is installed. With `ref`, the tree is read at the commit
+        the ref resolves to. `206` answers a page of a tree that has further
+        pages.
       parameters:
         - $ref: "#/components/parameters/repositoryName"
+        - $ref: "#/components/parameters/repositoryRef"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
       responses:
@@ -137,6 +139,8 @@ paths:
           $ref: "#/components/responses/401"
         "403":
           $ref: "#/components/responses/MeshkitError403"
+        "409":
+          $ref: "#/components/responses/MeshkitError409"
         "500":
           $ref: "#/components/responses/MeshkitError500"
         "502":
@@ -298,6 +302,8 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError403"
     MeshkitError404:
       $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError404"
+    MeshkitError409:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError409"
     MeshkitError500:
       $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError500"
     MeshkitError502:
@@ -337,6 +343,16 @@ components:
       schema:
         type: string
         maxLength: 512
+    repositoryRef:
+      name: ref
+      in: query
+      required: false
+      description: >-
+        Branch or tag to scan. Empty or omitted scans the repository's
+        default branch. A ref that names no commit answers 409.
+      schema:
+        type: string
+        maxLength: 255
     owner:
       name: owner
       in: path
