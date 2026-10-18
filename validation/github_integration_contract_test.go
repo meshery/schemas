@@ -56,8 +56,8 @@ var githubIntegrationOperations = []githubIntegrationOperation{
 		method:        "get",
 		operationID:   "scanGithubRepository",
 		successSchema: "#/components/schemas/GithubRepositoryTree",
-		responseCodes: []string{"200", "206", "400", "401", "403", "500", "502"},
-		params:        []string{"repositoryName", "page", "pageSize"},
+		responseCodes: []string{"200", "206", "400", "401", "403", "409", "500", "502"},
+		params:        []string{"repositoryName", "repositoryRef", "page", "pageSize"},
 	},
 	{
 		path:          "/api/integrations/github/verify/{owner}/{repo}",
@@ -99,6 +99,7 @@ var githubIntegrationErrorResponse = map[string]string{
 	"401": "#/components/responses/401",
 	"403": "#/components/responses/MeshkitError403",
 	"404": "#/components/responses/MeshkitError404",
+	"409": "#/components/responses/MeshkitError409",
 	"500": "#/components/responses/MeshkitError500",
 	"502": "#/components/responses/MeshkitError502",
 }
@@ -188,6 +189,7 @@ func TestGithubIntegrationParameters(t *testing.T) {
 		{"installationIdQuery", "id", "query"},
 		{"ignoredInstallationId", "id", "query"},
 		{"repositoryName", "name", "query"},
+		{"repositoryRef", "ref", "query"},
 		{"owner", "owner", "path"},
 		{"repo", "repo", "path"},
 		{"flow", "flow", "query"},
@@ -211,6 +213,13 @@ func TestGithubIntegrationParameters(t *testing.T) {
 	}
 	if got := mustLookup(t, params, "installationIdQuery", "schema", "pattern"); got != "^[1-9][0-9]*$" {
 		t.Errorf("installationIdQuery pattern = %v, want a positive decimal installation id", got)
+	}
+	// An omitted or empty ref scans the default branch, so existing callers are unaffected.
+	if got, ok := mappingValue(mustValue(params, "repositoryRef"), "required"); ok && got != false {
+		t.Errorf("repositoryRef required = %v, want optional", got)
+	}
+	if got := mustLookup(t, params, "repositoryRef", "schema", "maxLength"); got != 255 {
+		t.Errorf("repositoryRef maxLength = %v, want 255", got)
 	}
 	if got := mustLookup(t, params, "ignoredInstallationId", "deprecated"); got != true {
 		t.Errorf("ignoredInstallationId deprecated = %v, want true (the server does not consult it)", got)
