@@ -154,6 +154,9 @@ type Repo = string
 // RepositoryName defines model for repositoryName.
 type RepositoryName = string
 
+// RepositoryRef defines model for repositoryRef.
+type RepositoryRef = string
+
 // State defines model for state.
 type State = string
 
@@ -165,6 +168,9 @@ type CoreMeshkitError403 = core.MeshkitError
 
 // CoreMeshkitError404 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError404 = core.MeshkitError
+
+// CoreMeshkitError409 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError409 = core.MeshkitError
 
 // CoreMeshkitError500 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError500 = core.MeshkitError

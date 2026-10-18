@@ -53,7 +53,7 @@ export interface paths {
         };
         /**
          * One page of a repository's file tree
-         * @description Returns one page of a repository's file tree, as nested tree items. The repository must be reachable through one of the caller's verified GitHub App installations; otherwise the request is refused with the same uniform `403` as `importGithubRepository`, which does not reveal where the App is installed. `206` answers a page of a tree that has further pages.
+         * @description Returns one page of a repository's file tree, as nested tree items. The repository must be reachable through one of the caller's verified GitHub App installations; otherwise the request is refused with the same uniform `403` as `importGithubRepository`, which does not reveal where the App is installed. With `ref`, the tree is read at the commit the ref resolves to. `206` answers a page of a tree that has further pages.
          */
         get: operations["scanGithubRepository"];
         put?: never;
@@ -346,6 +346,29 @@ export interface components {
                 };
             };
         };
+        /** @description Conflict */
+        MeshkitError409: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
         /** @description Internal server error */
         MeshkitError500: {
             headers: {
@@ -407,6 +430,8 @@ export interface components {
         ignoredInstallationId: string;
         /** @description Repository as `<owner>/<repo>`. */
         repositoryName: string;
+        /** @description Branch or tag to scan. Empty or omitted scans the repository's default branch. A ref that names no commit answers 409. */
+        repositoryRef: string;
         /** @description Login of the account that owns the repository. */
         owner: string;
         /** @description Repository name, without its owner. */
@@ -680,6 +705,8 @@ export interface operations {
             query: {
                 /** @description Repository as `<owner>/<repo>`. */
                 name: string;
+                /** @description Branch or tag to scan. Empty or omitted scans the repository's default branch. A ref that names no commit answers 409. */
+                ref?: string;
                 /** @description Get responses by page */
                 page?: number;
                 /** @description Number of items per page. */
@@ -779,6 +806,29 @@ export interface operations {
             };
             /** @description Forbidden */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

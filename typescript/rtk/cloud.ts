@@ -1547,6 +1547,7 @@ const injectedRtkApi = api
           url: `/api/integrations/github/scan`,
           params: {
             name: queryArg?.name,
+            ref: queryArg?.ref,
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
           },
@@ -15753,6 +15754,8 @@ export type ScanGithubRepositoryApiResponse = /** status 200 Tree page. */
 export type ScanGithubRepositoryApiArg = {
   /** Repository as `<owner>/<repo>`. */
   name: string;
+  /** Branch or tag to scan. Empty or omitted scans the repository's default branch. A ref that names no commit answers 409. */
+  ref?: string;
   /** Get responses by page */
   page?: number;
   /** Number of items per page. */
