@@ -201,7 +201,18 @@ paths:
               $ref: '#/components/schemas/NativeAuthorizationPayload'
       responses:
         '302':
-          description: Redirect to the loopback callback carrying code and state
+          description: >-
+            Redirect to the loopback callback carrying code and state. The
+            callback's query parameters are described by
+            NativeAuthorizationCallback.
+          headers:
+            Location:
+              required: true
+              description: >-
+                http://127.0.0.1:{port}/callback?code=...&state=..., whose query
+                is a NativeAuthorizationCallback.
+              schema:
+                type: string
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -435,6 +446,30 @@ components:
           type: string
           description: PKCE code verifier (RFC 7636, 43 to 128 unreserved characters).
           pattern: ^[A-Za-z0-9._~-]{43,128}$
+          x-order: 2
+    NativeAuthorizationCallback:
+      type: object
+      description: >-
+        Query parameters of the loopback redirect that approveNativeClientAuthorization
+        answers with, http://127.0.0.1:{port}/callback?code=...&state=... The code is
+        single-use and expires after 60 seconds; no token is ever placed in the URL.
+        The native client compares state with the one it sent before redeeming the code
+        at /api/identity/native/token.
+      required:
+      - code
+      - state
+      properties:
+        code:
+          type: string
+          description: Single-use authorization code, redeemed with the PKCE code verifier.
+          minLength: 1
+          maxLength: 128
+          x-order: 1
+        state:
+          type: string
+          description: The state the native client sent to the consent page, unchanged.
+          minLength: 8
+          maxLength: 512
           x-order: 2
     TokenPage:
       type: object
