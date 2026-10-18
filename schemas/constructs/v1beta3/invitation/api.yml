@@ -166,13 +166,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Invitation'
         '400':
-          $ref: '#/components/responses/400'
+          $ref: '#/components/responses/MeshkitError400'
         '401':
           $ref: '#/components/responses/401'
         '404':
-          $ref: '#/components/responses/404'
+          $ref: '#/components/responses/MeshkitError404'
         '500':
-          $ref: '#/components/responses/500'
+          $ref: '#/components/responses/MeshkitError500'
   /api/identity/orgs/{orgId}/users/invite:
     post:
       x-internal:

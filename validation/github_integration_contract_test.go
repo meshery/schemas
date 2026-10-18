@@ -316,8 +316,8 @@ func TestConnectionWritesDeclareReservedIdentity409(t *testing.T) {
 	}
 }
 
-// Meshery Cloud answers the invitation-write and events-aggregate refusals as
-// MeshKit JSON error bodies.
+// Meshery Cloud answers the invitation-write, invitation-acceptance and
+// events-aggregate refusals as MeshKit JSON error bodies.
 func TestInvitationAndEventsDeclareMeshkitErrorBodies(t *testing.T) {
 	invitations := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), invitationV1beta3Spec))
 	for _, op := range []struct {
@@ -341,6 +341,30 @@ func TestInvitationAndEventsDeclareMeshkitErrorBodies(t *testing.T) {
 		if ref, _ := mappingValue(mustValue(responses, "401"), "$ref"); ref != "#/components/responses/401" {
 			t.Errorf("%s 401 $ref = %v, want the shared 401", op.operationID, ref)
 		}
+	}
+
+	// acceptInvitation answers its 400, 404 and 500 as the shared MeshKit
+	// responses.
+	accept := mustLookup(t, invitations, "paths", "/api/organizations/invitations/{invitationId}/accept", "post")
+	if got := mustValue(accept, "operationId"); got != "acceptInvitation" {
+		t.Fatalf("POST accept operationId = %v, want acceptInvitation", got)
+	}
+	acceptResponses := mustValue(accept, "responses")
+	if got := sortedMappingKeys(acceptResponses); !reflect.DeepEqual(got, []string{"200", "400", "401", "404", "500"}) {
+		t.Errorf("acceptInvitation responses = %v", got)
+	}
+	for _, code := range []string{"400", "404", "500"} {
+		want := "#/components/responses/MeshkitError" + code
+		if ref, _ := mappingValue(mustValue(acceptResponses, code), "$ref"); ref != want {
+			t.Errorf("acceptInvitation %s $ref = %v, want %q", code, ref, want)
+		}
+	}
+	if ref, _ := mappingValue(mustValue(acceptResponses, "401"), "$ref"); ref != "#/components/responses/401" {
+		t.Errorf("acceptInvitation 401 $ref = %v, want the shared 401", ref)
+	}
+	invitationSpec := mustLoadAPISpec(t, invitationV1beta3Spec)
+	for _, code := range []string{"400", "404", "500"} {
+		assertMeshkitErrorBody(t, invitationSpec, "/api/organizations/invitations/{invitationId}/accept", "post", code)
 	}
 
 	events := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), eventV1beta3Spec))
