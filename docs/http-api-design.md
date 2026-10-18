@@ -65,15 +65,16 @@ same `text/plain` body and a description that names its conflict.
 
 Those shared responses declare a `text/plain` body. An operation whose server answers its refusals
 as a MeshKit JSON error body - `{error, code, severity, probableCause, suggestedRemediation}`, as
-Meshery Cloud does from its GitHub integration, invitation-write and events-aggregate routes -
-references `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`,
+Meshery Cloud does from its GitHub integration, invitation-write, invitation-acceptance and
+events-aggregate routes - references `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`,
 `MeshkitError500` or `MeshkitError502` instead, which carry the `MeshkitError` schema as
 `application/json`. The four design operations that reach GitHub use `MeshkitError403` and
 `MeshkitError502` for those two refusals, and `registerConnection`/`updateConnection` use
-`MeshkitError409`. Two existing contracts changed when these were introduced: the `403` and `502`
+`MeshkitError409`. Three existing contracts changed when these were introduced: the `403` and `502`
 bodies of the four design operations - `refreshPatternFromSource`, `updatePatternSource`,
-`importGithubRepository` and `getGithubRepositoryBranches` - and the `400`, `403` and `500` bodies
-of `createInvitation` and `updateInvitation` (plus `updateInvitation`'s `404`) moved from `text/plain` to the MeshKit JSON
+`importGithubRepository` and `getGithubRepositoryBranches` - the `400`, `403` and `500` bodies
+of `createInvitation` and `updateInvitation` (plus `updateInvitation`'s `404`), and the `400`,
+`404` and `500` bodies of `acceptInvitation` moved from `text/plain` to the MeshKit JSON
 error body. The rest were new responses: the connection `409`, the `getEventsAggregate` `403`, and
 the MeshKit refusals of the new `v1beta3/github` operations. Every other error response, including the
 shared `401`, keeps its plain-text body. Descriptions name a MeshKit refusal by its meaning, never by its numeric `code`: codes

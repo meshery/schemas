@@ -172,7 +172,7 @@ paths:
         '404':
           $ref: '#/components/responses/MeshkitError404'
         '500':
-          $ref: '#/components/responses/InvitationAcceptanceFailed500'
+          $ref: '#/components/responses/MeshkitError500'
   /api/identity/orgs/{orgId}/users/invite:
     post:
       x-internal:
@@ -470,12 +470,6 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/responses/MeshkitError404
     MeshkitError500:
       $ref: ../../v1beta2/core/api.yml#/components/responses/MeshkitError500
-    InvitationAcceptanceFailed500:
-      description: The invitation could not be accepted
-      content:
-        application/json:
-          schema:
-            $ref: ../../v1beta2/core/api.yml#/components/schemas/MeshkitError
   securitySchemes:
     jwt:
       type: http
