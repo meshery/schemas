@@ -92,7 +92,7 @@ var githubIntegrationOperations = []githubIntegrationOperation{
 	},
 }
 
-// Meshery Cloud answers 400/403/404/500/502 from these routes as a MeshKit
+// Meshery Cloud answers 400/403/404/409/500/502 from these routes as a MeshKit
 // JSON body; 401 keeps the shared core response.
 var githubIntegrationErrorResponse = map[string]string{
 	"400": "#/components/responses/MeshkitError400",
