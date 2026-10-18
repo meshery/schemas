@@ -15899,20 +15899,20 @@ export type UpdateInvitationApiArg = {
     isDefault?: boolean;
     /** Name of the invitation. */
     name: string;
-    /** Description of the invitation. */
-    description: string;
-    /** Email addresses or patterns this invitation is valid for. */
-    emails: string[];
+    /** Description of the invitation. Optional; omitting it stores an empty description. */
+    description?: string;
+    /** Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation. */
+    emails?: string[];
     /** ID of the organization to which the user is invited. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. */
     expiresAt?: string;
     /** Quota for the invitation; limits the number of users that can accept it. */
     quota?: number;
-    /** Roles that the user will have when accepting the invitation. */
-    roles: string[];
-    /** Teams that the user will be added to when accepting the invitation. */
-    teams: string[];
+    /** Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles. */
+    roles?: string[];
+    /** Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
+    teams?: string[];
     /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
     acceptanceOutcome?: "direct_membership" | "child_organization";
     /** Activation status of the invitation. */
@@ -16022,20 +16022,20 @@ export type CreateInvitationApiArg = {
     isDefault?: boolean;
     /** Name of the invitation. */
     name: string;
-    /** Description of the invitation. */
-    description: string;
-    /** Email addresses or patterns this invitation is valid for. */
-    emails: string[];
+    /** Description of the invitation. Optional; omitting it stores an empty description. */
+    description?: string;
+    /** Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation. */
+    emails?: string[];
     /** ID of the organization to which the user is invited. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. */
     expiresAt?: string;
     /** Quota for the invitation; limits the number of users that can accept it. */
     quota?: number;
-    /** Roles that the user will have when accepting the invitation. */
-    roles: string[];
-    /** Teams that the user will be added to when accepting the invitation. */
-    teams: string[];
+    /** Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles. */
+    roles?: string[];
+    /** Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
+    teams?: string[];
     /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
     acceptanceOutcome?: "direct_membership" | "child_organization";
     /** Activation status of the invitation. */

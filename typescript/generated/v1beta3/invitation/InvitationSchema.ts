@@ -418,11 +418,7 @@ const InvitationSchema: Record<string, unknown> = {
                 "description": "Payload for creating or updating an invitation.",
                 "required": [
                   "name",
-                  "description",
                   "orgId",
-                  "emails",
-                  "roles",
-                  "teams",
                   "status"
                 ],
                 "properties": {
@@ -469,7 +465,7 @@ const InvitationSchema: Record<string, unknown> = {
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the invitation.",
+                    "description": "Description of the invitation. Optional; omitting it stores an empty description.",
                     "maxLength": 5000
                   },
                   "emails": {
@@ -484,7 +480,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "description": "Email address or pattern that is permitted to use this invitation.",
                       "x-go-type": "string"
                     },
-                    "description": "Email addresses or patterns this invitation is valid for."
+                    "description": "Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation."
                   },
                   "orgId": {
                     "type": "string",
@@ -521,7 +517,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Role identifier granted by this invitation on acceptance."
                     },
-                    "description": "Roles that the user will have when accepting the invitation."
+                    "description": "Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles."
                   },
                   "teams": {
                     "type": "array",
@@ -533,7 +529,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Team identifier the invited user is added to on acceptance."
                     },
-                    "description": "Teams that the user will be added to when accepting the invitation."
+                    "description": "Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams."
                   },
                   "acceptanceOutcome": {
                     "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named \"My Organization\" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
@@ -1375,11 +1371,7 @@ const InvitationSchema: Record<string, unknown> = {
                 "description": "Payload for creating or updating an invitation.",
                 "required": [
                   "name",
-                  "description",
                   "orgId",
-                  "emails",
-                  "roles",
-                  "teams",
                   "status"
                 ],
                 "properties": {
@@ -1426,7 +1418,7 @@ const InvitationSchema: Record<string, unknown> = {
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the invitation.",
+                    "description": "Description of the invitation. Optional; omitting it stores an empty description.",
                     "maxLength": 5000
                   },
                   "emails": {
@@ -1441,7 +1433,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "description": "Email address or pattern that is permitted to use this invitation.",
                       "x-go-type": "string"
                     },
-                    "description": "Email addresses or patterns this invitation is valid for."
+                    "description": "Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation."
                   },
                   "orgId": {
                     "type": "string",
@@ -1478,7 +1470,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Role identifier granted by this invitation on acceptance."
                     },
-                    "description": "Roles that the user will have when accepting the invitation."
+                    "description": "Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles."
                   },
                   "teams": {
                     "type": "array",
@@ -1490,7 +1482,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Team identifier the invited user is added to on acceptance."
                     },
-                    "description": "Teams that the user will be added to when accepting the invitation."
+                    "description": "Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams."
                   },
                   "acceptanceOutcome": {
                     "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named \"My Organization\" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",
@@ -4164,11 +4156,7 @@ const InvitationSchema: Record<string, unknown> = {
         "description": "Payload for creating or updating an invitation.",
         "required": [
           "name",
-          "description",
           "orgId",
-          "emails",
-          "roles",
-          "teams",
           "status"
         ],
         "properties": {
@@ -4215,7 +4203,7 @@ const InvitationSchema: Record<string, unknown> = {
           },
           "description": {
             "type": "string",
-            "description": "Description of the invitation.",
+            "description": "Description of the invitation. Optional; omitting it stores an empty description.",
             "maxLength": 5000
           },
           "emails": {
@@ -4230,7 +4218,7 @@ const InvitationSchema: Record<string, unknown> = {
               "description": "Email address or pattern that is permitted to use this invitation.",
               "x-go-type": "string"
             },
-            "description": "Email addresses or patterns this invitation is valid for."
+            "description": "Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation."
           },
           "orgId": {
             "type": "string",
@@ -4267,7 +4255,7 @@ const InvitationSchema: Record<string, unknown> = {
               "type": "string",
               "description": "Role identifier granted by this invitation on acceptance."
             },
-            "description": "Roles that the user will have when accepting the invitation."
+            "description": "Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles."
           },
           "teams": {
             "type": "array",
@@ -4279,7 +4267,7 @@ const InvitationSchema: Record<string, unknown> = {
               "type": "string",
               "description": "Team identifier the invited user is added to on acceptance."
             },
-            "description": "Teams that the user will be added to when accepting the invitation."
+            "description": "Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams."
           },
           "acceptanceOutcome": {
             "description": "Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named \"My Organization\" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.",

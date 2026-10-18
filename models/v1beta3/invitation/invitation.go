@@ -86,11 +86,11 @@ type InvitationPayload struct {
 	// AcceptanceOutcome Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user.
 	AcceptanceOutcome *InvitationAcceptanceOutcome `db:"acceptance_outcome" json:"acceptanceOutcome,omitempty" yaml:"acceptanceOutcome,omitempty"`
 
-	// Description Description of the invitation.
-	Description string `json:"description" yaml:"description"`
+	// Description Description of the invitation. Optional; omitting it stores an empty description.
+	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
 
-	// Emails Email addresses or patterns this invitation is valid for.
-	Emails pq.StringArray `json:"emails" yaml:"emails"`
+	// Emails Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation.
+	Emails *pq.StringArray `json:"emails,omitempty" yaml:"emails,omitempty"`
 
 	// ExpiresAt Timestamp when the invitation expires, if applicable.
 	ExpiresAt *time.Time `db:"expires_at" json:"expiresAt,omitempty" yaml:"expiresAt,omitempty"`
@@ -113,14 +113,14 @@ type InvitationPayload struct {
 	// Quota Quota for the invitation; limits the number of users that can accept it.
 	Quota *int `json:"quota,omitempty" yaml:"quota,omitempty"`
 
-	// Roles Roles that the user will have when accepting the invitation.
-	Roles pq.StringArray `json:"roles" yaml:"roles"`
+	// Roles Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles.
+	Roles *pq.StringArray `json:"roles,omitempty" yaml:"roles,omitempty"`
 
 	// Status Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive. Disabled invitations can be re-enabled later.
 	Status InvitationStatus `json:"status" yaml:"status"`
 
-	// Teams Teams that the user will be added to when accepting the invitation.
-	Teams pq.StringArray `json:"teams" yaml:"teams"`
+	// Teams Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams.
+	Teams *pq.StringArray `json:"teams,omitempty" yaml:"teams,omitempty"`
 }
 
 // InvitationStatus Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive. Disabled invitations can be re-enabled later.
