@@ -343,6 +343,37 @@ func TestInvitationAndEventsDeclareMeshkitErrorBodies(t *testing.T) {
 		}
 	}
 
+	// acceptInvitation answers 400 and 404 as the shared MeshKit responses and
+	// its 500 as a MeshKit body that says the acceptance failed.
+	accept := mustLookup(t, invitations, "paths", "/api/organizations/invitations/{invitationId}/accept", "post")
+	if got := mustValue(accept, "operationId"); got != "acceptInvitation" {
+		t.Fatalf("POST accept operationId = %v, want acceptInvitation", got)
+	}
+	acceptResponses := mustValue(accept, "responses")
+	if got := sortedMappingKeys(acceptResponses); !reflect.DeepEqual(got, []string{"200", "400", "401", "404", "500"}) {
+		t.Errorf("acceptInvitation responses = %v", got)
+	}
+	for _, code := range []string{"400", "404"} {
+		want := "#/components/responses/MeshkitError" + code
+		if ref, _ := mappingValue(mustValue(acceptResponses, code), "$ref"); ref != want {
+			t.Errorf("acceptInvitation %s $ref = %v, want %q", code, ref, want)
+		}
+	}
+	if ref, _ := mappingValue(mustValue(acceptResponses, "401"), "$ref"); ref != "#/components/responses/401" {
+		t.Errorf("acceptInvitation 401 $ref = %v, want the shared 401", ref)
+	}
+	if ref, _ := mappingValue(mustValue(acceptResponses, "500"), "$ref"); ref != "#/components/responses/InvitationAcceptanceFailed500" {
+		t.Errorf("acceptInvitation 500 $ref = %v, want InvitationAcceptanceFailed500", ref)
+	}
+	failed := mustLookup(t, invitations, "components", "responses", "InvitationAcceptanceFailed500")
+	if got := mustValue(failed, "description"); got != "The invitation could not be accepted" {
+		t.Errorf("InvitationAcceptanceFailed500 description = %v", got)
+	}
+	invitationSpec := mustLoadAPISpec(t, invitationV1beta3Spec)
+	for _, code := range []string{"400", "404", "500"} {
+		assertMeshkitErrorBody(t, invitationSpec, "/api/organizations/invitations/{invitationId}/accept", "post", code)
+	}
+
 	events := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), eventV1beta3Spec))
 	aggregate := mustLookup(t, events, "paths", "/api/events", "get")
 	if got := mustValue(aggregate, "operationId"); got != "getEventsAggregate" {
