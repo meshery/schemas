@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Whether the caller's GitHub connection is usable
-         * @description Checks the caller's GitHub App connection. A connection is usable only when its installations were verified against the caller's own GitHub account and GitHub confirms the installation it opens on still exists. `403` (code `meshery_cloud-3381`) means the connection must be re-authorized (`startGithubAuthorization` with `flow=authorize`). When GitHub reports the installation the connection opens on removed, that installation is dropped and the connection re-points at its next verified installation, which is checked in turn: `200` when one remains. `404` means the caller has no GitHub connection, or no verified installation remains - in which case the connection is deleted. `502` means GitHub could not confirm either way; the connection is kept.
+         * @description Checks the caller's GitHub App connection. A connection is usable only when its installations were verified against the caller's own GitHub account and GitHub confirms the installation it opens on still exists. `403` with a MeshKit error saying the connection must be re-authorized means it predates verification; re-authorize it with `startGithubAuthorization` (`flow=authorize`). When GitHub reports the installation the connection opens on removed, that installation is dropped and the connection re-points at its next verified installation, which is checked in turn: `200` when one remains. `404` means the caller has no GitHub connection, or no verified installation remains - in which case the connection is deleted. `502` means GitHub could not confirm either way; the connection is kept.
          */
         get: operations["getGithubAppStatus"];
         put?: never;
@@ -286,7 +286,7 @@ export interface components {
                 "application/json": {
                     /** @description The sentence the caller is shown. */
                     error: string;
-                    /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                     code?: string;
                     /**
                      * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -309,7 +309,7 @@ export interface components {
                 "application/json": {
                     /** @description The sentence the caller is shown. */
                     error: string;
-                    /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                     code?: string;
                     /**
                      * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -332,7 +332,7 @@ export interface components {
                 "application/json": {
                     /** @description The sentence the caller is shown. */
                     error: string;
-                    /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                     code?: string;
                     /**
                      * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -355,7 +355,7 @@ export interface components {
                 "application/json": {
                     /** @description The sentence the caller is shown. */
                     error: string;
-                    /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                     code?: string;
                     /**
                      * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -378,7 +378,7 @@ export interface components {
                 "application/json": {
                     /** @description The sentence the caller is shown. */
                     error: string;
-                    /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                     code?: string;
                     /**
                      * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -462,7 +462,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -485,7 +485,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -508,7 +508,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -531,7 +531,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -581,7 +581,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -613,7 +613,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -636,7 +636,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -659,7 +659,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -754,7 +754,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -786,7 +786,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -809,7 +809,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -832,7 +832,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -899,7 +899,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -931,7 +931,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -954,7 +954,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -977,7 +977,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -1040,7 +1040,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -1072,7 +1072,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -1095,7 +1095,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -1118,7 +1118,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.

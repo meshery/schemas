@@ -1645,7 +1645,7 @@ const CoreSchema: Record<string, unknown> = {
           "code": {
             "type": "string",
             "minLength": 1,
-            "description": "MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error."
+            "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
           },
           "severity": {
             "type": "string",

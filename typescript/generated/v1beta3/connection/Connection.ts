@@ -19,7 +19,7 @@ export interface paths {
         put?: never;
         /**
          * Register a new connection
-         * @description Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with `409` (code `meshery_cloud-3397`).
+         * @description Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.
          */
         post: operations["registerConnection"];
         delete?: never;
@@ -82,7 +82,7 @@ export interface paths {
         get: operations["getConnectionById"];
         /**
          * Update a connection
-         * @description Update an existing connection. Meshery Cloud refuses (`409`, code `meshery_cloud-3397`) an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct.
+         * @description Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct.
          */
         put: operations["updateConnection"];
         post?: never;
@@ -1785,7 +1785,7 @@ export interface components {
                 "application/json": {
                     /** @description The sentence the caller is shown. */
                     error: string;
-                    /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                     code?: string;
                     /**
                      * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -2848,7 +2848,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -4009,7 +4009,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.

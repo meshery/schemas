@@ -146,7 +146,7 @@ export interface paths {
         put?: never;
         /**
          * Refresh design from its source
-         * @description Re-fetches the source file recorded in the design's `location` (`type: github`, `host: github.com/<owner>/<repo>`, `path`, optional `branch`; an empty branch means the repository's default branch), re-identifies it, and rewrites the design's content in place under the same design ID. A Meshery Design source replaces `patternFile`; any other source type (Helm Chart, Kubernetes Manifest, Docker Compose) replaces `sourceContent` and clears `patternFile`, so Meshery reconverts it the next time the design is opened - exactly the state a first import leaves. Only the design's owner may refresh it. No request body. Denials: `404` answers both "no such design" and "not the caller's design" with the same body by design, so the route is not an existence oracle; `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A `403` whose `code` is `meshery_cloud-3381` means the caller's GitHub connection predates verification and must be re-authorized (see `startGithubAuthorization`) before it can be used; `409` means the design has no refreshable source (`location.type` is not `github`, or `host`/`path` is missing) or its source path no longer resolves to an importable file; `502` means GitHub could not be reached or rejected the request. The server resolves the tracked ref to a commit, reads the file at that commit, and records it in `location.commitSha`.
+         * @description Re-fetches the source file recorded in the design's `location` (`type: github`, `host: github.com/<owner>/<repo>`, `path`, optional `branch`; an empty branch means the repository's default branch), re-identifies it, and rewrites the design's content in place under the same design ID. A Meshery Design source replaces `patternFile`; any other source type (Helm Chart, Kubernetes Manifest, Docker Compose) replaces `sourceContent` and clears `patternFile`, so Meshery reconverts it the next time the design is opened - exactly the state a first import leaves. Only the design's owner may refresh it. No request body. Denials: `404` answers both "no such design" and "not the caller's design" with the same body by design, so the route is not an existence oracle; `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A distinct `403` whose MeshKit error asks for re-authorization means the caller's GitHub connection predates verification; re-authorize it (see `startGithubAuthorization`) before use; `409` means the design has no refreshable source (`location.type` is not `github`, or `host`/`path` is missing) or its source path no longer resolves to an importable file; `502` means GitHub could not be reached or rejected the request. The server resolves the tracked ref to a commit, reads the file at that commit, and records it in `location.commitSha`.
          */
         post: operations["refreshPatternFromSource"];
         delete?: never;
@@ -170,7 +170,7 @@ export interface paths {
         head?: never;
         /**
          * Remap a design's GitHub source
-         * @description Re-points the design's source binding - the GitHub file its `location` records and `refreshPatternFromSource` re-reads - at another repository, path or ref. The design's content is not changed: call `refreshPatternFromSource` afterwards to replace it from the new source. The server resolves `ref` to a commit and confirms that `path` names an importable file at that commit before it writes anything, so a binding that a refresh could not read is never stored. It writes `location` as `type: github`, `host`, `path` and `branch` (= `ref`). When the binding changes, `location.commitSha` is removed, because the stored content was not read from the new source; it is kept when the request names the binding the design already has. A design with no GitHub source (an upload or URL import) may be bound to one; it becomes refreshable. Only the design's owner may remap it. Denials: `404` answers "no such design", "not the caller's design" and "connectionId is not the caller's own live GitHub connection" with the same body, so the route is not an existence oracle; `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A `403` whose `code` is `meshery_cloud-3381` means the caller's GitHub connection predates verification and must be re-authorized (see `startGithubAuthorization`) before it can be used; `409` means `ref` does not resolve to a commit, or `path` does not name an importable file at it (missing, a directory, or not a supported format); `502` means GitHub could not be reached or rejected the request.
+         * @description Re-points the design's source binding - the GitHub file its `location` records and `refreshPatternFromSource` re-reads - at another repository, path or ref. The design's content is not changed: call `refreshPatternFromSource` afterwards to replace it from the new source. The server resolves `ref` to a commit and confirms that `path` names an importable file at that commit before it writes anything, so a binding that a refresh could not read is never stored. It writes `location` as `type: github`, `host`, `path` and `branch` (= `ref`). When the binding changes, `location.commitSha` is removed, because the stored content was not read from the new source; it is kept when the request names the binding the design already has. A design with no GitHub source (an upload or URL import) may be bound to one; it becomes refreshable. Only the design's owner may remap it. Denials: `404` answers "no such design", "not the caller's design" and "connectionId is not the caller's own live GitHub connection" with the same body, so the route is not an existence oracle; `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A distinct `403` whose MeshKit error asks for re-authorization means the caller's GitHub connection predates verification; re-authorize it (see `startGithubAuthorization`) before use; `409` means `ref` does not resolve to a commit, or `path` does not name an importable file at it (missing, a directory, or not a supported format); `502` means GitHub could not be reached or rejected the request.
          */
         patch: operations["updatePatternSource"];
         trace?: never;
@@ -223,7 +223,7 @@ export interface paths {
         put?: never;
         /**
          * Import files from a GitHub repository as designs
-         * @description Imports the selected files (a selected directory is walked recursively) from one repository reachable through the caller's GitHub App connection. Matching is idempotent: a file whose (owner, location.type, location.host, location.path, location.branch) already identifies one of the caller's designs is handled per `onExisting`. `connectionId` must name the caller's own live GitHub connection (404 otherwise). `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A `403` whose `code` is `meshery_cloud-3381` means the caller's GitHub connection predates verification and must be re-authorized (see `startGithubAuthorization`) before it can be used; `502` means GitHub could not be reached or rejected the request. Each imported or updated design records the commit its file was read at in `location.commitSha`.
+         * @description Imports the selected files (a selected directory is walked recursively) from one repository reachable through the caller's GitHub App connection. Matching is idempotent: a file whose (owner, location.type, location.host, location.path, location.branch) already identifies one of the caller's designs is handled per `onExisting`. `connectionId` must name the caller's own live GitHub connection (404 otherwise). `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A distinct `403` whose MeshKit error asks for re-authorization means the caller's GitHub connection predates verification; re-authorize it (see `startGithubAuthorization`) before use; `502` means GitHub could not be reached or rejected the request. Each imported or updated design records the commit its file was read at in `location.commitSha`.
          */
         post: operations["importGithubRepository"];
         delete?: never;
@@ -241,7 +241,7 @@ export interface paths {
         };
         /**
          * List a repository's branches
-         * @description Lists the branches of one repository reachable through the caller's GitHub App connection, with the repository's default branch, so a client can offer the refs a design's source can track. Branch order is GitHub's. `connectionId` must name the caller's own live GitHub connection (404 otherwise, with the same body as "no such connection"). `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A `403` whose `code` is `meshery_cloud-3381` means the caller's GitHub connection predates verification and must be re-authorized (see `startGithubAuthorization`) before it can be used; `502` means GitHub could not be reached or rejected the request.
+         * @description Lists the branches of one repository reachable through the caller's GitHub App connection, with the repository's default branch, so a client can offer the refs a design's source can track. Branch order is GitHub's. `connectionId` must name the caller's own live GitHub connection (404 otherwise, with the same body as "no such connection"). `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A distinct `403` whose MeshKit error asks for re-authorization means the caller's GitHub connection predates verification; re-authorize it (see `startGithubAuthorization`) before use; `502` means GitHub could not be reached or rejected the request.
          */
         get: operations["getGithubRepositoryBranches"];
         put?: never;
@@ -4574,7 +4574,7 @@ export interface components {
                 "application/json": {
                     /** @description The sentence the caller is shown. */
                     error: string;
-                    /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                     code?: string;
                     /**
                      * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -4597,7 +4597,7 @@ export interface components {
                 "application/json": {
                     /** @description The sentence the caller is shown. */
                     error: string;
-                    /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                     code?: string;
                     /**
                      * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -7061,7 +7061,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -7111,7 +7111,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -7553,7 +7553,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -7603,7 +7603,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -8993,7 +8993,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -9034,7 +9034,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -9120,7 +9120,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.
@@ -9161,7 +9161,7 @@ export interface operations {
                     "application/json": {
                         /** @description The sentence the caller is shown. */
                         error: string;
-                        /** @description MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error. */
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
                         code?: string;
                         /**
                          * @description MeshKit severity name. Omitted when MeshKit reports none.

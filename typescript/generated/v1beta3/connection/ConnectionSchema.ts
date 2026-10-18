@@ -1303,7 +1303,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "registerConnection",
         "summary": "Register a new connection",
-        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with `409` (code `meshery_cloud-3397`).\n",
+        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -2952,7 +2952,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "code": {
                       "type": "string",
                       "minLength": 1,
-                      "description": "MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error."
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
                     },
                     "severity": {
                       "type": "string",
@@ -4391,7 +4391,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "updateConnection",
         "summary": "Update a connection",
-        "description": "Update an existing connection. Meshery Cloud refuses (`409`, code `meshery_cloud-3397`) an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct.\n",
+        "description": "Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct.\n",
         "parameters": [
           {
             "name": "connectionId",
@@ -6062,7 +6062,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "code": {
                       "type": "string",
                       "minLength": 1,
-                      "description": "MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error."
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
                     },
                     "severity": {
                       "type": "string",
@@ -9775,7 +9775,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "code": {
                   "type": "string",
                   "minLength": 1,
-                  "description": "MeshKit error code, e.g. `meshery_cloud-3420`. Omitted for an error that is not a MeshKit error."
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
                 },
                 "severity": {
                   "type": "string",
