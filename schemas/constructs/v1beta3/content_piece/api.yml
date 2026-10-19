@@ -7,9 +7,15 @@ info:
     updates.
     Organization scope: every operation acts only in the organization the
     session resolved to (X-Current-Orgid, then the user's selected
-    organization), and only when the caller is a live member of it. A
-    caller who is not a member receives the same 404 as an unknown id, so
-    the existence of another organization's rows is never disclosed.
+    organization), and only when the caller is a live member of it.
+    Authorization: each operation requires one permission key in that
+    organization (Catalog Management / Content Pieces: View Content
+    Pieces for the reads, Create Content Piece, Edit Content Piece and
+    Delete Content Piece for the writes); a caller without it receives a
+    403 before any row is read. Past that check, an id that does not name
+    a live content piece of the organization, and a caller who is not a
+    live member of it, receive the same 404, so the existence of another
+    organization's rows is never disclosed.
   version: v1beta3
   contact:
     name: Meshery Maintainers
@@ -33,7 +39,12 @@ paths:
         - contentPieces
       summary: List content pieces
       operationId: listContentPieces
-      description: Returns a paginated list of content pieces in the organization of the authenticated session.
+      description: |
+        Returns a paginated list of the live content pieces in the
+        organization of the authenticated session, ordered by `rowNumber`
+        unless `order` names another column (`rowNumber`, `createdAt`,
+        `updatedAt`). `search` matches the profile or the content values,
+        case-insensitively.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
@@ -43,7 +54,7 @@ paths:
         - name: profile
           in: query
           required: false
-          description: Filter by owning profile subject.
+          description: Filter by owning profile subject (exact match).
           schema:
             type: string
       responses:
@@ -55,6 +66,8 @@ paths:
                 $ref: "#/components/schemas/ContentPiecePage"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "500":
@@ -69,7 +82,9 @@ paths:
         Inserts a new content piece. Insert-only: any supplied
         `id` and `expectedFingerprint` are ignored; existing rows change
         only through the conditional `updateContentPiece`. The
-        `fingerprint` is server-computed.
+        `fingerprint` is server-computed. A live content piece of the
+        organization that already holds the same `profile` and
+        `rowNumber` refuses the insert with a 409.
       requestBody:
         required: true
         content:
@@ -87,8 +102,12 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
 
@@ -112,6 +131,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "500":
@@ -125,7 +146,9 @@ paths:
       description: |
         Conditionally updates the content piece. When
         `expectedFingerprint` is supplied and stale, the update is
-        refused with a 409.
+        refused with a 409, as is an update that would move the piece
+        onto a `profile` and `rowNumber` another live content piece of
+        the organization holds.
       parameters:
         - $ref: "#/components/parameters/contentPieceId"
       requestBody:
@@ -145,6 +168,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "409":
@@ -165,6 +190,8 @@ paths:
           description: Content piece deleted
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "500":
@@ -184,8 +211,10 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/401"
     404:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    403:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/403"
     409:
-      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint
+      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber
       content:
         text/plain:
           schema:
