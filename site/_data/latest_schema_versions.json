@@ -8,6 +8,13 @@
     "extension": true
   },
   {
+    "construct": "activity_result",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/activity_result/activity_result.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "badge",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/badge/api.yml",
