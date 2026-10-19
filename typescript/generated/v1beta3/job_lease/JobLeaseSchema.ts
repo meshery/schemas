@@ -7,7 +7,7 @@ const JobLeaseSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "JobLease",
-    "description": "OpenAPI schema for shared job leases - time-bound claims on due jobs\nwith pause scopes, used by Layer5 Cloud and Blowhorn alike. Competing\nconsumers claim due, unheld, unpaused rows; a dead holder's row returns\nto the pool when its lease lapses. The claim race is decided server-side\nin a single statement: losing racers receive null, never an error.\nMachine-local pause stays on the machine and is never sent; the\norganization-wide pause and per-row pause live here.\n",
+    "description": "OpenAPI schema for shared job leases - time-bound claims on due jobs\nwith pause scopes, used by Layer5 Cloud and Blowhorn alike. Competing\nconsumers claim due, unheld, unpaused rows; a dead holder's row returns\nto the pool when its lease lapses. The claim race is decided server-side\nin a single statement: losing racers receive null, never an error.\nMachine-local pause stays on the machine and is never sent; the\norganization-wide pause and per-row pause live here.\nOrganization scope: every operation acts only in the organization the\nsession resolved to (X-Current-Orgid, then the user's selected\norganization), and only when the caller is a live member of it. A\ncaller who is not a member receives the same 404 as an unknown id, so\nthe existence of another organization's rows is never disclosed.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -466,6 +466,16 @@ const JobLeaseSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -947,6 +957,16 @@ const JobLeaseSchema: Record<string, unknown> = {
               }
             }
           },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -1384,6 +1404,16 @@ const JobLeaseSchema: Record<string, unknown> = {
               }
             }
           },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -1647,6 +1677,16 @@ const JobLeaseSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
             "content": {
               "text/plain": {
                 "schema": {

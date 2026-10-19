@@ -904,6 +904,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Internal server error */
             500: {
                 headers: {
@@ -1092,6 +1101,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Internal server error */
             500: {
                 headers: {
@@ -1268,6 +1286,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Internal server error */
             500: {
                 headers: {
@@ -1412,6 +1439,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

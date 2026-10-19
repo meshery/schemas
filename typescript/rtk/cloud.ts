@@ -18,12 +18,12 @@ export const addTagTypes = [
   "View_views",
   "Academy_API_Academy",
   "BlowhornBinding_blowhornBindings",
-  "BlowhornContent_blowhornContent",
   "BlowhornHealth_blowhornHealth",
   "BlowhornLedger_blowhornLedger",
   "BlowhornProfile_blowhornProfiles",
   "Connection_API_Connections",
   "Connection_API_ConnectionDefinitions",
+  "ContentPiece_contentPieces",
   "Design_designs",
   "Design_github",
   "Environment_environments",
@@ -880,40 +880,6 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/blowhorn/bindings/${queryArg.blowhornBindingId}`, method: "DELETE" }),
         invalidatesTags: ["BlowhornBinding_blowhornBindings"],
       }),
-      listBlowhornContent: build.query<ListBlowhornContentApiResponse, ListBlowhornContentApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/content`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            profile: queryArg?.profile,
-          },
-        }),
-        providesTags: ["BlowhornContent_blowhornContent"],
-      }),
-      insertBlowhornContent: build.mutation<InsertBlowhornContentApiResponse, InsertBlowhornContentApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/content`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["BlowhornContent_blowhornContent"],
-      }),
-      getBlowhornContent: build.query<GetBlowhornContentApiResponse, GetBlowhornContentApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/content/${queryArg.blowhornContentId}` }),
-        providesTags: ["BlowhornContent_blowhornContent"],
-      }),
-      updateBlowhornContent: build.mutation<UpdateBlowhornContentApiResponse, UpdateBlowhornContentApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/content/${queryArg.blowhornContentId}`,
-          method: "PUT",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["BlowhornContent_blowhornContent"],
-      }),
-      deleteBlowhornContent: build.mutation<DeleteBlowhornContentApiResponse, DeleteBlowhornContentApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/content/${queryArg.blowhornContentId}`, method: "DELETE" }),
-        invalidatesTags: ["BlowhornContent_blowhornContent"],
-      }),
       getBlowhornHealth: build.query<GetBlowhornHealthApiResponse, GetBlowhornHealthApiArg>({
         query: () => ({ url: `/api/blowhorn/health` }),
         providesTags: ["BlowhornHealth_blowhornHealth"],
@@ -1152,6 +1118,40 @@ const injectedRtkApi = api
           method: "DELETE",
         }),
         invalidatesTags: ["Connection_API_ConnectionDefinitions"],
+      }),
+      listContentPieces: build.query<ListContentPiecesApiResponse, ListContentPiecesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content/pieces`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            profile: queryArg?.profile,
+          },
+        }),
+        providesTags: ["ContentPiece_contentPieces"],
+      }),
+      insertContentPiece: build.mutation<InsertContentPieceApiResponse, InsertContentPieceApiArg>({
+        query: (queryArg) => ({ url: `/api/content/pieces`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["ContentPiece_contentPieces"],
+      }),
+      getContentPiece: build.query<GetContentPieceApiResponse, GetContentPieceApiArg>({
+        query: (queryArg) => ({ url: `/api/content/pieces/${queryArg.contentPieceId}` }),
+        providesTags: ["ContentPiece_contentPieces"],
+      }),
+      updateContentPiece: build.mutation<UpdateContentPieceApiResponse, UpdateContentPieceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content/pieces/${queryArg.contentPieceId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["ContentPiece_contentPieces"],
+      }),
+      deleteContentPiece: build.mutation<DeleteContentPieceApiResponse, DeleteContentPieceApiArg>({
+        query: (queryArg) => ({ url: `/api/content/pieces/${queryArg.contentPieceId}`, method: "DELETE" }),
+        invalidatesTags: ["ContentPiece_contentPieces"],
       }),
       getPatterns: build.query<GetPatternsApiResponse, GetPatternsApiArg>({
         query: (queryArg) => ({
@@ -8561,158 +8561,6 @@ export type UnbindBlowhornBindingApiArg = {
   /** Blowhorn binding ID */
   blowhornBindingId: string;
 };
-export type ListBlowhornContentApiResponse = /** status 200 Blowhorn content page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** Blowhorn content rows included on this page of results. */
-  blowhornContent?: {
-    /** Server-generated Blowhorn content ID. */
-    id: string;
-    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-    organizationId: string;
-    /** Subject of the owning Blowhorn profile. */
-    profile: string;
-    /** Row number of the content within the owning profile. */
-    rowNumber: number;
-    /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-    fingerprint: string;
-    /** Content values, stored as a JSON blob. */
-    data?: object;
-    /** Timestamp of Blowhorn content creation. */
-    createdAt: string;
-    /** Timestamp of last Blowhorn content modification. */
-    updatedAt: string;
-    /** Timestamp when the Blowhorn content was soft-deleted. */
-    deletedAt?: string | null;
-  }[];
-};
-export type ListBlowhornContentApiArg = {
-  /** Get responses by page */
-  page?: number;
-  /** Number of items per page (canonical camelCase form). */
-  pageSize?: number;
-  /** Number of items per page. Deprecated alias of pageSize;
-    canonical `pageSize` wins when both are present.
-     */
-  pagesize?: number;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Filter by owning profile subject. */
-  profile?: string;
-};
-export type InsertBlowhornContentApiResponse = /** status 201 Blowhorn content created */ {
-  /** Server-generated Blowhorn content ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Subject of the owning Blowhorn profile. */
-  profile: string;
-  /** Row number of the content within the owning profile. */
-  rowNumber: number;
-  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-  fingerprint: string;
-  /** Content values, stored as a JSON blob. */
-  data?: object;
-  /** Timestamp of Blowhorn content creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn content modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn content was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type InsertBlowhornContentApiArg = {
-  body: {
-    /** Existing Blowhorn content ID for updates; ignored on insert. */
-    id?: string;
-    /** Subject of the owning Blowhorn profile. */
-    profile: string;
-    /** Row number of the content within the owning profile. */
-    rowNumber: number;
-    /** Content values, stored as a JSON blob. */
-    data?: object;
-    /** Optimistic-concurrency precondition for update: when supplied,
-        the update applies only when the stored fingerprint still
-        matches, and is refused with a 409 otherwise. Ignored on
-        insert.
-         */
-    expectedFingerprint?: string;
-  };
-};
-export type GetBlowhornContentApiResponse = /** status 200 Blowhorn content response */ {
-  /** Server-generated Blowhorn content ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Subject of the owning Blowhorn profile. */
-  profile: string;
-  /** Row number of the content within the owning profile. */
-  rowNumber: number;
-  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-  fingerprint: string;
-  /** Content values, stored as a JSON blob. */
-  data?: object;
-  /** Timestamp of Blowhorn content creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn content modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn content was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type GetBlowhornContentApiArg = {
-  /** Blowhorn content ID */
-  blowhornContentId: string;
-};
-export type UpdateBlowhornContentApiResponse = /** status 200 Blowhorn content updated */ {
-  /** Server-generated Blowhorn content ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Subject of the owning Blowhorn profile. */
-  profile: string;
-  /** Row number of the content within the owning profile. */
-  rowNumber: number;
-  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-  fingerprint: string;
-  /** Content values, stored as a JSON blob. */
-  data?: object;
-  /** Timestamp of Blowhorn content creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn content modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn content was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type UpdateBlowhornContentApiArg = {
-  /** Blowhorn content ID */
-  blowhornContentId: string;
-  body: {
-    /** Existing Blowhorn content ID for updates; ignored on insert. */
-    id?: string;
-    /** Subject of the owning Blowhorn profile. */
-    profile: string;
-    /** Row number of the content within the owning profile. */
-    rowNumber: number;
-    /** Content values, stored as a JSON blob. */
-    data?: object;
-    /** Optimistic-concurrency precondition for update: when supplied,
-        the update applies only when the stored fingerprint still
-        matches, and is refused with a 409 otherwise. Ignored on
-        insert.
-         */
-    expectedFingerprint?: string;
-  };
-};
-export type DeleteBlowhornContentApiResponse = unknown;
-export type DeleteBlowhornContentApiArg = {
-  /** Blowhorn content ID */
-  blowhornContentId: string;
-};
 export type GetBlowhornHealthApiResponse = /** status 200 Blowhorn health response */ {
   /** Frozen Blowhorn contract version the server speaks. */
   contractVersion: string;
@@ -11261,6 +11109,158 @@ export type DeleteConnectionDefinitionApiResponse = unknown;
 export type DeleteConnectionDefinitionApiArg = {
   /** Connection definition ID */
   connectionDefinitionId: string;
+};
+export type ListContentPiecesApiResponse = /** status 200 Content piece page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Content pieces included on this page of results. */
+  contentPieces?: {
+    /** Server-generated content piece ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Subject of the owning profile. */
+    profile: string;
+    /** Row number of the content within the owning profile. */
+    rowNumber: number;
+    /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+    fingerprint: string;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Timestamp of content piece creation. */
+    createdAt: string;
+    /** Timestamp of last content piece modification. */
+    updatedAt: string;
+    /** Timestamp when the content piece was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListContentPiecesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by owning profile subject. */
+  profile?: string;
+};
+export type InsertContentPieceApiResponse = /** status 201 Content piece created */ {
+  /** Server-generated content piece ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the owning profile. */
+  profile: string;
+  /** Row number of the content within the owning profile. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of content piece creation. */
+  createdAt: string;
+  /** Timestamp of last content piece modification. */
+  updatedAt: string;
+  /** Timestamp when the content piece was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type InsertContentPieceApiArg = {
+  body: {
+    /** Existing content piece ID for updates; ignored on insert. */
+    id?: string;
+    /** Subject of the owning profile. */
+    profile: string;
+    /** Row number of the content within the owning profile. */
+    rowNumber: number;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        insert.
+         */
+    expectedFingerprint?: string;
+  };
+};
+export type GetContentPieceApiResponse = /** status 200 Content piece response */ {
+  /** Server-generated content piece ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the owning profile. */
+  profile: string;
+  /** Row number of the content within the owning profile. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of content piece creation. */
+  createdAt: string;
+  /** Timestamp of last content piece modification. */
+  updatedAt: string;
+  /** Timestamp when the content piece was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetContentPieceApiArg = {
+  /** Content piece ID */
+  contentPieceId: string;
+};
+export type UpdateContentPieceApiResponse = /** status 200 Content piece updated */ {
+  /** Server-generated content piece ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the owning profile. */
+  profile: string;
+  /** Row number of the content within the owning profile. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of content piece creation. */
+  createdAt: string;
+  /** Timestamp of last content piece modification. */
+  updatedAt: string;
+  /** Timestamp when the content piece was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpdateContentPieceApiArg = {
+  /** Content piece ID */
+  contentPieceId: string;
+  body: {
+    /** Existing content piece ID for updates; ignored on insert. */
+    id?: string;
+    /** Subject of the owning profile. */
+    profile: string;
+    /** Row number of the content within the owning profile. */
+    rowNumber: number;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        insert.
+         */
+    expectedFingerprint?: string;
+  };
+};
+export type DeleteContentPieceApiResponse = unknown;
+export type DeleteContentPieceApiArg = {
+  /** Content piece ID */
+  contentPieceId: string;
 };
 export type GetPatternsApiResponse = /** status 200 Designs response */ {
   /** Current page number of the result set. */
@@ -19910,13 +19910,6 @@ export const {
   useLazyListBlowhornBindingsQuery,
   useBindBlowhornBindingMutation,
   useUnbindBlowhornBindingMutation,
-  useListBlowhornContentQuery,
-  useLazyListBlowhornContentQuery,
-  useInsertBlowhornContentMutation,
-  useGetBlowhornContentQuery,
-  useLazyGetBlowhornContentQuery,
-  useUpdateBlowhornContentMutation,
-  useDeleteBlowhornContentMutation,
   useGetBlowhornHealthQuery,
   useLazyGetBlowhornHealthQuery,
   useListBlowhornLedgerQuery,
@@ -19960,6 +19953,13 @@ export const {
   useLazyGetConnectionDefinitionQuery,
   useUpdateConnectionDefinitionMutation,
   useDeleteConnectionDefinitionMutation,
+  useListContentPiecesQuery,
+  useLazyListContentPiecesQuery,
+  useInsertContentPieceMutation,
+  useGetContentPieceQuery,
+  useLazyGetContentPieceQuery,
+  useUpdateContentPieceMutation,
+  useDeleteContentPieceMutation,
   useGetPatternsQuery,
   useLazyGetPatternsQuery,
   useUpsertPatternMutation,
