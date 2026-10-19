@@ -68,7 +68,7 @@ const TokenSchema: Record<string, unknown> = {
           {
             "name": "purpose",
             "in": "query",
-            "description": "Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list.",
+            "description": "Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose.",
             "schema": {
               "type": "string",
               "maxLength": 500
@@ -350,7 +350,7 @@ const TokenSchema: Record<string, unknown> = {
           {
             "name": "purpose",
             "in": "query",
-            "description": "Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list.",
+            "description": "Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose.",
             "schema": {
               "type": "string",
               "maxLength": 500
@@ -1894,7 +1894,7 @@ const TokenSchema: Record<string, unknown> = {
       "purpose": {
         "name": "purpose",
         "in": "query",
-        "description": "Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list.",
+        "description": "Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose.",
         "schema": {
           "type": "string",
           "maxLength": 500

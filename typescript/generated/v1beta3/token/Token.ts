@@ -303,7 +303,7 @@ export interface components {
         isOauth: boolean;
         /** @description Name of the token. */
         name: string;
-        /** @description Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list. */
+        /** @description Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
         purpose: string;
         /** @description Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token. */
         nativeClientName: string;
@@ -327,7 +327,7 @@ export interface operations {
             query?: {
                 /** @description Whether to retrieve OAuth-backed sessions instead of API tokens. */
                 isOauth?: boolean;
-                /** @description Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list. */
+                /** @description Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
                 purpose?: string;
                 /** @description Get responses by page */
                 page?: number;
@@ -425,7 +425,7 @@ export interface operations {
             query: {
                 /** @description Name of the token. */
                 name: string;
-                /** @description Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list. */
+                /** @description Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
                 purpose?: string;
             };
             header?: never;
