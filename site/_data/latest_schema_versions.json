@@ -64,6 +64,13 @@
     "extension": false
   },
   {
+    "construct": "claim",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/claim/claim.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "component",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/component/component.yaml",
@@ -174,13 +181,6 @@
     "extension": true
   },
   {
-    "construct": "job_lease",
-    "version": "v1beta3",
-    "href": "/schemas/constructs/v1beta3/job_lease/job_lease.yaml",
-    "core": false,
-    "extension": true
-  },
-  {
     "construct": "key",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/key/key.yaml",
@@ -262,8 +262,8 @@
   },
   {
     "construct": "schedule",
-    "version": "v1beta2",
-    "href": "/schemas/constructs/v1beta2/schedule/api.yml",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/schedule/schedule.yaml",
     "core": false,
     "extension": true
   },
