@@ -1,10 +1,15 @@
 openapi: 3.0.0
 info:
-  title: BlowhornContent
+  title: ContentPiece
   description: |
-    OpenAPI schema for Blowhorn content rows - fingerprinted content
+    OpenAPI schema for content pieces - fingerprinted content
     values keyed by owning profile and row number, with conditional
     updates.
+    Organization scope: every operation acts only in the organization the
+    session resolved to (X-Current-Orgid, then the user's selected
+    organization), and only when the caller is a live member of it. A
+    caller who is not a member receives the same 404 as an unknown id, so
+    the existence of another organization's rows is never disclosed.
   version: v1beta3
   contact:
     name: Meshery Maintainers
@@ -17,18 +22,18 @@ info:
 security:
   - jwt: []
 tags:
-  - name: blowhornContent
-    description: Operations related to Blowhorn content.
+  - name: contentPieces
+    description: Operations related to content pieces.
 
 paths:
-  /api/blowhorn/content:
+  /api/content/pieces:
     get:
       x-internal: ["cloud"]
       tags:
-        - blowhornContent
-      summary: List Blowhorn content
-      operationId: listBlowhornContent
-      description: Returns a paginated list of Blowhorn content rows in the organization of the authenticated session.
+        - contentPieces
+      summary: List content pieces
+      operationId: listContentPieces
+      description: Returns a paginated list of content pieces in the organization of the authenticated session.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
@@ -43,62 +48,66 @@ paths:
             type: string
       responses:
         "200":
-          description: Blowhorn content page
+          description: Content piece page
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BlowhornContentPage"
+                $ref: "#/components/schemas/ContentPiecePage"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud"]
       tags:
-        - blowhornContent
-      summary: Insert Blowhorn content
-      operationId: insertBlowhornContent
+        - contentPieces
+      summary: Insert a content piece
+      operationId: insertContentPiece
       description: |
-        Inserts a new Blowhorn content row. Insert-only: any supplied
+        Inserts a new content piece. Insert-only: any supplied
         `id` and `expectedFingerprint` are ignored; existing rows change
-        only through the conditional `updateBlowhornContent`. The
+        only through the conditional `updateContentPiece`. The
         `fingerprint` is server-computed.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/BlowhornContentPayload"
+              $ref: "#/components/schemas/ContentPiecePayload"
       responses:
         "201":
-          description: Blowhorn content created
+          description: Content piece created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BlowhornContent"
+                $ref: "#/components/schemas/ContentPiece"
         "400":
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
-  /api/blowhorn/content/{blowhornContentId}:
+  /api/content/pieces/{contentPieceId}:
     get:
       x-internal: ["cloud"]
       tags:
-        - blowhornContent
-      summary: Get Blowhorn content by ID
-      operationId: getBlowhornContent
+        - contentPieces
+      summary: Get a content piece by ID
+      operationId: getContentPiece
       parameters:
-        - $ref: "#/components/parameters/blowhornContentId"
+        - $ref: "#/components/parameters/contentPieceId"
       responses:
         "200":
-          description: Blowhorn content response
+          description: Content piece response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BlowhornContent"
+                $ref: "#/components/schemas/ContentPiece"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -110,28 +119,28 @@ paths:
     put:
       x-internal: ["cloud"]
       tags:
-        - blowhornContent
-      summary: Update Blowhorn content
-      operationId: updateBlowhornContent
+        - contentPieces
+      summary: Update a content piece
+      operationId: updateContentPiece
       description: |
-        Conditionally updates the Blowhorn content row. When
+        Conditionally updates the content piece. When
         `expectedFingerprint` is supplied and stale, the update is
         refused with a 409.
       parameters:
-        - $ref: "#/components/parameters/blowhornContentId"
+        - $ref: "#/components/parameters/contentPieceId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/BlowhornContentPayload"
+              $ref: "#/components/schemas/ContentPiecePayload"
       responses:
         "200":
-          description: Blowhorn content updated
+          description: Content piece updated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BlowhornContent"
+                $ref: "#/components/schemas/ContentPiece"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -145,15 +154,15 @@ paths:
     delete:
       x-internal: ["cloud"]
       tags:
-        - blowhornContent
-      summary: Delete Blowhorn content
-      operationId: deleteBlowhornContent
-      description: Soft-deletes the Blowhorn content row.
+        - contentPieces
+      summary: Delete a content piece
+      operationId: deleteContentPiece
+      description: Soft-deletes the content piece.
       parameters:
-        - $ref: "#/components/parameters/blowhornContentId"
+        - $ref: "#/components/parameters/contentPieceId"
       responses:
         "204":
-          description: Blowhorn content deleted
+          description: Content piece deleted
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -185,10 +194,10 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
 
   parameters:
-    blowhornContentId:
-      name: blowhornContentId
+    contentPieceId:
+      name: contentPieceId
       in: path
-      description: Blowhorn content ID
+      description: Content piece ID
       required: true
       schema:
         $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
@@ -217,13 +226,13 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
 
   schemas:
-    BlowhornContent:
-      $ref: "./blowhorn_content.yaml"
+    ContentPiece:
+      $ref: "./content_piece.yaml"
 
-    BlowhornContentPayload:
+    ContentPiecePayload:
       type: object
       description: |
-        Payload for inserting or updating a Blowhorn content row.
+        Payload for inserting or updating a content piece.
         Contains only client-settable fields; the owning
         `organizationId` (derived from the authenticated session), the
         server-computed `fingerprint` and the server-generated
@@ -234,12 +243,12 @@ components:
       properties:
         id:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
-          description: Existing Blowhorn content ID for updates; ignored on insert.
+          description: Existing content piece ID for updates; ignored on insert.
           x-oapi-codegen-extra-tags:
             json: "id,omitempty"
         profile:
           type: string
-          description: Subject of the owning Blowhorn profile.
+          description: Subject of the owning profile.
           minLength: 1
           maxLength: 255
         rowNumber:
@@ -263,9 +272,9 @@ components:
             insert.
           maxLength: 255
 
-    BlowhornContentPage:
+    ContentPiecePage:
       type: object
-      description: Paginated collection of Blowhorn content rows.
+      description: Paginated collection of content pieces.
       properties:
         page:
           type: integer
@@ -279,9 +288,9 @@ components:
           type: integer
           description: Total number of items available.
           minimum: 0
-        blowhornContent:
+        contentPieces:
           type: array
           items:
-            $ref: "#/components/schemas/BlowhornContent"
-            x-go-type: BlowhornContent
-          description: Blowhorn content rows included on this page of results.
+            $ref: "#/components/schemas/ContentPiece"
+            x-go-type: ContentPiece
+          description: Content pieces included on this page of results.

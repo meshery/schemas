@@ -685,6 +685,40 @@ components:
         - CoreKindGrafana
         - CoreKindGithub
 
+    # Publishing-destination kinds: a connection of one of these kinds is a
+    # place content is published to; clients read their destinations as
+    # connections filtered by these kinds, so there is no separate destination
+    # construct. Like CoreKind this names kinds, it does not close the open
+    # `kind` set and is referenced by no `kind` field. A destination
+    # connection carries the public URL of the target (profile, page,
+    # channel, repository, blog) in `metadata.url`, an absolute https URL; its
+    # secret stays in the credential named by `credentialId` and never
+    # appears in the connection.
+    DestinationKind:
+      type: string
+      description: A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.
+      x-go-name: DestinationKind
+      x-ts-const: DestinationConnectionKinds
+      x-ts-type: DestinationConnectionKind
+      enum:
+        - linkedin
+        - x
+        - reddit
+        - hn
+        - slack
+        - bluesky
+        - github
+        - blog
+      x-enum-varnames:
+        - DestinationKindLinkedin
+        - DestinationKindX
+        - DestinationKindReddit
+        - DestinationKindHn
+        - DestinationKindSlack
+        - DestinationKindBluesky
+        - DestinationKindGithub
+        - DestinationKindBlog
+
     ConnectionDefinition:
       description: A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.
       # Self-referential x-go-type: oapi-codegen emits `type ConnectionDefinition =
