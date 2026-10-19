@@ -1,8 +1,8 @@
 $schema: http://json-schema.org/draft-07/schema#
-title: Blowhorn Content Schema
+title: Content Piece Schema
 description: |
-  Server-returned Blowhorn content row as persisted by meshery-cloud.
-  Content rows carry a row number and a server-computed fingerprint over
+  Server-returned content piece as persisted by meshery-cloud.
+  Content pieces carry a row number and a server-computed fingerprint over
   their canonical values; updates are conditional on the fingerprint the
   writer read, so stale writes are refused rather than silently applied.
 type: object
@@ -18,7 +18,7 @@ required:
 properties:
   id:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
-    description: Server-generated Blowhorn content ID.
+    description: Server-generated content piece ID.
     x-order: 1
   organizationId:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
@@ -29,7 +29,7 @@ properties:
     x-order: 2
   profile:
     type: string
-    description: Subject of the owning Blowhorn profile.
+    description: Subject of the owning profile.
     minLength: 1
     maxLength: 255
     x-oapi-codegen-extra-tags:
@@ -63,20 +63,20 @@ properties:
     x-order: 6
   createdAt:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
-    description: Timestamp of Blowhorn content creation.
+    description: Timestamp of content piece creation.
     x-oapi-codegen-extra-tags:
       db: created_at
     x-order: 7
   updatedAt:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
-    description: Timestamp of last Blowhorn content modification.
+    description: Timestamp of last content piece modification.
     x-oapi-codegen-extra-tags:
       db: updated_at
     x-order: 8
   deletedAt:
     type: string
     format: date-time
-    description: Timestamp when the Blowhorn content was soft-deleted.
+    description: Timestamp when the content piece was soft-deleted.
     nullable: true
     x-go-type: core.NullTime
     x-go-type-import:

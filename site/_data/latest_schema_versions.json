@@ -22,13 +22,6 @@
     "extension": true
   },
   {
-    "construct": "blowhorn_content",
-    "version": "v1beta3",
-    "href": "/schemas/constructs/v1beta3/blowhorn_content/blowhorn_content.yaml",
-    "core": false,
-    "extension": true
-  },
-  {
     "construct": "blowhorn_health",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/blowhorn_health/api.yml",
@@ -92,6 +85,13 @@
     "href": "/schemas/constructs/v1beta1/console/api.yml",
     "core": true,
     "extension": false
+  },
+  {
+    "construct": "content_piece",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/content_piece/content_piece.yaml",
+    "core": false,
+    "extension": true
   },
   {
     "construct": "controllers_config",
