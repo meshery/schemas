@@ -13,7 +13,7 @@ import (
 // writer read, so stale writes are refused rather than silently applied.
 type ContentPiece struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID core.Uuid `json:"id" yaml:"id"`
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	OrganizationID core.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`

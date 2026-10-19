@@ -11401,7 +11401,7 @@ export type ListContentPiecesApiArg = {
   search?: string;
   /** Get ordered responses */
   order?: string;
-  /** Filter by owning profile subject. */
+  /** Filter by owning profile subject (exact match). */
   profile?: string;
 };
 export type InsertContentPieceApiResponse = /** status 201 Content piece created */ {

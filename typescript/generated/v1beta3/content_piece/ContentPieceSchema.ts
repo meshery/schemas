@@ -7,7 +7,7 @@ const ContentPieceSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "ContentPiece",
-    "description": "OpenAPI schema for content pieces - fingerprinted content\nvalues keyed by owning profile and row number, with conditional\nupdates.\nOrganization scope: every operation acts only in the organization the\nsession resolved to (X-Current-Orgid, then the user's selected\norganization), and only when the caller is a live member of it. A\ncaller who is not a member receives the same 404 as an unknown id, so\nthe existence of another organization's rows is never disclosed.\n",
+    "description": "OpenAPI schema for content pieces - fingerprinted content\nvalues keyed by owning profile and row number, with conditional\nupdates.\nOrganization scope: every operation acts only in the organization the\nsession resolved to (X-Current-Orgid, then the user's selected\norganization), and only when the caller is a live member of it.\nAuthorization: each operation requires one permission key in that\norganization (Catalog Management / Content Pieces: View Content\nPieces for the reads, Create Content Piece, Edit Content Piece and\nDelete Content Piece for the writes); a caller without it receives a\n403 before any row is read. Past that check, an id that does not name\na live content piece of the organization, and a caller who is not a\nlive member of it, receive the same 404, so the existence of another\norganization's rows is never disclosed.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -41,7 +41,7 @@ const ContentPieceSchema: Record<string, unknown> = {
         ],
         "summary": "List content pieces",
         "operationId": "listContentPieces",
-        "description": "Returns a paginated list of content pieces in the organization of the authenticated session.",
+        "description": "Returns a paginated list of the live content pieces in the\norganization of the authenticated session, ordered by `rowNumber`\nunless `order` names another column (`rowNumber`, `createdAt`,\n`updatedAt`). `search` matches the profile or the content values,\ncase-insensitively.\n",
         "parameters": [
           {
             "name": "page",
@@ -91,7 +91,7 @@ const ContentPieceSchema: Record<string, unknown> = {
             "name": "profile",
             "in": "query",
             "required": false,
-            "description": "Filter by owning profile subject.",
+            "description": "Filter by owning profile subject (exact match).",
             "schema": {
               "type": "string"
             }
@@ -142,6 +142,9 @@ const ContentPieceSchema: Record<string, unknown> = {
                         "properties": {
                           "id": {
                             "description": "Server-generated content piece ID.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id"
+                            },
                             "x-order": 1,
                             "type": "string",
                             "format": "uuid",
@@ -262,6 +265,16 @@ const ContentPieceSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -293,7 +306,7 @@ const ContentPieceSchema: Record<string, unknown> = {
         ],
         "summary": "Insert a content piece",
         "operationId": "insertContentPiece",
-        "description": "Inserts a new content piece. Insert-only: any supplied\n`id` and `expectedFingerprint` are ignored; existing rows change\nonly through the conditional `updateContentPiece`. The\n`fingerprint` is server-computed.\n",
+        "description": "Inserts a new content piece. Insert-only: any supplied\n`id` and `expectedFingerprint` are ignored; existing rows change\nonly through the conditional `updateContentPiece`. The\n`fingerprint` is server-computed. A live content piece of the\norganization that already holds the same `profile` and\n`rowNumber` refuses the insert with a 409.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -372,6 +385,9 @@ const ContentPieceSchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "description": "Server-generated content piece ID.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id"
+                      },
                       "x-order": 1,
                       "type": "string",
                       "format": "uuid",
@@ -498,8 +514,28 @@ const ContentPieceSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber",
             "content": {
               "text/plain": {
                 "schema": {
@@ -571,6 +607,9 @@ const ContentPieceSchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "description": "Server-generated content piece ID.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id"
+                      },
                       "x-order": 1,
                       "type": "string",
                       "format": "uuid",
@@ -697,6 +736,16 @@ const ContentPieceSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -728,7 +777,7 @@ const ContentPieceSchema: Record<string, unknown> = {
         ],
         "summary": "Update a content piece",
         "operationId": "updateContentPiece",
-        "description": "Conditionally updates the content piece. When\n`expectedFingerprint` is supplied and stale, the update is\nrefused with a 409.\n",
+        "description": "Conditionally updates the content piece. When\n`expectedFingerprint` is supplied and stale, the update is\nrefused with a 409, as is an update that would move the piece\nonto a `profile` and `rowNumber` another live content piece of\nthe organization holds.\n",
         "parameters": [
           {
             "name": "contentPieceId",
@@ -824,6 +873,9 @@ const ContentPieceSchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "description": "Server-generated content piece ID.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id"
+                      },
                       "x-order": 1,
                       "type": "string",
                       "format": "uuid",
@@ -950,6 +1002,16 @@ const ContentPieceSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -961,7 +1023,7 @@ const ContentPieceSchema: Record<string, unknown> = {
             }
           },
           "409": {
-            "description": "Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint",
+            "description": "Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1023,6 +1085,16 @@ const ContentPieceSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -1076,6 +1148,16 @@ const ContentPieceSchema: Record<string, unknown> = {
           }
         }
       },
+      "403": {
+        "description": "Forbidden",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "404": {
         "description": "Result not found",
         "content": {
@@ -1087,7 +1169,7 @@ const ContentPieceSchema: Record<string, unknown> = {
         }
       },
       "409": {
-        "description": "Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint",
+        "description": "Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber",
         "content": {
           "text/plain": {
             "schema": {
@@ -1187,6 +1269,9 @@ const ContentPieceSchema: Record<string, unknown> = {
         "properties": {
           "id": {
             "description": "Server-generated content piece ID.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id"
+            },
             "x-order": 1,
             "type": "string",
             "format": "uuid",
@@ -1378,6 +1463,9 @@ const ContentPieceSchema: Record<string, unknown> = {
               "properties": {
                 "id": {
                   "description": "Server-generated content piece ID.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id"
+                  },
                   "x-order": 1,
                   "type": "string",
                   "format": "uuid",

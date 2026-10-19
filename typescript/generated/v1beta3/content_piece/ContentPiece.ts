@@ -13,7 +13,11 @@ export interface paths {
         };
         /**
          * List content pieces
-         * @description Returns a paginated list of content pieces in the organization of the authenticated session.
+         * @description Returns a paginated list of the live content pieces in the
+         *     organization of the authenticated session, ordered by `rowNumber`
+         *     unless `order` names another column (`rowNumber`, `createdAt`,
+         *     `updatedAt`). `search` matches the profile or the content values,
+         *     case-insensitively.
          */
         get: operations["listContentPieces"];
         put?: never;
@@ -22,7 +26,9 @@ export interface paths {
          * @description Inserts a new content piece. Insert-only: any supplied
          *     `id` and `expectedFingerprint` are ignored; existing rows change
          *     only through the conditional `updateContentPiece`. The
-         *     `fingerprint` is server-computed.
+         *     `fingerprint` is server-computed. A live content piece of the
+         *     organization that already holds the same `profile` and
+         *     `rowNumber` refuses the insert with a 409.
          */
         post: operations["insertContentPiece"];
         delete?: never;
@@ -44,7 +50,9 @@ export interface paths {
          * Update a content piece
          * @description Conditionally updates the content piece. When
          *     `expectedFingerprint` is supplied and stale, the update is
-         *     refused with a 409.
+         *     refused with a 409, as is an update that would move the piece
+         *     onto a `profile` and `rowNumber` another live content piece of
+         *     the organization holds.
          */
         put: operations["updateContentPiece"];
         post?: never;
@@ -196,6 +204,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Forbidden */
+        403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Result not found */
         404: {
             headers: {
@@ -205,7 +222,7 @@ export interface components {
                 "text/plain": string;
             };
         };
-        /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint */
+        /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber */
         409: {
             headers: {
                 [name: string]: unknown;
@@ -265,7 +282,7 @@ export interface operations {
                 search?: string;
                 /** @description Get ordered responses */
                 order?: string;
-                /** @description Filter by owning profile subject. */
+                /** @description Filter by owning profile subject (exact match). */
                 profile?: string;
             };
             header?: never;
@@ -328,6 +345,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -448,8 +474,26 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -534,6 +578,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -657,6 +710,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -666,7 +728,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint */
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -707,6 +769,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
