@@ -20,8 +20,9 @@ const (
 
 // Defines values for InvitationChildOrganizationBranding.
 const (
-	InvitingOrganization InvitationChildOrganizationBranding = "inviting_organization"
-	Provider             InvitationChildOrganizationBranding = "provider"
+	None     InvitationChildOrganizationBranding = "none"
+	Parent   InvitationChildOrganizationBranding = "parent"
+	Provider InvitationChildOrganizationBranding = "provider"
 )
 
 // Defines values for InvitationStatus.
@@ -38,7 +39,7 @@ type Invitation struct {
 	// AcceptedBy List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.
 	AcceptedBy pq.StringArray `db:"accepted_by" json:"acceptedBy" yaml:"acceptedBy"`
 
-	// ChildOrganizationBranding Branding a child organization created through an invitation starts with. provider gives the child no branding of its own, so it shows the provider's; inviting_organization copies the inviting organization's branding into the child at creation.
+	// ChildOrganizationBranding Branding a child organization created through an invitation starts with: parent (default) copies the inviting organization's branding, provider copies the provider organization's branding, none gives the child no branding of its own. A snapshot taken at creation.
 	ChildOrganizationBranding *InvitationChildOrganizationBranding `db:"child_organization_branding" json:"childOrganizationBranding" yaml:"childOrganizationBranding,omitempty"`
 
 	// CreatedAt Timestamp when the invitation was created.
@@ -90,7 +91,7 @@ type Invitation struct {
 // InvitationAcceptanceOutcome Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user.
 type InvitationAcceptanceOutcome string
 
-// InvitationChildOrganizationBranding Branding a child organization created through an invitation starts with. provider gives the child no branding of its own, so it shows the provider's; inviting_organization copies the inviting organization's branding into the child at creation.
+// InvitationChildOrganizationBranding Branding a child organization created through an invitation starts with: parent (default) copies the inviting organization's branding, provider copies the provider organization's branding, none gives the child no branding of its own. A snapshot taken at creation.
 type InvitationChildOrganizationBranding string
 
 // InvitationPayload Payload for creating or updating an invitation.
@@ -98,7 +99,7 @@ type InvitationPayload struct {
 	// AcceptanceOutcome Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user.
 	AcceptanceOutcome *InvitationAcceptanceOutcome `db:"acceptance_outcome" json:"acceptanceOutcome,omitempty" yaml:"acceptanceOutcome,omitempty"`
 
-	// ChildOrganizationBranding Branding a child organization created through an invitation starts with. provider gives the child no branding of its own, so it shows the provider's; inviting_organization copies the inviting organization's branding into the child at creation.
+	// ChildOrganizationBranding Branding a child organization created through an invitation starts with: parent (default) copies the inviting organization's branding, provider copies the provider organization's branding, none gives the child no branding of its own. A snapshot taken at creation.
 	ChildOrganizationBranding *InvitationChildOrganizationBranding `db:"child_organization_branding" json:"childOrganizationBranding,omitempty" yaml:"childOrganizationBranding,omitempty"`
 
 	// Description Description of the invitation. Optional; omitting it stores an empty description.
