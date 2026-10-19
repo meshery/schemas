@@ -873,9 +873,9 @@ components:
       properties:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
-        page_size:
+        pageSize:
           $ref: "../core/api.yml#/components/schemas/number"
-        total_count:
+        totalCount:
           $ref: "../core/api.yml#/components/schemas/number"
         designs:
           type: array
