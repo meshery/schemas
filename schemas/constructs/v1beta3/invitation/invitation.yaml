@@ -130,6 +130,13 @@ properties:
     x-oapi-codegen-extra-tags:
       db: acceptance_outcome
       json: acceptanceOutcome
+  childOrganizationBranding:
+    $ref: './api.yml#/components/schemas/InvitationChildOrganizationBranding'
+    description: "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards."
+    x-go-type: InvitationChildOrganizationBranding
+    x-oapi-codegen-extra-tags:
+      db: child_organization_branding
+      json: childOrganizationBranding
   status:
     $ref: './api.yml#/components/schemas/InvitationStatus'
     description: Activation status of the invitation.
