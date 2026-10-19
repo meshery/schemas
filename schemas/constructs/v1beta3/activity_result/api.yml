@@ -21,27 +21,6 @@ components:
     ActivityResult:
       $ref: "./activity_result.yaml"
 
-    ActivityResultRequest:
-      type: object
-      description: Which activity result to read, optionally narrowed to one profile or one platform.
-      additionalProperties: false
-      required:
-        - activityId
-      properties:
-        activityId:
-          type: string
-          description: Identifier of the activity.
-          minLength: 1
-          maxLength: 255
-        profile:
-          type: string
-          description: Only the entry for this profile.
-          maxLength: 255
-        platform:
-          type: string
-          description: Only the entries for this platform.
-          maxLength: 64
-
     ActivityResultEntry:
       type: object
       description: The result of an activity for one profile on one platform.
