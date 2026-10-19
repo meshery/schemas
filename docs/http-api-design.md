@@ -60,7 +60,7 @@ GitHub could not be reached or rejected the request). Reference them - directly,
 alias under the construct's own `components/responses` as the v1beta3 design construct does -
 rather than redefining an error response inline. The one exception is a shared response whose
 description is wrong for the operation: the shared `409` reads "Publish request already exists",
-so a construct whose conflict means something else (`job_lease`) declares its own `409` with the
+so a construct whose conflict means something else (`claim`, `schedule`) declares its own `409` with the
 same `text/plain` body and a description that names its conflict.
 
 Those shared responses declare a `text/plain` body. An operation whose server answers its refusals
@@ -98,7 +98,7 @@ Endpoints are grouped into logical categories under `/api`:
 |---|---|
 | `/api/identity/` | Users, orgs, roles, teams, invitations |
 | `/api/integrations/` | Connections, environments, credentials |
-| `/api/content/` | Designs, views, components, models |
+| `/api/content/` | Designs, views, components, models, content pieces (`/api/content/pieces`) |
 | `/api/entitlement/` | Plans, subscriptions, features |
 | `/api/auth/` | Tokens, keychains, keys |
 | `/api/system/` | Operational endpoints (database, version, session sync, adapters, meshsync, telemetry config, file IO, GraphQL transport) |
@@ -209,3 +209,30 @@ pattern bound by RFC 7636 PKCE, defined in `v1beta3/token`:
    client name.
 
 The construct is client-agnostic: no client is named in the schema.
+
+## Schedules and claims
+
+`v1beta3/schedule` serves organization schedules at `/api/schedules`, linked to workspaces through
+`/api/workspaces/{workspaceId}/schedules[/{scheduleId}]`. A schedule is a job: an `action` with
+`params`, a due time, an optional `recurrence`, a retry budget and a `status` (`pending`,
+`scheduled`, `assigned`, `claimed`, `running`, `retrying`, `completed`, `failed`, `cancelled`).
+The per-user `/user/schedules` routes of `v1beta2/schedule` remain as a deprecated alias for
+Meshery Server's persist-schedules capability.
+
+Workers take a schedule through a **claim**, the generic `v1beta3/claim` construct: a time-bound
+hold by one `claimant` on one resource (`resourceType`, `resourceId`), with `claimedAt`,
+`expiresAt` and `status` (`active`, `released`, `expired`). The claim is nested under the schedule
+(`/api/schedules/{scheduleId}/claim`, `/claim/renew`, `/claim/release`; `/api/schedules/claim`
+takes the next due one) and is also usable on its own at `/api/claims` for any other resource.
+The rules a consumer must enforce:
+
+- The race is decided server-side in one statement; of two racing claimants exactly one wins, and
+  claiming the next due schedule answers 204 when nothing qualifies, never an error.
+- Only the holder renews or releases; anyone else gets 409 and the claim is never taken back.
+- A claim past `expiresAt` is stale and the resource is claimable again.
+- A schedule is claimed only when neither the organization-wide pause (`/api/schedules/pause`) nor
+  its own pause says paused, unless the request carries `ignorePause`.
+- The claim, the `assigned`/`claimed`/`running` statuses and the pause fields are server-managed
+  and refused on create and update.
+
+`v1beta3/job_lease` was removed in favour of these two constructs; no consumer served or called it.
