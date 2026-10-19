@@ -228,6 +228,20 @@ const InvitationSchema: Record<string, unknown> = {
                       ],
                       "default": "direct_membership"
                     },
+                    "childOrganizationBranding": {
+                      "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards.",
+                      "x-go-type": "InvitationChildOrganizationBranding",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "child_organization_branding",
+                        "json": "childOrganizationBranding"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "provider",
+                        "inviting_organization"
+                      ],
+                      "default": "provider"
+                    },
                     "status": {
                       "description": "Activation status of the invitation.",
                       "x-go-type": "InvitationStatus",
@@ -545,6 +559,20 @@ const InvitationSchema: Record<string, unknown> = {
                     ],
                     "default": "direct_membership"
                   },
+                  "childOrganizationBranding": {
+                    "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards.",
+                    "x-go-type": "InvitationChildOrganizationBranding",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "child_organization_branding",
+                      "json": "childOrganizationBranding,omitempty"
+                    },
+                    "type": "string",
+                    "enum": [
+                      "provider",
+                      "inviting_organization"
+                    ],
+                    "default": "provider"
+                  },
                   "status": {
                     "description": "Activation status of the invitation.",
                     "x-go-type": "InvitationStatus",
@@ -734,6 +762,20 @@ const InvitationSchema: Record<string, unknown> = {
                         "child_organization"
                       ],
                       "default": "direct_membership"
+                    },
+                    "childOrganizationBranding": {
+                      "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards.",
+                      "x-go-type": "InvitationChildOrganizationBranding",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "child_organization_branding",
+                        "json": "childOrganizationBranding"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "provider",
+                        "inviting_organization"
+                      ],
+                      "default": "provider"
                     },
                     "status": {
                       "description": "Activation status of the invitation.",
@@ -1262,6 +1304,20 @@ const InvitationSchema: Record<string, unknown> = {
                             ],
                             "default": "direct_membership"
                           },
+                          "childOrganizationBranding": {
+                            "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards.",
+                            "x-go-type": "InvitationChildOrganizationBranding",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "child_organization_branding",
+                              "json": "childOrganizationBranding"
+                            },
+                            "type": "string",
+                            "enum": [
+                              "provider",
+                              "inviting_organization"
+                            ],
+                            "default": "provider"
+                          },
                           "status": {
                             "description": "Activation status of the invitation.",
                             "x-go-type": "InvitationStatus",
@@ -1498,6 +1554,20 @@ const InvitationSchema: Record<string, unknown> = {
                     ],
                     "default": "direct_membership"
                   },
+                  "childOrganizationBranding": {
+                    "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards.",
+                    "x-go-type": "InvitationChildOrganizationBranding",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "child_organization_branding",
+                      "json": "childOrganizationBranding,omitempty"
+                    },
+                    "type": "string",
+                    "enum": [
+                      "provider",
+                      "inviting_organization"
+                    ],
+                    "default": "provider"
+                  },
                   "status": {
                     "description": "Activation status of the invitation.",
                     "x-go-type": "InvitationStatus",
@@ -1687,6 +1757,20 @@ const InvitationSchema: Record<string, unknown> = {
                         "child_organization"
                       ],
                       "default": "direct_membership"
+                    },
+                    "childOrganizationBranding": {
+                      "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards.",
+                      "x-go-type": "InvitationChildOrganizationBranding",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "child_organization_branding",
+                        "json": "childOrganizationBranding"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "provider",
+                        "inviting_organization"
+                      ],
+                      "default": "provider"
                     },
                     "status": {
                       "description": "Activation status of the invitation.",
@@ -2102,6 +2186,20 @@ const InvitationSchema: Record<string, unknown> = {
                         "child_organization"
                       ],
                       "default": "direct_membership"
+                    },
+                    "childOrganizationBranding": {
+                      "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards.",
+                      "x-go-type": "InvitationChildOrganizationBranding",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "child_organization_branding",
+                        "json": "childOrganizationBranding"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "provider",
+                        "inviting_organization"
+                      ],
+                      "default": "provider"
                     },
                     "status": {
                       "description": "Activation status of the invitation.",
@@ -3726,6 +3824,20 @@ const InvitationSchema: Record<string, unknown> = {
                   ],
                   "default": "direct_membership"
                 },
+                "childOrganizationBranding": {
+                  "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards.",
+                  "x-go-type": "InvitationChildOrganizationBranding",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "child_organization_branding",
+                    "json": "childOrganizationBranding"
+                  },
+                  "type": "string",
+                  "enum": [
+                    "provider",
+                    "inviting_organization"
+                  ],
+                  "default": "provider"
+                },
                 "status": {
                   "description": "Activation status of the invitation.",
                   "x-go-type": "InvitationStatus",
@@ -4406,6 +4518,20 @@ const InvitationSchema: Record<string, unknown> = {
             ],
             "default": "direct_membership"
           },
+          "childOrganizationBranding": {
+            "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards.",
+            "x-go-type": "InvitationChildOrganizationBranding",
+            "x-oapi-codegen-extra-tags": {
+              "db": "child_organization_branding",
+              "json": "childOrganizationBranding,omitempty"
+            },
+            "type": "string",
+            "enum": [
+              "provider",
+              "inviting_organization"
+            ],
+            "default": "provider"
+          },
           "status": {
             "description": "Activation status of the invitation.",
             "x-go-type": "InvitationStatus",
@@ -4433,6 +4559,15 @@ const InvitationSchema: Record<string, unknown> = {
         ],
         "default": "direct_membership",
         "description": "Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user."
+      },
+      "InvitationChildOrganizationBranding": {
+        "type": "string",
+        "enum": [
+          "provider",
+          "inviting_organization"
+        ],
+        "default": "provider",
+        "description": "Branding a child organization created through an invitation starts with. provider gives the child no branding of its own, so it shows the provider's; inviting_organization copies the inviting organization's branding into the child at creation."
       },
       "Invitation": {
         "type": "object",
@@ -4603,6 +4738,20 @@ const InvitationSchema: Record<string, unknown> = {
               "child_organization"
             ],
             "default": "direct_membership"
+          },
+          "childOrganizationBranding": {
+            "description": "Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards.",
+            "x-go-type": "InvitationChildOrganizationBranding",
+            "x-oapi-codegen-extra-tags": {
+              "db": "child_organization_branding",
+              "json": "childOrganizationBranding"
+            },
+            "type": "string",
+            "enum": [
+              "provider",
+              "inviting_organization"
+            ],
+            "default": "provider"
           },
           "status": {
             "description": "Activation status of the invitation.",
