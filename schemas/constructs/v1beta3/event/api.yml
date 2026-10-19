@@ -172,8 +172,14 @@ paths:
                 $ref: '#/components/schemas/EventsAggregate'
         '401':
           description: Unauthorized
+        '403':
+          $ref: '#/components/responses/MeshkitError403'
         '404':
-          description: Not found
+          description: Not found - the caller is not a provider-wide Provider Admin
+          content:
+            text/plain:
+              schema:
+                type: string
         '500':
           description: Server error
     post:
@@ -288,6 +294,8 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/responses/404
     500:
       $ref: ../../v1beta2/core/api.yml#/components/responses/500
+    MeshkitError403:
+      $ref: ../../v1beta2/core/api.yml#/components/responses/MeshkitError403
   parameters:
     eventId:
       name: eventId

@@ -9,6 +9,55 @@ import (
 	core "github.com/meshery/schemas/models/core"
 )
 
+// Defines values for NativeAuthorizationPayloadCodeChallengeMethod.
+const (
+	NativeAuthorizationPayloadCodeChallengeMethodS256 NativeAuthorizationPayloadCodeChallengeMethod = "S256"
+)
+
+// Defines values for NativeCodeChallengeMethod.
+const (
+	NativeCodeChallengeMethodS256 NativeCodeChallengeMethod = "S256"
+)
+
+// NativeAuthorizationCallback Query parameters of the loopback redirect that approveNativeClientAuthorization answers with, http://127.0.0.1:{port}/callback?code=...&state=... The code is single-use and expires after 60 seconds; no token is ever placed in the URL. The native client compares state with the one it sent before redeeming the code at /api/identity/native/token.
+type NativeAuthorizationCallback struct {
+	// Code Single-use authorization code, redeemed with the PKCE code verifier.
+	Code string `json:"code" yaml:"code"`
+
+	// State The state the native client sent to the consent page, unchanged.
+	State string `json:"state" yaml:"state"`
+}
+
+// NativeAuthorizationPayload Consent form fields for approving a native client sign-in.
+type NativeAuthorizationPayload struct {
+	// ClientName Display name of the native client.
+	ClientName string `json:"clientName" yaml:"clientName"`
+
+	// Port Port on 127.0.0.1 for the callback.
+	Port int `json:"port" yaml:"port"`
+
+	// CodeChallenge PKCE S256 code challenge.
+	CodeChallenge string `json:"codeChallenge" yaml:"codeChallenge"`
+
+	// CodeChallengeMethod PKCE challenge method.
+	CodeChallengeMethod NativeAuthorizationPayloadCodeChallengeMethod `json:"codeChallengeMethod" yaml:"codeChallengeMethod"`
+
+	// State Opaque client state returned on the callback.
+	State string `json:"state" yaml:"state"`
+}
+
+// NativeAuthorizationPayloadCodeChallengeMethod PKCE challenge method.
+type NativeAuthorizationPayloadCodeChallengeMethod string
+
+// NativeCodeExchangePayload Redeems a native client authorization code with its PKCE verifier.
+type NativeCodeExchangePayload struct {
+	// Code Single-use authorization code from the loopback callback.
+	Code string `json:"code" yaml:"code"`
+
+	// CodeVerifier PKCE code verifier (RFC 7636, 43 to 128 unreserved characters).
+	CodeVerifier string `json:"codeVerifier" yaml:"codeVerifier"`
+}
+
 // TokenPage A paginated list of tokens.
 type TokenPage struct {
 	// Tokens Tokens returned on the current page.
@@ -62,6 +111,18 @@ type IsOauth = bool
 
 // Name defines model for name.
 type Name = string
+
+// NativeCodeChallenge defines model for nativeCodeChallenge.
+type NativeCodeChallenge = string
+
+// NativeCodeChallengeMethod defines model for nativeCodeChallengeMethod.
+type NativeCodeChallengeMethod string
+
+// NativePort defines model for nativePort.
+type NativePort = int
+
+// NativeState defines model for nativeState.
+type NativeState = string
 
 // Order defines model for order.
 type Order = string

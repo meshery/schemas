@@ -160,6 +160,13 @@
     "extension": true
   },
   {
+    "construct": "github",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/github/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "invitation",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/invitation/invitation.yaml",

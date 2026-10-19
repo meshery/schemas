@@ -29,6 +29,7 @@ export const addTagTypes = [
   "Environment_environments",
   "Events_events",
   "Filter_filters",
+  "GitHub_github",
   "Invitation_Invitation",
   "JobLease_jobLeases",
   "PatternResource_patternResources",
@@ -1524,6 +1525,80 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/content/filters/download/${queryArg.filterId}` }),
         providesTags: ["Filter_filters"],
       }),
+      getGithubAppStatus: build.query<GetGithubAppStatusApiResponse, GetGithubAppStatusApiArg>({
+        query: () => ({ url: `/api/integrations/github/status` }),
+        providesTags: ["GitHub_github"],
+      }),
+      getGithubInstallationRepositories: build.query<
+        GetGithubInstallationRepositoriesApiResponse,
+        GetGithubInstallationRepositoriesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/github`,
+          params: {
+            id: queryArg?.id,
+            page: queryArg?.page,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
+      scanGithubRepository: build.query<ScanGithubRepositoryApiResponse, ScanGithubRepositoryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/scan`,
+          params: {
+            name: queryArg?.name,
+            ref: queryArg?.ref,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
+      verifyGithubRepositoryWorkflow: build.mutation<
+        VerifyGithubRepositoryWorkflowApiResponse,
+        VerifyGithubRepositoryWorkflowApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/verify/${queryArg.owner}/${queryArg.repo}`,
+          method: "POST",
+          params: {
+            id: queryArg?.id,
+          },
+        }),
+        invalidatesTags: ["GitHub_github"],
+      }),
+      installGithubWorkflow: build.mutation<InstallGithubWorkflowApiResponse, InstallGithubWorkflowApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/install`,
+          method: "POST",
+          body: queryArg.body,
+          params: {
+            id: queryArg?.id,
+          },
+        }),
+        invalidatesTags: ["GitHub_github"],
+      }),
+      startGithubAuthorization: build.query<StartGithubAuthorizationApiResponse, StartGithubAuthorizationApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/authorize`,
+          params: {
+            flow: queryArg?.flow,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
+      githubAppCallback: build.query<GithubAppCallbackApiResponse, GithubAppCallbackApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/callback`,
+          params: {
+            state: queryArg?.state,
+            code: queryArg?.code,
+            installation_id: queryArg?.installationId,
+            setup_action: queryArg?.setupAction,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
       getInvitation: build.query<GetInvitationApiResponse, GetInvitationApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}` }),
         providesTags: ["Invitation_Invitation"],
@@ -1931,6 +2006,36 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["token_tokens"],
+      }),
+      getNativeClientAuthorization: build.query<
+        GetNativeClientAuthorizationApiResponse,
+        GetNativeClientAuthorizationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/identity/native/authorize`,
+          params: {
+            clientName: queryArg?.clientName,
+            port: queryArg?.port,
+            codeChallenge: queryArg?.codeChallenge,
+            codeChallengeMethod: queryArg?.codeChallengeMethod,
+            state: queryArg?.state,
+          },
+        }),
+        providesTags: ["token_tokens"],
+      }),
+      approveNativeClientAuthorization: build.mutation<
+        ApproveNativeClientAuthorizationApiResponse,
+        ApproveNativeClientAuthorizationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/identity/native/authorize`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
+      }),
+      exchangeNativeAuthorizationCode: build.mutation<
+        ExchangeNativeAuthorizationCodeApiResponse,
+        ExchangeNativeAuthorizationCodeApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/identity/native/token`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
       }),
       getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
         query: (queryArg) => ({
@@ -7097,6 +7202,8 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
     teams: string[];
     /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
     acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards. */
+    childOrganizationBranding?: "provider" | "inviting_organization";
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created. */
@@ -7314,6 +7421,8 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
     teams: string[];
     /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
     acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards. */
+    childOrganizationBranding?: "provider" | "inviting_organization";
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created. */
@@ -15601,6 +15710,109 @@ export type GetFilterFileApiArg = {
   /** Filter ID */
   filterId: string;
 };
+export type GetGithubAppStatusApiResponse = unknown;
+export type GetGithubAppStatusApiArg = void;
+export type GetGithubInstallationRepositoriesApiResponse =
+  /** status 200 One page of the installation's repositories. */ {
+    [key: string]: any;
+  };
+export type GetGithubInstallationRepositoriesApiArg = {
+  /** GitHub App installation id; must be one of the caller's verified installations. */
+  id: string;
+  /** Get responses by page */
+  page?: number;
+};
+export type ScanGithubRepositoryApiResponse = /** status 200 Tree page. */
+  | {
+      /** Identifier of the tree item, for the UI's tree view. */
+      id?: string;
+      /** Display name of the file or directory. */
+      label?: string;
+      /** Kind of the tree item, such as a file or a directory. */
+      type?: string;
+      /** GitHub's tree entry for the item, passed through as GitHub returns it. */
+      entry?: {
+        [key: string]: any;
+      };
+      /** The items under a directory, each shaped as a `GithubRepositoryTreeItem`. */
+      children?: {
+        [key: string]: any;
+      }[];
+    }[]
+  | /** status 206 Tree page of a tree that has further pages. */ {
+      /** Identifier of the tree item, for the UI's tree view. */
+      id?: string;
+      /** Display name of the file or directory. */
+      label?: string;
+      /** Kind of the tree item, such as a file or a directory. */
+      type?: string;
+      /** GitHub's tree entry for the item, passed through as GitHub returns it. */
+      entry?: {
+        [key: string]: any;
+      };
+      /** The items under a directory, each shaped as a `GithubRepositoryTreeItem`. */
+      children?: {
+        [key: string]: any;
+      }[];
+    }[];
+export type ScanGithubRepositoryApiArg = {
+  /** Repository as `<owner>/<repo>`. */
+  name: string;
+  /** Branch or tag to scan. Empty or omitted scans the repository's default branch. A ref that names no commit answers 409. */
+  ref?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+};
+export type VerifyGithubRepositoryWorkflowApiResponse = /** status 200 Workflow presence. */ {
+  /** `ok` when no workflow is present; `error` when one is (`fileUrl` names it) or the check failed (`error` says why). */
+  status: "ok" | "error";
+  /** URL of the workflow file already present. */
+  fileUrl?: string;
+  /** Why the repository cannot take the workflow. */
+  error?: string;
+};
+export type VerifyGithubRepositoryWorkflowApiArg = {
+  /** Login of the account that owns the repository. */
+  owner: string;
+  /** Repository name, without its owner. */
+  repo: string;
+  /** Ignored. Accepted for compatibility; the server resolves the installation itself. */
+  id?: string;
+};
+export type InstallGithubWorkflowApiResponse = /** status 200 One entry per requested repository. */ {
+  [key: string]: {
+    /** HTTP-style status of the repository's outcome; `400` for a malformed repository identifier. */
+    code?: number;
+    /** The outcome, in words. */
+    description?: string;
+  };
+}[];
+export type InstallGithubWorkflowApiArg = {
+  /** Ignored. Accepted for compatibility; the server resolves the installation itself. */
+  id?: string;
+  body: {
+    /** Repositories as `<owner>/<repo>`. */
+    repositories: string[];
+  };
+};
+export type StartGithubAuthorizationApiResponse = unknown;
+export type StartGithubAuthorizationApiArg = {
+  /** `install` sends the browser to the GitHub App's installation page; `authorize` sends it to GitHub's user-authorization page for the App. */
+  flow: "install" | "authorize";
+};
+export type GithubAppCallbackApiResponse = unknown;
+export type GithubAppCallbackApiArg = {
+  /** The single-use state `startGithubAuthorization` issued. */
+  state: string;
+  /** GitHub's one-time authorization code. */
+  code?: string;
+  /** The installation GitHub names on return (GitHub's parameter name). It is stored only when it is one of the installations GitHub lists for the authorizing account. */
+  installationId?: string;
+  /** GitHub's setup action (GitHub's parameter name). */
+  setupAction?: "install" | "update" | "request";
+};
 export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   /** Unique identifier for the invitation, also used as the invitation code. */
   id: string;
@@ -15628,6 +15840,8 @@ export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   teams: string[];
   /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
   acceptanceOutcome?: "direct_membership" | "child_organization";
+  /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards. */
+  childOrganizationBranding?: "provider" | "inviting_organization";
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -15673,6 +15887,8 @@ export type UpdateInvitationApiResponse = /** status 200 Invitation updated */ {
   teams: string[];
   /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
   acceptanceOutcome?: "direct_membership" | "child_organization";
+  /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards. */
+  childOrganizationBranding?: "provider" | "inviting_organization";
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -15694,22 +15910,24 @@ export type UpdateInvitationApiArg = {
     isDefault?: boolean;
     /** Name of the invitation. */
     name: string;
-    /** Description of the invitation. */
-    description: string;
-    /** Email addresses or patterns this invitation is valid for. */
-    emails: string[];
+    /** Description of the invitation. Optional; omitting it stores an empty description. */
+    description?: string;
+    /** Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation. */
+    emails?: string[];
     /** ID of the organization to which the user is invited. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. */
     expiresAt?: string;
     /** Quota for the invitation; limits the number of users that can accept it. */
     quota?: number;
-    /** Roles that the user will have when accepting the invitation. */
-    roles: string[];
-    /** Teams that the user will be added to when accepting the invitation. */
-    teams: string[];
+    /** Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles. */
+    roles?: string[];
+    /** Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
+    teams?: string[];
     /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
     acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards. */
+    childOrganizationBranding?: "provider" | "inviting_organization";
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
   };
@@ -15749,6 +15967,8 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
     teams: string[];
     /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
     acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards. */
+    childOrganizationBranding?: "provider" | "inviting_organization";
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created. */
@@ -15798,6 +16018,8 @@ export type CreateInvitationApiResponse = /** status 201 Invitation created */ {
   teams: string[];
   /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
   acceptanceOutcome?: "direct_membership" | "child_organization";
+  /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards. */
+  childOrganizationBranding?: "provider" | "inviting_organization";
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -15817,22 +16039,24 @@ export type CreateInvitationApiArg = {
     isDefault?: boolean;
     /** Name of the invitation. */
     name: string;
-    /** Description of the invitation. */
-    description: string;
-    /** Email addresses or patterns this invitation is valid for. */
-    emails: string[];
+    /** Description of the invitation. Optional; omitting it stores an empty description. */
+    description?: string;
+    /** Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation. */
+    emails?: string[];
     /** ID of the organization to which the user is invited. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. */
     expiresAt?: string;
     /** Quota for the invitation; limits the number of users that can accept it. */
     quota?: number;
-    /** Roles that the user will have when accepting the invitation. */
-    roles: string[];
-    /** Teams that the user will be added to when accepting the invitation. */
-    teams: string[];
+    /** Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles. */
+    roles?: string[];
+    /** Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
+    teams?: string[];
     /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
     acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards. */
+    childOrganizationBranding?: "provider" | "inviting_organization";
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
   };
@@ -15864,6 +16088,8 @@ export type AcceptInvitationApiResponse = /** status 200 Invitation accepted */ 
   teams: string[];
   /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
   acceptanceOutcome?: "direct_membership" | "child_organization";
+  /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. provider (the default, and the behavior of every invitation that omits this property) creates the child with no branding of its own, so it shows the provider's branding. inviting_organization copies the inviting organization's branding (theme, including logo and colors; authentication-page branding; links; and the authentication-page carousel setting) into the child at creation. The copy is a snapshot: later changes to the inviting organization's branding do not propagate, and the child's administrators can change its branding afterwards. */
+  childOrganizationBranding?: "provider" | "inviting_organization";
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -17735,7 +17961,7 @@ export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
 export type GetUserTokensApiArg = {
   /** Whether to retrieve OAuth-backed sessions instead of API tokens. */
   isOauth?: boolean;
-  /** Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
+  /** Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list. */
   purpose?: string;
   /** Get responses by page */
   page?: number;
@@ -17782,7 +18008,7 @@ export type GenerateTokenApiResponse = /** status 201 Token generated */ {
 export type GenerateTokenApiArg = {
   /** Name of the token. */
   name: string;
-  /** Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
+  /** Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list. */
   purpose?: string;
 };
 export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
@@ -17882,6 +18108,64 @@ export type IssueIndefiniteLifetimeTokenApiArg = {
   userId: string;
   /** Authentication provider to associate with the indefinite token. */
   provider: string;
+};
+export type GetNativeClientAuthorizationApiResponse = unknown;
+export type GetNativeClientAuthorizationApiArg = {
+  /** Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token. */
+  clientName: string;
+  /** Port on 127.0.0.1 where the native client listens for the callback. */
+  port: number;
+  /** PKCE code challenge, BASE64URL(SHA256(codeVerifier)) without padding. */
+  codeChallenge: string;
+  /** PKCE challenge method. Only S256 is accepted. */
+  codeChallengeMethod: "S256";
+  /** Opaque value from the native client, returned unchanged on the callback. */
+  state: string;
+};
+export type ApproveNativeClientAuthorizationApiResponse = unknown;
+export type ApproveNativeClientAuthorizationApiArg = {
+  body: {
+    /** Display name of the native client. */
+    clientName: string;
+    /** Port on 127.0.0.1 for the callback. */
+    port: number;
+    /** PKCE S256 code challenge. */
+    codeChallenge: string;
+    /** PKCE challenge method. */
+    codeChallengeMethod: "S256";
+    /** Opaque client state returned on the callback. */
+    state: string;
+  };
+};
+export type ExchangeNativeAuthorizationCodeApiResponse = /** status 201 API token minted for the native client */ {
+  /** Unique identifier for the token. */
+  id: string;
+  /** UUID of the user who owns the token. */
+  owner: string;
+  /** Authentication provider associated with the token. */
+  provider: string;
+  /** Access token value. */
+  accessToken: string;
+  /** Refresh token value when applicable. */
+  refreshToken?: string;
+  /** Human-readable token name. */
+  name: string;
+  /** Purpose for which the token was created. */
+  purpose: string;
+  /** Whether this entry represents an OAuth session. */
+  isOauth: boolean;
+  /** Timestamp when the token was created. */
+  createdAt: string;
+  /** Timestamp when the token was last updated. */
+  updatedAt: string;
+};
+export type ExchangeNativeAuthorizationCodeApiArg = {
+  body: {
+    /** Single-use authorization code from the loopback callback. */
+    code: string;
+    /** PKCE code verifier (RFC 7636, 43 to 128 unreserved characters). */
+    codeVerifier: string;
+  };
 };
 export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
   /** Current page number of the result set. */
@@ -19744,6 +20028,18 @@ export const {
   useCloneFilterMutation,
   useGetFilterFileQuery,
   useLazyGetFilterFileQuery,
+  useGetGithubAppStatusQuery,
+  useLazyGetGithubAppStatusQuery,
+  useGetGithubInstallationRepositoriesQuery,
+  useLazyGetGithubInstallationRepositoriesQuery,
+  useScanGithubRepositoryQuery,
+  useLazyScanGithubRepositoryQuery,
+  useVerifyGithubRepositoryWorkflowMutation,
+  useInstallGithubWorkflowMutation,
+  useStartGithubAuthorizationQuery,
+  useLazyStartGithubAuthorizationQuery,
+  useGithubAppCallbackQuery,
+  useLazyGithubAppCallbackQuery,
   useGetInvitationQuery,
   useLazyGetInvitationQuery,
   useDeleteInvitationMutation,
@@ -19815,6 +20111,10 @@ export const {
   useLazyDownloadTokenQuery,
   useIssueIndefiniteLifetimeTokenQuery,
   useLazyIssueIndefiniteLifetimeTokenQuery,
+  useGetNativeClientAuthorizationQuery,
+  useLazyGetNativeClientAuthorizationQuery,
+  useApproveNativeClientAuthorizationMutation,
+  useExchangeNativeAuthorizationCodeMutation,
   useGetUsersQuery,
   useLazyGetUsersQuery,
   useSearchUsersQuery,

@@ -58,7 +58,37 @@ Error responses are shared: `schemas/constructs/v1beta2/core/api.yml#/components
 `400`, `401`, `403`, `404`, `409`, `500` and `502` (bad gateway - an upstream service such as
 GitHub could not be reached or rejected the request). Reference them - directly, or through an
 alias under the construct's own `components/responses` as the v1beta3 design construct does -
-rather than redefining an error response inline.
+rather than redefining an error response inline. The one exception is a shared response whose
+description is wrong for the operation: the shared `409` reads "Publish request already exists",
+so a construct whose conflict means something else (`job_lease`) declares its own `409` with the
+same `text/plain` body and a description that names its conflict.
+
+Those shared responses declare a `text/plain` body. An operation whose server answers its refusals
+as a MeshKit JSON error body - `{error, code, severity, probableCause, suggestedRemediation}`, as
+Meshery Cloud does from its GitHub integration, invitation-write, invitation-acceptance and
+events-aggregate routes - references `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`,
+`MeshkitError500` or `MeshkitError502` instead, which carry the `MeshkitError` schema as
+`application/json`. The four design operations that reach GitHub use `MeshkitError403` and
+`MeshkitError502` for those two refusals, and `registerConnection`/`updateConnection` use
+`MeshkitError409`. Three existing contracts changed when these were introduced: the `403` and `502`
+bodies of the four design operations - `refreshPatternFromSource`, `updatePatternSource`,
+`importGithubRepository` and `getGithubRepositoryBranches` - the `400`, `403` and `500` bodies
+of `createInvitation` and `updateInvitation` (plus `updateInvitation`'s `404`), and the `400`,
+`404` and `500` bodies of `acceptInvitation` moved from `text/plain` to the MeshKit JSON
+error body. The rest were new responses: the connection `409`, the `getEventsAggregate` `403`, and
+the MeshKit refusals of the new `v1beta3/github` operations. Every other error response, including the
+shared `401`, keeps its plain-text body. Descriptions name a MeshKit refusal by its meaning, never by its numeric `code`: codes
+are the emitting service's internal allocation and are renumbered. Two generator constraints shape these:
+
+- Every `$ref` to a `v1beta2/core` schema generates a Go reference into the unversioned
+  `models/core` package, which is generated from `v1alpha1/core`. `MeshkitError` is therefore
+  mirrored, identically, in `v1alpha1/core`, as `MapObject` and `Endpoint` are.
+- Inside `v1beta2/core`, the `MeshkitError*` responses write their schema `$ref` in the
+  external form (`../../v1beta2/core/api.yml#/components/schemas/MeshkitError`). Written as a local
+  `#/...` ref, a consumer that aliases the response would generate an unqualified `MeshkitError`
+  its own package does not define.
+
+`validation/github_integration_contract_test.go` (`TestMeshkitErrorContract`) pins both.
 
 ## Resource grouping and path structure
 
@@ -131,3 +161,51 @@ The tag picks the cache within a construct, so an operation that must stay out o
 tag. `getGithubRepositoryBranches` sits beside the import operations in `v1beta3/design` but reads
 only GitHub, so it is tagged `github` (`Design_github`): a design write does not refetch the branch
 list. `validation/design_github_import_contract_test.go` pins each operation's tag.
+
+The GitHub integration operations that touch no design - the connection status, an installation's
+repositories, a repository's file tree, the Kanvas workflow check and install, and the two browser
+navigations of the authorization trip - are declared in their own `v1beta3/github` construct, so
+they share the `GitHub_github` tag: a workflow install refetches the status, repository and tree
+reads, and no design write refetches any of them. `validation/github_integration_contract_test.go`
+pins them.
+
+## GitHub integration: verified installations
+
+Every Meshery Cloud GitHub integration operation acts only through the caller's own verified GitHub
+App installations - the installations GitHub lists for the caller's own GitHub account when they
+authorize the App, which the server stores on the caller's GitHub connection
+(`GithubConnectionMetadata` in `v1beta3/github`). The contract that follows from it:
+
+- A repository or installation the caller cannot reach that way is refused with one uniform `403`,
+  whether the App is not installed on the repository's account or is installed there for someone
+  else, so no route reveals where the App is installed. A distinct `403`, whose MeshKit
+  error says the connection must be re-authorized, means the connection predates verification.
+- The authorization trip starts at `startGithubAuthorization` (`GET
+  /api/integrations/github/authorize?flow=install|authorize`), which issues a single-use state the
+  callback (`githubAppCallback`) must present; the UI never links to GitHub directly. Both are
+  browser navigations answering `302`, not data calls. The callback's `installation_id` and
+  `setup_action` query parameters keep GitHub's names, the one deliberate exception to camelCase
+  query parameters in the construct.
+- `registerConnection` and `updateConnection` refuse with a `409` MeshKit error a write
+  that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type
+  `git`), and an edit of that connection cannot set or erase its server-written installation keys.
+
+## Native client sign-in (loopback + PKCE)
+
+Local native clients (CLIs, desktop agents) sign in with the RFC 8252 loopback
+pattern bound by RFC 7636 PKCE, defined in `v1beta3/token`:
+
+1. `GET /api/identity/native/authorize` (session cookie required) validates
+   `clientName`, `port`, `codeChallenge`, `codeChallengeMethod=S256` and `state`
+   and renders a consent page. Nothing is issued.
+2. The consent form posts (same origin) to `POST /api/identity/native/authorize`,
+   which stores a single-use code (60 second TTL) bound to the user, client name
+   and challenge, then redirects to
+   `http://127.0.0.1:{port}/callback?code=...&state=...`. The redirect host is
+   always the 127.0.0.1 literal; no token is in the URL.
+3. The client calls `POST /api/identity/native/token` with `code` and
+   `codeVerifier`. The code is consumed on the first redemption attempt; on a
+   verifier match an API token is minted with `name` and `purpose` set to the
+   client name.
+
+The construct is client-agnostic: no client is named in the schema.
