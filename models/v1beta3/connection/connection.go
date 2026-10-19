@@ -70,6 +70,18 @@ const (
 	CoreKindPrometheus CoreKind = "prometheus"
 )
 
+// Defines values for DestinationKind.
+const (
+	DestinationKindBlog     DestinationKind = "blog"
+	DestinationKindBluesky  DestinationKind = "bluesky"
+	DestinationKindGithub   DestinationKind = "github"
+	DestinationKindHn       DestinationKind = "hn"
+	DestinationKindLinkedin DestinationKind = "linkedin"
+	DestinationKindReddit   DestinationKind = "reddit"
+	DestinationKindSlack    DestinationKind = "slack"
+	DestinationKindX        DestinationKind = "x"
+)
+
 // Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 type Connection struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -358,6 +370,9 @@ type ConnectionsStatusPage struct {
 
 // CoreKind A core connection kind that receives bespoke, kind-specific handling in Meshery. The `kind` field itself remains an open-ended string; this names only the kinds with special behavior.
 type CoreKind string
+
+// DestinationKind A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.
+type DestinationKind string
 
 // K8sContext Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.
 type K8sContext struct {

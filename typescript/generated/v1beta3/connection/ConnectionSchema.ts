@@ -10987,6 +10987,33 @@ const ConnectionSchema: Record<string, unknown> = {
           "CoreKindGithub"
         ]
       },
+      "DestinationKind": {
+        "type": "string",
+        "description": "A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.",
+        "x-go-name": "DestinationKind",
+        "x-ts-const": "DestinationConnectionKinds",
+        "x-ts-type": "DestinationConnectionKind",
+        "enum": [
+          "linkedin",
+          "x",
+          "reddit",
+          "hn",
+          "slack",
+          "bluesky",
+          "github",
+          "blog"
+        ],
+        "x-enum-varnames": [
+          "DestinationKindLinkedin",
+          "DestinationKindX",
+          "DestinationKindReddit",
+          "DestinationKindHn",
+          "DestinationKindSlack",
+          "DestinationKindBluesky",
+          "DestinationKindGithub",
+          "DestinationKindBlog"
+        ]
+      },
       "ConnectionDefinition": {
         "description": "A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.",
         "x-go-type": "ConnectionDefinition"

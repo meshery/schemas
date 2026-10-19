@@ -11,7 +11,7 @@ acceptedBy: []
 roles: []
 teams: []
 acceptanceOutcome: direct_membership
-childOrganizationBranding: provider
+childOrganizationBranding: parent
 status: ''
 createdAt: ''
 updatedAt: ''
