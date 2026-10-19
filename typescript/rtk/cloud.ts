@@ -21,6 +21,7 @@ export const addTagTypes = [
   "BlowhornHealth_blowhornHealth",
   "BlowhornLedger_blowhornLedger",
   "BlowhornProfile_blowhornProfiles",
+  "Claim_claims",
   "Connection_API_Connections",
   "Connection_API_ConnectionDefinitions",
   "ContentPiece_contentPieces",
@@ -31,10 +32,10 @@ export const addTagTypes = [
   "Filter_filters",
   "GitHub_github",
   "Invitation_Invitation",
-  "JobLease_jobLeases",
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
+  "Schedule_schedules",
   "Subscription_Subscriptions",
   "Subscription_Payment Processors",
   "token_tokens",
@@ -1004,6 +1005,37 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}`, method: "DELETE" }),
         invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
       }),
+      listClaims: build.query<ListClaimsApiResponse, ListClaimsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/claims`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            order: queryArg?.order,
+            resourceType: queryArg?.resourceType,
+            resourceId: queryArg?.resourceId,
+            claimant: queryArg?.claimant,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["Claim_claims"],
+      }),
+      createClaim: build.mutation<CreateClaimApiResponse, CreateClaimApiArg>({
+        query: (queryArg) => ({ url: `/api/claims`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Claim_claims"],
+      }),
+      getClaim: build.query<GetClaimApiResponse, GetClaimApiArg>({
+        query: (queryArg) => ({ url: `/api/claims/${queryArg.claimId}` }),
+        providesTags: ["Claim_claims"],
+      }),
+      renewClaim: build.mutation<RenewClaimApiResponse, RenewClaimApiArg>({
+        query: (queryArg) => ({ url: `/api/claims/${queryArg.claimId}/renew`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Claim_claims"],
+      }),
+      releaseClaim: build.mutation<ReleaseClaimApiResponse, ReleaseClaimApiArg>({
+        query: (queryArg) => ({ url: `/api/claims/${queryArg.claimId}/release`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Claim_claims"],
+      }),
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
         query: (queryArg) => ({
           url: `/api/integrations/connections`,
@@ -1711,80 +1743,6 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/identity/users/request/notification` }),
         providesTags: ["Invitation_Invitation"],
       }),
-      listJobLeases: build.query<ListJobLeasesApiResponse, ListJobLeasesApiArg>({
-        query: (queryArg) => ({
-          url: `/api/job-leases`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            status: queryArg?.status,
-          },
-        }),
-        providesTags: ["JobLease_jobLeases"],
-      }),
-      createJobLease: build.mutation<CreateJobLeaseApiResponse, CreateJobLeaseApiArg>({
-        query: (queryArg) => ({ url: `/api/job-leases`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["JobLease_jobLeases"],
-      }),
-      claimJobLease: build.mutation<ClaimJobLeaseApiResponse, ClaimJobLeaseApiArg>({
-        query: (queryArg) => ({ url: `/api/job-leases/claim`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["JobLease_jobLeases"],
-      }),
-      getSchedulePause: build.query<GetSchedulePauseApiResponse, GetSchedulePauseApiArg>({
-        query: () => ({ url: `/api/job-leases/schedule-pause` }),
-        providesTags: ["JobLease_jobLeases"],
-      }),
-      setSchedulePause: build.mutation<SetSchedulePauseApiResponse, SetSchedulePauseApiArg>({
-        query: (queryArg) => ({ url: `/api/job-leases/schedule-pause`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["JobLease_jobLeases"],
-      }),
-      clearSchedulePause: build.mutation<ClearSchedulePauseApiResponse, ClearSchedulePauseApiArg>({
-        query: () => ({ url: `/api/job-leases/schedule-pause`, method: "DELETE" }),
-        invalidatesTags: ["JobLease_jobLeases"],
-      }),
-      getJobLease: build.query<GetJobLeaseApiResponse, GetJobLeaseApiArg>({
-        query: (queryArg) => ({ url: `/api/job-leases/${queryArg.jobLeaseId}` }),
-        providesTags: ["JobLease_jobLeases"],
-      }),
-      updateJobLease: build.mutation<UpdateJobLeaseApiResponse, UpdateJobLeaseApiArg>({
-        query: (queryArg) => ({ url: `/api/job-leases/${queryArg.jobLeaseId}`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["JobLease_jobLeases"],
-      }),
-      deleteJobLease: build.mutation<DeleteJobLeaseApiResponse, DeleteJobLeaseApiArg>({
-        query: (queryArg) => ({ url: `/api/job-leases/${queryArg.jobLeaseId}`, method: "DELETE" }),
-        invalidatesTags: ["JobLease_jobLeases"],
-      }),
-      renewJobLease: build.mutation<RenewJobLeaseApiResponse, RenewJobLeaseApiArg>({
-        query: (queryArg) => ({
-          url: `/api/job-leases/${queryArg.jobLeaseId}/renew`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["JobLease_jobLeases"],
-      }),
-      releaseJobLease: build.mutation<ReleaseJobLeaseApiResponse, ReleaseJobLeaseApiArg>({
-        query: (queryArg) => ({
-          url: `/api/job-leases/${queryArg.jobLeaseId}/release`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["JobLease_jobLeases"],
-      }),
-      pauseJobLease: build.mutation<PauseJobLeaseApiResponse, PauseJobLeaseApiArg>({
-        query: (queryArg) => ({
-          url: `/api/job-leases/${queryArg.jobLeaseId}/pause`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["JobLease_jobLeases"],
-      }),
-      resumeJobLease: build.mutation<ResumeJobLeaseApiResponse, ResumeJobLeaseApiArg>({
-        query: (queryArg) => ({ url: `/api/job-leases/${queryArg.jobLeaseId}/resume`, method: "POST" }),
-        invalidatesTags: ["JobLease_jobLeases"],
-      }),
       getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
         query: (queryArg) => ({
           url: `/api/content/patterns/resource`,
@@ -1898,6 +1856,118 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["Plan_Plans"],
+      }),
+      listSchedules: build.query<ListSchedulesApiResponse, ListSchedulesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/schedules`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            workspaceId: queryArg?.workspaceId,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["Schedule_schedules"],
+      }),
+      createSchedule: build.mutation<CreateScheduleApiResponse, CreateScheduleApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      claimNextSchedule: build.mutation<ClaimNextScheduleApiResponse, ClaimNextScheduleApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules/claim`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      getSchedulePause: build.query<GetSchedulePauseApiResponse, GetSchedulePauseApiArg>({
+        query: () => ({ url: `/api/schedules/pause` }),
+        providesTags: ["Schedule_schedules"],
+      }),
+      setSchedulePause: build.mutation<SetSchedulePauseApiResponse, SetSchedulePauseApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules/pause`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      clearSchedulePause: build.mutation<ClearSchedulePauseApiResponse, ClearSchedulePauseApiArg>({
+        query: () => ({ url: `/api/schedules/pause`, method: "DELETE" }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      getScheduleById: build.query<GetScheduleByIdApiResponse, GetScheduleByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}` }),
+        providesTags: ["Schedule_schedules"],
+      }),
+      updateSchedule: build.mutation<UpdateScheduleApiResponse, UpdateScheduleApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      deleteScheduleById: build.mutation<DeleteScheduleByIdApiResponse, DeleteScheduleByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}`, method: "DELETE" }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      claimSchedule: build.mutation<ClaimScheduleApiResponse, ClaimScheduleApiArg>({
+        query: (queryArg) => ({
+          url: `/api/schedules/${queryArg.scheduleId}/claim`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      renewScheduleClaim: build.mutation<RenewScheduleClaimApiResponse, RenewScheduleClaimApiArg>({
+        query: (queryArg) => ({
+          url: `/api/schedules/${queryArg.scheduleId}/claim/renew`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      releaseScheduleClaim: build.mutation<ReleaseScheduleClaimApiResponse, ReleaseScheduleClaimApiArg>({
+        query: (queryArg) => ({
+          url: `/api/schedules/${queryArg.scheduleId}/claim/release`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      pauseSchedule: build.mutation<PauseScheduleApiResponse, PauseScheduleApiArg>({
+        query: (queryArg) => ({
+          url: `/api/schedules/${queryArg.scheduleId}/pause`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      resumeSchedule: build.mutation<ResumeScheduleApiResponse, ResumeScheduleApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}/resume`, method: "POST" }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      getSchedulesOfWorkspace: build.query<GetSchedulesOfWorkspaceApiResponse, GetSchedulesOfWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/schedules`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["Schedule_schedules"],
+      }),
+      assignScheduleToWorkspace: build.mutation<AssignScheduleToWorkspaceApiResponse, AssignScheduleToWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/schedules/${queryArg.scheduleId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      unassignScheduleFromWorkspace: build.mutation<
+        UnassignScheduleFromWorkspaceApiResponse,
+        UnassignScheduleFromWorkspaceApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/schedules/${queryArg.scheduleId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Schedule_schedules"],
       }),
       getSubscriptions: build.query<GetSubscriptionsApiResponse, GetSubscriptionsApiArg>({
         query: (queryArg) => ({
@@ -9018,6 +9088,185 @@ export type DeleteBlowhornProfileApiResponse = unknown;
 export type DeleteBlowhornProfileApiArg = {
   /** Blowhorn profile ID */
   blowhornProfileId: string;
+};
+export type ListClaimsApiResponse = /** status 200 Claims page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Claims included on this page of results. */
+  claims: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListClaimsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by claimed resource type. */
+  resourceType?: string;
+  /** Filter by claimed resource ID. */
+  resourceId?: string;
+  /** Filter by holder identity. */
+  claimant?: string;
+  /** Filter by claim status. */
+  status?: "active" | "released" | "expired";
+};
+export type CreateClaimApiResponse = /** status 201 Claim taken */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Type of the claimed resource, for example `schedule`. */
+  resourceType: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  resourceId: string;
+  /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+  claimant: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+  status: "active" | "released" | "expired";
+  /** Time the claim was taken. */
+  claimedAt: string;
+  /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+  expiresAt: string;
+  /** Time the holder released the claim. Null while the claim is active or after it expired. */
+  releasedAt?: string | null;
+  /** Timestamp of claim creation. */
+  createdAt: string;
+  /** Timestamp of last claim modification. */
+  updatedAt: string;
+};
+export type CreateClaimApiArg = {
+  body: {
+    /** Type of the resource to claim, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the worker taking the claim. */
+    claimant: string;
+    /** Requested claim duration in minutes; the server applies its default when omitted and may cap it. */
+    durationMinutes?: number;
+  };
+};
+export type GetClaimApiResponse = /** status 200 Claim response */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Type of the claimed resource, for example `schedule`. */
+  resourceType: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  resourceId: string;
+  /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+  claimant: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+  status: "active" | "released" | "expired";
+  /** Time the claim was taken. */
+  claimedAt: string;
+  /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+  expiresAt: string;
+  /** Time the holder released the claim. Null while the claim is active or after it expired. */
+  releasedAt?: string | null;
+  /** Timestamp of claim creation. */
+  createdAt: string;
+  /** Timestamp of last claim modification. */
+  updatedAt: string;
+};
+export type GetClaimApiArg = {
+  /** Claim ID */
+  claimId: string;
+};
+export type RenewClaimApiResponse = /** status 200 Claim renewed */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Type of the claimed resource, for example `schedule`. */
+  resourceType: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  resourceId: string;
+  /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+  claimant: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+  status: "active" | "released" | "expired";
+  /** Time the claim was taken. */
+  claimedAt: string;
+  /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+  expiresAt: string;
+  /** Time the holder released the claim. Null while the claim is active or after it expired. */
+  releasedAt?: string | null;
+  /** Timestamp of claim creation. */
+  createdAt: string;
+  /** Timestamp of last claim modification. */
+  updatedAt: string;
+};
+export type RenewClaimApiArg = {
+  /** Claim ID */
+  claimId: string;
+  body: {
+    /** Identity of the holder renewing the claim. */
+    claimant: string;
+    /** Requested extension in minutes from now; the server applies its default when omitted and may cap it. */
+    durationMinutes?: number;
+  };
+};
+export type ReleaseClaimApiResponse = /** status 200 Claim released */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Type of the claimed resource, for example `schedule`. */
+  resourceType: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  resourceId: string;
+  /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+  claimant: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+  status: "active" | "released" | "expired";
+  /** Time the claim was taken. */
+  claimedAt: string;
+  /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+  expiresAt: string;
+  /** Time the holder released the claim. Null while the claim is active or after it expired. */
+  releasedAt?: string | null;
+  /** Timestamp of claim creation. */
+  createdAt: string;
+  /** Timestamp of last claim modification. */
+  updatedAt: string;
+};
+export type ReleaseClaimApiArg = {
+  /** Claim ID */
+  claimId: string;
+  body: {
+    /** Identity of the holder releasing the claim. */
+    claimant: string;
+  };
 };
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
   /** List of connections on this page */
@@ -16233,759 +16482,6 @@ export type GetSignupRequestNotificationApiResponse = /** status 200 Signup requ
   preProcessed: boolean;
 };
 export type GetSignupRequestNotificationApiArg = void;
-export type ListJobLeasesApiResponse = /** status 200 Job leases page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** Job leases included on this page of results. */
-  jobLeases?: {
-    /** Server-generated job lease ID. */
-    id: string;
-    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-    organizationId: string;
-    /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
-    rowNumber: number;
-    /** Job command to execute when the lease is held. */
-    command: string;
-    /** Profile reference the job runs against. */
-    profile?: string;
-    /** Target platform for the job (e.g. linkedin). */
-    platform?: string;
-    /** Arbitrary job parameters, stored as a JSON blob. */
-    params?: object;
-    /** Time the job becomes due. */
-    runAt?: string | null;
-    /** Next scheduled time for recurring jobs. */
-    nextRunAt?: string | null;
-    /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
-    recurrence?: string;
-    /** Remaining execution attempts for the job. */
-    retryBudget?: number;
-    /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
-    status: "pending" | "leased" | "succeeded" | "failed";
-    /** Execution driver mode for the job. */
-    driverMode?: string;
-    /** Time of the most recent execution attempt. */
-    lastRunAt?: string | null;
-    /** Error reported by the most recent execution attempt. */
-    lastError?: string;
-    /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
-    claimedBy?: string;
-    /** Time the lease was claimed. Server-managed. */
-    claimedAt?: string | null;
-    /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
-    leaseExpiresAt?: string | null;
-    /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
-    pausedAt?: string | null;
-    /** Identity that paused the row. Server-managed. */
-    pausedBy?: string;
-    /** Operator reason for pausing the row. Server-managed. */
-    pauseReason?: string;
-    /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-    fingerprint: string;
-    /** Computed projection. True while a live lease is held on the row. */
-    locked?: boolean;
-    /** Computed projection of the current lease holder. */
-    lockedBy?: string;
-    /** Computed projection of the current claim time. */
-    lockedAt?: string | null;
-    /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
-    lockStale?: boolean;
-    /** Timestamp of job lease creation. */
-    createdAt: string;
-    /** Timestamp of last job lease modification. */
-    updatedAt: string;
-    /** Timestamp when the job lease was soft-deleted. */
-    deletedAt?: string | null;
-  }[];
-};
-export type ListJobLeasesApiArg = {
-  /** Get responses by page */
-  page?: number;
-  /** Number of items per page (canonical camelCase form). */
-  pageSize?: number;
-  /** Number of items per page. Deprecated alias of pageSize;
-    canonical `pageSize` wins when both are present.
-     */
-  pagesize?: number;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Filter by job status (pending, leased, succeeded, failed). */
-  status?: string;
-};
-export type CreateJobLeaseApiResponse = /** status 201 Job lease created */ {
-  /** Server-generated job lease ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
-  rowNumber: number;
-  /** Job command to execute when the lease is held. */
-  command: string;
-  /** Profile reference the job runs against. */
-  profile?: string;
-  /** Target platform for the job (e.g. linkedin). */
-  platform?: string;
-  /** Arbitrary job parameters, stored as a JSON blob. */
-  params?: object;
-  /** Time the job becomes due. */
-  runAt?: string | null;
-  /** Next scheduled time for recurring jobs. */
-  nextRunAt?: string | null;
-  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
-  recurrence?: string;
-  /** Remaining execution attempts for the job. */
-  retryBudget?: number;
-  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
-  status: "pending" | "leased" | "succeeded" | "failed";
-  /** Execution driver mode for the job. */
-  driverMode?: string;
-  /** Time of the most recent execution attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent execution attempt. */
-  lastError?: string;
-  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
-  claimedBy?: string;
-  /** Time the lease was claimed. Server-managed. */
-  claimedAt?: string | null;
-  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
-  leaseExpiresAt?: string | null;
-  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
-  pausedAt?: string | null;
-  /** Identity that paused the row. Server-managed. */
-  pausedBy?: string;
-  /** Operator reason for pausing the row. Server-managed. */
-  pauseReason?: string;
-  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-  fingerprint: string;
-  /** Computed projection. True while a live lease is held on the row. */
-  locked?: boolean;
-  /** Computed projection of the current lease holder. */
-  lockedBy?: string;
-  /** Computed projection of the current claim time. */
-  lockedAt?: string | null;
-  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
-  lockStale?: boolean;
-  /** Timestamp of job lease creation. */
-  createdAt: string;
-  /** Timestamp of last job lease modification. */
-  updatedAt: string;
-  /** Timestamp when the job lease was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type CreateJobLeaseApiArg = {
-  body: {
-    /** Existing job lease ID for updates; omit on create. */
-    id?: string;
-    /** Targetable row number within the organization's job set. */
-    rowNumber: number;
-    /** Job command to execute when the lease is held. */
-    command: string;
-    /** Profile reference the job runs against. */
-    profile?: string;
-    /** Target platform for the job (e.g. linkedin). */
-    platform?: string;
-    /** Arbitrary job parameters, stored as a JSON blob. */
-    params?: object;
-    /** Time the job becomes due. */
-    runAt?: string;
-    /** Next scheduled time for recurring jobs. */
-    nextRunAt?: string;
-    /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
-    recurrence?: string;
-    /** Remaining execution attempts for the job. */
-    retryBudget?: number;
-    /** Execution driver mode for the job. */
-    driverMode?: string;
-    /** Optimistic-concurrency precondition for update: when supplied,
-        the update applies only when the stored fingerprint still
-        matches, and is refused with a 409 otherwise. Ignored on
-        create.
-         */
-    expectedFingerprint?: string;
-  };
-};
-export type ClaimJobLeaseApiResponse =
-  /** status 200 Claim result holding the row, or null when nothing was claimed */ {
-    /** Server-returned job lease as persisted by meshery-cloud. A job lease is a
-    due-work row plus time-bound claim state, shared by Layer5 Cloud and
-    Blowhorn: competing consumers claim, renew and release leases on due jobs,
-    and pause scopes gate which rows are claimable. The claim race is decided
-    server-side in a single statement; losing racers receive null, never an
-    error. Claim columns (`claimedBy`, `claimedAt`, `leaseExpiresAt`) and pause
-    columns (`pausedAt`, `pausedBy`, `pauseReason`) are server-managed and are
-    refused on CRUD paths; they change only through the claim, renew, release,
-    pause and resume operations. `locked`, `lockedBy`, `lockedAt` and
-    `lockStale` are computed projections for schedule screens, not stored
-    columns.
-     */
-    jobLease?: {
-      /** Server-generated job lease ID. */
-      id: string;
-      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-      organizationId: string;
-      /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
-      rowNumber: number;
-      /** Job command to execute when the lease is held. */
-      command: string;
-      /** Profile reference the job runs against. */
-      profile?: string;
-      /** Target platform for the job (e.g. linkedin). */
-      platform?: string;
-      /** Arbitrary job parameters, stored as a JSON blob. */
-      params?: object;
-      /** Time the job becomes due. */
-      runAt?: string | null;
-      /** Next scheduled time for recurring jobs. */
-      nextRunAt?: string | null;
-      /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
-      recurrence?: string;
-      /** Remaining execution attempts for the job. */
-      retryBudget?: number;
-      /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
-      status: "pending" | "leased" | "succeeded" | "failed";
-      /** Execution driver mode for the job. */
-      driverMode?: string;
-      /** Time of the most recent execution attempt. */
-      lastRunAt?: string | null;
-      /** Error reported by the most recent execution attempt. */
-      lastError?: string;
-      /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
-      claimedBy?: string;
-      /** Time the lease was claimed. Server-managed. */
-      claimedAt?: string | null;
-      /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
-      leaseExpiresAt?: string | null;
-      /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
-      pausedAt?: string | null;
-      /** Identity that paused the row. Server-managed. */
-      pausedBy?: string;
-      /** Operator reason for pausing the row. Server-managed. */
-      pauseReason?: string;
-      /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-      fingerprint: string;
-      /** Computed projection. True while a live lease is held on the row. */
-      locked?: boolean;
-      /** Computed projection of the current lease holder. */
-      lockedBy?: string;
-      /** Computed projection of the current claim time. */
-      lockedAt?: string | null;
-      /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
-      lockStale?: boolean;
-      /** Timestamp of job lease creation. */
-      createdAt: string;
-      /** Timestamp of last job lease modification. */
-      updatedAt: string;
-      /** Timestamp when the job lease was soft-deleted. */
-      deletedAt?: string | null;
-    } | null;
-  };
-export type ClaimJobLeaseApiArg = {
-  body: {
-    /** Machine taking the lease, recorded as `claimedBy`. Client-asserted; the holder check is advisory in v1. */
-    machineId: string;
-    /** Claim only the row with this row number. */
-    rowNumber?: number;
-    /** Trigger-now override that drops only the due test; a live foreign lease still refuses. */
-    force?: boolean;
-    /** Single operator override over the organization-wide and per-row pause scopes. */
-    ignorePause?: boolean;
-    /** Requested lease duration in minutes. When omitted the server applies its default lease duration. */
-    leaseMinutes?: number;
-  };
-};
-export type GetSchedulePauseApiResponse = /** status 200 Organization schedule pause */ {
-  /** Server-generated schedule pause ID. */
-  id: string;
-  /** Organization the pause applies to. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Operator reason for pausing the organization schedule. */
-  reason?: string;
-  /** Identity that set the pause. Server-managed. */
-  pausedBy?: string;
-  /** Timestamp of schedule pause creation. */
-  createdAt: string;
-  /** Timestamp of last schedule pause modification. */
-  updatedAt: string;
-};
-export type GetSchedulePauseApiArg = void;
-export type SetSchedulePauseApiResponse = /** status 200 Organization schedule pause set */ {
-  /** Server-generated schedule pause ID. */
-  id: string;
-  /** Organization the pause applies to. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Operator reason for pausing the organization schedule. */
-  reason?: string;
-  /** Identity that set the pause. Server-managed. */
-  pausedBy?: string;
-  /** Timestamp of schedule pause creation. */
-  createdAt: string;
-  /** Timestamp of last schedule pause modification. */
-  updatedAt: string;
-};
-export type SetSchedulePauseApiArg = {
-  body: {
-    /** Operator reason for pausing the organization schedule. */
-    reason?: string;
-  };
-};
-export type ClearSchedulePauseApiResponse = unknown;
-export type ClearSchedulePauseApiArg = void;
-export type GetJobLeaseApiResponse = /** status 200 Job lease response */ {
-  /** Server-generated job lease ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
-  rowNumber: number;
-  /** Job command to execute when the lease is held. */
-  command: string;
-  /** Profile reference the job runs against. */
-  profile?: string;
-  /** Target platform for the job (e.g. linkedin). */
-  platform?: string;
-  /** Arbitrary job parameters, stored as a JSON blob. */
-  params?: object;
-  /** Time the job becomes due. */
-  runAt?: string | null;
-  /** Next scheduled time for recurring jobs. */
-  nextRunAt?: string | null;
-  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
-  recurrence?: string;
-  /** Remaining execution attempts for the job. */
-  retryBudget?: number;
-  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
-  status: "pending" | "leased" | "succeeded" | "failed";
-  /** Execution driver mode for the job. */
-  driverMode?: string;
-  /** Time of the most recent execution attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent execution attempt. */
-  lastError?: string;
-  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
-  claimedBy?: string;
-  /** Time the lease was claimed. Server-managed. */
-  claimedAt?: string | null;
-  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
-  leaseExpiresAt?: string | null;
-  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
-  pausedAt?: string | null;
-  /** Identity that paused the row. Server-managed. */
-  pausedBy?: string;
-  /** Operator reason for pausing the row. Server-managed. */
-  pauseReason?: string;
-  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-  fingerprint: string;
-  /** Computed projection. True while a live lease is held on the row. */
-  locked?: boolean;
-  /** Computed projection of the current lease holder. */
-  lockedBy?: string;
-  /** Computed projection of the current claim time. */
-  lockedAt?: string | null;
-  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
-  lockStale?: boolean;
-  /** Timestamp of job lease creation. */
-  createdAt: string;
-  /** Timestamp of last job lease modification. */
-  updatedAt: string;
-  /** Timestamp when the job lease was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type GetJobLeaseApiArg = {
-  /** Job lease ID */
-  jobLeaseId: string;
-};
-export type UpdateJobLeaseApiResponse = /** status 200 Job lease updated */ {
-  /** Server-generated job lease ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
-  rowNumber: number;
-  /** Job command to execute when the lease is held. */
-  command: string;
-  /** Profile reference the job runs against. */
-  profile?: string;
-  /** Target platform for the job (e.g. linkedin). */
-  platform?: string;
-  /** Arbitrary job parameters, stored as a JSON blob. */
-  params?: object;
-  /** Time the job becomes due. */
-  runAt?: string | null;
-  /** Next scheduled time for recurring jobs. */
-  nextRunAt?: string | null;
-  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
-  recurrence?: string;
-  /** Remaining execution attempts for the job. */
-  retryBudget?: number;
-  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
-  status: "pending" | "leased" | "succeeded" | "failed";
-  /** Execution driver mode for the job. */
-  driverMode?: string;
-  /** Time of the most recent execution attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent execution attempt. */
-  lastError?: string;
-  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
-  claimedBy?: string;
-  /** Time the lease was claimed. Server-managed. */
-  claimedAt?: string | null;
-  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
-  leaseExpiresAt?: string | null;
-  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
-  pausedAt?: string | null;
-  /** Identity that paused the row. Server-managed. */
-  pausedBy?: string;
-  /** Operator reason for pausing the row. Server-managed. */
-  pauseReason?: string;
-  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-  fingerprint: string;
-  /** Computed projection. True while a live lease is held on the row. */
-  locked?: boolean;
-  /** Computed projection of the current lease holder. */
-  lockedBy?: string;
-  /** Computed projection of the current claim time. */
-  lockedAt?: string | null;
-  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
-  lockStale?: boolean;
-  /** Timestamp of job lease creation. */
-  createdAt: string;
-  /** Timestamp of last job lease modification. */
-  updatedAt: string;
-  /** Timestamp when the job lease was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type UpdateJobLeaseApiArg = {
-  /** Job lease ID */
-  jobLeaseId: string;
-  body: {
-    /** Existing job lease ID for updates; omit on create. */
-    id?: string;
-    /** Targetable row number within the organization's job set. */
-    rowNumber: number;
-    /** Job command to execute when the lease is held. */
-    command: string;
-    /** Profile reference the job runs against. */
-    profile?: string;
-    /** Target platform for the job (e.g. linkedin). */
-    platform?: string;
-    /** Arbitrary job parameters, stored as a JSON blob. */
-    params?: object;
-    /** Time the job becomes due. */
-    runAt?: string;
-    /** Next scheduled time for recurring jobs. */
-    nextRunAt?: string;
-    /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
-    recurrence?: string;
-    /** Remaining execution attempts for the job. */
-    retryBudget?: number;
-    /** Execution driver mode for the job. */
-    driverMode?: string;
-    /** Optimistic-concurrency precondition for update: when supplied,
-        the update applies only when the stored fingerprint still
-        matches, and is refused with a 409 otherwise. Ignored on
-        create.
-         */
-    expectedFingerprint?: string;
-  };
-};
-export type DeleteJobLeaseApiResponse = unknown;
-export type DeleteJobLeaseApiArg = {
-  /** Job lease ID */
-  jobLeaseId: string;
-};
-export type RenewJobLeaseApiResponse =
-  /** status 200 Renew result holding the row, or null when not held by the caller */ {
-    /** Server-returned job lease as persisted by meshery-cloud. A job lease is a
-    due-work row plus time-bound claim state, shared by Layer5 Cloud and
-    Blowhorn: competing consumers claim, renew and release leases on due jobs,
-    and pause scopes gate which rows are claimable. The claim race is decided
-    server-side in a single statement; losing racers receive null, never an
-    error. Claim columns (`claimedBy`, `claimedAt`, `leaseExpiresAt`) and pause
-    columns (`pausedAt`, `pausedBy`, `pauseReason`) are server-managed and are
-    refused on CRUD paths; they change only through the claim, renew, release,
-    pause and resume operations. `locked`, `lockedBy`, `lockedAt` and
-    `lockStale` are computed projections for schedule screens, not stored
-    columns.
-     */
-    jobLease?: {
-      /** Server-generated job lease ID. */
-      id: string;
-      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-      organizationId: string;
-      /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
-      rowNumber: number;
-      /** Job command to execute when the lease is held. */
-      command: string;
-      /** Profile reference the job runs against. */
-      profile?: string;
-      /** Target platform for the job (e.g. linkedin). */
-      platform?: string;
-      /** Arbitrary job parameters, stored as a JSON blob. */
-      params?: object;
-      /** Time the job becomes due. */
-      runAt?: string | null;
-      /** Next scheduled time for recurring jobs. */
-      nextRunAt?: string | null;
-      /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
-      recurrence?: string;
-      /** Remaining execution attempts for the job. */
-      retryBudget?: number;
-      /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
-      status: "pending" | "leased" | "succeeded" | "failed";
-      /** Execution driver mode for the job. */
-      driverMode?: string;
-      /** Time of the most recent execution attempt. */
-      lastRunAt?: string | null;
-      /** Error reported by the most recent execution attempt. */
-      lastError?: string;
-      /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
-      claimedBy?: string;
-      /** Time the lease was claimed. Server-managed. */
-      claimedAt?: string | null;
-      /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
-      leaseExpiresAt?: string | null;
-      /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
-      pausedAt?: string | null;
-      /** Identity that paused the row. Server-managed. */
-      pausedBy?: string;
-      /** Operator reason for pausing the row. Server-managed. */
-      pauseReason?: string;
-      /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-      fingerprint: string;
-      /** Computed projection. True while a live lease is held on the row. */
-      locked?: boolean;
-      /** Computed projection of the current lease holder. */
-      lockedBy?: string;
-      /** Computed projection of the current claim time. */
-      lockedAt?: string | null;
-      /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
-      lockStale?: boolean;
-      /** Timestamp of job lease creation. */
-      createdAt: string;
-      /** Timestamp of last job lease modification. */
-      updatedAt: string;
-      /** Timestamp when the job lease was soft-deleted. */
-      deletedAt?: string | null;
-    } | null;
-  };
-export type RenewJobLeaseApiArg = {
-  /** Job lease ID */
-  jobLeaseId: string;
-  body: {
-    /** Machine holding the lease. Only the holder may renew. Client-asserted; the holder check is advisory in v1. */
-    machineId: string;
-    /** Requested lease extension in minutes. When omitted the server applies its default lease duration. */
-    leaseMinutes?: number;
-  };
-};
-export type ReleaseJobLeaseApiResponse = /** status 200 Job lease released */ {
-  /** Server-generated job lease ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
-  rowNumber: number;
-  /** Job command to execute when the lease is held. */
-  command: string;
-  /** Profile reference the job runs against. */
-  profile?: string;
-  /** Target platform for the job (e.g. linkedin). */
-  platform?: string;
-  /** Arbitrary job parameters, stored as a JSON blob. */
-  params?: object;
-  /** Time the job becomes due. */
-  runAt?: string | null;
-  /** Next scheduled time for recurring jobs. */
-  nextRunAt?: string | null;
-  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
-  recurrence?: string;
-  /** Remaining execution attempts for the job. */
-  retryBudget?: number;
-  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
-  status: "pending" | "leased" | "succeeded" | "failed";
-  /** Execution driver mode for the job. */
-  driverMode?: string;
-  /** Time of the most recent execution attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent execution attempt. */
-  lastError?: string;
-  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
-  claimedBy?: string;
-  /** Time the lease was claimed. Server-managed. */
-  claimedAt?: string | null;
-  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
-  leaseExpiresAt?: string | null;
-  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
-  pausedAt?: string | null;
-  /** Identity that paused the row. Server-managed. */
-  pausedBy?: string;
-  /** Operator reason for pausing the row. Server-managed. */
-  pauseReason?: string;
-  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-  fingerprint: string;
-  /** Computed projection. True while a live lease is held on the row. */
-  locked?: boolean;
-  /** Computed projection of the current lease holder. */
-  lockedBy?: string;
-  /** Computed projection of the current claim time. */
-  lockedAt?: string | null;
-  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
-  lockStale?: boolean;
-  /** Timestamp of job lease creation. */
-  createdAt: string;
-  /** Timestamp of last job lease modification. */
-  updatedAt: string;
-  /** Timestamp when the job lease was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type ReleaseJobLeaseApiArg = {
-  /** Job lease ID */
-  jobLeaseId: string;
-  body: {
-    /** Machine holding the lease. Only the holder may release; a non-holder is refused with a 409 and nothing changes. Client-asserted; the holder check is advisory in v1. */
-    machineId: string;
-    /** Result values merged into the row on release (e.g. last run outcome and error). */
-    values?: object;
-  };
-};
-export type PauseJobLeaseApiResponse = /** status 200 Job lease row paused */ {
-  /** Server-generated job lease ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
-  rowNumber: number;
-  /** Job command to execute when the lease is held. */
-  command: string;
-  /** Profile reference the job runs against. */
-  profile?: string;
-  /** Target platform for the job (e.g. linkedin). */
-  platform?: string;
-  /** Arbitrary job parameters, stored as a JSON blob. */
-  params?: object;
-  /** Time the job becomes due. */
-  runAt?: string | null;
-  /** Next scheduled time for recurring jobs. */
-  nextRunAt?: string | null;
-  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
-  recurrence?: string;
-  /** Remaining execution attempts for the job. */
-  retryBudget?: number;
-  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
-  status: "pending" | "leased" | "succeeded" | "failed";
-  /** Execution driver mode for the job. */
-  driverMode?: string;
-  /** Time of the most recent execution attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent execution attempt. */
-  lastError?: string;
-  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
-  claimedBy?: string;
-  /** Time the lease was claimed. Server-managed. */
-  claimedAt?: string | null;
-  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
-  leaseExpiresAt?: string | null;
-  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
-  pausedAt?: string | null;
-  /** Identity that paused the row. Server-managed. */
-  pausedBy?: string;
-  /** Operator reason for pausing the row. Server-managed. */
-  pauseReason?: string;
-  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-  fingerprint: string;
-  /** Computed projection. True while a live lease is held on the row. */
-  locked?: boolean;
-  /** Computed projection of the current lease holder. */
-  lockedBy?: string;
-  /** Computed projection of the current claim time. */
-  lockedAt?: string | null;
-  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
-  lockStale?: boolean;
-  /** Timestamp of job lease creation. */
-  createdAt: string;
-  /** Timestamp of last job lease modification. */
-  updatedAt: string;
-  /** Timestamp when the job lease was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type PauseJobLeaseApiArg = {
-  /** Job lease ID */
-  jobLeaseId: string;
-  body: {
-    /** Operator reason for pausing the row. */
-    reason?: string;
-  };
-};
-export type ResumeJobLeaseApiResponse = /** status 200 Job lease row resumed */ {
-  /** Server-generated job lease ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Targetable row number within the organization's job set. Used for per-row claims and trigger-now overrides. */
-  rowNumber: number;
-  /** Job command to execute when the lease is held. */
-  command: string;
-  /** Profile reference the job runs against. */
-  profile?: string;
-  /** Target platform for the job (e.g. linkedin). */
-  platform?: string;
-  /** Arbitrary job parameters, stored as a JSON blob. */
-  params?: object;
-  /** Time the job becomes due. */
-  runAt?: string | null;
-  /** Next scheduled time for recurring jobs. */
-  nextRunAt?: string | null;
-  /** Recurrence rule (cron expression) for repeating jobs. Absent for one-shot jobs. */
-  recurrence?: string;
-  /** Remaining execution attempts for the job. */
-  retryBudget?: number;
-  /** Lifecycle status of the job. Managed server-side through the claim, renew, release, pause and resume operations. */
-  status: "pending" | "leased" | "succeeded" | "failed";
-  /** Execution driver mode for the job. */
-  driverMode?: string;
-  /** Time of the most recent execution attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent execution attempt. */
-  lastError?: string;
-  /** Machine holding the lease. Server-managed; set only by claim, refused on every other path. */
-  claimedBy?: string;
-  /** Time the lease was claimed. Server-managed. */
-  claimedAt?: string | null;
-  /** Time the lease lapses when unrenewed. A holder with a null or expired lease is stale and the row returns to the pool. Server-managed; moved only by renew for the holder. */
-  leaseExpiresAt?: string | null;
-  /** Time the row was paused. Server-managed; set only by pause, cleared by resume. */
-  pausedAt?: string | null;
-  /** Identity that paused the row. Server-managed. */
-  pausedBy?: string;
-  /** Operator reason for pausing the row. Server-managed. */
-  pauseReason?: string;
-  /** Hex digest over the canonical job values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
-  fingerprint: string;
-  /** Computed projection. True while a live lease is held on the row. */
-  locked?: boolean;
-  /** Computed projection of the current lease holder. */
-  lockedBy?: string;
-  /** Computed projection of the current claim time. */
-  lockedAt?: string | null;
-  /** Computed projection. True when the row carries a holder whose lease is null or expired, marking the row reclaimable. */
-  lockStale?: boolean;
-  /** Timestamp of job lease creation. */
-  createdAt: string;
-  /** Timestamp of last job lease modification. */
-  updatedAt: string;
-  /** Timestamp when the job lease was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type ResumeJobLeaseApiArg = {
-  /** Job lease ID */
-  jobLeaseId: string;
-};
 export type GetPatternResourcesApiResponse = /** status 200 Pattern resources page */ {
   /** Current page number of the result set. */
   page?: number;
@@ -17607,6 +17103,1387 @@ export type GetPlansApiArg = {
   page?: number;
   /** Get responses by pagesize */
   pagesize?: number;
+};
+export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Schedules included on this page of results. */
+  schedules: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** Human-readable name for the schedule. */
+    name: string;
+    /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+    action: string;
+    /** Action parameters, stored as a JSON blob. */
+    params?: object;
+    /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+    enabled: boolean;
+    /** Time the schedule first becomes due. */
+    runAt?: string | null;
+    /** Next time a recurring or retrying schedule becomes due. */
+    nextRunAt?: string | null;
+    /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+    recurrence?: string;
+    /** Lifecycle status. `pending`: created, not yet due-scheduled.
+        `scheduled`: waiting for its due time. `assigned`: designated for a
+        particular worker but not yet claimed. `claimed`: a worker holds the
+        claim and has not started. `running`: the claim holder is executing
+        it. `retrying`: the last attempt failed and another is due.
+        `completed`, `failed` and `cancelled` are terminal for a run-once
+        schedule; a recurring schedule returns to `scheduled`.
+         */
+    status:
+      | "pending"
+      | "scheduled"
+      | "assigned"
+      | "claimed"
+      | "running"
+      | "retrying"
+      | "completed"
+      | "failed"
+      | "cancelled";
+    /** Attempts already retried for the current run. */
+    retryCount: number;
+    /** Maximum retries before the run is marked failed. */
+    maxRetries: number;
+    /** Minutes to wait before a retry becomes due. */
+    retryDelayMinutes?: number;
+    /** Time of the most recent attempt. */
+    lastRunAt?: string | null;
+    /** Error reported by the most recent attempt. */
+    lastError?: string;
+    /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+    claim?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
+      /** Type of the claimed resource, for example `schedule`. */
+      resourceType: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      resourceId: string;
+      /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+      claimant: string;
+      /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+      status: "active" | "released" | "expired";
+      /** Time the claim was taken. */
+      claimedAt: string;
+      /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+      expiresAt: string;
+      /** Time the holder released the claim. Null while the claim is active or after it expired. */
+      releasedAt?: string | null;
+      /** Timestamp of claim creation. */
+      createdAt: string;
+      /** Timestamp of last claim modification. */
+      updatedAt: string;
+    };
+    /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+    pausedAt?: string | null;
+    /** Identity that paused the schedule. Server-managed. */
+    pausedBy?: string;
+    /** Reason given for pausing the schedule. Server-managed. */
+    pauseReason?: string;
+    /** Timestamp of schedule creation. */
+    createdAt: string;
+    /** Timestamp of last schedule modification. */
+    updatedAt: string;
+    /** Timestamp when the schedule was soft-deleted. Null while live. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListSchedulesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Only schedules linked to this workspace. */
+  workspaceId?: string;
+  /** Only schedules in this status. */
+  status?:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+};
+export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule. Server-managed. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type CreateScheduleApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** Human-readable name for the schedule. */
+    name: string;
+    /** The action the worker runs, for example a command name. */
+    action: string;
+    /** Action parameters, stored as a JSON blob. */
+    params?: object;
+    /** Whether the schedule is eligible to run. Defaults to true. */
+    enabled?: boolean;
+    /** Time the schedule first becomes due. */
+    runAt?: string | null;
+    /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+    recurrence?: string;
+    /** Client-settable status. Omit to let the server choose `scheduled` for a due-timed schedule and `pending` otherwise. */
+    status?: "pending" | "scheduled" | "cancelled";
+    /** Maximum retries before the run is marked failed. */
+    maxRetries?: number;
+    /** Minutes to wait before a retry becomes due. */
+    retryDelayMinutes?: number;
+  };
+};
+export type ClaimNextScheduleApiResponse = /** status 200 The claimed schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule. Server-managed. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type ClaimNextScheduleApiArg = {
+  body: {
+    /** Identity of the worker taking the claim. */
+    claimant: string;
+    /** Requested claim duration in minutes; the server applies its default when omitted and may cap it. */
+    durationMinutes?: number;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** Operator override that claims through the organization-wide and per-schedule pauses. */
+    ignorePause?: boolean;
+  };
+};
+export type GetSchedulePauseApiResponse = /** status 200 The organization-wide pause */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Time the pause was set. */
+  pausedAt: string;
+  /** Identity that set the pause. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing every schedule in the organization. */
+  reason?: string;
+  /** Timestamp of schedule pause creation. */
+  createdAt: string;
+  /** Timestamp of last schedule pause modification. */
+  updatedAt: string;
+};
+export type GetSchedulePauseApiArg = void;
+export type SetSchedulePauseApiResponse = /** status 200 The organization-wide pause */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Time the pause was set. */
+  pausedAt: string;
+  /** Identity that set the pause. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing every schedule in the organization. */
+  reason?: string;
+  /** Timestamp of schedule pause creation. */
+  createdAt: string;
+  /** Timestamp of last schedule pause modification. */
+  updatedAt: string;
+};
+export type SetSchedulePauseApiArg = {
+  body: {
+    /** Identity setting the pause; defaults to the authenticated user. */
+    pausedBy?: string;
+    /** Reason for the pause. */
+    reason?: string;
+  };
+};
+export type ClearSchedulePauseApiResponse = unknown;
+export type ClearSchedulePauseApiArg = void;
+export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule. Server-managed. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type GetScheduleByIdApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+};
+export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule. Server-managed. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type UpdateScheduleApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** Human-readable name for the schedule. */
+    name: string;
+    /** The action the worker runs, for example a command name. */
+    action: string;
+    /** Action parameters, stored as a JSON blob. */
+    params?: object;
+    /** Whether the schedule is eligible to run. Defaults to true. */
+    enabled?: boolean;
+    /** Time the schedule first becomes due. */
+    runAt?: string | null;
+    /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+    recurrence?: string;
+    /** Client-settable status. Omit to let the server choose `scheduled` for a due-timed schedule and `pending` otherwise. */
+    status?: "pending" | "scheduled" | "cancelled";
+    /** Maximum retries before the run is marked failed. */
+    maxRetries?: number;
+    /** Minutes to wait before a retry becomes due. */
+    retryDelayMinutes?: number;
+  };
+};
+export type DeleteScheduleByIdApiResponse = unknown;
+export type DeleteScheduleByIdApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+};
+export type ClaimScheduleApiResponse = /** status 200 The claimed schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule. Server-managed. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type ClaimScheduleApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+  body: {
+    /** Identity of the worker taking the claim. */
+    claimant: string;
+    /** Requested claim duration in minutes; the server applies its default when omitted and may cap it. */
+    durationMinutes?: number;
+    /** Claim even though the schedule is not yet due (trigger now). A live claim held by another claimant still refuses. */
+    force?: boolean;
+    /** Operator override that claims through the organization-wide and per-schedule pauses. */
+    ignorePause?: boolean;
+  };
+};
+export type RenewScheduleClaimApiResponse = /** status 200 The schedule with its renewed claim */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule. Server-managed. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type RenewScheduleClaimApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+  body: {
+    /** Identity of the holder renewing the claim. */
+    claimant: string;
+    /** Requested extension in minutes from now; the server applies its default when omitted and may cap it. */
+    durationMinutes?: number;
+  };
+};
+export type ReleaseScheduleClaimApiResponse = /** status 200 The released schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule. Server-managed. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type ReleaseScheduleClaimApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+  body: {
+    /** Identity of the holder releasing the claim. */
+    claimant: string;
+    /** Outcome status to record with the release. */
+    status?: "scheduled" | "retrying" | "completed" | "failed" | "cancelled";
+    /** Time of the attempt being reported. */
+    lastRunAt?: string | null;
+    /** Error reported by the attempt; empty on success. */
+    lastError?: string;
+    /** Next due time for a recurring or retrying schedule. */
+    nextRunAt?: string | null;
+    /** Retries used so far for the current run. */
+    retryCount?: number;
+  };
+};
+export type PauseScheduleApiResponse = /** status 200 The paused schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule. Server-managed. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type PauseScheduleApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+  body: {
+    /** Identity setting the pause; defaults to the authenticated user. */
+    pausedBy?: string;
+    /** Reason for the pause. */
+    reason?: string;
+  };
+};
+export type ResumeScheduleApiResponse = /** status 200 The resumed schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule. Server-managed. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type ResumeScheduleApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+};
+export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Schedules included on this page of results. */
+  schedules: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** Human-readable name for the schedule. */
+    name: string;
+    /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+    action: string;
+    /** Action parameters, stored as a JSON blob. */
+    params?: object;
+    /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+    enabled: boolean;
+    /** Time the schedule first becomes due. */
+    runAt?: string | null;
+    /** Next time a recurring or retrying schedule becomes due. */
+    nextRunAt?: string | null;
+    /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+    recurrence?: string;
+    /** Lifecycle status. `pending`: created, not yet due-scheduled.
+        `scheduled`: waiting for its due time. `assigned`: designated for a
+        particular worker but not yet claimed. `claimed`: a worker holds the
+        claim and has not started. `running`: the claim holder is executing
+        it. `retrying`: the last attempt failed and another is due.
+        `completed`, `failed` and `cancelled` are terminal for a run-once
+        schedule; a recurring schedule returns to `scheduled`.
+         */
+    status:
+      | "pending"
+      | "scheduled"
+      | "assigned"
+      | "claimed"
+      | "running"
+      | "retrying"
+      | "completed"
+      | "failed"
+      | "cancelled";
+    /** Attempts already retried for the current run. */
+    retryCount: number;
+    /** Maximum retries before the run is marked failed. */
+    maxRetries: number;
+    /** Minutes to wait before a retry becomes due. */
+    retryDelayMinutes?: number;
+    /** Time of the most recent attempt. */
+    lastRunAt?: string | null;
+    /** Error reported by the most recent attempt. */
+    lastError?: string;
+    /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+    claim?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
+      /** Type of the claimed resource, for example `schedule`. */
+      resourceType: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      resourceId: string;
+      /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+      claimant: string;
+      /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+      status: "active" | "released" | "expired";
+      /** Time the claim was taken. */
+      claimedAt: string;
+      /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+      expiresAt: string;
+      /** Time the holder released the claim. Null while the claim is active or after it expired. */
+      releasedAt?: string | null;
+      /** Timestamp of claim creation. */
+      createdAt: string;
+      /** Timestamp of last claim modification. */
+      updatedAt: string;
+    };
+    /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+    pausedAt?: string | null;
+    /** Identity that paused the schedule. Server-managed. */
+    pausedBy?: string;
+    /** Reason given for pausing the schedule. Server-managed. */
+    pauseReason?: string;
+    /** Timestamp of schedule creation. */
+    createdAt: string;
+    /** Timestamp of last schedule modification. */
+    updatedAt: string;
+    /** Timestamp when the schedule was soft-deleted. Null while live. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetSchedulesOfWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Only schedules in this status. */
+  status?:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+};
+export type AssignScheduleToWorkspaceApiResponse = /** status 200 The linked schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule. Server-managed. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type AssignScheduleToWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Schedule ID */
+  scheduleId: string;
+};
+export type UnassignScheduleFromWorkspaceApiResponse = /** status 200 The unlinked schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule. Server-managed. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type UnassignScheduleFromWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Schedule ID */
+  scheduleId: string;
 };
 export type GetSubscriptionsApiResponse = /** status 200 Subscriptions response */ {
   /** Current page number of the result set. */
@@ -19934,6 +20811,13 @@ export const {
   useLazyGetBlowhornProfileQuery,
   useUpdateBlowhornProfileMutation,
   useDeleteBlowhornProfileMutation,
+  useListClaimsQuery,
+  useLazyListClaimsQuery,
+  useCreateClaimMutation,
+  useGetClaimQuery,
+  useLazyGetClaimQuery,
+  useRenewClaimMutation,
+  useReleaseClaimMutation,
   useGetConnectionsQuery,
   useLazyGetConnectionsQuery,
   useRegisterConnectionMutation,
@@ -20056,22 +20940,6 @@ export const {
   useDenySignupRequestMutation,
   useGetSignupRequestNotificationQuery,
   useLazyGetSignupRequestNotificationQuery,
-  useListJobLeasesQuery,
-  useLazyListJobLeasesQuery,
-  useCreateJobLeaseMutation,
-  useClaimJobLeaseMutation,
-  useGetSchedulePauseQuery,
-  useLazyGetSchedulePauseQuery,
-  useSetSchedulePauseMutation,
-  useClearSchedulePauseMutation,
-  useGetJobLeaseQuery,
-  useLazyGetJobLeaseQuery,
-  useUpdateJobLeaseMutation,
-  useDeleteJobLeaseMutation,
-  useRenewJobLeaseMutation,
-  useReleaseJobLeaseMutation,
-  usePauseJobLeaseMutation,
-  useResumeJobLeaseMutation,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,
@@ -20093,6 +20961,27 @@ export const {
   useLazyGetPerformanceResultsQuery,
   useGetPlansQuery,
   useLazyGetPlansQuery,
+  useListSchedulesQuery,
+  useLazyListSchedulesQuery,
+  useCreateScheduleMutation,
+  useClaimNextScheduleMutation,
+  useGetSchedulePauseQuery,
+  useLazyGetSchedulePauseQuery,
+  useSetSchedulePauseMutation,
+  useClearSchedulePauseMutation,
+  useGetScheduleByIdQuery,
+  useLazyGetScheduleByIdQuery,
+  useUpdateScheduleMutation,
+  useDeleteScheduleByIdMutation,
+  useClaimScheduleMutation,
+  useRenewScheduleClaimMutation,
+  useReleaseScheduleClaimMutation,
+  usePauseScheduleMutation,
+  useResumeScheduleMutation,
+  useGetSchedulesOfWorkspaceQuery,
+  useLazyGetSchedulesOfWorkspaceQuery,
+  useAssignScheduleToWorkspaceMutation,
+  useUnassignScheduleFromWorkspaceMutation,
   useGetSubscriptionsQuery,
   useLazyGetSubscriptionsQuery,
   useUpsertSubscriptionMutation,
