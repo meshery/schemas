@@ -239,8 +239,10 @@ The rules a consumer must enforce:
   pause is set or lifted by updating the organization's preferences. There are no `/pause` or
   `/resume` routes.
 - The claim, the `assigned`/`claimed`/`running` statuses, `pausedAt` and `pausedBy` are
-  server-managed. `pausedAt` and `pausedBy` are `readOnly` on the organization pause, and a schedule
-  payload is closed (`additionalProperties: false`), so clients cannot set any of them on create or
-  update.
+  server-managed. The organization pause is written through `PreferencesPayload`, whose
+  `schedulePause` is `SchedulePausePayload` (`paused` required, `reason` only, closed), so
+  `pausedAt` and `pausedBy` cannot be set by a client. A schedule payload is closed
+  (`additionalProperties: false`) and refuses the same fields.
+- The unauthenticated `getOrgByDomain` response never includes `preferences.schedulePause`.
 
 `v1beta3/job_lease` was removed in favour of these two constructs; no consumer served or called it.

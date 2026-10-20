@@ -7,33 +7,38 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
-// The organization-wide pause is data in organization preferences. Its
-// server-recorded fields are readOnly and the object is closed, so a client
-// request cannot forge them.
+// The organization-wide pause is data in organization preferences. Writes go
+// through SchedulePausePayload, which is closed and requires paused, so a
+// client request cannot forge the server-recorded fields or omit paused.
 func TestOrgSchedulePauseRequestValidation(t *testing.T) {
 	doc, err := loadAPISpec(filepath.Join(repoRootDir(t), organizationSpec))
 	if err != nil {
 		t.Fatalf("load %s: %v", organizationSpec, err)
 	}
+	payload := doc.Components.Schemas["SchedulePausePayload"].Value
 	pause := doc.Components.Schemas["SchedulePause"].Value
 
 	request := []openapi3.SchemaValidationOption{openapi3.VisitAsRequest()}
 	response := []openapi3.SchemaValidationOption{openapi3.VisitAsResponse()}
 	cases := []struct {
 		name    string
+		schema  *openapi3.Schema
 		body    map[string]any
 		opts    []openapi3.SchemaValidationOption
 		wantErr bool
 	}{
-		{"request sets paused and reason", map[string]any{"paused": true, "reason": "maintenance"}, request, false},
-		{"request forges pausedBy", map[string]any{"paused": true, "pausedBy": "mallory"}, request, true},
-		{"request forges pausedAt", map[string]any{"paused": true, "pausedAt": "2026-10-20T00:00:00Z"}, request, true},
-		{"request carries unknown field", map[string]any{"paused": false, "extra": 1}, request, true},
-		{"response reports pausedBy and pausedAt", map[string]any{"paused": true, "pausedBy": "admin", "pausedAt": "2026-10-20T00:00:00Z"}, response, false},
+		{"request sets paused and reason", payload, map[string]any{"paused": true, "reason": "maintenance"}, request, false},
+		{"request lifts pause", payload, map[string]any{"paused": false}, request, false},
+		{"request omits paused", payload, map[string]any{"reason": "freeze"}, request, true},
+		{"request empty body omits paused", payload, map[string]any{}, request, true},
+		{"request forges pausedBy", payload, map[string]any{"paused": true, "pausedBy": "mallory"}, request, true},
+		{"request forges pausedAt", payload, map[string]any{"paused": true, "pausedAt": "2026-10-20T00:00:00Z"}, request, true},
+		{"request carries unknown field", payload, map[string]any{"paused": false, "extra": 1}, request, true},
+		{"response reports pausedBy and pausedAt", pause, map[string]any{"paused": true, "pausedBy": "admin", "pausedAt": "2026-10-20T00:00:00Z"}, response, false},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := pause.VisitJSON(tc.body, tc.opts...)
+			err := tc.schema.VisitJSON(tc.body, tc.opts...)
 			if (err != nil) != tc.wantErr {
 				t.Errorf("VisitJSON(%v) error = %v, wantErr %v", tc.body, err, tc.wantErr)
 			}
