@@ -56,23 +56,22 @@ func TestEffectivePurposeResolvesAbsentToUser(t *testing.T) {
 func TestEnvironmentPayloadCannotCarryPrivilegedPurpose(t *testing.T) {
 	var payload EnvironmentPayload
 	body := []byte(`{"name":"attacker","organizationId":"00000000-0000-0000-0000-000000000000","purpose":"administrative"}`)
-	if err := json.Unmarshal(body, &payload); err != nil {
-		t.Fatalf("unmarshal payload: %v", err)
+	if err := json.Unmarshal(body, &payload); err == nil {
+		t.Fatalf("decoding a privileged purpose must fail, got purpose %v", payload.Purpose)
 	}
-	if payload.Purpose == nil {
-		t.Fatal("expected the decoded purpose so the server can refuse it")
-	}
-	if payload.Purpose.IsClientSettable() {
-		t.Fatalf("purpose %q must not be client-settable", *payload.Purpose)
-	}
-	for _, ok := range []EnvironmentPayloadPurpose{EnvironmentPayloadPurposeUser, EnvironmentPayloadPurposeProfile} {
-		if !ok.IsClientSettable() {
-			t.Errorf("purpose %q must be client-settable", ok)
+	for _, value := range []string{"user", "profile"} {
+		var ok EnvironmentPayload
+		if err := json.Unmarshal([]byte(`{"name":"ok","purpose":"`+value+`"}`), &ok); err != nil {
+			t.Fatalf("decoding client-settable purpose %q: %v", value, err)
+		}
+		if ok.Purpose == nil || string(*ok.Purpose) != value {
+			t.Fatalf("decoded purpose = %v, want %q", ok.Purpose, value)
 		}
 	}
-	for _, bad := range []EnvironmentPayloadPurpose{"", "administrative", "Profile", " user"} {
-		if bad.IsClientSettable() {
-			t.Errorf("purpose %q must not be client-settable", bad)
+	for _, bad := range []string{"", "Profile", " user", "administrative"} {
+		var p EnvironmentPayloadPurpose
+		if err := json.Unmarshal([]byte(`"`+bad+`"`), &p); err == nil {
+			t.Errorf("decoding purpose %q must fail", bad)
 		}
 	}
 }
