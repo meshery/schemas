@@ -86,7 +86,9 @@ paths:
         the live content pieces of the organization, whatever their
         `profile`. When `rowNumber` is omitted the server assigns the next
         row number of the organization (one more than the highest row
-        number the organization has used), atomically with the insert, so
+        number the organization has used, counting soft-deleted content
+        pieces so a deleted piece's number is not handed out again by
+        assignment), atomically with the insert, so
         concurrent inserts never receive the same number. A supplied
         `rowNumber` that another live content piece of the organization
         already holds refuses the insert with a 409.
@@ -246,7 +248,6 @@ components:
       required: false
       schema:
         type: string
-        minLength: 1
         maxLength: 255
     contentPieceId:
       name: contentPieceId
