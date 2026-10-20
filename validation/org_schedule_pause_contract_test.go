@@ -111,6 +111,19 @@ func TestOrgPreferenceWriteOperationsRefuseNonAdmin(t *testing.T) {
 	}
 }
 
+func TestSchedulePayloadDeclaresNoServerManagedFields(t *testing.T) {
+	doc, err := loadAPISpec(filepath.Join(repoRootDir(t), scheduleV1beta3Spec))
+	if err != nil {
+		t.Fatalf("load %s: %v", scheduleV1beta3Spec, err)
+	}
+	payload := doc.Components.Schemas["SchedulePayload"].Value
+	for _, name := range []string{"claim", "pausedAt", "pausedBy", "retryCount", "lastRunAt", "lastError", "organizationId", "createdAt", "updatedAt"} {
+		if _, ok := payload.Properties[name]; ok {
+			t.Errorf("SchedulePayload must not declare server-managed property %q", name)
+		}
+	}
+}
+
 // A schedule payload stays open, so a read-modify-write update that echoes
 // server-managed pause bookkeeping back is accepted; the server ignores it.
 func TestSchedulePayloadAcceptsEchoedServerPauseFields(t *testing.T) {

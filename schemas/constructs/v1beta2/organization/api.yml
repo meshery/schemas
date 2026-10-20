@@ -79,8 +79,8 @@ paths:
         - Organizations
       summary: Get organization by domain
       description: >-
-        Unauthenticated lookup. The response never includes
-        `preferences.schedulePause`; the organization-wide pause is read through
+        Unauthenticated lookup. Servers MUST omit `preferences.schedulePause` from
+        this response; the organization-wide pause is read through
         getOrgPreferences.
       operationId: getOrgByDomain
       parameters:

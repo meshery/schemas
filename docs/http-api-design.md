@@ -238,11 +238,12 @@ The rules a consumer must enforce:
   (and optionally `pauseReason`) on `PUT /api/schedules/{scheduleId}`, and the organization-wide
   pause is set or lifted by updating the organization's preferences. There are no `/pause` or
   `/resume` routes.
-- The claim, the `assigned`/`claimed`/`running` statuses, `pausedAt` and `pausedBy` are
-  server-managed. The organization pause is written through `PreferencesPayload`, whose
-  `schedulePause` is `SchedulePausePayload` (`paused` required, `reason` only, closed), so
-  `pausedAt` and `pausedBy` cannot be set by a client. A schedule payload is closed
-  (`additionalProperties: false`) and refuses the same fields.
-- The unauthenticated `getOrgByDomain` response never includes `preferences.schedulePause`.
+- The claim, `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError`, `organizationId` and
+  the timestamps are server-managed and ignored on input, not refused. A schedule payload accepts
+  `status` only as `pending`, `scheduled` or `cancelled`, so the claim-set statuses are rejected.
+  The organization pause is written through `PreferencesPayload`, whose `schedulePause` is
+  `SchedulePausePayload` (`paused` required, `reason` only), so `pausedAt` and `pausedBy` are
+  not part of that write shape.
+- Servers MUST omit `preferences.schedulePause` from the unauthenticated `getOrgByDomain` response.
 
 `v1beta3/job_lease` was removed in favour of these two constructs; no consumer served or called it.
