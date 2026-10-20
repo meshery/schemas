@@ -89,7 +89,8 @@ paths:
         number the organization has used, counting soft-deleted content
         pieces so a deleted piece's number is not handed out again by
         assignment), atomically with the insert, so
-        concurrent inserts never receive the same number. A supplied
+        concurrent inserts never receive the same number. An organization
+        that has never had a content piece is assigned row number 0 first. A supplied
         `rowNumber` that another live content piece of the organization
         already holds refuses the insert with a 409.
       requestBody:
