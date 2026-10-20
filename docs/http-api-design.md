@@ -236,3 +236,18 @@ The rules a consumer must enforce:
   and refused on create and update.
 
 `v1beta3/job_lease` was removed in favour of these two constructs; no consumer served or called it.
+
+## Client machine connections
+
+A client machine (a desktop app install) registers the way a Meshery Server
+does: on sign-in it POSTs `/api/integrations/connections` with kind
+`machine`, type `platform`, sub_type `management` and `metadata` matching
+`MachineConnectionMetadata` (`machineId` generated once per install, plus
+host, OS and app details). The server deduplicates on (owner, `machineId`) and
+records `organizationId`, so an organization can list and count its machines.
+The machine keeps itself live with `POST
+/api/integrations/connections/{connectionId}/heartbeat` (no body; the server
+sets `metadata.lastSeenAt` and restores `connected`); past the liveness
+threshold the connection reads `disconnected`. On sign-out or uninstall it
+calls `DELETE /api/integrations/connections/machine/{machineId}`. The
+connection id is the machine's identity elsewhere, for example as a claimant.

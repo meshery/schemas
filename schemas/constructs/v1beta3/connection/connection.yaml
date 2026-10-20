@@ -194,6 +194,18 @@ properties:
       db: deleted_at
       json: deletedAt
     x-order: 14
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      Organization the connection belongs to, set by the server from the
+      organization the caller registered it in. Lets an organization list and
+      count its connections (for example its registered machines) without
+      going through each owner. Absent on connections that predate it.
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+      json: organizationId,omitempty
+    x-go-type-skip-optional-pointer: false
+    x-order: 19
   environments:
     type: array
     description: Associated environments for this connection

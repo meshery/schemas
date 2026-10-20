@@ -92,6 +92,15 @@ paths:
         only its GitHub authorization flow creates that connection, so a
         request naming it is refused with a `409` MeshKit error that names the
         reserved GitHub App connection identity.
+
+
+        A client machine (a desktop app install) registers itself on sign-in
+        with kind `machine`, type `platform`, sub_type `management` and status
+        `connected`, and `metadata` matching `MachineConnectionMetadata`. The
+        server deduplicates on (owner, `metadata.machineId`): registering the
+        same machine again updates that connection and returns it rather than
+        creating a second one. The product the machine runs is a metadata
+        value (`metadata.appName`), never a kind.
       requestBody:
         required: true
         content:
@@ -314,6 +323,59 @@ paths:
       responses:
         "204":
           description: Meshery connection deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/machine/{machineId}:
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - Connections
+      operationId: deregisterMachineConnection
+      summary: Deregister a client machine
+      description: >
+        Delete the caller's `machine` connection whose `metadata.machineId`
+        matches, as a machine does on sign-out or uninstall. Owner-scoped: a
+        machine registered by another user is not found.
+      parameters:
+        - $ref: "#/components/parameters/machineId"
+      responses:
+        "204":
+          description: Machine connection deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{connectionId}/heartbeat:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - Connections
+      operationId: recordConnectionHeartbeat
+      summary: Record a connection heartbeat
+      description: >
+        Mark the caller's connection as alive: the server sets
+        `metadata.lastSeenAt` to the current time and, when the connection was
+        `disconnected`, sets its status back to `connected`. A connection whose
+        `metadata.lastSeenAt` is older than the server's liveness threshold is
+        reported as `disconnected` until its next heartbeat. The request has no
+        body, so a heartbeat can change nothing else about the connection.
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "200":
+          description: Connection after the heartbeat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -633,6 +695,15 @@ components:
         type: string
         maxLength: 500
 
+    machineId:
+      name: machineId
+      in: path
+      description: Stable per-install machine identifier from `metadata.machineId`.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 255
     orgIdQuery:
       name: orgId
       in: query
@@ -937,6 +1008,52 @@ components:
           x-oapi-codegen-extra-tags:
             json: "statusSummary,omitempty"
           x-order: 5
+
+    MachineConnectionMetadata:
+      type: object
+      description: >
+        Metadata of a `machine` connection: a client machine that registered
+        itself on sign-in. `machineId` is generated once per install and is the
+        deduplication key; the other fields describe the install and are
+        refreshed on each registration. `lastSeenAt` is written by the server
+        on registration and on each heartbeat.
+      required:
+        - machineId
+      additionalProperties: true
+      properties:
+        machineId:
+          type: string
+          description: Stable identifier generated once per install.
+          minLength: 1
+          maxLength: 255
+        hostname:
+          type: string
+          description: Host name of the machine.
+          maxLength: 255
+        os:
+          type: string
+          description: Operating system, for example `macos`.
+          maxLength: 64
+        osVersion:
+          type: string
+          description: Operating system version.
+          maxLength: 64
+        appName:
+          type: string
+          description: Name of the client application running on the machine.
+          maxLength: 255
+        appVersion:
+          type: string
+          description: Version of the client application.
+          maxLength: 64
+        buildSha:
+          type: string
+          description: Build commit of the client application.
+          maxLength: 64
+        lastSeenAt:
+          type: string
+          format: date-time
+          description: Server time of the last registration or heartbeat.
 
     ConnectionStatusValue:
       type: string
