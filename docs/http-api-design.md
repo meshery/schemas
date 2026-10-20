@@ -237,17 +237,26 @@ The rules a consumer must enforce:
 
 `v1beta3/job_lease` was removed in favour of these two constructs; no consumer served or called it.
 
-## Client machine connections
+## Desktop app connections
 
-A client machine (a desktop app install) registers the way a Meshery Server
-does: on sign-in it POSTs `/api/integrations/connections` with kind
-`machine`, type `platform`, sub_type `management` and `metadata` matching
-`MachineConnectionMetadata` (`machineId` generated once per install, plus
-host, OS and app details). The server deduplicates on (owner, `machineId`) and
-records `organizationId`, so an organization can list and count its machines.
-The machine keeps itself live with `POST
-/api/integrations/connections/{connectionId}/heartbeat` (no body; the server
-sets `metadata.lastSeenAt` and restores `connected`); past the liveness
-threshold the connection reads `disconnected`. On sign-out or uninstall it
-calls `DELETE /api/integrations/connections/machine/{machineId}`. The
-connection id is the machine's identity elsewhere, for example as a claimant.
+A desktop app install registers itself the way a Meshery Server does: on
+sign-in it POSTs `/api/integrations/connections` with kind `desktop`, type
+`platform`, sub_type `management` and `metadata` matching
+`DesktopConnectionMetadata` (`machineId` generated once per install, plus host,
+OS and app version). Desktop registration is Cloud-only; the heartbeat and
+deregistration routes are Cloud-only as well.
+
+The contract requires the server to take the organization from the
+`X-Current-Orgid` header (400 when a `desktop` registration omits it, 403 when
+the caller is not a member), to deduplicate on (organization, owner,
+`machineId`), and to answer `200` when it updates an existing connection or
+`201` when it creates one. `organizationId` records the organization so an
+organization can list and count its desktop installs. Only the owner and
+organization admins may read that metadata in organization listings.
+
+The install keeps itself live with `POST
+/api/integrations/connections/{connectionId}/heartbeat` (no body). The server
+sets `metadata.lastSeenAt` and restores `connected` from `disconnected`. A
+connection whose `lastSeenAt` is older than 3 minutes reads `disconnected`.
+On sign-out or uninstall the install calls `DELETE
+/api/integrations/connections/desktop/{machineId}`.

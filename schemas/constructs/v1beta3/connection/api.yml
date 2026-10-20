@@ -94,13 +94,28 @@ paths:
         reserved GitHub App connection identity.
 
 
-        A client machine (a desktop app install) registers itself on sign-in
-        with kind `machine`, type `platform`, sub_type `management` and status
-        `connected`, and `metadata` matching `MachineConnectionMetadata`. The
-        server deduplicates on (owner, `metadata.machineId`): registering the
-        same machine again updates that connection and returns it rather than
-        creating a second one. The product the machine runs is a metadata
-        value (`metadata.appName`), never a kind.
+        Desktop registration is Cloud-only. A client desktop app install
+        registers itself on sign-in with kind `desktop`, type `platform`,
+        sub_type `management`, status `connected`, and `metadata` matching
+        `DesktopConnectionMetadata`. Servers implementing this contract must
+        take the organization from the `X-Current-Orgid` header, refuse a
+        `desktop` registration without it with `400`, and refuse a caller who
+        is not a live member of that organization with `403`. They must
+        deduplicate on (organization, owner, `metadata.machineId`): registering
+        the same machine again updates that connection and returns `200`, while
+        a new connection returns `201`. A `desktop` body whose metadata lacks
+        `machineId` is refused with `400`. The product the machine runs is a
+        metadata value (`metadata.appName`), never a kind.
+      parameters:
+        - name: X-Current-Orgid
+          in: header
+          required: false
+          description: >
+            Organization the connection is registered in. Required for kind
+            `desktop`; ignored for other kinds.
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -108,6 +123,12 @@ paths:
             schema:
               $ref: "#/components/schemas/ConnectionPayload"
       responses:
+        "200":
+          description: Existing desktop connection for this machine updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
         "201":
           description: Connection registered
           content:
@@ -118,6 +139,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/403"
         "409":
           $ref: "#/components/responses/MeshkitError409"
         "500":
@@ -330,22 +353,23 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/integrations/connections/machine/{machineId}:
+  /api/integrations/connections/desktop/{machineId}:
     delete:
       x-internal: ["cloud"]
       tags:
         - Connections
-      operationId: deregisterMachineConnection
-      summary: Deregister a client machine
+      operationId: deregisterDesktopConnection
+      summary: Deregister a desktop app install
       description: >
-        Delete the caller's `machine` connection whose `metadata.machineId`
-        matches, as a machine does on sign-out or uninstall. Owner-scoped: a
-        machine registered by another user is not found.
+        Delete the caller's `desktop` connection whose `metadata.machineId`
+        matches, as a desktop app install does on sign-out or uninstall.
+        Servers implementing this contract must scope the deletion to the
+        caller: a connection registered by another user is not found.
       parameters:
         - $ref: "#/components/parameters/machineId"
       responses:
         "204":
-          description: Machine connection deleted
+          description: Desktop connection deleted
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -361,12 +385,13 @@ paths:
       operationId: recordConnectionHeartbeat
       summary: Record a connection heartbeat
       description: >
-        Mark the caller's connection as alive: the server sets
-        `metadata.lastSeenAt` to the current time and, when the connection was
-        `disconnected`, sets its status back to `connected`. A connection whose
-        `metadata.lastSeenAt` is older than the server's liveness threshold is
-        reported as `disconnected` until its next heartbeat. The request has no
-        body, so a heartbeat can change nothing else about the connection.
+        Mark the caller's connection as alive. Servers implementing this
+        contract must set `metadata.lastSeenAt` to the current time and, when
+        the connection is `disconnected`, set its status back to `connected`.
+        Servers must report a connection whose `metadata.lastSeenAt` is older
+        than 3 minutes as `disconnected` until its next heartbeat. The request
+        has no body, so a heartbeat cannot change anything else about the
+        connection.
       parameters:
         - $ref: "#/components/parameters/connectionId"
       responses:
@@ -701,9 +726,7 @@ components:
       description: Stable per-install machine identifier from `metadata.machineId`.
       required: true
       schema:
-        type: string
-        minLength: 1
-        maxLength: 255
+        $ref: "#/components/schemas/DesktopMachineId"
     orgIdQuery:
       name: orgId
       in: query
@@ -1009,23 +1032,28 @@ components:
             json: "statusSummary,omitempty"
           x-order: 5
 
-    MachineConnectionMetadata:
+    DesktopMachineId:
+      type: string
+      description: Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key and the `machineId` path parameter.
+      minLength: 1
+      maxLength: 255
+
+    DesktopConnectionMetadata:
       type: object
       description: >
-        Metadata of a `machine` connection: a client machine that registered
-        itself on sign-in. `machineId` is generated once per install and is the
-        deduplication key; the other fields describe the install and are
-        refreshed on each registration. `lastSeenAt` is written by the server
-        on registration and on each heartbeat.
+        Metadata of a `desktop` connection: a desktop app install that
+        registered itself on sign-in. Servers implementing this contract must
+        validate `metadata` against this schema when a registration has kind
+        `desktop`. The deduplication key is (organization, owner, `machineId`).
+        `lastSeenAt` is set by the server on registration and on each
+        heartbeat. Servers must show this metadata in organization listings
+        only to the connection's owner and to organization admins.
       required:
         - machineId
       additionalProperties: true
       properties:
         machineId:
-          type: string
-          description: Stable identifier generated once per install.
-          minLength: 1
-          maxLength: 255
+          $ref: "#/components/schemas/DesktopMachineId"
         hostname:
           type: string
           description: Host name of the machine.
@@ -1034,21 +1062,9 @@ components:
           type: string
           description: Operating system, for example `macos`.
           maxLength: 64
-        osVersion:
-          type: string
-          description: Operating system version.
-          maxLength: 64
-        appName:
-          type: string
-          description: Name of the client application running on the machine.
-          maxLength: 255
         appVersion:
           type: string
-          description: Version of the client application.
-          maxLength: 64
-        buildSha:
-          type: string
-          description: Build commit of the client application.
+          description: Version of the desktop app.
           maxLength: 64
         lastSeenAt:
           type: string

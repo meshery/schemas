@@ -38225,7 +38225,7 @@ const RegistrySchema: Record<string, unknown> = {
                         },
                         "x-order": 8,
                         "type": "string",
-                        "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+                        "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
                         "maxLength": 255
                       },
                       "modelReference": {
@@ -38939,6 +38939,21 @@ const RegistrySchema: Record<string, unknown> = {
                         "format": "date-time",
                         "nullable": true,
                         "x-go-type-skip-optional-pointer": true
+                      },
+                      "organizationId": {
+                        "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "organization_id",
+                          "json": "organizationId,omitempty"
+                        },
+                        "x-go-type-skip-optional-pointer": false,
+                        "x-order": 19,
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
                       },
                       "environments": {
                         "type": "array",
@@ -49326,7 +49341,7 @@ const RegistrySchema: Record<string, unknown> = {
                         },
                         "x-order": 8,
                         "type": "string",
-                        "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+                        "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
                         "maxLength": 255
                       },
                       "modelReference": {
@@ -50040,6 +50055,21 @@ const RegistrySchema: Record<string, unknown> = {
                         "format": "date-time",
                         "nullable": true,
                         "x-go-type-skip-optional-pointer": true
+                      },
+                      "organizationId": {
+                        "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "organization_id",
+                          "json": "organizationId,omitempty"
+                        },
+                        "x-go-type-skip-optional-pointer": false,
+                        "x-order": 19,
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
                       },
                       "environments": {
                         "type": "array",
@@ -69409,7 +69439,7 @@ const RegistrySchema: Record<string, unknown> = {
                 },
                 "x-order": 8,
                 "type": "string",
-                "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+                "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
                 "maxLength": 255
               },
               "modelReference": {
@@ -70123,6 +70153,21 @@ const RegistrySchema: Record<string, unknown> = {
                 "format": "date-time",
                 "nullable": true,
                 "x-go-type-skip-optional-pointer": true
+              },
+              "organizationId": {
+                "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "organization_id",
+                  "json": "organizationId,omitempty"
+                },
+                "x-go-type-skip-optional-pointer": false,
+                "x-order": 19,
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
               },
               "environments": {
                 "type": "array",
