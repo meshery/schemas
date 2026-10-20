@@ -76,9 +76,10 @@ paths:
       operationId: createSchedule
       description: |
         Creates a schedule in the organization of the authenticated session. The
-        claim, the server-managed status values (`assigned`, `claimed`, `running`)
-        and the server-managed pause fields (`pausedAt`, `pausedBy`) are refused
-        here. Send `paused: true` to create the schedule already paused.
+        claim and the server-managed status values (`assigned`, `claimed`,
+        `running`) are refused here; the server-managed pause fields (`pausedAt`,
+        `pausedBy`) are ignored. Send `paused: true` to create the schedule already
+        paused.
       requestBody:
         required: true
         content:
@@ -170,8 +171,8 @@ paths:
       operationId: updateSchedule
       description: |
         Updates the client-settable fields of a schedule. The claim, the
-        server-managed status values and the server-managed pause fields
-        (`pausedAt`, `pausedBy`) are refused here. Pause or resume the
+        server-managed status values are refused here, and the server-managed
+        pause fields (`pausedAt`, `pausedBy`) are ignored. Pause or resume the
         schedule by setting `paused` (with an optional `pauseReason`); the
         server then records `pausedAt` and `pausedBy`. Pausing a paused
         schedule keeps its original `pausedAt`; omitting `paused` leaves the
@@ -493,12 +494,13 @@ components:
 
     SchedulePayload:
       type: object
-      additionalProperties: false
       description: |
         Payload for creating or updating a schedule. Contains only
         client-settable fields; the owning `organizationId`, the claim,
         `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError` and the
-        timestamps are server-managed. Pausing is a field, not an operation:
+        timestamps are server-managed. The server ignores `pausedAt` and
+        `pausedBy` on input, so a fetched schedule can be sent back unchanged
+        apart from the fields being edited. Pausing is a field, not an operation:
         `paused` pauses or resumes the schedule. `status` accepts only `pending`,
         `scheduled` and `cancelled` here; the other values are set by the
         claim and release operations.

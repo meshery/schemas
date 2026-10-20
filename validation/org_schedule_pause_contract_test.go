@@ -111,9 +111,9 @@ func TestOrgPreferenceWriteOperationsRefuseNonAdmin(t *testing.T) {
 	}
 }
 
-// A schedule payload is closed, so a client cannot set server-managed pause
-// bookkeeping on create or update.
-func TestSchedulePayloadRefusesServerPauseFields(t *testing.T) {
+// A schedule payload stays open, so a read-modify-write update that echoes
+// server-managed pause bookkeeping back is accepted; the server ignores it.
+func TestSchedulePayloadAcceptsEchoedServerPauseFields(t *testing.T) {
 	doc, err := loadAPISpec(filepath.Join(repoRootDir(t), scheduleV1beta3Spec))
 	if err != nil {
 		t.Fatalf("load %s: %v", scheduleV1beta3Spec, err)
@@ -127,8 +127,8 @@ func TestSchedulePayloadRefusesServerPauseFields(t *testing.T) {
 		wantErr bool
 	}{
 		{"client pauses with reason", map[string]any{"name": "nightly", "action": "sync", "paused": true, "pauseReason": "maintenance"}, false},
-		{"client forges pausedBy", map[string]any{"name": "nightly", "action": "sync", "pausedBy": "mallory"}, true},
-		{"client forges pausedAt", map[string]any{"name": "nightly", "action": "sync", "pausedAt": "2026-10-20T00:00:00Z"}, true},
+		{"echoed pausedBy is ignored", map[string]any{"name": "nightly", "action": "sync", "pausedBy": "mallory"}, false},
+		{"echoed pausedAt is ignored", map[string]any{"name": "nightly", "action": "sync", "pausedAt": "2026-10-20T00:00:00Z"}, false},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
