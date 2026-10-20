@@ -493,6 +493,7 @@ components:
 
     SchedulePayload:
       type: object
+      additionalProperties: false
       description: |
         Payload for creating or updating a schedule. Contains only
         client-settable fields; the owning `organizationId`, the claim,
