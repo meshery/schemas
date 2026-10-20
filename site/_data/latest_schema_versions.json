@@ -239,6 +239,13 @@
     "extension": true
   },
   {
+    "construct": "profile",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/profile/profile.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "provider_capability",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/provider_capability/provider_capability.yaml",

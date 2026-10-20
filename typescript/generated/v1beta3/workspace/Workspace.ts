@@ -188,6 +188,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/workspaces/{workspaceId}/profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get profiles assigned to a workspace
+         * @description Gets profiles assigned to or available for a workspace depending on the filter. A profile can be assigned to many workspaces; members of each one can read it.
+         */
+        get: operations["getProfilesOfWorkspace"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/workspaces/{workspaceId}/profiles/{profileId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign a profile to a workspace
+         * @description Assigns a profile to a workspace, granting the workspace's members read access to it. The profile and the workspace must belong to the same organization, and a profile can be assigned to many workspaces.
+         */
+        post: operations["assignProfileToWorkspace"];
+        /**
+         * Unassign a profile from a workspace
+         * @description Removes a profile from a workspace. The profile itself is left intact.
+         */
+        delete: operations["unassignProfileFromWorkspace"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/workspaces/{workspaceId}/views": {
         parameters: {
             query?: never;
@@ -614,6 +658,81 @@ export interface components {
                  * @description Timestamp when the mapping was soft-deleted.
                  */
                 deletedAt?: string;
+            }[];
+        };
+        /** @description Junction record linking a workspace to a profile. */
+        WorkspacesProfilesMapping: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            workspaceId: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            profileId: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was created.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was last updated.
+             */
+            updatedAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was soft-deleted.
+             */
+            deletedAt?: string | null;
+        };
+        /** @description Paginated list of workspace-profile mappings. */
+        WorkspacesProfilesMappingPage: {
+            /** @description Zero-based page index returned in this response. */
+            page?: number;
+            /** @description Maximum number of items returned on each page. */
+            pageSize?: number;
+            /** @description Total number of items across all pages. */
+            totalCount?: number;
+            /** @description Workspace-profile mapping entries. */
+            workspacesProfilesMapping?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                workspaceId: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                profileId: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was last updated.
+                 */
+                updatedAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was soft-deleted.
+                 */
+                deletedAt?: string | null;
             }[];
         };
         /** @description Junction record linking a workspace to a view. */
@@ -2276,6 +2395,8 @@ export interface components {
         environmentId: string;
         /** @description Design ID */
         designId: string;
+        /** @description Profile ID */
+        profileId: string;
         /** @description View ID */
         viewId: string;
         /** @description Organization ID used to scope the workspace listing. */
@@ -3185,7 +3306,7 @@ export interface operations {
                              */
                             deletedAt?: string | null;
                             /**
-                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
@@ -5016,6 +5137,305 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Workspace design mapping removed */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getProfilesOfWorkspace: {
+        parameters: {
+            query?: {
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get responses by page */
+                page?: number;
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
+                pagesize?: number;
+                /** @description JSON-encoded filter string used for assignment and soft-delete filters. */
+                filter?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Workspace ID */
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Profiles */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Zero-based page index returned in this response. */
+                        page: number;
+                        /** @description Maximum number of items returned on each page. */
+                        pageSize: number;
+                        /** @description Total number of items across all pages. */
+                        totalCount: number;
+                        /** @description Profiles in this page. */
+                        profiles: {
+                            /**
+                             * Format: uuid
+                             * @description Server-generated profile ID.
+                             */
+                            id: string;
+                            /**
+                             * @description Specifies the version of the schema to which the profile conforms.
+                             * @default profiles.meshery.io/v1beta3
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
+                            /** @description Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+                            name: string;
+                            /** @description Description of the profile. */
+                            description?: string;
+                            /**
+                             * Format: uuid
+                             * @description Owning organization ID. Fixed at creation.
+                             */
+                            organizationId: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs.
+                             */
+                            owner: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile.
+                             */
+                            userId?: string;
+                            /** @description Free-form settings of the profile, stored as a JSON blob. */
+                            metadata?: Record<string, never>;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the profile was created.
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the profile was last updated.
+                             */
+                            updatedAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the profile was soft-deleted. Null while the profile remains active.
+                             */
+                            deletedAt?: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    assignProfileToWorkspace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Workspace ID */
+                workspaceId: string;
+                /** @description Profile ID */
+                profileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Workspace profile mappings */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Zero-based page index returned in this response. */
+                        page?: number;
+                        /** @description Maximum number of items returned on each page. */
+                        pageSize?: number;
+                        /** @description Total number of items across all pages. */
+                        totalCount?: number;
+                        /** @description Workspace-profile mapping entries. */
+                        workspacesProfilesMapping?: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            workspaceId: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            profileId: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the mapping was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the mapping was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the mapping was soft-deleted.
+                             */
+                            deletedAt?: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    unassignProfileFromWorkspace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Workspace ID */
+                workspaceId: string;
+                /** @description Profile ID */
+                profileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Workspace profile mapping removed */
             204: {
                 headers: {
                     [name: string]: unknown;

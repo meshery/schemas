@@ -50,6 +50,10 @@ const WorkspaceSchema: Record<string, unknown> = {
     {
       "name": "designs",
       "description": "APIs for Meshery Cloud designs associated with workspaces."
+    },
+    {
+      "name": "profiles",
+      "description": "APIs for Meshery Cloud profiles associated with workspaces."
     }
   ],
   "paths": {
@@ -2056,7 +2060,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
                               "administrative",
@@ -7736,6 +7740,684 @@ const WorkspaceSchema: Record<string, unknown> = {
         }
       }
     },
+    "/api/workspaces/{workspaceId}/profiles": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "workspaces",
+          "profiles"
+        ],
+        "operationId": "getProfilesOfWorkspace",
+        "summary": "Get profiles assigned to a workspace",
+        "description": "Gets profiles assigned to or available for a workspace depending on the filter. A profile can be assigned to many workspaces; members of each one can read it.",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "path",
+            "description": "Workspace ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "workspace_id",
+                "json": "workspace_id"
+              },
+              "x-go-type-name": "WorkspaceId",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "required": true
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "JSON-encoded filter string used for assignment and soft-delete filters.",
+            "schema": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profiles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated list of profiles.",
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "profiles"
+                  ],
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of items across all pages.",
+                      "minimum": 0
+                    },
+                    "profiles": {
+                      "type": "array",
+                      "description": "Profiles in this page.",
+                      "x-go-type-skip-optional-pointer": true,
+                      "items": {
+                        "x-go-type": "Profile",
+                        "$id": "https://schemas.meshery.io/profile.yaml",
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "title": "Profile",
+                        "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is granted: a profile is readable by members of the workspaces it is assigned to and by organization admins.",
+                        "additionalProperties": false,
+                        "type": "object",
+                        "example": {
+                          "id": "00000000-0000-0000-0000-000000000000",
+                          "schemaVersion": "profiles.meshery.io/v1beta3",
+                          "name": "jane",
+                          "description": "Profile for Jane's accounts and settings.",
+                          "organizationId": "00000000-0000-0000-0000-000000000000",
+                          "owner": "00000000-0000-0000-0000-000000000000",
+                          "userId": "00000000-0000-0000-0000-000000000000",
+                          "metadata": {},
+                          "createdAt": "0001-01-01T00:00:00Z",
+                          "updatedAt": "0001-01-01T00:00:00Z",
+                          "deletedAt": null
+                        },
+                        "required": [
+                          "id",
+                          "schemaVersion",
+                          "name",
+                          "organizationId",
+                          "owner",
+                          "createdAt",
+                          "updatedAt"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "Server-generated profile ID.",
+                            "x-order": 1,
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "schemaVersion": {
+                            "description": "Specifies the version of the schema to which the profile conforms.",
+                            "x-order": 2,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "schemaVersion",
+                              "db": "-",
+                              "gorm": "-"
+                            },
+                            "default": "profiles.meshery.io/v1beta3",
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 100,
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
+                            "example": [
+                              "v1",
+                              "v1alpha1",
+                              "v2beta3",
+                              "v1.custom-suffix",
+                              "models.meshery.io/v1beta1",
+                              "capability.meshery.io/v1alpha1"
+                            ]
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one.",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "x-order": 3,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name"
+                            }
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the profile.",
+                            "maxLength": 1000,
+                            "x-order": 5,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "description",
+                              "json": "description,omitempty"
+                            }
+                          },
+                          "organizationId": {
+                            "description": "Owning organization ID. Fixed at creation.",
+                            "x-order": 6,
+                            "x-go-name": "OrganizationID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "owner": {
+                            "description": "ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs.",
+                            "x-order": 7,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner",
+                              "json": "owner"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "userId": {
+                            "description": "ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile.",
+                            "x-order": 8,
+                            "x-go-name": "UserID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_id",
+                              "json": "userId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "metadata": {
+                            "type": "object",
+                            "description": "Free-form settings of the profile, stored as a JSON blob.",
+                            "x-order": 9,
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core",
+                              "name": "core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "metadata",
+                              "json": "metadata"
+                            }
+                          },
+                          "createdAt": {
+                            "description": "Timestamp when the profile was created.",
+                            "x-order": 10,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "json": "createdAt"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp when the profile was last updated.",
+                            "x-order": 11,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "json": "updatedAt"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deletedAt": {
+                            "description": "Timestamp when the profile was soft-deleted. Null while the profile remains active.",
+                            "nullable": true,
+                            "x-order": 12,
+                            "x-go-type": "core.NullTime",
+                            "x-go-type-import": {
+                              "name": "core",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspaces/{workspaceId}/profiles/{profileId}": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "workspaces",
+          "profiles"
+        ],
+        "operationId": "assignProfileToWorkspace",
+        "summary": "Assign a profile to a workspace",
+        "description": "Assigns a profile to a workspace, granting the workspace's members read access to it. The profile and the workspace must belong to the same organization, and a profile can be assigned to many workspaces.",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "path",
+            "description": "Workspace ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "workspace_id",
+                "json": "workspace_id"
+              },
+              "x-go-type-name": "WorkspaceId",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "required": true
+          },
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "Profile ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workspace profile mappings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated list of workspace-profile mappings.",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize,omitempty"
+                      }
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of items across all pages.",
+                      "minimum": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount,omitempty"
+                      }
+                    },
+                    "workspacesProfilesMapping": {
+                      "type": "array",
+                      "description": "Workspace-profile mapping entries.",
+                      "x-go-type-skip-optional-pointer": true,
+                      "items": {
+                        "x-go-type": "WorkspacesProfilesMapping",
+                        "type": "object",
+                        "description": "Junction record linking a workspace to a profile.",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "workspaceId",
+                          "profileId"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            }
+                          },
+                          "workspaceId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "WorkspaceID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "workspace_id",
+                              "json": "workspaceId"
+                            }
+                          },
+                          "profileId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "ProfileID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "profile_id",
+                              "json": "profileId"
+                            }
+                          },
+                          "createdAt": {
+                            "description": "Timestamp when the mapping was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "json": "createdAt,omitempty"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp when the mapping was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "json": "updatedAt,omitempty"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deletedAt": {
+                            "description": "Timestamp when the mapping was soft-deleted.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            },
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "workspaces",
+          "profiles"
+        ],
+        "operationId": "unassignProfileFromWorkspace",
+        "summary": "Unassign a profile from a workspace",
+        "description": "Removes a profile from a workspace. The profile itself is left intact.",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "path",
+            "description": "Workspace ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "workspace_id",
+                "json": "workspace_id"
+              },
+              "x-go-type-name": "WorkspaceId",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "required": true
+          },
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "Profile ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Workspace profile mapping removed"
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/workspaces/{workspaceId}/views": {
       "get": {
         "x-internal": [
@@ -8537,6 +9219,21 @@ const WorkspaceSchema: Record<string, unknown> = {
           },
           "x-go-type-name": "DesignId",
           "x-go-type-skip-optional-pointer": true
+        },
+        "required": true
+      },
+      "profileId": {
+        "name": "profileId",
+        "in": "path",
+        "description": "Profile ID",
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+          "x-go-type": "uuid.UUID",
+          "x-go-type-import": {
+            "path": "github.com/gofrs/uuid"
+          }
         },
         "required": true
       },
@@ -9880,6 +10577,223 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "DeletedAt",
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "WorkspacesProfilesMapping": {
+        "type": "object",
+        "description": "Junction record linking a workspace to a profile.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "workspaceId",
+          "profileId"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "ID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id"
+            }
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "WorkspaceID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "workspace_id",
+              "json": "workspaceId"
+            }
+          },
+          "profileId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "ProfileID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "profile_id",
+              "json": "profileId"
+            }
+          },
+          "createdAt": {
+            "description": "Timestamp when the mapping was created.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "json": "createdAt,omitempty"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updatedAt": {
+            "description": "Timestamp when the mapping was last updated.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "json": "updatedAt,omitempty"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "deletedAt": {
+            "description": "Timestamp when the mapping was soft-deleted.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "json": "deletedAt,omitempty"
+            },
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "x-go-type-skip-optional-pointer": true
+          }
+        }
+      },
+      "WorkspacesProfilesMappingPage": {
+        "type": "object",
+        "description": "Paginated list of workspace-profile mappings.",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Maximum number of items returned on each page.",
+            "minimum": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize,omitempty"
+            }
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items across all pages.",
+            "minimum": 0,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount,omitempty"
+            }
+          },
+          "workspacesProfilesMapping": {
+            "type": "array",
+            "description": "Workspace-profile mapping entries.",
+            "x-go-type-skip-optional-pointer": true,
+            "items": {
+              "x-go-type": "WorkspacesProfilesMapping",
+              "type": "object",
+              "description": "Junction record linking a workspace to a profile.",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "workspaceId",
+                "profileId"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "ID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "id"
+                  }
+                },
+                "workspaceId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "WorkspaceID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "workspace_id",
+                    "json": "workspaceId"
+                  }
+                },
+                "profileId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "ProfileID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "profile_id",
+                    "json": "profileId"
+                  }
+                },
+                "createdAt": {
+                  "description": "Timestamp when the mapping was created.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "json": "createdAt,omitempty"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updatedAt": {
+                  "description": "Timestamp when the mapping was last updated.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "json": "updatedAt,omitempty"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "deletedAt": {
+                  "description": "Timestamp when the mapping was soft-deleted.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "json": "deletedAt,omitempty"
+                  },
+                  "x-go-type": "meshcore.NullTime",
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true,
                   "x-go-type-skip-optional-pointer": true
                 }
               }
