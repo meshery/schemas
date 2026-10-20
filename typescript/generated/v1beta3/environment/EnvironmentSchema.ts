@@ -337,16 +337,16 @@ const EnvironmentSchema: Record<string, unknown> = {
           },
           "purpose": {
             "type": "string",
-            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
             "enum": [
               "user",
               "administrative",
-              "blowhorn"
+              "profile"
             ],
             "x-enum-varnames": [
               "EnvironmentPurposeUser",
               "EnvironmentPurposeAdministrative",
-              "EnvironmentPurposeBlowhorn"
+              "EnvironmentPurposeProfile"
             ],
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
@@ -443,7 +443,7 @@ const EnvironmentSchema: Record<string, unknown> = {
       },
       "EnvironmentPayload": {
         "type": "object",
-        "description": "Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them, and `purpose` because permission to create an environment must not confer the ability to designate it administrative. Excluding it here is a codegen guarantee rather than access control: the registrant connection inlines the full environment entity, so `purpose` still reaches the `registerRegistryComponent` and `registerRegistryRelationship` request types, and every consumer must refuse it on input whatever surface it arrives on. Do not add `purpose` here - see https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+        "description": "Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them. `purpose` is present but limited to the non-privileged values, because permission to create an environment must not confer the ability to designate it administrative. Limiting it here is a codegen guarantee rather than access control: the registrant connection inlines the full environment entity, so `purpose` still reaches the `registerRegistryComponent` and `registerRegistryRelationship` request types, and every consumer must refuse a privileged value on input whatever surface it arrives on. Do not widen `EnvironmentPayloadPurpose` to a privileged value - see https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
         "required": [
           "name",
           "organizationId"
@@ -469,8 +469,43 @@ const EnvironmentSchema: Record<string, unknown> = {
             },
             "maxLength": 500,
             "format": "uuid"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Free-form settings stored with the environment, for example a profile's settings.",
+            "additionalProperties": true,
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "purpose": {
+            "type": "string",
+            "description": "The purposes a client may give an environment on create or update: `user` (an ordinary environment) or `profile` (an ordinary environment holding one profile's settings and accounts). Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.",
+            "enum": [
+              "user",
+              "profile"
+            ],
+            "x-enum-varnames": [
+              "EnvironmentPayloadPurposeUser",
+              "EnvironmentPayloadPurposeProfile"
+            ]
           }
         }
+      },
+      "EnvironmentPayloadPurpose": {
+        "type": "string",
+        "description": "The purposes a client may give an environment on create or update: `user` (an ordinary environment) or `profile` (an ordinary environment holding one profile's settings and accounts). Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.",
+        "enum": [
+          "user",
+          "profile"
+        ],
+        "x-enum-varnames": [
+          "EnvironmentPayloadPurposeUser",
+          "EnvironmentPayloadPurposeProfile"
+        ]
       },
       "EnvironmentPage": {
         "type": "object",
@@ -673,16 +708,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                 },
                 "purpose": {
                   "type": "string",
-                  "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                  "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                   "enum": [
                     "user",
                     "administrative",
-                    "blowhorn"
+                    "profile"
                   ],
                   "x-enum-varnames": [
                     "EnvironmentPurposeUser",
                     "EnvironmentPurposeAdministrative",
-                    "EnvironmentPurposeBlowhorn"
+                    "EnvironmentPurposeProfile"
                   ],
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
@@ -865,7 +900,7 @@ const EnvironmentSchema: Record<string, unknown> = {
           "application/json": {
             "schema": {
               "type": "object",
-              "description": "Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them, and `purpose` because permission to create an environment must not confer the ability to designate it administrative. Excluding it here is a codegen guarantee rather than access control: the registrant connection inlines the full environment entity, so `purpose` still reaches the `registerRegistryComponent` and `registerRegistryRelationship` request types, and every consumer must refuse it on input whatever surface it arrives on. Do not add `purpose` here - see https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+              "description": "Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them. `purpose` is present but limited to the non-privileged values, because permission to create an environment must not confer the ability to designate it administrative. Limiting it here is a codegen guarantee rather than access control: the registrant connection inlines the full environment entity, so `purpose` still reaches the `registerRegistryComponent` and `registerRegistryRelationship` request types, and every consumer must refuse a privileged value on input whatever surface it arrives on. Do not widen `EnvironmentPayloadPurpose` to a privileged value - see https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
               "required": [
                 "name",
                 "organizationId"
@@ -891,6 +926,29 @@ const EnvironmentSchema: Record<string, unknown> = {
                   },
                   "maxLength": 500,
                   "format": "uuid"
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Free-form settings stored with the environment, for example a profile's settings.",
+                  "additionalProperties": true,
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core",
+                    "name": "core"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "purpose": {
+                  "type": "string",
+                  "description": "The purposes a client may give an environment on create or update: `user` (an ordinary environment) or `profile` (an ordinary environment holding one profile's settings and accounts). Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.",
+                  "enum": [
+                    "user",
+                    "profile"
+                  ],
+                  "x-enum-varnames": [
+                    "EnvironmentPayloadPurposeUser",
+                    "EnvironmentPayloadPurposeProfile"
+                  ]
                 }
               }
             }
@@ -919,7 +977,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them, and `purpose` because permission to create an environment must not confer the ability to designate it administrative. Excluding it here is a codegen guarantee rather than access control: the registrant connection inlines the full environment entity, so `purpose` still reaches the `registerRegistryComponent` and `registerRegistryRelationship` request types, and every consumer must refuse it on input whatever surface it arrives on. Do not add `purpose` here - see https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                "description": "Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them. `purpose` is present but limited to the non-privileged values, because permission to create an environment must not confer the ability to designate it administrative. Limiting it here is a codegen guarantee rather than access control: the registrant connection inlines the full environment entity, so `purpose` still reaches the `registerRegistryComponent` and `registerRegistryRelationship` request types, and every consumer must refuse a privileged value on input whatever surface it arrives on. Do not widen `EnvironmentPayloadPurpose` to a privileged value - see https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                 "required": [
                   "name",
                   "organizationId"
@@ -945,6 +1003,29 @@ const EnvironmentSchema: Record<string, unknown> = {
                     },
                     "maxLength": 500,
                     "format": "uuid"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Free-form settings stored with the environment, for example a profile's settings.",
+                    "additionalProperties": true,
+                    "x-go-type": "core.Map",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/core",
+                      "name": "core"
+                    },
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "description": "The purposes a client may give an environment on create or update: `user` (an ordinary environment) or `profile` (an ordinary environment holding one profile's settings and accounts). Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.",
+                    "enum": [
+                      "user",
+                      "profile"
+                    ],
+                    "x-enum-varnames": [
+                      "EnvironmentPayloadPurposeUser",
+                      "EnvironmentPayloadPurposeProfile"
+                    ]
                   }
                 }
               }
@@ -1125,16 +1206,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                     },
                     "purpose": {
                       "type": "string",
-                      "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                      "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                       "enum": [
                         "user",
                         "administrative",
-                        "blowhorn"
+                        "profile"
                       ],
                       "x-enum-varnames": [
                         "EnvironmentPurposeUser",
                         "EnvironmentPurposeAdministrative",
-                        "EnvironmentPurposeBlowhorn"
+                        "EnvironmentPurposeProfile"
                       ],
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
@@ -1246,6 +1327,33 @@ const EnvironmentSchema: Record<string, unknown> = {
               "maxLength": 36
             },
             "required": true
+          },
+          {
+            "name": "purpose",
+            "in": "query",
+            "required": false,
+            "description": "Return only environments with this purpose; absent returns every purpose the caller may see. The filter only narrows the environments the caller can already list and grants no visibility - a caller who cannot see administrative environments receives an empty page for purpose=administrative.",
+            "schema": {
+              "type": "string",
+              "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+              "enum": [
+                "user",
+                "administrative",
+                "profile"
+              ],
+              "x-enum-varnames": [
+                "EnvironmentPurposeUser",
+                "EnvironmentPurposeAdministrative",
+                "EnvironmentPurposeProfile"
+              ],
+              "x-go-type-skip-optional-pointer": true,
+              "x-oapi-codegen-extra-tags": {
+                "db": "purpose",
+                "gorm": "not null;default:user",
+                "json": "purpose,omitempty"
+              },
+              "x-order": 11
+            }
           }
         ],
         "responses": {
@@ -1454,16 +1562,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
                               "administrative",
-                              "blowhorn"
+                              "profile"
                             ],
                             "x-enum-varnames": [
                               "EnvironmentPurposeUser",
                               "EnvironmentPurposeAdministrative",
-                              "EnvironmentPurposeBlowhorn"
+                              "EnvironmentPurposeProfile"
                             ],
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
@@ -1750,16 +1858,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
                               "administrative",
-                              "blowhorn"
+                              "profile"
                             ],
                             "x-enum-varnames": [
                               "EnvironmentPurposeUser",
                               "EnvironmentPurposeAdministrative",
-                              "EnvironmentPurposeBlowhorn"
+                              "EnvironmentPurposeProfile"
                             ],
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
@@ -1854,7 +1962,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them, and `purpose` because permission to create an environment must not confer the ability to designate it administrative. Excluding it here is a codegen guarantee rather than access control: the registrant connection inlines the full environment entity, so `purpose` still reaches the `registerRegistryComponent` and `registerRegistryRelationship` request types, and every consumer must refuse it on input whatever surface it arrives on. Do not add `purpose` here - see https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                "description": "Payload for creating or updating an environment. Carries only the client-settable fields. Server-owned fields are deliberately absent: `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the server assigns them. `purpose` is present but limited to the non-privileged values, because permission to create an environment must not confer the ability to designate it administrative. Limiting it here is a codegen guarantee rather than access control: the registrant connection inlines the full environment entity, so `purpose` still reaches the `registerRegistryComponent` and `registerRegistryRelationship` request types, and every consumer must refuse a privileged value on input whatever surface it arrives on. Do not widen `EnvironmentPayloadPurpose` to a privileged value - see https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                 "required": [
                   "name",
                   "organizationId"
@@ -1880,6 +1988,29 @@ const EnvironmentSchema: Record<string, unknown> = {
                     },
                     "maxLength": 500,
                     "format": "uuid"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Free-form settings stored with the environment, for example a profile's settings.",
+                    "additionalProperties": true,
+                    "x-go-type": "core.Map",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/core",
+                      "name": "core"
+                    },
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "description": "The purposes a client may give an environment on create or update: `user` (an ordinary environment) or `profile` (an ordinary environment holding one profile's settings and accounts). Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.",
+                    "enum": [
+                      "user",
+                      "profile"
+                    ],
+                    "x-enum-varnames": [
+                      "EnvironmentPayloadPurposeUser",
+                      "EnvironmentPayloadPurposeProfile"
+                    ]
                   }
                 }
               }
@@ -2092,16 +2223,16 @@ const EnvironmentSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `blowhorn` designates an environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain; it is privileged in the same sense as `administrative`.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
                               "administrative",
-                              "blowhorn"
+                              "profile"
                             ],
                             "x-enum-varnames": [
                               "EnvironmentPurposeUser",
                               "EnvironmentPurposeAdministrative",
-                              "EnvironmentPurposeBlowhorn"
+                              "EnvironmentPurposeProfile"
                             ],
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {

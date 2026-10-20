@@ -53,7 +53,7 @@ type Environment struct {
 	// DeletedAt SQL null Timestamp to handle null values of time.
 	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt,omitempty"`
 
-	// Purpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile: the profile's settings in `metadata` and the profile's accounts as its Connections. Like `user`, it carries no authority and a client may choose it.
+	// Purpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
 	//
 	// Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
 	//
@@ -65,7 +65,7 @@ type Environment struct {
 	Purpose EnvironmentPurpose `db:"purpose" gorm:"not null;default:user" json:"purpose,omitempty" yaml:"purpose,omitempty"`
 }
 
-// EnvironmentPurpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile: the profile's settings in `metadata` and the profile's accounts as its Connections. Like `user`, it carries no authority and a client may choose it.
+// EnvironmentPurpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
 //
 // Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
 //
