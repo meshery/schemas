@@ -56,10 +56,11 @@ const (
 // linked to a workspace. A worker takes a schedule through a claim (the
 // generic `claim` construct, nested under the schedule); while the claim is
 // live no other worker can take it, and a claim past its `expiresAt` is
-// stale and the schedule is claimable again. The `claim`, the status
-// values `assigned`, `claimed` and `running`, and the pause fields are
-// server-managed: they change only through the claim, release, pause and
-// resume operations and are refused on create and update.
+// stale and the schedule is claimable again. The `claim` and the status
+// values `assigned`, `claimed` and `running` are server-managed and change
+// only through the claim and release operations. Pausing is data, not an
+// operation: a client sets `paused` (and optionally `pauseReason`) on create
+// or update, and the server records `pausedAt` and `pausedBy`.
 type Schedule struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID core.Uuid `json:"id" yaml:"id"`
@@ -133,7 +134,7 @@ type Schedule struct {
 	// PausedBy Identity that paused the schedule. Server-managed.
 	PausedBy *string `db:"paused_by" json:"pausedBy,omitempty" yaml:"pausedBy,omitempty"`
 
-	// PauseReason Reason given for pausing the schedule. Server-managed.
+	// PauseReason Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.
 	PauseReason *string   `db:"pause_reason" json:"pauseReason,omitempty" yaml:"pauseReason,omitempty"`
 	CreatedAt   core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 	UpdatedAt   core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
@@ -205,41 +206,12 @@ type SchedulePage struct {
 	TotalCount int `json:"totalCount" yaml:"totalCount"`
 }
 
-// SchedulePause Server-returned organization-wide schedule pause. While a pause exists for
-// an organization, none of its schedules is claimed unless the claim
-// request carries the operator override. Absence of a pause means
-// unpaused; there is at most one live pause per organization. A pause on a
-// single schedule is carried on the schedule itself.
-type SchedulePause struct {
-	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID core.Uuid `json:"id" yaml:"id"`
-
-	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrganizationID core.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`
-	PausedAt       core.Time `db:"paused_at" json:"pausedAt" yaml:"pausedAt"`
-
-	// PausedBy Identity that set the pause. Server-managed.
-	PausedBy *string `db:"paused_by" json:"pausedBy,omitempty" yaml:"pausedBy,omitempty"`
-
-	// Reason Reason given for pausing every schedule in the organization.
-	Reason    *string   `db:"reason" json:"reason,omitempty" yaml:"reason,omitempty"`
-	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
-	UpdatedAt core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
-}
-
-// SchedulePausePayload Request to pause a schedule or every schedule in the organization.
-type SchedulePausePayload struct {
-	// PausedBy Identity setting the pause; defaults to the authenticated user.
-	PausedBy *string `json:"pausedBy,omitempty" yaml:"pausedBy,omitempty"`
-
-	// Reason Reason for the pause.
-	Reason *string `json:"reason,omitempty" yaml:"reason,omitempty"`
-}
-
 // SchedulePayload Payload for creating or updating a schedule. Contains only
-// client-settable fields; the owning `organizationId`, the claim, the
-// pause fields, `retryCount`, `lastRunAt`, `lastError` and the
-// timestamps are server-managed. `status` accepts only `pending`,
+// client-settable fields; the owning `organizationId`, the claim,
+// `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError` and the
+// timestamps are server-managed. The server ignores them on input. Pausing
+// is a field, not an operation: `paused` pauses or resumes the schedule.
+// `status` accepts only `pending`,
 // `scheduled` and `cancelled` here; the other values are set by the
 // claim and release operations.
 type SchedulePayload struct {
@@ -260,6 +232,14 @@ type SchedulePayload struct {
 
 	// Params Action parameters, stored as a JSON blob.
 	Params core.Map `json:"params,omitempty" yaml:"params,omitempty"`
+
+	// PauseReason Reason for pausing; stored only while `paused` is true and cleared on resume.
+	PauseReason *string `json:"pauseReason,omitempty" yaml:"pauseReason,omitempty"`
+
+	// Paused `true` pauses the schedule so it is never claimed (unless a claim
+	// carries `ignorePause`); `false` resumes it. Omit to leave the pause
+	// unchanged. The server records `pausedAt` and `pausedBy`.
+	Paused *bool `json:"paused,omitempty" yaml:"paused,omitempty"`
 
 	// Recurrence Recurrence rule for repeating schedules. Empty for a run-once schedule.
 	Recurrence *string `json:"recurrence,omitempty" yaml:"recurrence,omitempty"`

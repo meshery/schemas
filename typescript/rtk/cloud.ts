@@ -1880,18 +1880,6 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/schedules/claim`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Schedule_schedules"],
       }),
-      getSchedulePause: build.query<GetSchedulePauseApiResponse, GetSchedulePauseApiArg>({
-        query: () => ({ url: `/api/schedules/pause` }),
-        providesTags: ["Schedule_schedules"],
-      }),
-      setSchedulePause: build.mutation<SetSchedulePauseApiResponse, SetSchedulePauseApiArg>({
-        query: (queryArg) => ({ url: `/api/schedules/pause`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["Schedule_schedules"],
-      }),
-      clearSchedulePause: build.mutation<ClearSchedulePauseApiResponse, ClearSchedulePauseApiArg>({
-        query: () => ({ url: `/api/schedules/pause`, method: "DELETE" }),
-        invalidatesTags: ["Schedule_schedules"],
-      }),
       getScheduleById: build.query<GetScheduleByIdApiResponse, GetScheduleByIdApiArg>({
         query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}` }),
         providesTags: ["Schedule_schedules"],
@@ -1926,18 +1914,6 @@ const injectedRtkApi = api
           method: "POST",
           body: queryArg.body,
         }),
-        invalidatesTags: ["Schedule_schedules"],
-      }),
-      pauseSchedule: build.mutation<PauseScheduleApiResponse, PauseScheduleApiArg>({
-        query: (queryArg) => ({
-          url: `/api/schedules/${queryArg.scheduleId}/pause`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Schedule_schedules"],
-      }),
-      resumeSchedule: build.mutation<ResumeScheduleApiResponse, ResumeScheduleApiArg>({
-        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}/resume`, method: "POST" }),
         invalidatesTags: ["Schedule_schedules"],
       }),
       getSchedulesOfWorkspace: build.query<GetSchedulesOfWorkspaceApiResponse, GetSchedulesOfWorkspaceApiArg>({
@@ -3891,6 +3867,17 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -4025,6 +4012,17 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -4135,6 +4133,13 @@ export type CreateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
     };
   };
 };
@@ -4278,6 +4283,17 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -4409,6 +4425,17 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -4521,6 +4548,13 @@ export type UpdateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
     };
   };
 };
@@ -4670,6 +4704,17 @@ export type CreateChildOrgApiResponse =
           };
           /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
           showAuthCarousel?: boolean;
+          /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+          schedulePause?: {
+            /** Whether every schedule in the organization is paused. */
+            paused?: boolean;
+            /** Reason given for the pause. Cleared when the pause is lifted. */
+            reason?: string;
+            /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+            pausedAt?: string;
+            /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+            pausedBy?: string;
+          };
         };
       };
       /** Timestamp when the organization was created. */
@@ -4782,6 +4827,13 @@ export type CreateChildOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
     };
   };
 };
@@ -4873,6 +4925,17 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
     showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused?: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+      /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedAt?: string;
+      /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedBy?: string;
+    };
   };
 };
 export type GetOrgPreferencesApiArg = {
@@ -17205,7 +17268,7 @@ export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
     pausedAt?: string | null;
     /** Identity that paused the schedule. Server-managed. */
     pausedBy?: string;
-    /** Reason given for pausing the schedule. Server-managed. */
+    /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
     pauseReason?: string;
     /** Timestamp of schedule creation. */
     createdAt: string;
@@ -17316,7 +17379,7 @@ export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
   pausedAt?: string | null;
   /** Identity that paused the schedule. Server-managed. */
   pausedBy?: string;
-  /** Reason given for pausing the schedule. Server-managed. */
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
   /** Timestamp of schedule creation. */
   createdAt: string;
@@ -17349,6 +17412,13 @@ export type CreateScheduleApiArg = {
     maxRetries?: number;
     /** Minutes to wait before a retry becomes due. */
     retryDelayMinutes?: number;
+    /** `true` pauses the schedule so it is never claimed (unless a claim
+        carries `ignorePause`); `false` resumes it. Omit to leave the pause
+        unchanged. The server records `pausedAt` and `pausedBy`.
+         */
+    paused?: boolean;
+    /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
+    pauseReason?: string;
   };
 };
 export type ClaimNextScheduleApiResponse = /** status 200 The claimed schedule */ {
@@ -17429,7 +17499,7 @@ export type ClaimNextScheduleApiResponse = /** status 200 The claimed schedule *
   pausedAt?: string | null;
   /** Identity that paused the schedule. Server-managed. */
   pausedBy?: string;
-  /** Reason given for pausing the schedule. Server-managed. */
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
   /** Timestamp of schedule creation. */
   createdAt: string;
@@ -17450,49 +17520,6 @@ export type ClaimNextScheduleApiArg = {
     ignorePause?: boolean;
   };
 };
-export type GetSchedulePauseApiResponse = /** status 200 The organization-wide pause */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** Time the pause was set. */
-  pausedAt: string;
-  /** Identity that set the pause. Server-managed. */
-  pausedBy?: string;
-  /** Reason given for pausing every schedule in the organization. */
-  reason?: string;
-  /** Timestamp of schedule pause creation. */
-  createdAt: string;
-  /** Timestamp of last schedule pause modification. */
-  updatedAt: string;
-};
-export type GetSchedulePauseApiArg = void;
-export type SetSchedulePauseApiResponse = /** status 200 The organization-wide pause */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** Time the pause was set. */
-  pausedAt: string;
-  /** Identity that set the pause. Server-managed. */
-  pausedBy?: string;
-  /** Reason given for pausing every schedule in the organization. */
-  reason?: string;
-  /** Timestamp of schedule pause creation. */
-  createdAt: string;
-  /** Timestamp of last schedule pause modification. */
-  updatedAt: string;
-};
-export type SetSchedulePauseApiArg = {
-  body: {
-    /** Identity setting the pause; defaults to the authenticated user. */
-    pausedBy?: string;
-    /** Reason for the pause. */
-    reason?: string;
-  };
-};
-export type ClearSchedulePauseApiResponse = unknown;
-export type ClearSchedulePauseApiArg = void;
 export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
@@ -17571,7 +17598,7 @@ export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
   pausedAt?: string | null;
   /** Identity that paused the schedule. Server-managed. */
   pausedBy?: string;
-  /** Reason given for pausing the schedule. Server-managed. */
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
   /** Timestamp of schedule creation. */
   createdAt: string;
@@ -17662,7 +17689,7 @@ export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
   pausedAt?: string | null;
   /** Identity that paused the schedule. Server-managed. */
   pausedBy?: string;
-  /** Reason given for pausing the schedule. Server-managed. */
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
   /** Timestamp of schedule creation. */
   createdAt: string;
@@ -17697,6 +17724,13 @@ export type UpdateScheduleApiArg = {
     maxRetries?: number;
     /** Minutes to wait before a retry becomes due. */
     retryDelayMinutes?: number;
+    /** `true` pauses the schedule so it is never claimed (unless a claim
+        carries `ignorePause`); `false` resumes it. Omit to leave the pause
+        unchanged. The server records `pausedAt` and `pausedBy`.
+         */
+    paused?: boolean;
+    /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
+    pauseReason?: string;
   };
 };
 export type DeleteScheduleByIdApiResponse = unknown;
@@ -17782,7 +17816,7 @@ export type ClaimScheduleApiResponse = /** status 200 The claimed schedule */ {
   pausedAt?: string | null;
   /** Identity that paused the schedule. Server-managed. */
   pausedBy?: string;
-  /** Reason given for pausing the schedule. Server-managed. */
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
   /** Timestamp of schedule creation. */
   createdAt: string;
@@ -17883,7 +17917,7 @@ export type RenewScheduleClaimApiResponse = /** status 200 The schedule with its
   pausedAt?: string | null;
   /** Identity that paused the schedule. Server-managed. */
   pausedBy?: string;
-  /** Reason given for pausing the schedule. Server-managed. */
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
   /** Timestamp of schedule creation. */
   createdAt: string;
@@ -17980,7 +18014,7 @@ export type ReleaseScheduleClaimApiResponse = /** status 200 The released schedu
   pausedAt?: string | null;
   /** Identity that paused the schedule. Server-managed. */
   pausedBy?: string;
-  /** Reason given for pausing the schedule. Server-managed. */
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
   /** Timestamp of schedule creation. */
   createdAt: string;
@@ -18006,194 +18040,6 @@ export type ReleaseScheduleClaimApiArg = {
     /** Retries used so far for the current run. */
     retryCount?: number;
   };
-};
-export type PauseScheduleApiResponse = /** status 200 The paused schedule */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  workspaceId?: string;
-  /** Human-readable name for the schedule. */
-  name: string;
-  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
-  action: string;
-  /** Action parameters, stored as a JSON blob. */
-  params?: object;
-  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
-  enabled: boolean;
-  /** Time the schedule first becomes due. */
-  runAt?: string | null;
-  /** Next time a recurring or retrying schedule becomes due. */
-  nextRunAt?: string | null;
-  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
-  recurrence?: string;
-  /** Lifecycle status. `pending`: created, not yet due-scheduled.
-    `scheduled`: waiting for its due time. `assigned`: designated for a
-    particular worker but not yet claimed. `claimed`: a worker holds the
-    claim and has not started. `running`: the claim holder is executing
-    it. `retrying`: the last attempt failed and another is due.
-    `completed`, `failed` and `cancelled` are terminal for a run-once
-    schedule; a recurring schedule returns to `scheduled`.
-     */
-  status:
-    | "pending"
-    | "scheduled"
-    | "assigned"
-    | "claimed"
-    | "running"
-    | "retrying"
-    | "completed"
-    | "failed"
-    | "cancelled";
-  /** Attempts already retried for the current run. */
-  retryCount: number;
-  /** Maximum retries before the run is marked failed. */
-  maxRetries: number;
-  /** Minutes to wait before a retry becomes due. */
-  retryDelayMinutes?: number;
-  /** Time of the most recent attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent attempt. */
-  lastError?: string;
-  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
-  claim?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    organizationId: string;
-    /** Type of the claimed resource, for example `schedule`. */
-    resourceType: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    resourceId: string;
-    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-    claimant: string;
-    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
-    status: "active" | "released" | "expired";
-    /** Time the claim was taken. */
-    claimedAt: string;
-    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
-    expiresAt: string;
-    /** Time the holder released the claim. Null while the claim is active or after it expired. */
-    releasedAt?: string | null;
-    /** Timestamp of claim creation. */
-    createdAt: string;
-    /** Timestamp of last claim modification. */
-    updatedAt: string;
-  };
-  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
-  pausedAt?: string | null;
-  /** Identity that paused the schedule. Server-managed. */
-  pausedBy?: string;
-  /** Reason given for pausing the schedule. Server-managed. */
-  pauseReason?: string;
-  /** Timestamp of schedule creation. */
-  createdAt: string;
-  /** Timestamp of last schedule modification. */
-  updatedAt: string;
-  /** Timestamp when the schedule was soft-deleted. Null while live. */
-  deletedAt?: string | null;
-};
-export type PauseScheduleApiArg = {
-  /** Schedule ID */
-  scheduleId: string;
-  body: {
-    /** Identity setting the pause; defaults to the authenticated user. */
-    pausedBy?: string;
-    /** Reason for the pause. */
-    reason?: string;
-  };
-};
-export type ResumeScheduleApiResponse = /** status 200 The resumed schedule */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  workspaceId?: string;
-  /** Human-readable name for the schedule. */
-  name: string;
-  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
-  action: string;
-  /** Action parameters, stored as a JSON blob. */
-  params?: object;
-  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
-  enabled: boolean;
-  /** Time the schedule first becomes due. */
-  runAt?: string | null;
-  /** Next time a recurring or retrying schedule becomes due. */
-  nextRunAt?: string | null;
-  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
-  recurrence?: string;
-  /** Lifecycle status. `pending`: created, not yet due-scheduled.
-    `scheduled`: waiting for its due time. `assigned`: designated for a
-    particular worker but not yet claimed. `claimed`: a worker holds the
-    claim and has not started. `running`: the claim holder is executing
-    it. `retrying`: the last attempt failed and another is due.
-    `completed`, `failed` and `cancelled` are terminal for a run-once
-    schedule; a recurring schedule returns to `scheduled`.
-     */
-  status:
-    | "pending"
-    | "scheduled"
-    | "assigned"
-    | "claimed"
-    | "running"
-    | "retrying"
-    | "completed"
-    | "failed"
-    | "cancelled";
-  /** Attempts already retried for the current run. */
-  retryCount: number;
-  /** Maximum retries before the run is marked failed. */
-  maxRetries: number;
-  /** Minutes to wait before a retry becomes due. */
-  retryDelayMinutes?: number;
-  /** Time of the most recent attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent attempt. */
-  lastError?: string;
-  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
-  claim?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    organizationId: string;
-    /** Type of the claimed resource, for example `schedule`. */
-    resourceType: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    resourceId: string;
-    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-    claimant: string;
-    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
-    status: "active" | "released" | "expired";
-    /** Time the claim was taken. */
-    claimedAt: string;
-    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
-    expiresAt: string;
-    /** Time the holder released the claim. Null while the claim is active or after it expired. */
-    releasedAt?: string | null;
-    /** Timestamp of claim creation. */
-    createdAt: string;
-    /** Timestamp of last claim modification. */
-    updatedAt: string;
-  };
-  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
-  pausedAt?: string | null;
-  /** Identity that paused the schedule. Server-managed. */
-  pausedBy?: string;
-  /** Reason given for pausing the schedule. Server-managed. */
-  pauseReason?: string;
-  /** Timestamp of schedule creation. */
-  createdAt: string;
-  /** Timestamp of last schedule modification. */
-  updatedAt: string;
-  /** Timestamp when the schedule was soft-deleted. Null while live. */
-  deletedAt?: string | null;
-};
-export type ResumeScheduleApiArg = {
-  /** Schedule ID */
-  scheduleId: string;
 };
 export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page */ {
   /** Current page number of the result set. */
@@ -18281,7 +18127,7 @@ export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page *
     pausedAt?: string | null;
     /** Identity that paused the schedule. Server-managed. */
     pausedBy?: string;
-    /** Reason given for pausing the schedule. Server-managed. */
+    /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
     pauseReason?: string;
     /** Timestamp of schedule creation. */
     createdAt: string;
@@ -18392,7 +18238,7 @@ export type AssignScheduleToWorkspaceApiResponse = /** status 200 The linked sch
   pausedAt?: string | null;
   /** Identity that paused the schedule. Server-managed. */
   pausedBy?: string;
-  /** Reason given for pausing the schedule. Server-managed. */
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
   /** Timestamp of schedule creation. */
   createdAt: string;
@@ -18485,7 +18331,7 @@ export type UnassignScheduleFromWorkspaceApiResponse = /** status 200 The unlink
   pausedAt?: string | null;
   /** Identity that paused the schedule. Server-managed. */
   pausedBy?: string;
-  /** Reason given for pausing the schedule. Server-managed. */
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
   /** Timestamp of schedule creation. */
   createdAt: string;
@@ -20980,10 +20826,6 @@ export const {
   useLazyListSchedulesQuery,
   useCreateScheduleMutation,
   useClaimNextScheduleMutation,
-  useGetSchedulePauseQuery,
-  useLazyGetSchedulePauseQuery,
-  useSetSchedulePauseMutation,
-  useClearSchedulePauseMutation,
   useGetScheduleByIdQuery,
   useLazyGetScheduleByIdQuery,
   useUpdateScheduleMutation,
@@ -20991,8 +20833,6 @@ export const {
   useClaimScheduleMutation,
   useRenewScheduleClaimMutation,
   useReleaseScheduleClaimMutation,
-  usePauseScheduleMutation,
-  useResumeScheduleMutation,
   useGetSchedulesOfWorkspaceQuery,
   useLazyGetSchedulesOfWorkspaceQuery,
   useAssignScheduleToWorkspaceMutation,

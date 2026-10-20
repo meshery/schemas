@@ -22,8 +22,10 @@ export interface paths {
         /**
          * Create a schedule
          * @description Creates a schedule in the organization of the authenticated session. The
-         *     claim, the server-managed status values (`assigned`, `claimed`, `running`)
-         *     and the pause fields are refused here.
+         *     server-managed fields (the claim, `pausedAt`, `pausedBy`, `retryCount`,
+         *     `lastRunAt`, `lastError`, `organizationId` and the timestamps) are ignored
+         *     on input. `status` accepts only `pending`, `scheduled` and `cancelled`.
+         *     Send `paused: true` to create the schedule already paused.
          */
         post: operations["createSchedule"];
         delete?: never;
@@ -56,38 +58,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/schedules/pause": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get the organization-wide schedule pause
-         * @description Returns the organization-wide pause, or 204 when every schedule in the
-         *     organization may be claimed.
-         */
-        get: operations["getSchedulePause"];
-        /**
-         * Pause every schedule in the organization
-         * @description Sets the organization-wide pause. While it exists no schedule in the
-         *     organization is claimed unless the claim request carries `ignorePause`.
-         *     Setting it again updates the reason and keeps the original time.
-         */
-        put: operations["setSchedulePause"];
-        post?: never;
-        /**
-         * Lift the organization-wide schedule pause
-         * @description Lifts the organization-wide pause. Lifting a pause that does not exist
-         *     is a no-op.
-         */
-        delete: operations["clearSchedulePause"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/schedules/{scheduleId}": {
         parameters: {
             query?: never;
@@ -102,8 +72,14 @@ export interface paths {
         get: operations["getScheduleById"];
         /**
          * Update a schedule
-         * @description Updates the client-settable fields of a schedule. The claim, the
-         *     server-managed status values and the pause fields are refused here.
+         * @description Updates the client-settable fields of a schedule. The server-managed
+         *     fields (the claim, `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`,
+         *     `lastError`, `organizationId` and the timestamps) are ignored on input.
+         *     `status` accepts only `pending`, `scheduled` and `cancelled`. Pause or resume the
+         *     schedule by setting `paused` (with an optional `pauseReason`); the
+         *     server then records `pausedAt` and `pausedBy`. Pausing a paused
+         *     schedule keeps its original `pausedAt`; omitting `paused` leaves the
+         *     pause unchanged.
          */
         put: operations["updateSchedule"];
         post?: never;
@@ -184,47 +160,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/schedules/{scheduleId}/pause": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Pause a schedule
-         * @description Pauses this schedule so it is never claimed until resumed. Pausing a
-         *     paused schedule keeps its original pause time.
-         */
-        post: operations["pauseSchedule"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/schedules/{scheduleId}/resume": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Resume a schedule
-         * @description Clears this schedule's pause. Resuming a schedule that is not paused is a no-op.
-         */
-        post: operations["resumeSchedule"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/workspaces/{workspaceId}/schedules": {
         parameters: {
             query?: never;
@@ -281,10 +216,11 @@ export interface components {
          *     linked to a workspace. A worker takes a schedule through a claim (the
          *     generic `claim` construct, nested under the schedule); while the claim is
          *     live no other worker can take it, and a claim past its `expiresAt` is
-         *     stale and the schedule is claimable again. The `claim`, the status
-         *     values `assigned`, `claimed` and `running`, and the pause fields are
-         *     server-managed: they change only through the claim, release, pause and
-         *     resume operations and are refused on create and update.
+         *     stale and the schedule is claimable again. The `claim` and the status
+         *     values `assigned`, `claimed` and `running` are server-managed and change
+         *     only through the claim and release operations. Pausing is data, not an
+         *     operation: a client sets `paused` (and optionally `pauseReason`) on create
+         *     or update, and the server records `pausedAt` and `pausedBy`.
          */
         Schedule: {
             /**
@@ -408,7 +344,7 @@ export interface components {
             pausedAt?: string | null;
             /** @description Identity that paused the schedule. Server-managed. */
             pausedBy?: string;
-            /** @description Reason given for pausing the schedule. Server-managed. */
+            /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
             pauseReason?: string;
             /**
              * Format: date-time
@@ -427,49 +363,12 @@ export interface components {
             deletedAt?: string | null;
         };
         /**
-         * Schedule Pause Schema
-         * @description Server-returned organization-wide schedule pause. While a pause exists for
-         *     an organization, none of its schedules is claimed unless the claim
-         *     request carries the operator override. Absence of a pause means
-         *     unpaused; there is at most one live pause per organization. A pause on a
-         *     single schedule is carried on the schedule itself.
-         */
-        SchedulePause: {
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            id: string;
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            organizationId: string;
-            /**
-             * Format: date-time
-             * @description Time the pause was set.
-             */
-            pausedAt: string;
-            /** @description Identity that set the pause. Server-managed. */
-            pausedBy?: string;
-            /** @description Reason given for pausing every schedule in the organization. */
-            reason?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp of schedule pause creation.
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp of last schedule pause modification.
-             */
-            updatedAt: string;
-        };
-        /**
          * @description Payload for creating or updating a schedule. Contains only
-         *     client-settable fields; the owning `organizationId`, the claim, the
-         *     pause fields, `retryCount`, `lastRunAt`, `lastError` and the
-         *     timestamps are server-managed. `status` accepts only `pending`,
+         *     client-settable fields; the owning `organizationId`, the claim,
+         *     `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError` and the
+         *     timestamps are server-managed. The server ignores them on input. Pausing
+         *     is a field, not an operation: `paused` pauses or resumes the schedule.
+         *     `status` accepts only `pending`,
          *     `scheduled` and `cancelled` here; the other values are set by the
          *     claim and release operations.
          */
@@ -508,6 +407,14 @@ export interface components {
             maxRetries?: number;
             /** @description Minutes to wait before a retry becomes due. */
             retryDelayMinutes?: number;
+            /**
+             * @description `true` pauses the schedule so it is never claimed (unless a claim
+             *     carries `ignorePause`); `false` resumes it. Omit to leave the pause
+             *     unchanged. The server records `pausedAt` and `pausedBy`.
+             */
+            paused?: boolean;
+            /** @description Reason for pausing; stored only while `paused` is true and cleared on resume. */
+            pauseReason?: string;
         };
         /** @description Request to claim the next due schedule. */
         ScheduleClaimRequest: {
@@ -557,13 +464,6 @@ export interface components {
             nextRunAt?: string | null;
             /** @description Retries used so far for the current run. */
             retryCount?: number;
-        };
-        /** @description Request to pause a schedule or every schedule in the organization. */
-        SchedulePausePayload: {
-            /** @description Identity setting the pause; defaults to the authenticated user. */
-            pausedBy?: string;
-            /** @description Reason for the pause. */
-            reason?: string;
         };
         /** @description Paginated collection of schedules. */
         SchedulePage: {
@@ -696,7 +596,7 @@ export interface components {
                 pausedAt?: string | null;
                 /** @description Identity that paused the schedule. Server-managed. */
                 pausedBy?: string;
-                /** @description Reason given for pausing the schedule. Server-managed. */
+                /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
                 pauseReason?: string;
                 /**
                  * Format: date-time
@@ -945,7 +845,7 @@ export interface operations {
                             pausedAt?: string | null;
                             /** @description Identity that paused the schedule. Server-managed. */
                             pausedBy?: string;
-                            /** @description Reason given for pausing the schedule. Server-managed. */
+                            /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
                             pauseReason?: string;
                             /**
                              * Format: date-time
@@ -1039,6 +939,14 @@ export interface operations {
                     maxRetries?: number;
                     /** @description Minutes to wait before a retry becomes due. */
                     retryDelayMinutes?: number;
+                    /**
+                     * @description `true` pauses the schedule so it is never claimed (unless a claim
+                     *     carries `ignorePause`); `false` resumes it. Omit to leave the pause
+                     *     unchanged. The server records `pausedAt` and `pausedBy`.
+                     */
+                    paused?: boolean;
+                    /** @description Reason for pausing; stored only while `paused` is true and cleared on resume. */
+                    pauseReason?: string;
                 };
             };
         };
@@ -1171,7 +1079,7 @@ export interface operations {
                         pausedAt?: string | null;
                         /** @description Identity that paused the schedule. Server-managed. */
                         pausedBy?: string;
-                        /** @description Reason given for pausing the schedule. Server-managed. */
+                        /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
                         pauseReason?: string;
                         /**
                          * Format: date-time
@@ -1382,7 +1290,7 @@ export interface operations {
                         pausedAt?: string | null;
                         /** @description Identity that paused the schedule. Server-managed. */
                         pausedBy?: string;
-                        /** @description Reason given for pausing the schedule. Server-managed. */
+                        /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
                         pauseReason?: string;
                         /**
                          * Format: date-time
@@ -1417,230 +1325,6 @@ export interface operations {
                 content: {
                     "text/plain": string;
                 };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getSchedulePause: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The organization-wide pause */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        organizationId: string;
-                        /**
-                         * Format: date-time
-                         * @description Time the pause was set.
-                         */
-                        pausedAt: string;
-                        /** @description Identity that set the pause. Server-managed. */
-                        pausedBy?: string;
-                        /** @description Reason given for pausing every schedule in the organization. */
-                        reason?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of schedule pause creation.
-                         */
-                        createdAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of last schedule pause modification.
-                         */
-                        updatedAt: string;
-                    };
-                };
-            };
-            /** @description The organization is not paused */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    setSchedulePause: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description Identity setting the pause; defaults to the authenticated user. */
-                    pausedBy?: string;
-                    /** @description Reason for the pause. */
-                    reason?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description The organization-wide pause */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        organizationId: string;
-                        /**
-                         * Format: date-time
-                         * @description Time the pause was set.
-                         */
-                        pausedAt: string;
-                        /** @description Identity that set the pause. Server-managed. */
-                        pausedBy?: string;
-                        /** @description Reason given for pausing every schedule in the organization. */
-                        reason?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of schedule pause creation.
-                         */
-                        createdAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of last schedule pause modification.
-                         */
-                        updatedAt: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    clearSchedulePause: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The organization is not paused */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
@@ -1811,7 +1495,7 @@ export interface operations {
                         pausedAt?: string | null;
                         /** @description Identity that paused the schedule. Server-managed. */
                         pausedBy?: string;
-                        /** @description Reason given for pausing the schedule. Server-managed. */
+                        /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
                         pauseReason?: string;
                         /**
                          * Format: date-time
@@ -1907,6 +1591,14 @@ export interface operations {
                     maxRetries?: number;
                     /** @description Minutes to wait before a retry becomes due. */
                     retryDelayMinutes?: number;
+                    /**
+                     * @description `true` pauses the schedule so it is never claimed (unless a claim
+                     *     carries `ignorePause`); `false` resumes it. Omit to leave the pause
+                     *     unchanged. The server records `pausedAt` and `pausedBy`.
+                     */
+                    paused?: boolean;
+                    /** @description Reason for pausing; stored only while `paused` is true and cleared on resume. */
+                    pauseReason?: string;
                 };
             };
         };
@@ -2039,7 +1731,7 @@ export interface operations {
                         pausedAt?: string | null;
                         /** @description Identity that paused the schedule. Server-managed. */
                         pausedBy?: string;
-                        /** @description Reason given for pausing the schedule. Server-managed. */
+                        /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
                         pauseReason?: string;
                         /**
                          * Format: date-time
@@ -2298,7 +1990,7 @@ export interface operations {
                         pausedAt?: string | null;
                         /** @description Identity that paused the schedule. Server-managed. */
                         pausedBy?: string;
-                        /** @description Reason given for pausing the schedule. Server-managed. */
+                        /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
                         pauseReason?: string;
                         /**
                          * Format: date-time
@@ -2514,7 +2206,7 @@ export interface operations {
                         pausedAt?: string | null;
                         /** @description Identity that paused the schedule. Server-managed. */
                         pausedBy?: string;
-                        /** @description Reason given for pausing the schedule. Server-managed. */
+                        /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
                         pauseReason?: string;
                         /**
                          * Format: date-time
@@ -2747,7 +2439,7 @@ export interface operations {
                         pausedAt?: string | null;
                         /** @description Identity that paused the schedule. Server-managed. */
                         pausedBy?: string;
-                        /** @description Reason given for pausing the schedule. Server-managed. */
+                        /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
                         pauseReason?: string;
                         /**
                          * Format: date-time
@@ -2796,402 +2488,6 @@ export interface operations {
             };
             /** @description Conflict - the schedule is held by another claimant's live claim, or the caller is not the holder of the claim it tried to renew or release */
             409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    pauseSchedule: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Schedule ID */
-                scheduleId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description Identity setting the pause; defaults to the authenticated user. */
-                    pausedBy?: string;
-                    /** @description Reason for the pause. */
-                    reason?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description The paused schedule */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        organizationId: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        workspaceId?: string;
-                        /** @description Human-readable name for the schedule. */
-                        name: string;
-                        /** @description The action the worker runs when it holds the schedule's claim, for example a command name. */
-                        action: string;
-                        /** @description Action parameters, stored as a JSON blob. */
-                        params?: Record<string, never>;
-                        /** @description Whether the schedule is eligible to run. A disabled schedule is never claimed. */
-                        enabled: boolean;
-                        /**
-                         * Format: date-time
-                         * @description Time the schedule first becomes due.
-                         */
-                        runAt?: string | null;
-                        /**
-                         * Format: date-time
-                         * @description Next time a recurring or retrying schedule becomes due.
-                         */
-                        nextRunAt?: string | null;
-                        /** @description Recurrence rule for repeating schedules. Empty for a run-once schedule. */
-                        recurrence?: string;
-                        /**
-                         * @description Lifecycle status. `pending`: created, not yet due-scheduled.
-                         *     `scheduled`: waiting for its due time. `assigned`: designated for a
-                         *     particular worker but not yet claimed. `claimed`: a worker holds the
-                         *     claim and has not started. `running`: the claim holder is executing
-                         *     it. `retrying`: the last attempt failed and another is due.
-                         *     `completed`, `failed` and `cancelled` are terminal for a run-once
-                         *     schedule; a recurring schedule returns to `scheduled`.
-                         * @enum {string}
-                         */
-                        status: "pending" | "scheduled" | "assigned" | "claimed" | "running" | "retrying" | "completed" | "failed" | "cancelled";
-                        /** @description Attempts already retried for the current run. */
-                        retryCount: number;
-                        /** @description Maximum retries before the run is marked failed. */
-                        maxRetries: number;
-                        /** @description Minutes to wait before a retry becomes due. */
-                        retryDelayMinutes?: number;
-                        /**
-                         * Format: date-time
-                         * @description Time of the most recent attempt.
-                         */
-                        lastRunAt?: string | null;
-                        /** @description Error reported by the most recent attempt. */
-                        lastError?: string;
-                        /**
-                         * Claim Schema
-                         * @description The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.
-                         */
-                        claim?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            organizationId: string;
-                            /** @description Type of the claimed resource, for example `schedule`. */
-                            resourceType: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            resourceId: string;
-                            /** @description Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-                            claimant: string;
-                            /**
-                             * @description Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.
-                             * @enum {string}
-                             */
-                            status: "active" | "released" | "expired";
-                            /**
-                             * Format: date-time
-                             * @description Time the claim was taken.
-                             */
-                            claimedAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale.
-                             */
-                            expiresAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Time the holder released the claim. Null while the claim is active or after it expired.
-                             */
-                            releasedAt?: string | null;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of claim creation.
-                             */
-                            createdAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of last claim modification.
-                             */
-                            updatedAt: string;
-                        };
-                        /**
-                         * Format: date-time
-                         * @description Time the schedule was paused. Null when the schedule is not paused. Server-managed.
-                         */
-                        pausedAt?: string | null;
-                        /** @description Identity that paused the schedule. Server-managed. */
-                        pausedBy?: string;
-                        /** @description Reason given for pausing the schedule. Server-managed. */
-                        pauseReason?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of schedule creation.
-                         */
-                        createdAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of last schedule modification.
-                         */
-                        updatedAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the schedule was soft-deleted. Null while live.
-                         */
-                        deletedAt?: string | null;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    resumeSchedule: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Schedule ID */
-                scheduleId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The resumed schedule */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        organizationId: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        workspaceId?: string;
-                        /** @description Human-readable name for the schedule. */
-                        name: string;
-                        /** @description The action the worker runs when it holds the schedule's claim, for example a command name. */
-                        action: string;
-                        /** @description Action parameters, stored as a JSON blob. */
-                        params?: Record<string, never>;
-                        /** @description Whether the schedule is eligible to run. A disabled schedule is never claimed. */
-                        enabled: boolean;
-                        /**
-                         * Format: date-time
-                         * @description Time the schedule first becomes due.
-                         */
-                        runAt?: string | null;
-                        /**
-                         * Format: date-time
-                         * @description Next time a recurring or retrying schedule becomes due.
-                         */
-                        nextRunAt?: string | null;
-                        /** @description Recurrence rule for repeating schedules. Empty for a run-once schedule. */
-                        recurrence?: string;
-                        /**
-                         * @description Lifecycle status. `pending`: created, not yet due-scheduled.
-                         *     `scheduled`: waiting for its due time. `assigned`: designated for a
-                         *     particular worker but not yet claimed. `claimed`: a worker holds the
-                         *     claim and has not started. `running`: the claim holder is executing
-                         *     it. `retrying`: the last attempt failed and another is due.
-                         *     `completed`, `failed` and `cancelled` are terminal for a run-once
-                         *     schedule; a recurring schedule returns to `scheduled`.
-                         * @enum {string}
-                         */
-                        status: "pending" | "scheduled" | "assigned" | "claimed" | "running" | "retrying" | "completed" | "failed" | "cancelled";
-                        /** @description Attempts already retried for the current run. */
-                        retryCount: number;
-                        /** @description Maximum retries before the run is marked failed. */
-                        maxRetries: number;
-                        /** @description Minutes to wait before a retry becomes due. */
-                        retryDelayMinutes?: number;
-                        /**
-                         * Format: date-time
-                         * @description Time of the most recent attempt.
-                         */
-                        lastRunAt?: string | null;
-                        /** @description Error reported by the most recent attempt. */
-                        lastError?: string;
-                        /**
-                         * Claim Schema
-                         * @description The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.
-                         */
-                        claim?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            organizationId: string;
-                            /** @description Type of the claimed resource, for example `schedule`. */
-                            resourceType: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            resourceId: string;
-                            /** @description Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-                            claimant: string;
-                            /**
-                             * @description Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.
-                             * @enum {string}
-                             */
-                            status: "active" | "released" | "expired";
-                            /**
-                             * Format: date-time
-                             * @description Time the claim was taken.
-                             */
-                            claimedAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale.
-                             */
-                            expiresAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Time the holder released the claim. Null while the claim is active or after it expired.
-                             */
-                            releasedAt?: string | null;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of claim creation.
-                             */
-                            createdAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of last claim modification.
-                             */
-                            updatedAt: string;
-                        };
-                        /**
-                         * Format: date-time
-                         * @description Time the schedule was paused. Null when the schedule is not paused. Server-managed.
-                         */
-                        pausedAt?: string | null;
-                        /** @description Identity that paused the schedule. Server-managed. */
-                        pausedBy?: string;
-                        /** @description Reason given for pausing the schedule. Server-managed. */
-                        pauseReason?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of schedule creation.
-                         */
-                        createdAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of last schedule modification.
-                         */
-                        updatedAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the schedule was soft-deleted. Null while live.
-                         */
-                        deletedAt?: string | null;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3369,7 +2665,7 @@ export interface operations {
                             pausedAt?: string | null;
                             /** @description Identity that paused the schedule. Server-managed. */
                             pausedBy?: string;
-                            /** @description Reason given for pausing the schedule. Server-managed. */
+                            /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
                             pauseReason?: string;
                             /**
                              * Format: date-time
@@ -3561,7 +2857,7 @@ export interface operations {
                         pausedAt?: string | null;
                         /** @description Identity that paused the schedule. Server-managed. */
                         pausedBy?: string;
-                        /** @description Reason given for pausing the schedule. Server-managed. */
+                        /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
                         pauseReason?: string;
                         /**
                          * Format: date-time
@@ -3752,7 +3048,7 @@ export interface operations {
                         pausedAt?: string | null;
                         /** @description Identity that paused the schedule. Server-managed. */
                         pausedBy?: string;
-                        /** @description Reason given for pausing the schedule. Server-managed. */
+                        /** @description Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
                         pauseReason?: string;
                         /**
                          * Format: date-time

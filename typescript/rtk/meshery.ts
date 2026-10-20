@@ -11615,6 +11615,17 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -11749,6 +11760,17 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -11859,6 +11881,13 @@ export type CreateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
     };
   };
 };
@@ -12002,6 +12031,17 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -12133,6 +12173,17 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -12245,6 +12296,13 @@ export type UpdateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
     };
   };
 };
@@ -12394,6 +12452,17 @@ export type CreateChildOrgApiResponse =
           };
           /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
           showAuthCarousel?: boolean;
+          /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+          schedulePause?: {
+            /** Whether every schedule in the organization is paused. */
+            paused?: boolean;
+            /** Reason given for the pause. Cleared when the pause is lifted. */
+            reason?: string;
+            /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+            pausedAt?: string;
+            /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+            pausedBy?: string;
+          };
         };
       };
       /** Timestamp when the organization was created. */
@@ -12506,6 +12575,13 @@ export type CreateChildOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
     };
   };
 };
@@ -12597,6 +12673,17 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
     showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused?: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+      /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedAt?: string;
+      /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedBy?: string;
+    };
   };
 };
 export type GetOrgPreferencesApiArg = {

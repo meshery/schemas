@@ -444,6 +444,33 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "boolean",
                                     "default": true,
                                     "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                                  },
+                                  "schedulePause": {
+                                    "x-go-type": "SchedulePause",
+                                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "paused": {
+                                        "type": "boolean",
+                                        "description": "Whether every schedule in the organization is paused."
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                                      },
+                                      "pausedAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      },
+                                      "pausedBy": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -832,6 +859,26 @@ const OrganizationSchema: Record<string, unknown> = {
                         "type": "boolean",
                         "default": true,
                         "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                      },
+                      "schedulePause": {
+                        "x-go-type": "SchedulePausePayload",
+                        "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "paused"
+                        ],
+                        "properties": {
+                          "paused": {
+                            "type": "boolean",
+                            "description": "Whether every schedule in the organization is paused."
+                          },
+                          "reason": {
+                            "type": "string",
+                            "maxLength": 1000,
+                            "description": "Reason given for the pause. Cleared when the pause is lifted."
+                          }
+                        }
                       }
                     }
                   }
@@ -1198,6 +1245,33 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "boolean",
                                     "default": true,
                                     "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                                  },
+                                  "schedulePause": {
+                                    "x-go-type": "SchedulePause",
+                                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "paused": {
+                                        "type": "boolean",
+                                        "description": "Whether every schedule in the organization is paused."
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                                      },
+                                      "pausedAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      },
+                                      "pausedBy": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -1295,6 +1369,7 @@ const OrganizationSchema: Record<string, unknown> = {
           "Organizations"
         ],
         "summary": "Get organization by domain",
+        "description": "Unauthenticated lookup. Servers MUST omit `preferences.schedulePause` from this response; the organization-wide pause is read through getOrgPreferences.",
         "operationId": "getOrgByDomain",
         "parameters": [
           {
@@ -1870,6 +1945,33 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "boolean",
                                     "default": true,
                                     "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                                  },
+                                  "schedulePause": {
+                                    "x-go-type": "SchedulePause",
+                                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "paused": {
+                                        "type": "boolean",
+                                        "description": "Whether every schedule in the organization is paused."
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                                      },
+                                      "pausedAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      },
+                                      "pausedBy": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -2067,7 +2169,7 @@ const OrganizationSchema: Record<string, unknown> = {
           }
         ],
         "summary": "Update an organization",
-        "description": "Updates the organization.",
+        "description": "Updates the organization. Changing `preferences.schedulePause` is restricted to organization admins (otherwise 403); omitting `schedulePause` keeps the current pause unchanged.",
         "operationId": "updateOrg",
         "parameters": [
           {
@@ -2394,6 +2496,26 @@ const OrganizationSchema: Record<string, unknown> = {
                         "type": "boolean",
                         "default": true,
                         "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                      },
+                      "schedulePause": {
+                        "x-go-type": "SchedulePausePayload",
+                        "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "paused"
+                        ],
+                        "properties": {
+                          "paused": {
+                            "type": "boolean",
+                            "description": "Whether every schedule in the organization is paused."
+                          },
+                          "reason": {
+                            "type": "string",
+                            "maxLength": 1000,
+                            "description": "Reason given for the pause. Cleared when the pause is lifted."
+                          }
+                        }
                       }
                     }
                   }
@@ -2760,6 +2882,33 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "boolean",
                                     "default": true,
                                     "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                                  },
+                                  "schedulePause": {
+                                    "x-go-type": "SchedulePause",
+                                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "paused": {
+                                        "type": "boolean",
+                                        "description": "Whether every schedule in the organization is paused."
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                                      },
+                                      "pausedAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      },
+                                      "pausedBy": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -3407,6 +3556,26 @@ const OrganizationSchema: Record<string, unknown> = {
                         "type": "boolean",
                         "default": true,
                         "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                      },
+                      "schedulePause": {
+                        "x-go-type": "SchedulePausePayload",
+                        "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "paused"
+                        ],
+                        "properties": {
+                          "paused": {
+                            "type": "boolean",
+                            "description": "Whether every schedule in the organization is paused."
+                          },
+                          "reason": {
+                            "type": "string",
+                            "maxLength": 1000,
+                            "description": "Reason given for the pause. Cleared when the pause is lifted."
+                          }
+                        }
                       }
                     }
                   }
@@ -3773,6 +3942,33 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "boolean",
                                     "default": true,
                                     "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                                  },
+                                  "schedulePause": {
+                                    "x-go-type": "SchedulePause",
+                                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "paused": {
+                                        "type": "boolean",
+                                        "description": "Whether every schedule in the organization is paused."
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                                      },
+                                      "pausedAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      },
+                                      "pausedBy": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -4192,6 +4388,33 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "boolean",
                           "default": true,
                           "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                        },
+                        "schedulePause": {
+                          "x-go-type": "SchedulePause",
+                          "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "paused": {
+                              "type": "boolean",
+                              "description": "Whether every schedule in the organization is paused."
+                            },
+                            "reason": {
+                              "type": "string",
+                              "maxLength": 1000,
+                              "description": "Reason given for the pause. Cleared when the pause is lifted."
+                            },
+                            "pausedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            },
+                            "pausedBy": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            }
+                          }
                         }
                       }
                     }
@@ -5452,6 +5675,26 @@ const OrganizationSchema: Record<string, unknown> = {
                       "type": "boolean",
                       "default": true,
                       "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                    },
+                    "schedulePause": {
+                      "x-go-type": "SchedulePausePayload",
+                      "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "paused"
+                      ],
+                      "properties": {
+                        "paused": {
+                          "type": "boolean",
+                          "description": "Whether every schedule in the organization is paused."
+                        },
+                        "reason": {
+                          "type": "string",
+                          "maxLength": 1000,
+                          "description": "Reason given for the pause. Cleared when the pause is lifted."
+                        }
+                      }
                     }
                   }
                 }
@@ -6233,6 +6476,371 @@ const OrganizationSchema: Record<string, unknown> = {
             "type": "boolean",
             "default": true,
             "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+          },
+          "schedulePause": {
+            "x-go-type": "SchedulePause",
+            "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "paused": {
+                "type": "boolean",
+                "description": "Whether every schedule in the organization is paused."
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 1000,
+                "description": "Reason given for the pause. Cleared when the pause is lifted."
+              },
+              "pausedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+              },
+              "pausedBy": {
+                "type": "string",
+                "maxLength": 255,
+                "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+              }
+            }
+          }
+        }
+      },
+      "SchedulePause": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed unless the claim carries the operator override `ignorePause` (v1beta3 schedule). Set or lift it by updating the organization's preferences; there is no pause route. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity.",
+        "properties": {
+          "paused": {
+            "type": "boolean",
+            "description": "Whether every schedule in the organization is paused."
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Reason given for the pause. Cleared when the pause is lifted."
+          },
+          "pausedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+          },
+          "pausedBy": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+          }
+        }
+      },
+      "SchedulePausePayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Client-settable organization pause. Carries only `paused` and `reason`; `pausedAt` and `pausedBy` are recorded by the server and refused here. `paused` is required whenever `schedulePause` is sent, so a write can never lift the pause by omission.",
+        "required": [
+          "paused"
+        ],
+        "properties": {
+          "paused": {
+            "type": "boolean",
+            "description": "Whether every schedule in the organization is paused."
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Reason given for the pause. Cleared when the pause is lifted."
+          }
+        }
+      },
+      "PreferencesPayload": {
+        "type": "object",
+        "description": "Client-settable organization preferences. Identical to Preferences except that schedulePause is SchedulePausePayload.",
+        "required": [
+          "theme",
+          "dashboard"
+        ],
+        "properties": {
+          "theme": {
+            "x-go-type": "Theme",
+            "type": "object",
+            "description": "UI theme configured for an organization.",
+            "required": [
+              "id",
+              "logo"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Theme identifier.",
+                "format": "uuid",
+                "maxLength": 36
+              },
+              "logo": {
+                "x-go-type": "Logo",
+                "type": "object",
+                "description": "Themed logo assets used across light and dark, desktop and mobile presentations.",
+                "required": [
+                  "desktopView",
+                  "mobileView",
+                  "darkDesktopView",
+                  "darkMobileView"
+                ],
+                "properties": {
+                  "desktopView": {
+                    "x-go-type": "Location",
+                    "type": "object",
+                    "description": "Image asset anchored to a named location within an organization theme.",
+                    "required": [
+                      "svg",
+                      "location"
+                    ],
+                    "properties": {
+                      "svg": {
+                        "type": "string",
+                        "description": "SVG markup for the asset.",
+                        "maxLength": 500
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Named location of the asset (e.g. header, footer).",
+                        "maxLength": 500
+                      }
+                    }
+                  },
+                  "mobileView": {
+                    "x-go-type": "Location",
+                    "type": "object",
+                    "description": "Image asset anchored to a named location within an organization theme.",
+                    "required": [
+                      "svg",
+                      "location"
+                    ],
+                    "properties": {
+                      "svg": {
+                        "type": "string",
+                        "description": "SVG markup for the asset.",
+                        "maxLength": 500
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Named location of the asset (e.g. header, footer).",
+                        "maxLength": 500
+                      }
+                    }
+                  },
+                  "darkDesktopView": {
+                    "x-go-type": "Location",
+                    "type": "object",
+                    "description": "Image asset anchored to a named location within an organization theme.",
+                    "required": [
+                      "svg",
+                      "location"
+                    ],
+                    "properties": {
+                      "svg": {
+                        "type": "string",
+                        "description": "SVG markup for the asset.",
+                        "maxLength": 500
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Named location of the asset (e.g. header, footer).",
+                        "maxLength": 500
+                      }
+                    }
+                  },
+                  "darkMobileView": {
+                    "x-go-type": "Location",
+                    "type": "object",
+                    "description": "Image asset anchored to a named location within an organization theme.",
+                    "required": [
+                      "svg",
+                      "location"
+                    ],
+                    "properties": {
+                      "svg": {
+                        "type": "string",
+                        "description": "SVG markup for the asset.",
+                        "maxLength": 500
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Named location of the asset (e.g. header, footer).",
+                        "maxLength": 500
+                      }
+                    }
+                  }
+                }
+              },
+              "vars": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Arbitrary theme variables keyed by name."
+              }
+            }
+          },
+          "dashboard": {
+            "x-go-type": "DashboardPrefs",
+            "type": "object",
+            "description": "Preferences specific to dashboard behavior.",
+            "additionalProperties": true
+          },
+          "authBranding": {
+            "x-go-type": "AuthBranding",
+            "type": "object",
+            "x-internal": [
+              "cloud"
+            ],
+            "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+            "properties": {
+              "carousel": {
+                "type": "array",
+                "description": "Ordered slides rendered in the auth-page feature carousel.",
+                "items": {
+                  "type": "object",
+                  "x-internal": [
+                    "cloud"
+                  ],
+                  "description": "A single slide in the auth-page feature carousel.",
+                  "required": [
+                    "imageUrl",
+                    "title",
+                    "description"
+                  ],
+                  "properties": {
+                    "imageUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "maxLength": 2048,
+                      "description": "URL of the slide image asset.",
+                      "x-go-name": "ImageURL"
+                    },
+                    "title": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Slide title."
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 2048,
+                      "description": "Slide description text."
+                    }
+                  }
+                }
+              },
+              "faqs": {
+                "type": "array",
+                "description": "FAQ entries rendered on the auth pages.",
+                "items": {
+                  "type": "object",
+                  "x-internal": [
+                    "cloud"
+                  ],
+                  "description": "A single question/answer pair for the auth-page FAQ section.",
+                  "required": [
+                    "question",
+                    "answer"
+                  ],
+                  "properties": {
+                    "question": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "The question text."
+                    },
+                    "answer": {
+                      "type": "string",
+                      "maxLength": 5000,
+                      "description": "The answer text."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "links": {
+            "x-go-type": "Links",
+            "type": "object",
+            "x-internal": [
+              "cloud"
+            ],
+            "description": "Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults.",
+            "properties": {
+              "termsOfService": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048,
+                "description": "URL of the organization's Terms of Service page."
+              },
+              "privacy": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048,
+                "description": "URL of the organization's Privacy Policy page."
+              },
+              "support": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+              },
+              "social": {
+                "x-go-type": "Social",
+                "type": "object",
+                "x-internal": [
+                  "cloud"
+                ],
+                "description": "The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults.",
+                "properties": {
+                  "linkedin": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's LinkedIn profile.",
+                    "x-go-name": "LinkedIn"
+                  },
+                  "x": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's X (formerly Twitter) profile.",
+                    "x-go-name": "X"
+                  },
+                  "youtube": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's YouTube channel.",
+                    "x-go-name": "YouTube"
+                  }
+                }
+              }
+            }
+          },
+          "showAuthCarousel": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+          },
+          "schedulePause": {
+            "x-go-type": "SchedulePausePayload",
+            "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "paused"
+            ],
+            "properties": {
+              "paused": {
+                "type": "boolean",
+                "description": "Whether every schedule in the organization is paused."
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 1000,
+                "description": "Reason given for the pause. Cleared when the pause is lifted."
+              }
+            }
           }
         }
       },
@@ -6514,6 +7122,33 @@ const OrganizationSchema: Record<string, unknown> = {
                 "type": "boolean",
                 "default": true,
                 "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+              },
+              "schedulePause": {
+                "x-go-type": "SchedulePause",
+                "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "paused": {
+                    "type": "boolean",
+                    "description": "Whether every schedule in the organization is paused."
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Reason given for the pause. Cleared when the pause is lifted."
+                  },
+                  "pausedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                  },
+                  "pausedBy": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                  }
+                }
               }
             }
           }
@@ -6981,6 +7616,33 @@ const OrganizationSchema: Record<string, unknown> = {
                     "type": "boolean",
                     "default": true,
                     "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                  },
+                  "schedulePause": {
+                    "x-go-type": "SchedulePause",
+                    "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "paused": {
+                        "type": "boolean",
+                        "description": "Whether every schedule in the organization is paused."
+                      },
+                      "reason": {
+                        "type": "string",
+                        "maxLength": 1000,
+                        "description": "Reason given for the pause. Cleared when the pause is lifted."
+                      },
+                      "pausedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                      },
+                      "pausedBy": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                      }
+                    }
                   }
                 }
               }
@@ -7371,6 +8033,33 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "boolean",
                           "default": true,
                           "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                        },
+                        "schedulePause": {
+                          "x-go-type": "SchedulePause",
+                          "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "paused": {
+                              "type": "boolean",
+                              "description": "Whether every schedule in the organization is paused."
+                            },
+                            "reason": {
+                              "type": "string",
+                              "maxLength": 1000,
+                              "description": "Reason given for the pause. Cleared when the pause is lifted."
+                            },
+                            "pausedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            },
+                            "pausedBy": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            }
+                          }
                         }
                       }
                     }
@@ -7765,6 +8454,33 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "boolean",
                           "default": true,
                           "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+                        },
+                        "schedulePause": {
+                          "x-go-type": "SchedulePause",
+                          "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "paused": {
+                              "type": "boolean",
+                              "description": "Whether every schedule in the organization is paused."
+                            },
+                            "reason": {
+                              "type": "string",
+                              "maxLength": 1000,
+                              "description": "Reason given for the pause. Cleared when the pause is lifted."
+                            },
+                            "pausedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            },
+                            "pausedBy": {
+                              "type": "string",
+                              "maxLength": 255,
+                              "description": "Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted."
+                            }
+                          }
                         }
                       }
                     }
@@ -8285,6 +9001,26 @@ const OrganizationSchema: Record<string, unknown> = {
                 "type": "boolean",
                 "default": true,
                 "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
+              },
+              "schedulePause": {
+                "x-go-type": "SchedulePausePayload",
+                "description": "Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "paused"
+                ],
+                "properties": {
+                  "paused": {
+                    "type": "boolean",
+                    "description": "Whether every schedule in the organization is paused."
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Reason given for the pause. Cleared when the pause is lifted."
+                  }
+                }
               }
             }
           }

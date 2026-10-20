@@ -35,7 +35,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get organization by domain */
+        /**
+         * Get organization by domain
+         * @description Unauthenticated lookup. Servers MUST omit `preferences.schedulePause` from this response; the organization-wide pause is read through getOrgPreferences.
+         */
         get: operations["getOrgByDomain"];
         put?: never;
         post?: never;
@@ -59,7 +62,7 @@ export interface paths {
         get: operations["getOrg"];
         /**
          * Update an organization
-         * @description Updates the organization.
+         * @description Updates the organization. Changing `preferences.schedulePause` is restricted to organization admins (otherwise 403); omitting `schedulePause` keeps the current pause unchanged.
          */
         put: operations["updateOrg"];
         post?: never;
@@ -490,6 +493,160 @@ export interface components {
              * @default true
              */
             showAuthCarousel: boolean;
+            /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+            schedulePause?: {
+                /** @description Whether every schedule in the organization is paused. */
+                paused?: boolean;
+                /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                reason?: string;
+                /**
+                 * Format: date-time
+                 * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                 */
+                pausedAt?: string;
+                /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                pausedBy?: string;
+            };
+        };
+        /** @description Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed unless the claim carries the operator override `ignorePause` (v1beta3 schedule). Set or lift it by updating the organization's preferences; there is no pause route. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity. */
+        SchedulePause: {
+            /** @description Whether every schedule in the organization is paused. */
+            paused?: boolean;
+            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+            reason?: string;
+            /**
+             * Format: date-time
+             * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+             */
+            pausedAt?: string;
+            /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+            pausedBy?: string;
+        };
+        /** @description Client-settable organization pause. Carries only `paused` and `reason`; `pausedAt` and `pausedBy` are recorded by the server and refused here. `paused` is required whenever `schedulePause` is sent, so a write can never lift the pause by omission. */
+        SchedulePausePayload: {
+            /** @description Whether every schedule in the organization is paused. */
+            paused: boolean;
+            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+            reason?: string;
+        };
+        /** @description Client-settable organization preferences. Identical to Preferences except that schedulePause is SchedulePausePayload. */
+        PreferencesPayload: {
+            /** @description UI theme configured for an organization. */
+            theme: {
+                /**
+                 * Format: uuid
+                 * @description Theme identifier.
+                 */
+                id: string;
+                /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+                logo: {
+                    /** @description Image asset anchored to a named location within an organization theme. */
+                    desktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                    };
+                    /** @description Image asset anchored to a named location within an organization theme. */
+                    mobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                    };
+                    /** @description Image asset anchored to a named location within an organization theme. */
+                    darkDesktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                    };
+                    /** @description Image asset anchored to a named location within an organization theme. */
+                    darkMobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                    };
+                };
+                /** @description Arbitrary theme variables keyed by name. */
+                vars?: {
+                    [key: string]: unknown;
+                };
+            };
+            /** @description Preferences specific to dashboard behavior. */
+            dashboard: {
+                [key: string]: unknown;
+            };
+            /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+            authBranding?: {
+                /** @description Ordered slides rendered in the auth-page feature carousel. */
+                carousel?: {
+                    /**
+                     * Format: uri
+                     * @description URL of the slide image asset.
+                     */
+                    imageUrl: string;
+                    /** @description Slide title. */
+                    title: string;
+                    /** @description Slide description text. */
+                    description: string;
+                }[];
+                /** @description FAQ entries rendered on the auth pages. */
+                faqs?: {
+                    /** @description The question text. */
+                    question: string;
+                    /** @description The answer text. */
+                    answer: string;
+                }[];
+            };
+            /** @description Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+            links?: {
+                /**
+                 * Format: uri
+                 * @description URL of the organization's Terms of Service page.
+                 */
+                termsOfService?: string;
+                /**
+                 * Format: uri
+                 * @description URL of the organization's Privacy Policy page.
+                 */
+                privacy?: string;
+                /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                support?: {
+                    [key: string]: string;
+                };
+                /** @description The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+                social?: {
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's LinkedIn profile.
+                     */
+                    linkedin?: string;
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's X (formerly Twitter) profile.
+                     */
+                    x?: string;
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's YouTube channel.
+                     */
+                    youtube?: string;
+                };
+            };
+            /**
+             * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+             * @default true
+             */
+            showAuthCarousel: boolean;
+            /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+            schedulePause?: {
+                /** @description Whether every schedule in the organization is paused. */
+                paused: boolean;
+                /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                reason?: string;
+            };
         };
         /** @description Free-form metadata associated with an organization, including preferences. */
         OrgMetadata: {
@@ -604,6 +761,20 @@ export interface components {
                  * @default true
                  */
                 showAuthCarousel: boolean;
+                /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                schedulePause?: {
+                    /** @description Whether every schedule in the organization is paused. */
+                    paused?: boolean;
+                    /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                    reason?: string;
+                    /**
+                     * Format: date-time
+                     * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                     */
+                    pausedAt?: string;
+                    /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                    pausedBy?: string;
+                };
             };
         };
         /** @description An organization in Meshery Cloud. Organizations are the top-level tenancy boundary and own teams, workspaces, environments, designs, and other resources. Learn more at https://docs.meshery.io/concepts/logical/organizations */
@@ -778,6 +949,20 @@ export interface components {
                      * @default true
                      */
                     showAuthCarousel: boolean;
+                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                    schedulePause?: {
+                        /** @description Whether every schedule in the organization is paused. */
+                        paused?: boolean;
+                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                        reason?: string;
+                        /**
+                         * Format: date-time
+                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                         */
+                        pausedAt?: string;
+                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                        pausedBy?: string;
+                    };
                 };
             };
             /**
@@ -936,6 +1121,20 @@ export interface components {
                          * @default true
                          */
                         showAuthCarousel: boolean;
+                        /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        schedulePause?: {
+                            /** @description Whether every schedule in the organization is paused. */
+                            paused?: boolean;
+                            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                            reason?: string;
+                            /**
+                             * Format: date-time
+                             * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                             */
+                            pausedAt?: string;
+                            /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                            pausedBy?: string;
+                        };
                     };
                 };
                 /**
@@ -1095,6 +1294,20 @@ export interface components {
                          * @default true
                          */
                         showAuthCarousel: boolean;
+                        /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        schedulePause?: {
+                            /** @description Whether every schedule in the organization is paused. */
+                            paused?: boolean;
+                            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                            reason?: string;
+                            /**
+                             * Format: date-time
+                             * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                             */
+                            pausedAt?: string;
+                            /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                            pausedBy?: string;
+                        };
                     };
                 };
                 /**
@@ -1308,6 +1521,13 @@ export interface components {
                  * @default true
                  */
                 showAuthCarousel: boolean;
+                /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                schedulePause?: {
+                    /** @description Whether every schedule in the organization is paused. */
+                    paused: boolean;
+                    /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                    reason?: string;
+                };
             };
         };
         /** @description Team listing record used in team listings associated with an organization. */
@@ -1737,6 +1957,13 @@ export interface components {
                          * @default true
                          */
                         showAuthCarousel?: boolean;
+                        /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        schedulePause?: {
+                            /** @description Whether every schedule in the organization is paused. */
+                            paused: boolean;
+                            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                            reason?: string;
+                        };
                     };
                 };
             };
@@ -1912,6 +2139,20 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
+                                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    schedulePause?: {
+                                        /** @description Whether every schedule in the organization is paused. */
+                                        paused?: boolean;
+                                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                        reason?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                         */
+                                        pausedAt?: string;
+                                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                        pausedBy?: string;
+                                    };
                                 };
                             };
                             /**
@@ -2092,6 +2333,13 @@ export interface operations {
                          * @default true
                          */
                         showAuthCarousel?: boolean;
+                        /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        schedulePause?: {
+                            /** @description Whether every schedule in the organization is paused. */
+                            paused: boolean;
+                            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                            reason?: string;
+                        };
                     };
                 };
             };
@@ -2242,6 +2490,20 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
+                                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    schedulePause?: {
+                                        /** @description Whether every schedule in the organization is paused. */
+                                        paused?: boolean;
+                                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                        reason?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                         */
+                                        pausedAt?: string;
+                                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                        pausedBy?: string;
+                                    };
                                 };
                             };
                             /**
@@ -2542,6 +2804,20 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
+                                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    schedulePause?: {
+                                        /** @description Whether every schedule in the organization is paused. */
+                                        paused?: boolean;
+                                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                        reason?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                         */
+                                        pausedAt?: string;
+                                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                        pausedBy?: string;
+                                    };
                                 };
                             };
                             /**
@@ -2736,6 +3012,13 @@ export interface operations {
                          * @default true
                          */
                         showAuthCarousel?: boolean;
+                        /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        schedulePause?: {
+                            /** @description Whether every schedule in the organization is paused. */
+                            paused: boolean;
+                            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                            reason?: string;
+                        };
                     };
                 };
             };
@@ -2886,6 +3169,20 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
+                                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    schedulePause?: {
+                                        /** @description Whether every schedule in the organization is paused. */
+                                        paused?: boolean;
+                                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                        reason?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                         */
+                                        pausedAt?: string;
+                                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                        pausedBy?: string;
+                                    };
                                 };
                             };
                             /**
@@ -3262,6 +3559,13 @@ export interface operations {
                          * @default true
                          */
                         showAuthCarousel?: boolean;
+                        /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                        schedulePause?: {
+                            /** @description Whether every schedule in the organization is paused. */
+                            paused: boolean;
+                            /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                            reason?: string;
+                        };
                     };
                 };
             };
@@ -3412,6 +3716,20 @@ export interface operations {
                                      * @default true
                                      */
                                     showAuthCarousel: boolean;
+                                    /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                                    schedulePause?: {
+                                        /** @description Whether every schedule in the organization is paused. */
+                                        paused?: boolean;
+                                        /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                        reason?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                         */
+                                        pausedAt?: string;
+                                        /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                        pausedBy?: string;
+                                    };
                                 };
                             };
                             /**
@@ -3610,6 +3928,20 @@ export interface operations {
                              * @default true
                              */
                             showAuthCarousel: boolean;
+                            /** @description Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+                            schedulePause?: {
+                                /** @description Whether every schedule in the organization is paused. */
+                                paused?: boolean;
+                                /** @description Reason given for the pause. Cleared when the pause is lifted. */
+                                reason?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+                                 */
+                                pausedAt?: string;
+                                /** @description Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+                                pausedBy?: string;
+                            };
                         };
                     };
                 };
