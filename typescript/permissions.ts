@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "4b82183578f6b499c156caba33a8256d0d1e9d4d440f41745fb97850f781b0f4" as const;
+export const PERMISSIONS_INDEX_ID = "e9a85341d041813617c6ffd36da4983d34d7843af3a77df1700e4655f0a9884c" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -3989,6 +3989,28 @@ export const Keys = {
   },
 
   /**
+   * Add a profile to a workspace
+   */
+  WorkspaceManagementAssignProfileToWorkspace: {
+    id: "d02cab86-8c22-411e-a82a-50b7a8446b6c" as PermissionKey,
+    category: "Workspace Management",
+    subcategory: "Workspace",
+    function: "Assign profile to workspace",
+    description: "Add a profile to a workspace"
+  },
+
+  /**
+   * Remove a profile from a workspace
+   */
+  WorkspaceManagementRemoveProfileFromWorkspace: {
+    id: "1d8adb54-5e28-419f-83b6-2ea5ab6843a0" as PermissionKey,
+    category: "Workspace Management",
+    subcategory: "Workspace",
+    function: "Remove profile from workspace",
+    description: "Remove a profile from a workspace"
+  },
+
+  /**
    * No description available
    */
   WorkspaceManagementConnectGithubAccountToWorkspace: {
@@ -4085,6 +4107,50 @@ export const Keys = {
     subcategory: "Environments",
     function: "Remove connections from environment",
     description: "Remove connections from environment, "
+  },
+
+  /**
+   * See profiles assigned to your workspaces. Org admins see every profile in the organization.
+   */
+  WorkspaceManagementViewProfiles: {
+    id: "77f8a444-f9ac-4cb5-bb26-832b53addf01" as PermissionKey,
+    category: "Workspace Management",
+    subcategory: "Profiles",
+    function: "View Profiles",
+    description: "See profiles assigned to your workspaces. Org admins see every profile in the organization."
+  },
+
+  /**
+   * Create a new profile
+   */
+  WorkspaceManagementCreateProfile: {
+    id: "b71221e9-3247-4510-9175-14b9de4fb06e" as PermissionKey,
+    category: "Workspace Management",
+    subcategory: "Profiles",
+    function: "Create Profile",
+    description: "Create a new profile"
+  },
+
+  /**
+   * Delete a profile and its workspace and connection memberships. Leave associated connections intact.
+   */
+  WorkspaceManagementDeleteProfile: {
+    id: "cad76a9d-5718-4503-8293-570b495d82bc" as PermissionKey,
+    category: "Workspace Management",
+    subcategory: "Profiles",
+    function: "Delete Profile",
+    description: "Delete a profile and its workspace and connection memberships. Leave associated connections intact."
+  },
+
+  /**
+   * Edit a profile, transfer its owner, and link or unlink its connections
+   */
+  WorkspaceManagementEditProfile: {
+    id: "b8f0c75c-39f6-488f-92c0-ab6add761266" as PermissionKey,
+    category: "Workspace Management",
+    subcategory: "Profiles",
+    function: "Edit Profile",
+    description: "Edit a profile, transfer its owner, and link or unlink its connections"
   },
 
   /**
@@ -6780,6 +6846,16 @@ export const PermissionKeys = {
   WorkspaceManagementRemoveDesignsFromWorkspaces: "076515f1-f696-4211-ae27-58d5463a229e" as PermissionKey,
 
   /**
+   * Add a profile to a workspace
+   */
+  WorkspaceManagementAssignProfileToWorkspace: "d02cab86-8c22-411e-a82a-50b7a8446b6c" as PermissionKey,
+
+  /**
+   * Remove a profile from a workspace
+   */
+  WorkspaceManagementRemoveProfileFromWorkspace: "1d8adb54-5e28-419f-83b6-2ea5ab6843a0" as PermissionKey,
+
+  /**
    * No description available
    */
   WorkspaceManagementConnectGithubAccountToWorkspace: "410b2d3c-8194-44d1-9f80-7b5fea689b4f" as PermissionKey,
@@ -6823,6 +6899,26 @@ export const PermissionKeys = {
    * Remove connections from environment, 
    */
   WorkspaceManagementRemoveConnectionsFromEnvironment: "65648682-e47f-43d7-a5ad-dc042803f951" as PermissionKey,
+
+  /**
+   * See profiles assigned to your workspaces. Org admins see every profile in the organization.
+   */
+  WorkspaceManagementViewProfiles: "77f8a444-f9ac-4cb5-bb26-832b53addf01" as PermissionKey,
+
+  /**
+   * Create a new profile
+   */
+  WorkspaceManagementCreateProfile: "b71221e9-3247-4510-9175-14b9de4fb06e" as PermissionKey,
+
+  /**
+   * Delete a profile and its workspace and connection memberships. Leave associated connections intact.
+   */
+  WorkspaceManagementDeleteProfile: "cad76a9d-5718-4503-8293-570b495d82bc" as PermissionKey,
+
+  /**
+   * Edit a profile, transfer its owner, and link or unlink its connections
+   */
+  WorkspaceManagementEditProfile: "b8f0c75c-39f6-488f-92c0-ab6add761266" as PermissionKey,
 
   /**
    * View all of your projects
