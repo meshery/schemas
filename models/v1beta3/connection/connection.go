@@ -374,10 +374,16 @@ type ConnectionsStatusPage struct {
 // CoreKind A core connection kind that receives bespoke, kind-specific handling in Meshery. The `kind` field itself remains an open-ended string; this names only the kinds with special behavior.
 type CoreKind string
 
-// DesktopConnectionMetadata Metadata of a `desktop` connection: a desktop app install that registered itself on sign-in. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `machineId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins.
+// DesktopConnectionMetadata Metadata of a `desktop` connection: a desktop app install that registered itself on every connect to Cloud. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `machineId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins.
 type DesktopConnectionMetadata struct {
-	// AppVersion Version of the desktop app.
+	// AppVersion Version of the desktop app as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Compared with the server's minimum for `clientName`.
 	AppVersion *string `json:"appVersion,omitempty" yaml:"appVersion,omitempty"`
+
+	// BuildSha Source revision the desktop app was built from.
+	BuildSha *string `json:"buildSha,omitempty" yaml:"buildSha,omitempty"`
+
+	// ClientName Identifier of the desktop app, for example its product name, lowercase. A value, never a kind: it selects the server's minimum version for this client.
+	ClientName *string `json:"clientName,omitempty" yaml:"clientName,omitempty"`
 
 	// Hostname Host name of the machine.
 	Hostname *string `json:"hostname,omitempty" yaml:"hostname,omitempty"`
@@ -385,11 +391,17 @@ type DesktopConnectionMetadata struct {
 	// LastSeenAt Server time of the last registration or heartbeat.
 	LastSeenAt *time.Time `json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
-	// MachineId Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key.
+	// MachineId Stable identifier of a desktop app install: generated once on the install's first launch (a UUID is recommended), kept with the app's local state, and never derived from the host name, a process id or a hardware serial. A reinstall that discards local state is a new install. It is the machine part of the deduplication key.
 	MachineId string `json:"machineId" yaml:"machineId"`
 
 	// Os Operating system, for example `macos`.
 	Os *string `json:"os,omitempty" yaml:"os,omitempty"`
+
+	// OsVersion Operating system version, for example `26.0.1`.
+	OsVersion *string `json:"osVersion,omitempty" yaml:"osVersion,omitempty"`
+
+	// TokenId Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token. A value sent by the client is ignored.
+	TokenId *uuid.UUID `json:"tokenId,omitempty" yaml:"tokenId,omitempty"`
 }
 
 // DestinationKind A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.

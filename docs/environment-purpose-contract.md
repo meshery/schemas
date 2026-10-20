@@ -8,12 +8,12 @@ organization-level configuration key on.
 | --- | --- |
 | `user` | An ordinary environment. People create these to logically group Connections and their Credentials. This is what an environment is unless something says otherwise. |
 | `administrative` | An environment the platform itself provisions to hold organization-level configuration. Resolvers of that configuration trust it. |
-| `profile` | An ordinary, non-privileged environment that holds one profile. By convention there is one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections through the existing environment-connection mapping. It carries no authority and a client may choose it on create or update. The schema does not enforce one-per-profile; no uniqueness constraint is added for it. |
+| `profile` | **Deprecated.** Profiles are their own construct, [`schemas/constructs/v1beta3/profile`](../schemas/constructs/v1beta3/profile/api.yml), served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`, so access to a profile is controlled through workspaces. New profiles must not be stored as environments. The value stays in the enum only so environments written with it still read back: such an environment is ordinary and non-privileged, carries no authority, and a client may still send the value on create or update until it is removed. Consumers should move these environments to profiles (see [docs/profile-contract.md](profile-contract.md#moving-off-purpose-profile)), then stop accepting the value. |
 | absent | Identical to `user`. Every environment written before the column existed is in this state. |
 
 An omitted purpose means `user` on create, and the server normalises it to `user` on write, as `EnvironmentPayload` specifies.
 
-The former privileged `blowhorn` value is removed from the enum. Servers must not store it, and any consumer that created such rows should move them to `profile`.
+The former privileged `blowhorn` value is removed from the enum. Servers must not store it, and any consumer that created such rows should move them to the profile construct.
 
 The property is optional on the wire and omitted when empty. It is deliberately
 **not** in the entity's `required` list, and carries neither `default:` nor

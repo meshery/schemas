@@ -7,6 +7,7 @@ import (
 	"time"
 
 	core "github.com/meshery/schemas/models/core"
+	provider_capabilityv1beta3 "github.com/meshery/schemas/models/v1beta3/provider_capability"
 )
 
 // Defines values for NativeAuthorizationPayloadCodeChallengeMethod.
@@ -111,6 +112,12 @@ type IsOauth = bool
 
 // Name defines model for name.
 type Name = string
+
+// NativeClient Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.
+type NativeClient = provider_capabilityv1beta3.ClientName
+
+// NativeClientVersion defines model for nativeClientVersion.
+type NativeClientVersion = string
 
 // NativeCodeChallenge defines model for nativeCodeChallenge.
 type NativeCodeChallenge = string

@@ -81,7 +81,7 @@ export interface paths {
         };
         /**
          * Show native client sign-in consent
-         * @description Browser-facing step of the native client sign-in flow (RFC 8252 loopback redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in user, never URL credentials. Validates the request and renders a consent page that asks the user to allow the named local client to act on their behalf. Nothing is issued by this call.
+         * @description Browser-facing step of the native client sign-in flow (RFC 8252 loopback redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in user, never URL credentials. Validates the request and renders a consent page that asks the user to allow the named local client to act on their behalf. Nothing is issued by this call. When the request names the client application (`client`) and its version (`clientVersion`) and that version is below the provider's minimum for that client, an update page is rendered with status 426 instead of the consent page.
          */
         get: operations["getNativeClientAuthorization"];
         put?: never;
@@ -307,6 +307,10 @@ export interface components {
         purpose: string;
         /** @description Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token. */
         nativeClientName: string;
+        /** @description Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`. */
+        nativeClient: string;
+        /** @description Version of the client application, for example `v1.25.0`. */
+        nativeClientVersion: string;
         /** @description Port on 127.0.0.1 where the native client listens for the callback. */
         nativePort: number;
         /** @description PKCE code challenge, BASE64URL(SHA256(codeVerifier)) without padding. */
@@ -788,6 +792,10 @@ export interface operations {
             query: {
                 /** @description Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token. */
                 clientName: string;
+                /** @description Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`. */
+                client?: string;
+                /** @description Version of the client application, for example `v1.25.0`. */
+                clientVersion?: string;
                 /** @description Port on 127.0.0.1 where the native client listens for the callback. */
                 port: number;
                 /** @description PKCE code challenge, BASE64URL(SHA256(codeVerifier)) without padding. */
@@ -828,6 +836,15 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Update page; the client's version is below the provider's minimum for that client. */
+            426: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
                 };
             };
         };

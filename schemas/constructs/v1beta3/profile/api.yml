@@ -1,0 +1,490 @@
+openapi: 3.0.0
+info:
+  title: Profile
+  description: |
+    OpenAPI schema for profiles: publishing or persona profiles owned by an
+    organization and assigned to workspaces. A profile here is not the user
+    account profile (`/api/identity/users/profile`) and not a performance
+    profile (`/api/performance/profiles`).
+    Workspaces: like an environment, a profile can be assigned to any number
+    of workspaces through `/api/workspaces/{workspaceId}/profiles`, and that
+    assignment is how access to it is granted.
+    Read access: a profile is visible to members of the workspaces it is
+    assigned to, and to organization admins, provided they also hold
+    Workspace Management / Profiles: View Profiles. A profile assigned to no
+    workspace is visible to its owner and to organization admins only.
+    Write access: Create Profile, Edit Profile and Delete Profile. Edit
+    Profile also governs linking and unlinking the profile's connections and
+    transferring its owner; the owner may always edit their own profile.
+    Accounts: the platform accounts a profile acts through are existing
+    Connections, linked by a profile-to-connection mapping that mirrors the
+    environment-to-connection mapping.
+    A caller without the required key receives a 403. An id that does not name
+    a live profile the caller can see receives a 404, whether it does not
+    exist or belongs to another organization or workspace.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://cloud.meshery.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.meshery.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+
+security:
+  - jwt: []
+
+tags:
+  - name: profiles
+    description: APIs for profiles.
+
+paths:
+  /api/profiles:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - profiles
+      operationId: createProfile
+      summary: Create a profile
+      description: >-
+        Creates a profile in the organization named by `organizationId`. The
+        server assigns `id` and the timestamps; `owner` defaults to the
+        authenticated user. Names are not unique.
+      requestBody:
+        $ref: "#/components/requestBodies/profilePayload"
+      responses:
+        "201":
+          description: Created profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - profiles
+      operationId: getProfiles
+      summary: Get all profiles
+      description: >-
+        Gets the live profiles the caller can see: those assigned to a
+        workspace the caller is a member of, those the caller owns, and, for
+        organization admins, every profile of the organization. `search`
+        matches the name or description case-insensitively.
+      parameters:
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/orgIdQuery"
+        - $ref: "#/components/parameters/userIdQuery"
+      responses:
+        "200":
+          description: Profiles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfilePage"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/profiles/{profileId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - profiles
+      operationId: getProfileById
+      summary: Get profile by ID
+      parameters:
+        - $ref: "#/components/parameters/profileId"
+      responses:
+        "200":
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - profiles
+      operationId: updateProfile
+      summary: Update a profile
+      description: >-
+        Replaces the client-settable fields of the profile. `organizationId`
+        cannot change after creation; a different value is refused with 400.
+        Changing `owner` transfers the profile; the new owner must be a member
+        of the organization.
+      parameters:
+        - $ref: "#/components/parameters/profileId"
+      requestBody:
+        $ref: "#/components/requestBodies/profilePayload"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - profiles
+      operationId: deleteProfile
+      summary: Delete a profile
+      description: >-
+        Soft-deletes the profile and removes its workspace assignments and
+        connection links. The linked connections themselves are left intact.
+      parameters:
+        - $ref: "#/components/parameters/profileId"
+      responses:
+        "204":
+          description: Profile deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/profiles/{profileId}/connections:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - profiles
+      operationId: getProfileConnections
+      summary: Get profile connections
+      description: Gets the connections linked to the profile. Requires View Profiles and visibility of the profile.
+      parameters:
+        - $ref: "#/components/parameters/profileId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pagesize"
+      responses:
+        "200":
+          description: Profile connections
+          content:
+            application/json:
+              schema:
+                $ref: "../connection/api.yml#/components/schemas/ConnectionPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/profiles/{profileId}/connections/{connectionId}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - profiles
+      operationId: addConnectionToProfile
+      summary: Add connection to profile
+      description: Links an existing connection of the same organization to the profile. Requires Edit Profile.
+      parameters:
+        - $ref: "#/components/parameters/profileId"
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "201":
+          description: Connection linked to profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileConnectionMapping"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - profiles
+      operationId: removeConnectionFromProfile
+      summary: Remove connection from profile
+      description: Unlinks a connection from the profile. The connection itself is left intact. Requires Edit Profile.
+      parameters:
+        - $ref: "#/components/parameters/profileId"
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "204":
+          description: Connection unlinked from profile
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    "400":
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    "401":
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    "403":
+      $ref: "../../v1beta2/core/api.yml#/components/responses/403"
+    "404":
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    "500":
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    profileId:
+      name: profileId
+      in: path
+      description: Profile ID
+      required: true
+      schema:
+        $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    connectionId:
+      name: connectionId
+      in: path
+      description: Connection ID
+      required: true
+      schema:
+        $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    search:
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/search
+    order:
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/order
+    page:
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/page
+    pageSize:
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/pageSize
+    pagesize:
+      name: pagesize
+      in: query
+      description: Get responses by pagesize. Deprecated alias of pageSize.
+      deprecated: true
+      schema:
+        type: integer
+        minimum: 1
+    orgIdQuery:
+      name: orgId
+      in: query
+      description: Organization ID used to scope the listing. Defaults to the organization the session resolved to.
+      required: false
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+    userIdQuery:
+      name: userId
+      in: query
+      description: Return only the profile that represents this user.
+      required: false
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Profile:
+      $ref: "./profile.yaml"
+
+    ProfilePayload:
+      type: object
+      description: >-
+        Payload for creating or updating a profile. Carries only the
+        client-settable fields. `id`, `createdAt`, `updatedAt` and `deletedAt`
+        are server-owned and deliberately absent. `owner` is optional: omitted
+        on create it defaults to the authenticated user, and omitted on update
+        it is unchanged.
+      required:
+        - name
+        - organizationId
+      properties:
+        name:
+          type: string
+          description: Name of the profile, typically its short handle. Not unique.
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          description: Description of the profile.
+          maxLength: 1000
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "description,omitempty"
+        organizationId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: Organization in which to create the profile. Cannot change after creation.
+          x-go-name: OrganizationID
+          x-go-type-skip-optional-pointer: true
+        owner:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the user who owns the profile. Only the owner or a holder of Edit Profile in a workspace the profile is assigned to may change it.
+          x-oapi-codegen-extra-tags:
+            json: "owner,omitempty"
+        userId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the user this profile represents, when it represents a user. The user must be a member of the organization.
+          x-go-name: UserID
+          x-oapi-codegen-extra-tags:
+            json: "userId,omitempty"
+        metadata:
+          type: object
+          description: Free-form settings of the profile.
+          additionalProperties: true
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "metadata,omitempty"
+
+    ProfilePage:
+      type: object
+      description: Paginated list of profiles.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - profiles
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items across all pages.
+          minimum: 0
+        profiles:
+          type: array
+          description: Profiles in this page.
+          x-go-type-skip-optional-pointer: true
+          items:
+            x-go-type: Profile
+            $ref: "#/components/schemas/Profile"
+
+    ProfileConnectionMapping:
+      type: object
+      description: Junction record linking a profile to a connection.
+      additionalProperties: false
+      required:
+        - id
+        - profileId
+        - connectionId
+      properties:
+        id:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: Mapping record ID.
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: id
+        profileId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the linked profile.
+          x-go-name: ProfileID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: profile_id
+            json: profileId
+        connectionId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the linked connection.
+          x-go-name: ConnectionID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: connection_id
+            json: connectionId
+        createdAt:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+          description: Timestamp when the mapping was created.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+          description: Timestamp when the mapping was last updated.
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: "updatedAt,omitempty"
+        deletedAt:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/NullTime
+          description: Timestamp when the mapping was soft-deleted. Null while the mapping remains active.
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: "deletedAt,omitempty"
+
+  requestBodies:
+    profilePayload:
+      description: Body for creating or updating a profile
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProfilePayload"

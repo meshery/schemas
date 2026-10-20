@@ -152,7 +152,7 @@ components:
           format: uuid
         metadata:
           type: object
-          description: Free-form settings stored with the environment, for example a profile's settings.
+          description: Free-form settings stored with the environment.
           additionalProperties: true
           x-go-type: core.Map
           x-go-type-import:
@@ -165,8 +165,11 @@ components:
       type: string
       description: >-
         The purposes a client may give an environment on create or update:
-        `user` (an ordinary environment) or `profile` (an ordinary environment
-        holding one profile's settings and accounts). Omitted means `user` on
+        `user` (an ordinary environment) or the deprecated `profile`. Profiles
+        are their own construct at `/api/profiles`, assigned to workspaces;
+        `profile` remains accepted only for environments created with it
+        before that construct existed, and new clients must not send it.
+        Omitted means `user` on
         create and unchanged on update. A server refuses any other value with
         400, and never lets this field change an environment that already
         carries a privileged purpose.

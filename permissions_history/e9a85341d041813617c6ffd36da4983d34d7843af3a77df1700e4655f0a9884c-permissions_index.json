@@ -1,6 +1,6 @@
 {
-  "id": "b6719e8c3b67424743df4072b23c96e8b3e4b7cad768784e405f4fde74ec52fd",
-  "count": 449,
+  "id": "e9a85341d041813617c6ffd36da4983d34d7843af3a77df1700e4655f0a9884c",
+  "count": 455,
   "items": [
     {
       "name": "AccountManagementViewProfile",
@@ -381,40 +381,40 @@
       "description": "Delete WASM filter permanently from catalog."
     },
     {
-      "name": "CatalogManagementViewContentItems",
+      "name": "CatalogManagementViewContentPieces",
       "uuid": "5cd87dc9-02c6-44a0-a019-281f7295ad08",
-      "feature": "View the content items of the organization",
+      "feature": "View the content pieces of the organization",
       "category": "Catalog Management",
-      "subcategory": "Content Items",
-      "function": "View Content Items",
-      "description": "View the content items of the organization"
+      "subcategory": "Content Pieces",
+      "function": "View Content Pieces",
+      "description": "View the content pieces of the organization"
     },
     {
-      "name": "CatalogManagementCreateContentItem",
+      "name": "CatalogManagementCreateContentPiece",
       "uuid": "5fb97ae1-49ed-490c-b17a-377bf5558585",
-      "feature": "Create a content item in the organization",
+      "feature": "Create a content piece in the organization",
       "category": "Catalog Management",
-      "subcategory": "Content Items",
-      "function": "Create Content Item",
-      "description": "Create a content item in the organization"
+      "subcategory": "Content Pieces",
+      "function": "Create Content Piece",
+      "description": "Create a content piece in the organization"
     },
     {
-      "name": "CatalogManagementEditContentItem",
+      "name": "CatalogManagementEditContentPiece",
       "uuid": "06858261-c7eb-464a-a4b7-e29792a7ae54",
-      "feature": "Edit a content item of the organization",
+      "feature": "Edit a content piece of the organization",
       "category": "Catalog Management",
-      "subcategory": "Content Items",
-      "function": "Edit Content Item",
-      "description": "Edit a content item of the organization"
+      "subcategory": "Content Pieces",
+      "function": "Edit Content Piece",
+      "description": "Edit a content piece of the organization"
     },
     {
-      "name": "CatalogManagementDeleteContentItem",
+      "name": "CatalogManagementDeleteContentPiece",
       "uuid": "129d0297-1091-40e4-8d4a-5262b3378305",
-      "feature": "Delete a content item of the organization",
+      "feature": "Delete a content piece of the organization",
       "category": "Catalog Management",
-      "subcategory": "Content Items",
-      "function": "Delete Content Item",
-      "description": "Delete a content item of the organization"
+      "subcategory": "Content Pieces",
+      "function": "Delete Content Piece",
+      "description": "Delete a content piece of the organization"
     },
     {
       "name": "CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers",
@@ -3234,6 +3234,24 @@
       "description": "Remove designs from workspaces"
     },
     {
+      "name": "WorkspaceManagementAssignProfileToWorkspace",
+      "uuid": "d02cab86-8c22-411e-a82a-50b7a8446b6c",
+      "feature": "Add a profile to a workspace",
+      "category": "Workspace Management",
+      "subcategory": "Workspace",
+      "function": "Assign profile to workspace",
+      "description": "Add a profile to a workspace"
+    },
+    {
+      "name": "WorkspaceManagementRemoveProfileFromWorkspace",
+      "uuid": "1d8adb54-5e28-419f-83b6-2ea5ab6843a0",
+      "feature": "Remove a profile from a workspace",
+      "category": "Workspace Management",
+      "subcategory": "Workspace",
+      "function": "Remove profile from workspace",
+      "description": "Remove a profile from a workspace"
+    },
+    {
       "name": "WorkspaceManagementConnectGithubAccountToWorkspace",
       "uuid": "410b2d3c-8194-44d1-9f80-7b5fea689b4f",
       "feature": "",
@@ -3313,6 +3331,42 @@
       "subcategory": "Environments",
       "function": "Remove connections from environment",
       "description": "Remove connections from environment, "
+    },
+    {
+      "name": "WorkspaceManagementViewProfiles",
+      "uuid": "77f8a444-f9ac-4cb5-bb26-832b53addf01",
+      "feature": "See profiles assigned to your workspaces. Org admins see every profile in the organization.",
+      "category": "Workspace Management",
+      "subcategory": "Profiles",
+      "function": "View Profiles",
+      "description": "See profiles assigned to your workspaces. Org admins see every profile in the organization."
+    },
+    {
+      "name": "WorkspaceManagementCreateProfile",
+      "uuid": "b71221e9-3247-4510-9175-14b9de4fb06e",
+      "feature": "Create a new profile",
+      "category": "Workspace Management",
+      "subcategory": "Profiles",
+      "function": "Create Profile",
+      "description": "Create a new profile"
+    },
+    {
+      "name": "WorkspaceManagementDeleteProfile",
+      "uuid": "cad76a9d-5718-4503-8293-570b495d82bc",
+      "feature": "Delete a profile and its workspace and connection memberships. Leave associated connections intact.",
+      "category": "Workspace Management",
+      "subcategory": "Profiles",
+      "function": "Delete Profile",
+      "description": "Delete a profile and its workspace and connection memberships. Leave associated connections intact."
+    },
+    {
+      "name": "WorkspaceManagementEditProfile",
+      "uuid": "b8f0c75c-39f6-488f-92c0-ab6add761266",
+      "feature": "Edit a profile, transfer its owner, and link or unlink its connections",
+      "category": "Workspace Management",
+      "subcategory": "Profiles",
+      "function": "Edit Profile",
+      "description": "Edit a profile, transfer its owner, and link or unlink its connections"
     },
     {
       "name": "WorkspaceManagementViewProjects",

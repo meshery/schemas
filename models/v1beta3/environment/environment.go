@@ -53,7 +53,7 @@ type Environment struct {
 	// DeletedAt SQL null Timestamp to handle null values of time.
 	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt,omitempty"`
 
-	// Purpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+	// Purpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
 	//
 	// Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
 	//
@@ -65,7 +65,7 @@ type Environment struct {
 	Purpose EnvironmentPurpose `db:"purpose" gorm:"not null;default:user" json:"purpose,omitempty" yaml:"purpose,omitempty"`
 }
 
-// EnvironmentPurpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+// EnvironmentPurpose What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
 //
 // Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
 //
@@ -134,18 +134,18 @@ type EnvironmentPage struct {
 type EnvironmentPayload struct {
 	Description core.Text `json:"description,omitempty" yaml:"description,omitempty"`
 
-	// Metadata Free-form settings stored with the environment, for example a profile's settings.
+	// Metadata Free-form settings stored with the environment.
 	Metadata core.Map  `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 	Name     core.Text `json:"name" yaml:"name"`
 
 	// OrgID Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
 	OrgID uuid.UUID `json:"organizationId" yaml:"organizationId"`
 
-	// Purpose The purposes a client may give an environment on create or update: `user` (an ordinary environment) or `profile` (an ordinary environment holding one profile's settings and accounts). Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.
+	// Purpose The purposes a client may give an environment on create or update: `user` (an ordinary environment) or the deprecated `profile`. Profiles are their own construct at `/api/profiles`, assigned to workspaces; `profile` remains accepted only for environments created with it before that construct existed, and new clients must not send it. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.
 	Purpose *EnvironmentPayloadPurpose `json:"purpose,omitempty" yaml:"purpose,omitempty"`
 }
 
-// EnvironmentPayloadPurpose The purposes a client may give an environment on create or update: `user` (an ordinary environment) or `profile` (an ordinary environment holding one profile's settings and accounts). Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.
+// EnvironmentPayloadPurpose The purposes a client may give an environment on create or update: `user` (an ordinary environment) or the deprecated `profile`. Profiles are their own construct at `/api/profiles`, assigned to workspaces; `profile` remains accepted only for environments created with it before that construct existed, and new clients must not send it. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose.
 type EnvironmentPayloadPurpose string
 
 // EnvironmentId defines model for environmentId.

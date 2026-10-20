@@ -34,6 +34,7 @@ export const addTagTypes = [
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
+  "Profile_profiles",
   "ProviderCapability_capabilities",
   "Schedule_schedules",
   "Subscription_Subscriptions",
@@ -41,6 +42,7 @@ export const addTagTypes = [
   "token_tokens",
   "Workspace_workspaces",
   "Workspace_designs",
+  "Workspace_profiles",
   "Workspace_views",
 ] as const;
 const injectedRtkApi = api
@@ -1805,6 +1807,67 @@ const injectedRtkApi = api
         }),
         providesTags: ["Plan_Plans"],
       }),
+      createProfile: build.mutation<CreateProfileApiResponse, CreateProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/profiles`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      getProfiles: build.query<GetProfilesApiResponse, GetProfilesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/profiles`,
+          params: {
+            search: queryArg?.search,
+            order: queryArg?.order,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            orgId: queryArg?.orgId,
+            userId: queryArg?.userId,
+          },
+        }),
+        providesTags: ["Profile_profiles"],
+      }),
+      getProfileById: build.query<GetProfileByIdApiResponse, GetProfileByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/profiles/${queryArg.profileId}` }),
+        providesTags: ["Profile_profiles"],
+      }),
+      updateProfile: build.mutation<UpdateProfileApiResponse, UpdateProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/profiles/${queryArg.profileId}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      deleteProfile: build.mutation<DeleteProfileApiResponse, DeleteProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/profiles/${queryArg.profileId}`, method: "DELETE" }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      getProfileConnections: build.query<GetProfileConnectionsApiResponse, GetProfileConnectionsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/profiles/${queryArg.profileId}/connections`,
+          params: {
+            search: queryArg?.search,
+            order: queryArg?.order,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+          },
+        }),
+        providesTags: ["Profile_profiles"],
+      }),
+      addConnectionToProfile: build.mutation<AddConnectionToProfileApiResponse, AddConnectionToProfileApiArg>({
+        query: (queryArg) => ({
+          url: `/api/profiles/${queryArg.profileId}/connections/${queryArg.connectionId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      removeConnectionFromProfile: build.mutation<
+        RemoveConnectionFromProfileApiResponse,
+        RemoveConnectionFromProfileApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/profiles/${queryArg.profileId}/connections/${queryArg.connectionId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
       getProviderCapabilities: build.query<GetProviderCapabilitiesApiResponse, GetProviderCapabilitiesApiArg>({
         query: (queryArg) => ({
           url: `/${queryArg.version}/capabilities`,
@@ -2209,6 +2272,37 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Workspace_workspaces", "Workspace_designs"],
       }),
+      getProfilesOfWorkspace: build.query<GetProfilesOfWorkspaceApiResponse, GetProfilesOfWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/profiles`,
+          params: {
+            search: queryArg?.search,
+            order: queryArg?.order,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["Workspace_workspaces", "Workspace_profiles"],
+      }),
+      assignProfileToWorkspace: build.mutation<AssignProfileToWorkspaceApiResponse, AssignProfileToWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/profiles/${queryArg.profileId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Workspace_workspaces", "Workspace_profiles"],
+      }),
+      unassignProfileFromWorkspace: build.mutation<
+        UnassignProfileFromWorkspaceApiResponse,
+        UnassignProfileFromWorkspaceApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/profiles/${queryArg.profileId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Workspace_workspaces", "Workspace_profiles"],
+      }),
       getViewsOfWorkspace: build.query<GetViewsOfWorkspaceApiResponse, GetViewsOfWorkspaceApiArg>({
         query: (queryArg) => ({
           url: `/api/workspaces/${queryArg.workspaceId}/views`,
@@ -2371,7 +2465,7 @@ export type GetOrganizationSmtpEnvironmentApiResponse =
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
     
     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
     
@@ -9368,7 +9462,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
-      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
             
             Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
             
@@ -9689,7 +9783,7 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
         updatedAt?: string;
         /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
         deletedAt?: string | null;
-        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -9967,7 +10061,7 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
         updatedAt?: string;
         /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
         deletedAt?: string | null;
-        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -10431,7 +10525,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -10713,7 +10807,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -11191,7 +11285,7 @@ export type RecordConnectionHeartbeatApiResponse = /** status 200 Connection aft
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -15525,7 +15619,7 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   updatedAt?: string;
   /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
   deletedAt?: string | null;
-  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
     
     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
     
@@ -15545,11 +15639,11 @@ export type CreateEnvironmentApiArg = {
     description?: string;
     /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
     organizationId: string;
-    /** Free-form settings stored with the environment, for example a profile's settings. */
+    /** Free-form settings stored with the environment. */
     metadata?: {
       [key: string]: any;
     };
-    /** The purposes a client may give an environment on create or update: `user` (an ordinary environment) or `profile` (an ordinary environment holding one profile's settings and accounts). Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
+    /** The purposes a client may give an environment on create or update: `user` (an ordinary environment) or the deprecated `profile`. Profiles are their own construct at `/api/profiles`, assigned to workspaces; `profile` remains accepted only for environments created with it before that construct existed, and new clients must not send it. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
     purpose?: "user" | "profile";
   };
 };
@@ -15582,7 +15676,7 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -15639,7 +15733,7 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -15686,7 +15780,7 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -15709,11 +15803,11 @@ export type UpdateEnvironmentApiArg = {
     description?: string;
     /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
     organizationId: string;
-    /** Free-form settings stored with the environment, for example a profile's settings. */
+    /** Free-form settings stored with the environment. */
     metadata?: {
       [key: string]: any;
     };
-    /** The purposes a client may give an environment on create or update: `user` (an ordinary environment) or `profile` (an ordinary environment holding one profile's settings and accounts). Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
+    /** The purposes a client may give an environment on create or update: `user` (an ordinary environment) or the deprecated `profile`. Profiles are their own construct at `/api/profiles`, assigned to workspaces; `profile` remains accepted only for environments created with it before that construct existed, and new clients must not send it. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
     purpose?: "user" | "profile";
   };
 };
@@ -17756,6 +17850,507 @@ export type GetPlansApiArg = {
   page?: number;
   /** Get responses by pagesize */
   pagesize?: number;
+};
+export type CreateProfileApiResponse = /** status 201 Created profile */ {
+  /** Server-generated profile ID. */
+  id: string;
+  /** Specifies the version of the schema to which the profile conforms. */
+  schemaVersion: string;
+  /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+  name: string;
+  /** Description of the profile. */
+  description?: string;
+  /** Owning organization ID. Fixed at creation. */
+  organizationId: string;
+  /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+  owner: string;
+  /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+  userId?: string;
+  /** Free-form settings of the profile, stored as a JSON blob. */
+  metadata?: object;
+  /** Timestamp when the profile was created. */
+  createdAt: string;
+  /** Timestamp when the profile was last updated. */
+  updatedAt: string;
+  /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+  deletedAt?: string | null;
+};
+export type CreateProfileApiArg = {
+  /** Body for creating or updating a profile */
+  body: {
+    /** Name of the profile, typically its short handle. Not unique. */
+    name: string;
+    /** Description of the profile. */
+    description?: string;
+    /** Organization in which to create the profile. Cannot change after creation. */
+    organizationId: string;
+    /** ID of the user who owns the profile. Only the owner or a holder of Edit Profile in a workspace the profile is assigned to may change it. */
+    owner?: string;
+    /** ID of the user this profile represents, when it represents a user. The user must be a member of the organization. */
+    userId?: string;
+    /** Free-form settings of the profile. */
+    metadata?: {
+      [key: string]: any;
+    };
+  };
+};
+export type GetProfilesApiResponse = /** status 200 Profiles */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of items across all pages. */
+  totalCount: number;
+  /** Profiles in this page. */
+  profiles: {
+    /** Server-generated profile ID. */
+    id: string;
+    /** Specifies the version of the schema to which the profile conforms. */
+    schemaVersion: string;
+    /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+    name: string;
+    /** Description of the profile. */
+    description?: string;
+    /** Owning organization ID. Fixed at creation. */
+    organizationId: string;
+    /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+    owner: string;
+    /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+    userId?: string;
+    /** Free-form settings of the profile, stored as a JSON blob. */
+    metadata?: object;
+    /** Timestamp when the profile was created. */
+    createdAt: string;
+    /** Timestamp when the profile was last updated. */
+    updatedAt: string;
+    /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetProfilesApiArg = {
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
+  pagesize?: number;
+  /** Organization ID used to scope the listing. Defaults to the organization the session resolved to. */
+  orgId?: string;
+  /** Return only the profile that represents this user. */
+  userId?: string;
+};
+export type GetProfileByIdApiResponse = /** status 200 Profile */ {
+  /** Server-generated profile ID. */
+  id: string;
+  /** Specifies the version of the schema to which the profile conforms. */
+  schemaVersion: string;
+  /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+  name: string;
+  /** Description of the profile. */
+  description?: string;
+  /** Owning organization ID. Fixed at creation. */
+  organizationId: string;
+  /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+  owner: string;
+  /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+  userId?: string;
+  /** Free-form settings of the profile, stored as a JSON blob. */
+  metadata?: object;
+  /** Timestamp when the profile was created. */
+  createdAt: string;
+  /** Timestamp when the profile was last updated. */
+  updatedAt: string;
+  /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+  deletedAt?: string | null;
+};
+export type GetProfileByIdApiArg = {
+  /** Profile ID */
+  profileId: string;
+};
+export type UpdateProfileApiResponse = /** status 200 Updated profile */ {
+  /** Server-generated profile ID. */
+  id: string;
+  /** Specifies the version of the schema to which the profile conforms. */
+  schemaVersion: string;
+  /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+  name: string;
+  /** Description of the profile. */
+  description?: string;
+  /** Owning organization ID. Fixed at creation. */
+  organizationId: string;
+  /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+  owner: string;
+  /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+  userId?: string;
+  /** Free-form settings of the profile, stored as a JSON blob. */
+  metadata?: object;
+  /** Timestamp when the profile was created. */
+  createdAt: string;
+  /** Timestamp when the profile was last updated. */
+  updatedAt: string;
+  /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+  deletedAt?: string | null;
+};
+export type UpdateProfileApiArg = {
+  /** Profile ID */
+  profileId: string;
+  /** Body for creating or updating a profile */
+  body: {
+    /** Name of the profile, typically its short handle. Not unique. */
+    name: string;
+    /** Description of the profile. */
+    description?: string;
+    /** Organization in which to create the profile. Cannot change after creation. */
+    organizationId: string;
+    /** ID of the user who owns the profile. Only the owner or a holder of Edit Profile in a workspace the profile is assigned to may change it. */
+    owner?: string;
+    /** ID of the user this profile represents, when it represents a user. The user must be a member of the organization. */
+    userId?: string;
+    /** Free-form settings of the profile. */
+    metadata?: {
+      [key: string]: any;
+    };
+  };
+};
+export type DeleteProfileApiResponse = unknown;
+export type DeleteProfileApiArg = {
+  /** Profile ID */
+  profileId: string;
+};
+export type GetProfileConnectionsApiResponse = /** status 200 Profile connections */ {
+  /** List of connections on this page */
+  connections: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** Connection Name */
+    name: string;
+    /** Human-readable description of the connection and its purpose. */
+    description?: string;
+    /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+    url?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    credentialId?: string;
+    /** Connection Type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+    subType: string;
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+    kind: string;
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Additional connection metadata */
+    metadata?: object;
+    /** Schema for the credential Associated with the connection */
+    credentialSchema?: object;
+    /** Schema for the connection */
+    connectionSchema?: object;
+    /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Connection Status */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+    transitionMap?: {
+      [key: string]: {
+        /** The connection state reachable from the current state. */
+        nextState:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** Human-readable explanation of when or why this transition occurs. */
+        description?: string;
+      }[];
+    };
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    owner?: string;
+    /** Timestamp when the connection was created. */
+    createdAt?: string;
+    /** Timestamp when the connection was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the connection was soft-deleted, if applicable. */
+    deletedAt?: string | null;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId?: string;
+    /** Associated environments for this connection */
+    environments?: {
+      /** ID */
+      id: string;
+      /** Specifies the version of the schema to which the environment conforms. */
+      schemaVersion: string;
+      /** Environment name */
+      name: string;
+      /** Environment description */
+      description: string;
+      /** Environment organization ID */
+      organizationId: string;
+      /** Environment owner */
+      owner?: string;
+      /** Timestamp when the environment was created. */
+      createdAt?: string;
+      /** Additional metadata associated with the environment. */
+      metadata?: object;
+      /** Timestamp when the environment was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+      deletedAt?: string | null;
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
+            
+            Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+            
+            At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+            
+            Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged values (`user` and `profile`), and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            
+            The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+      purpose?: "user" | "administrative" | "profile";
+    }[];
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
+  }[];
+  /** Total number of connections on all pages */
+  totalCount: number;
+  /** Current page number */
+  page: number;
+  /** Number of elements per page */
+  pageSize: number;
+  /** Aggregate count of connections grouped by status */
+  statusSummary?: {
+    [key: string]: number;
+  };
+};
+export type GetProfileConnectionsApiArg = {
+  /** Profile ID */
+  profileId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
+  pagesize?: number;
+};
+export type AddConnectionToProfileApiResponse = /** status 201 Connection linked to profile */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  profileId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  connectionId: string;
+  /** Timestamp when the mapping was created. */
+  createdAt?: string;
+  /** Timestamp when the mapping was last updated. */
+  updatedAt?: string;
+  /** Timestamp when the mapping was soft-deleted. Null while the mapping remains active. */
+  deletedAt?: string | null;
+};
+export type AddConnectionToProfileApiArg = {
+  /** Profile ID */
+  profileId: string;
+  /** Connection ID */
+  connectionId: string;
+};
+export type RemoveConnectionFromProfileApiResponse = unknown;
+export type RemoveConnectionFromProfileApiArg = {
+  /** Profile ID */
+  profileId: string;
+  /** Connection ID */
+  connectionId: string;
 };
 export type GetProviderCapabilitiesApiResponse = /** status 200 The capabilities document */ {
   /** Provider type, for example `remote`. */
@@ -20012,7 +20607,7 @@ export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is an ordinary, non-privileged environment that holds one profile, by convention one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections. Like `user`, it carries no authority and a client may choose it.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. `profile` is deprecated: profiles are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be stored as environments. The value stays in the enum only so environments written with it before the profile construct existed still read back; it is an ordinary, non-privileged environment, carries no authority, and will be removed once no consumer stores it. Consumers should move those environments to profiles.
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
@@ -21145,6 +21740,91 @@ export type UnassignDesignFromWorkspaceApiArg = {
   /** Design ID */
   designId: string;
 };
+export type GetProfilesOfWorkspaceApiResponse = /** status 200 Profiles */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of items across all pages. */
+  totalCount: number;
+  /** Profiles in this page. */
+  profiles: {
+    /** Server-generated profile ID. */
+    id: string;
+    /** Specifies the version of the schema to which the profile conforms. */
+    schemaVersion: string;
+    /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+    name: string;
+    /** Description of the profile. */
+    description?: string;
+    /** Owning organization ID. Fixed at creation. */
+    organizationId: string;
+    /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+    owner: string;
+    /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+    userId?: string;
+    /** Free-form settings of the profile, stored as a JSON blob. */
+    metadata?: object;
+    /** Timestamp when the profile was created. */
+    createdAt: string;
+    /** Timestamp when the profile was last updated. */
+    updatedAt: string;
+    /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetProfilesOfWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
+  pagesize?: number;
+  /** JSON-encoded filter string used for assignment and soft-delete filters. */
+  filter?: string;
+};
+export type AssignProfileToWorkspaceApiResponse = /** status 200 Workspace profile mappings */ {
+  /** Zero-based page index returned in this response. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+  /** Total number of items across all pages. */
+  totalCount?: number;
+  /** Workspace-profile mapping entries. */
+  workspacesProfilesMapping?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    profileId: string;
+    /** Timestamp when the mapping was created. */
+    createdAt?: string;
+    /** Timestamp when the mapping was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the mapping was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type AssignProfileToWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Profile ID */
+  profileId: string;
+};
+export type UnassignProfileFromWorkspaceApiResponse = unknown;
+export type UnassignProfileFromWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Profile ID */
+  profileId: string;
+};
 export type GetViewsOfWorkspaceApiResponse = /** status 200 Views */ {
   page?: number;
   page_size?: number;
@@ -21553,6 +22233,17 @@ export const {
   useLazyGetPerformanceResultsQuery,
   useGetPlansQuery,
   useLazyGetPlansQuery,
+  useCreateProfileMutation,
+  useGetProfilesQuery,
+  useLazyGetProfilesQuery,
+  useGetProfileByIdQuery,
+  useLazyGetProfileByIdQuery,
+  useUpdateProfileMutation,
+  useDeleteProfileMutation,
+  useGetProfileConnectionsQuery,
+  useLazyGetProfileConnectionsQuery,
+  useAddConnectionToProfileMutation,
+  useRemoveConnectionFromProfileMutation,
   useGetProviderCapabilitiesQuery,
   useLazyGetProviderCapabilitiesQuery,
   useListSchedulesQuery,
@@ -21617,6 +22308,10 @@ export const {
   useLazyGetDesignsOfWorkspaceQuery,
   useAssignDesignToWorkspaceMutation,
   useUnassignDesignFromWorkspaceMutation,
+  useGetProfilesOfWorkspaceQuery,
+  useLazyGetProfilesOfWorkspaceQuery,
+  useAssignProfileToWorkspaceMutation,
+  useUnassignProfileFromWorkspaceMutation,
   useGetViewsOfWorkspaceQuery,
   useLazyGetViewsOfWorkspaceQuery,
   useAssignViewToWorkspaceMutation,

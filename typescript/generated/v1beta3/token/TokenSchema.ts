@@ -1286,7 +1286,7 @@ const TokenSchema: Record<string, unknown> = {
         ],
         "summary": "Show native client sign-in consent",
         "operationId": "getNativeClientAuthorization",
-        "description": "Browser-facing step of the native client sign-in flow (RFC 8252 loopback redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in user, never URL credentials. Validates the request and renders a consent page that asks the user to allow the named local client to act on their behalf. Nothing is issued by this call.",
+        "description": "Browser-facing step of the native client sign-in flow (RFC 8252 loopback redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in user, never URL credentials. Validates the request and renders a consent page that asks the user to allow the named local client to act on their behalf. Nothing is issued by this call. When the request names the client application (`client`) and its version (`clientVersion`) and that version is below the provider's minimum for that client, an update page is rendered with status 426 instead of the consent page.",
         "parameters": [
           {
             "name": "clientName",
@@ -1296,6 +1296,29 @@ const TokenSchema: Record<string, unknown> = {
             "schema": {
               "type": "string",
               "pattern": "^[A-Za-z0-9][A-Za-z0-9 ._-]{0,62}$"
+            }
+          },
+          {
+            "name": "client",
+            "in": "query",
+            "description": "Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.\n",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          {
+            "name": "clientVersion",
+            "in": "query",
+            "description": "Version of the client application, for example `v1.25.0`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 64
             }
           },
           {
@@ -1368,6 +1391,16 @@ const TokenSchema: Record<string, unknown> = {
             "description": "Expired JWT token used or insufficient privilege",
             "content": {
               "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "426": {
+            "description": "Update page; the client's version is below the provider's minimum for that client.",
+            "content": {
+              "text/html": {
                 "schema": {
                   "type": "string"
                 }
@@ -1908,6 +1941,29 @@ const TokenSchema: Record<string, unknown> = {
         "schema": {
           "type": "string",
           "pattern": "^[A-Za-z0-9][A-Za-z0-9 ._-]{0,62}$"
+        }
+      },
+      "nativeClient": {
+        "name": "client",
+        "in": "query",
+        "description": "Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "description": "Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.\n",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        }
+      },
+      "nativeClientVersion": {
+        "name": "clientVersion",
+        "in": "query",
+        "description": "Version of the client application, for example `v1.25.0`.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "maxLength": 64
         }
       },
       "nativePort": {

@@ -5,16 +5,57 @@ package provider_capability
 
 import (
 	core "github.com/meshery/schemas/models/core"
+	featurev1beta1 "github.com/meshery/schemas/models/v1beta1/feature"
+	planv1beta3 "github.com/meshery/schemas/models/v1beta3/plan"
 )
+
+// ClientCompatibility Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`.
+type ClientCompatibility struct {
+	// ClientName Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.
+	ClientName ClientName `json:"clientName" yaml:"clientName"`
+
+	// ClientVersion The client's version as it reported it, as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Versions are ordered by their numeric parts, so `v1.9.0` is older than `v1.25.0`.
+	ClientVersion string `json:"clientVersion" yaml:"clientVersion"`
+
+	// Compatible True when `clientVersion` is at or above `minimumVersion`, or when there is no minimum.
+	Compatible bool `json:"compatible" yaml:"compatible"`
+
+	// MinimumVersion Oldest client version the provider accepts for this client. Absent when the provider sets no minimum.
+	MinimumVersion *string `json:"minimumVersion,omitempty" yaml:"minimumVersion,omitempty"`
+
+	// UpgradeUrl Where the client can get an update, when the provider knows one.
+	UpgradeUrl *string `json:"upgradeUrl,omitempty" yaml:"upgradeUrl,omitempty"`
+}
+
+// ClientName Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.
+type ClientName = string
+
+// ClientUpgradeRequiredError Body of a 426 answer: a MeshKit error sentence plus the client's compatibility, so the client can show the minimum and where to update.
+type ClientUpgradeRequiredError struct {
+	// Code MeshKit error code allocated by the emitting service; not a stable part of this contract.
+	Code *string `json:"code,omitempty" yaml:"code,omitempty"`
+
+	// Compatibility Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`.
+	Compatibility ClientCompatibility `json:"compatibility" yaml:"compatibility"`
+
+	// Error The sentence the caller is shown.
+	Error string `json:"error" yaml:"error"`
+}
 
 // ProviderCapability The remote provider's capabilities document. Existing fields describe the
 // provider and its extensions; `contractVersion` and `membership` let a
 // native client gate on the provider's contract and on its organization
-// membership after authenticating. New fields arrive only with a new
-// `contractVersion`.
+// membership after authenticating; `compatibility` tells a client that
+// named itself whether its version is still accepted, and `session`
+// describes the authenticated caller's roles, plan and entitlements. New
+// fields arrive only with a new `contractVersion` (1.1 added
+// `compatibility` and `session`).
 type ProviderCapability struct {
-	// Capabilities Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them.
+	// Capabilities Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{machineId}` placeholders.
 	Capabilities *[]ProviderFeature `json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
+
+	// Compatibility Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`.
+	Compatibility *ClientCompatibility `json:"compatibility,omitempty" yaml:"compatibility,omitempty"`
 
 	// ContractVersion Version of the provider's REST contract for native clients, as
 	// `MAJOR.MINOR`. A client refuses a provider whose major differs from the
@@ -53,6 +94,21 @@ type ProviderCapability struct {
 
 	// RestrictedAccess Access restrictions applied to this client; shape owned by the provider.
 	RestrictedAccess core.Map `json:"restrictedAccess,omitempty" yaml:"restrictedAccess,omitempty"`
+
+	// Session The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request.
+	Session *ProviderSession `json:"session,omitempty" yaml:"session,omitempty"`
+}
+
+// ProviderDeviceUsage Registered devices (live `desktop` connections) in the organization against the organization's device limit. Registrations over the limit are accepted; `overLimit` flags the organization instead.
+type ProviderDeviceUsage struct {
+	// Limit Devices the organization's subscriptions allow. Absent when unlimited or when no subscription sets a device limit.
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+
+	// OverLimit True when `limit` is present and `registered` exceeds it.
+	OverLimit bool `json:"overLimit" yaml:"overLimit"`
+
+	// Registered Live `desktop` connections registered in the organization.
+	Registered int `json:"registered" yaml:"registered"`
 }
 
 // ProviderFeature One feature the provider serves and the endpoint that serves it.
@@ -75,8 +131,35 @@ type ProviderMembership struct {
 	OrganizationId core.Uuid `json:"organizationId" yaml:"organizationId"`
 }
 
+// ProviderSession The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request.
+type ProviderSession struct {
+	// DeviceUsage Registered devices (live `desktop` connections) in the organization against the organization's device limit. Registrations over the limit are accepted; `overLimit` flags the organization instead.
+	DeviceUsage *ProviderDeviceUsage `json:"deviceUsage,omitempty" yaml:"deviceUsage,omitempty"`
+
+	// Entitlements The features the organization's active subscriptions entitle it to.
+	Entitlements *[]featurev1beta1.Feature `json:"entitlements,omitempty" yaml:"entitlements,omitempty"`
+
+	// OrganizationRoles The caller's role names in the organization.
+	OrganizationRoles *[]string `json:"organizationRoles,omitempty" yaml:"organizationRoles,omitempty"`
+
+	// Plan Plan entity schema.
+	Plan *planv1beta3.Plan `json:"plan,omitempty" yaml:"plan,omitempty"`
+
+	// ProviderRoles The caller's provider-wide role names.
+	ProviderRoles []string `json:"providerRoles" yaml:"providerRoles"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserId core.Uuid `json:"userId" yaml:"userId"`
+}
+
+// Client Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.
+type Client = ClientName
+
 // CurrentOrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type CurrentOrgId = core.Uuid
 
 // Version defines model for version.
 type Version = string
+
+// ClientUpgradeRequired Body of a 426 answer: a MeshKit error sentence plus the client's compatibility, so the client can show the minimum and where to update.
+type ClientUpgradeRequired = ClientUpgradeRequiredError
