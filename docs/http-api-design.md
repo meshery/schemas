@@ -246,8 +246,9 @@ The rules a consumer must enforce:
   `organizationId` and the timestamps are server-managed and ignored on input, not refused. A
   schedule payload accepts `status` only as `pending`, `scheduled` or `cancelled`, so the
   claim-set statuses are rejected. Organization preference writes use the closed
-  `PreferencesPayload`, whose `schedulePause` is `SchedulePausePayload` (`paused` required, `reason`
-  only): an echoed `pausedAt` or `pausedBy` is refused with 400.
+  `PreferencesPayload` (or the closed `PreferencesPatchPayload` on PATCH), whose `schedulePause` is
+  `SchedulePausePayload` (`paused` required, `reason` only): an echoed `pausedAt` or `pausedBy` is
+  refused with 400.
 - Servers MUST omit `preferences.schedulePause` from the unauthenticated `getOrgByDomain` response.
 
 `v1beta3/job_lease` was removed in favour of these two constructs; no consumer served or called it.
