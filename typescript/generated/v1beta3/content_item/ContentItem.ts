@@ -84,7 +84,7 @@ export interface components {
     schemas: {
         /**
          * Content Item Schema
-         * @description Server-returned content item as persisted by meshery-cloud.
+         * @description Server-returned content item as persisted by the owning service.
          *     Content items carry a row number and a server-computed fingerprint over
          *     their canonical values; updates are conditional on the fingerprint the
          *     writer read, so stale writes are refused rather than silently applied.

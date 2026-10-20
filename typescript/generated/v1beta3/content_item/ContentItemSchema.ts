@@ -127,7 +127,7 @@ const ContentItemSchema: Record<string, unknown> = {
                         "x-go-type": "ContentItem",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "title": "Content Item Schema",
-                        "description": "Server-returned content item as persisted by meshery-cloud.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\n",
+                        "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\n",
                         "type": "object",
                         "additionalProperties": false,
                         "required": [
@@ -369,7 +369,7 @@ const ContentItemSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Content Item Schema",
-                  "description": "Server-returned content item as persisted by meshery-cloud.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\n",
+                  "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -591,7 +591,7 @@ const ContentItemSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Content Item Schema",
-                  "description": "Server-returned content item as persisted by meshery-cloud.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\n",
+                  "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -856,7 +856,7 @@ const ContentItemSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Content Item Schema",
-                  "description": "Server-returned content item as persisted by meshery-cloud.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\n",
+                  "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -1292,7 +1292,7 @@ const ContentItemSchema: Record<string, unknown> = {
       "ContentItem": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Content Item Schema",
-        "description": "Server-returned content item as persisted by meshery-cloud.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\n",
+        "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\n",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -1485,7 +1485,7 @@ const ContentItemSchema: Record<string, unknown> = {
               "x-go-type": "ContentItem",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "title": "Content Item Schema",
-              "description": "Server-returned content item as persisted by meshery-cloud.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\n",
+              "description": "Server-returned content item as persisted by the owning service.\nContent items carry a row number and a server-computed fingerprint over\ntheir canonical values; updates are conditional on the fingerprint the\nwriter read, so stale writes are refused rather than silently applied.\n",
               "type": "object",
               "additionalProperties": false,
               "required": [

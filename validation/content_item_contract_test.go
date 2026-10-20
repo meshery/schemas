@@ -29,7 +29,7 @@ func TestContentItemContract(t *testing.T) {
 			}
 		}
 	}
-	for path := range mustLookup(t, doc, "paths").(map[string]any) {
+	for path := range paths.(map[string]any) {
 		if strings.Contains(path, "piece") {
 			t.Errorf("path %s still uses the retired content piece name", path)
 		}
