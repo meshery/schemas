@@ -26,9 +26,17 @@ export interface paths {
          * @description Inserts a new content piece. Insert-only: any supplied
          *     `id` and `expectedFingerprint` are ignored; existing rows change
          *     only through the conditional `updateContentPiece`. The
-         *     `fingerprint` is server-computed. A live content piece of the
-         *     organization that already holds the same `profile` and
-         *     `rowNumber` refuses the insert with a 409.
+         *     `fingerprint` is server-computed. Row numbers are unique across
+         *     the live content pieces of the organization, whatever their
+         *     `profile`. When `rowNumber` is omitted the server assigns the next
+         *     row number of the organization (one more than the highest row
+         *     number the organization has used, counting soft-deleted content
+         *     pieces so a deleted piece's number is not handed out again by
+         *     assignment), atomically with the insert, so
+         *     concurrent inserts never receive the same number. An organization
+         *     that has never had a content piece is assigned row number 0 first. A supplied
+         *     `rowNumber` that another live content piece of the organization
+         *     already holds refuses the insert with a 409.
          */
         post: operations["insertContentPiece"];
         delete?: never;
@@ -51,14 +59,17 @@ export interface paths {
          * @description Conditionally updates the content piece. When
          *     `expectedFingerprint` is supplied and stale, the update is
          *     refused with a 409, as is an update that would move the piece
-         *     onto a `profile` and `rowNumber` another live content piece of
-         *     the organization holds.
+         *     onto a `rowNumber` another live content piece of the organization
+         *     holds. An omitted `rowNumber` keeps the stored one.
          */
         put: operations["updateContentPiece"];
         post?: never;
         /**
          * Delete a content piece
-         * @description Soft-deletes the content piece.
+         * @description Soft-deletes the content piece. When `expectedFingerprint` is
+         *     supplied, the delete applies only when the stored fingerprint
+         *     still matches and is refused with a 409 otherwise; without it the
+         *     delete is unconditional.
          */
         delete: operations["deleteContentPiece"];
         options?: never;
@@ -90,7 +101,7 @@ export interface components {
             organizationId: string;
             /** @description Subject of the owning profile. */
             profile: string;
-            /** @description Row number of the content within the owning profile. */
+            /** @description Row number of the content piece, unique across the live content pieces of the organization. */
             rowNumber: number;
             /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
             fingerprint: string;
@@ -127,8 +138,13 @@ export interface components {
             id?: string;
             /** @description Subject of the owning profile. */
             profile: string;
-            /** @description Row number of the content within the owning profile. */
-            rowNumber: number;
+            /**
+             * @description Row number of the content piece, unique across the live content
+             *     pieces of the organization. Optional: omitted on insert, the
+             *     server assigns the next row number of the organization; omitted
+             *     on update, the stored row number is kept.
+             */
+            rowNumber?: number;
             /** @description Content values, stored as a JSON blob. */
             data?: Record<string, never>;
             /**
@@ -161,7 +177,7 @@ export interface components {
                 organizationId: string;
                 /** @description Subject of the owning profile. */
                 profile: string;
-                /** @description Row number of the content within the owning profile. */
+                /** @description Row number of the content piece, unique across the live content pieces of the organization. */
                 rowNumber: number;
                 /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
                 fingerprint: string;
@@ -222,7 +238,7 @@ export interface components {
                 "text/plain": string;
             };
         };
-        /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber */
+        /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber */
         409: {
             headers: {
                 [name: string]: unknown;
@@ -242,6 +258,11 @@ export interface components {
         };
     };
     parameters: {
+        /**
+         * @description Optional optimistic-concurrency precondition for delete: the
+         *     delete applies only when the stored fingerprint still matches.
+         */
+        expectedFingerprint: string;
         /** @description Content piece ID */
         contentPieceId: string;
         /** @description Get responses by page */
@@ -318,7 +339,7 @@ export interface operations {
                             organizationId: string;
                             /** @description Subject of the owning profile. */
                             profile: string;
-                            /** @description Row number of the content within the owning profile. */
+                            /** @description Row number of the content piece, unique across the live content pieces of the organization. */
                             rowNumber: number;
                             /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
                             fingerprint: string;
@@ -398,8 +419,13 @@ export interface operations {
                     id?: string;
                     /** @description Subject of the owning profile. */
                     profile: string;
-                    /** @description Row number of the content within the owning profile. */
-                    rowNumber: number;
+                    /**
+                     * @description Row number of the content piece, unique across the live content
+                     *     pieces of the organization. Optional: omitted on insert, the
+                     *     server assigns the next row number of the organization; omitted
+                     *     on update, the stored row number is kept.
+                     */
+                    rowNumber?: number;
                     /** @description Content values, stored as a JSON blob. */
                     data?: Record<string, never>;
                     /**
@@ -432,7 +458,7 @@ export interface operations {
                         organizationId: string;
                         /** @description Subject of the owning profile. */
                         profile: string;
-                        /** @description Row number of the content within the owning profile. */
+                        /** @description Row number of the content piece, unique across the live content pieces of the organization. */
                         rowNumber: number;
                         /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
                         fingerprint: string;
@@ -492,7 +518,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber */
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -543,7 +569,7 @@ export interface operations {
                         organizationId: string;
                         /** @description Subject of the owning profile. */
                         profile: string;
-                        /** @description Row number of the content within the owning profile. */
+                        /** @description Row number of the content piece, unique across the live content pieces of the organization. */
                         rowNumber: number;
                         /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
                         fingerprint: string;
@@ -634,8 +660,13 @@ export interface operations {
                     id?: string;
                     /** @description Subject of the owning profile. */
                     profile: string;
-                    /** @description Row number of the content within the owning profile. */
-                    rowNumber: number;
+                    /**
+                     * @description Row number of the content piece, unique across the live content
+                     *     pieces of the organization. Optional: omitted on insert, the
+                     *     server assigns the next row number of the organization; omitted
+                     *     on update, the stored row number is kept.
+                     */
+                    rowNumber?: number;
                     /** @description Content values, stored as a JSON blob. */
                     data?: Record<string, never>;
                     /**
@@ -668,7 +699,7 @@ export interface operations {
                         organizationId: string;
                         /** @description Subject of the owning profile. */
                         profile: string;
-                        /** @description Row number of the content within the owning profile. */
+                        /** @description Row number of the content piece, unique across the live content pieces of the organization. */
                         rowNumber: number;
                         /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
                         fingerprint: string;
@@ -728,7 +759,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber */
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -750,7 +781,13 @@ export interface operations {
     };
     deleteContentPiece: {
         parameters: {
-            query?: never;
+            query?: {
+                /**
+                 * @description Optional optimistic-concurrency precondition for delete: the
+                 *     delete applies only when the stored fingerprint still matches.
+                 */
+                expectedFingerprint?: string;
+            };
             header?: never;
             path: {
                 /** @description Content piece ID */
@@ -766,6 +803,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
@@ -787,6 +833,15 @@ export interface operations {
             };
             /** @description Result not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

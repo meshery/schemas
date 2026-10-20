@@ -7,7 +7,7 @@ const ContentPieceSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "ContentPiece",
-    "description": "OpenAPI schema for content pieces - fingerprinted content\nvalues keyed by owning profile and row number, with conditional\nupdates.\nOrganization scope: every operation acts only in the organization the\nsession resolved to (X-Current-Orgid, then the user's selected\norganization), and only when the caller is a live member of it.\nAuthorization: each operation requires one permission key in that\norganization (Catalog Management / Content Pieces: View Content\nPieces for the reads, Create Content Piece, Edit Content Piece and\nDelete Content Piece for the writes); a caller without it receives a\n403 before any row is read. Past that check, an id that does not name\na live content piece of the organization, and a caller who is not a\nlive member of it, receive the same 404, so the existence of another\norganization's rows is never disclosed.\n",
+    "description": "OpenAPI schema for content pieces - fingerprinted content\nvalues keyed by organization and row number, with conditional\nupdates.\nOrganization scope: every operation acts only in the organization the\nsession resolved to (X-Current-Orgid, then the user's selected\norganization), and only when the caller is a live member of it.\nAuthorization: each operation requires one permission key in that\norganization (Catalog Management / Content Pieces: View Content\nPieces for the reads, Create Content Piece, Edit Content Piece and\nDelete Content Piece for the writes); a caller without it receives a\n403 before any row is read. Past that check, an id that does not name\na live content piece of the organization, and a caller who is not a\nlive member of it, receive the same 404, so the existence of another\norganization's rows is never disclosed.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -179,7 +179,7 @@ const ContentPieceSchema: Record<string, unknown> = {
                           },
                           "rowNumber": {
                             "type": "integer",
-                            "description": "Row number of the content within the owning profile.",
+                            "description": "Row number of the content piece, unique across the live content pieces of the organization.",
                             "minimum": 0,
                             "x-oapi-codegen-extra-tags": {
                               "db": "row_number"
@@ -306,7 +306,7 @@ const ContentPieceSchema: Record<string, unknown> = {
         ],
         "summary": "Insert a content piece",
         "operationId": "insertContentPiece",
-        "description": "Inserts a new content piece. Insert-only: any supplied\n`id` and `expectedFingerprint` are ignored; existing rows change\nonly through the conditional `updateContentPiece`. The\n`fingerprint` is server-computed. A live content piece of the\norganization that already holds the same `profile` and\n`rowNumber` refuses the insert with a 409.\n",
+        "description": "Inserts a new content piece. Insert-only: any supplied\n`id` and `expectedFingerprint` are ignored; existing rows change\nonly through the conditional `updateContentPiece`. The\n`fingerprint` is server-computed. Row numbers are unique across\nthe live content pieces of the organization, whatever their\n`profile`. When `rowNumber` is omitted the server assigns the next\nrow number of the organization (one more than the highest row\nnumber the organization has used, counting soft-deleted content\npieces so a deleted piece's number is not handed out again by\nassignment), atomically with the insert, so\nconcurrent inserts never receive the same number. An organization\nthat has never had a content piece is assigned row number 0 first. A supplied\n`rowNumber` that another live content piece of the organization\nalready holds refuses the insert with a 409.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -315,8 +315,7 @@ const ContentPieceSchema: Record<string, unknown> = {
                 "type": "object",
                 "description": "Payload for inserting or updating a content piece.\nContains only client-settable fields; the owning\n`organizationId` (derived from the authenticated session), the\nserver-computed `fingerprint` and the server-generated\n`createdAt` / `updatedAt` timestamps are intentionally excluded.\n",
                 "required": [
-                  "profile",
-                  "rowNumber"
+                  "profile"
                 ],
                 "properties": {
                   "id": {
@@ -339,7 +338,7 @@ const ContentPieceSchema: Record<string, unknown> = {
                   },
                   "rowNumber": {
                     "type": "integer",
-                    "description": "Row number of the content within the owning profile.",
+                    "description": "Row number of the content piece, unique across the live content\npieces of the organization. Optional: omitted on insert, the\nserver assigns the next row number of the organization; omitted\non update, the stored row number is kept.\n",
                     "minimum": 0
                   },
                   "data": {
@@ -422,7 +421,7 @@ const ContentPieceSchema: Record<string, unknown> = {
                     },
                     "rowNumber": {
                       "type": "integer",
-                      "description": "Row number of the content within the owning profile.",
+                      "description": "Row number of the content piece, unique across the live content pieces of the organization.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "row_number"
@@ -535,7 +534,7 @@ const ContentPieceSchema: Record<string, unknown> = {
             }
           },
           "409": {
-            "description": "Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber",
+            "description": "Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber",
             "content": {
               "text/plain": {
                 "schema": {
@@ -644,7 +643,7 @@ const ContentPieceSchema: Record<string, unknown> = {
                     },
                     "rowNumber": {
                       "type": "integer",
-                      "description": "Row number of the content within the owning profile.",
+                      "description": "Row number of the content piece, unique across the live content pieces of the organization.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "row_number"
@@ -777,7 +776,7 @@ const ContentPieceSchema: Record<string, unknown> = {
         ],
         "summary": "Update a content piece",
         "operationId": "updateContentPiece",
-        "description": "Conditionally updates the content piece. When\n`expectedFingerprint` is supplied and stale, the update is\nrefused with a 409, as is an update that would move the piece\nonto a `profile` and `rowNumber` another live content piece of\nthe organization holds.\n",
+        "description": "Conditionally updates the content piece. When\n`expectedFingerprint` is supplied and stale, the update is\nrefused with a 409, as is an update that would move the piece\nonto a `rowNumber` another live content piece of the organization\nholds. An omitted `rowNumber` keeps the stored one.\n",
         "parameters": [
           {
             "name": "contentPieceId",
@@ -803,8 +802,7 @@ const ContentPieceSchema: Record<string, unknown> = {
                 "type": "object",
                 "description": "Payload for inserting or updating a content piece.\nContains only client-settable fields; the owning\n`organizationId` (derived from the authenticated session), the\nserver-computed `fingerprint` and the server-generated\n`createdAt` / `updatedAt` timestamps are intentionally excluded.\n",
                 "required": [
-                  "profile",
-                  "rowNumber"
+                  "profile"
                 ],
                 "properties": {
                   "id": {
@@ -827,7 +825,7 @@ const ContentPieceSchema: Record<string, unknown> = {
                   },
                   "rowNumber": {
                     "type": "integer",
-                    "description": "Row number of the content within the owning profile.",
+                    "description": "Row number of the content piece, unique across the live content\npieces of the organization. Optional: omitted on insert, the\nserver assigns the next row number of the organization; omitted\non update, the stored row number is kept.\n",
                     "minimum": 0
                   },
                   "data": {
@@ -910,7 +908,7 @@ const ContentPieceSchema: Record<string, unknown> = {
                     },
                     "rowNumber": {
                       "type": "integer",
-                      "description": "Row number of the content within the owning profile.",
+                      "description": "Row number of the content piece, unique across the live content pieces of the organization.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "row_number"
@@ -1023,7 +1021,7 @@ const ContentPieceSchema: Record<string, unknown> = {
             }
           },
           "409": {
-            "description": "Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber",
+            "description": "Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1053,7 +1051,7 @@ const ContentPieceSchema: Record<string, unknown> = {
         ],
         "summary": "Delete a content piece",
         "operationId": "deleteContentPiece",
-        "description": "Soft-deletes the content piece.",
+        "description": "Soft-deletes the content piece. When `expectedFingerprint` is\nsupplied, the delete applies only when the stored fingerprint\nstill matches and is refused with a 409 otherwise; without it the\ndelete is unconditional.\n",
         "parameters": [
           {
             "name": "contentPieceId",
@@ -1069,11 +1067,31 @@ const ContentPieceSchema: Record<string, unknown> = {
                 "path": "github.com/gofrs/uuid"
               }
             }
+          },
+          {
+            "name": "expectedFingerprint",
+            "in": "query",
+            "description": "Optional optimistic-concurrency precondition for delete: the\ndelete applies only when the stored fingerprint still matches.\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
           }
         ],
         "responses": {
           "204": {
             "description": "Content piece deleted"
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
@@ -1097,6 +1115,16 @@ const ContentPieceSchema: Record<string, unknown> = {
           },
           "404": {
             "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1169,7 +1197,7 @@ const ContentPieceSchema: Record<string, unknown> = {
         }
       },
       "409": {
-        "description": "Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber",
+        "description": "Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber",
         "content": {
           "text/plain": {
             "schema": {
@@ -1190,6 +1218,16 @@ const ContentPieceSchema: Record<string, unknown> = {
       }
     },
     "parameters": {
+      "expectedFingerprint": {
+        "name": "expectedFingerprint",
+        "in": "query",
+        "description": "Optional optimistic-concurrency precondition for delete: the\ndelete applies only when the stored fingerprint still matches.\n",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "maxLength": 255
+        }
+      },
       "contentPieceId": {
         "name": "contentPieceId",
         "in": "path",
@@ -1306,7 +1344,7 @@ const ContentPieceSchema: Record<string, unknown> = {
           },
           "rowNumber": {
             "type": "integer",
-            "description": "Row number of the content within the owning profile.",
+            "description": "Row number of the content piece, unique across the live content pieces of the organization.",
             "minimum": 0,
             "x-oapi-codegen-extra-tags": {
               "db": "row_number"
@@ -1379,8 +1417,7 @@ const ContentPieceSchema: Record<string, unknown> = {
         "type": "object",
         "description": "Payload for inserting or updating a content piece.\nContains only client-settable fields; the owning\n`organizationId` (derived from the authenticated session), the\nserver-computed `fingerprint` and the server-generated\n`createdAt` / `updatedAt` timestamps are intentionally excluded.\n",
         "required": [
-          "profile",
-          "rowNumber"
+          "profile"
         ],
         "properties": {
           "id": {
@@ -1403,7 +1440,7 @@ const ContentPieceSchema: Record<string, unknown> = {
           },
           "rowNumber": {
             "type": "integer",
-            "description": "Row number of the content within the owning profile.",
+            "description": "Row number of the content piece, unique across the live content\npieces of the organization. Optional: omitted on insert, the\nserver assigns the next row number of the organization; omitted\non update, the stored row number is kept.\n",
             "minimum": 0
           },
           "data": {
@@ -1500,7 +1537,7 @@ const ContentPieceSchema: Record<string, unknown> = {
                 },
                 "rowNumber": {
                   "type": "integer",
-                  "description": "Row number of the content within the owning profile.",
+                  "description": "Row number of the content piece, unique across the live content pieces of the organization.",
                   "minimum": 0,
                   "x-oapi-codegen-extra-tags": {
                     "db": "row_number"

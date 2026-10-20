@@ -1214,7 +1214,13 @@ const injectedRtkApi = api
         invalidatesTags: ["ContentPiece_contentPieces"],
       }),
       deleteContentPiece: build.mutation<DeleteContentPieceApiResponse, DeleteContentPieceApiArg>({
-        query: (queryArg) => ({ url: `/api/content/pieces/${queryArg.contentPieceId}`, method: "DELETE" }),
+        query: (queryArg) => ({
+          url: `/api/content/pieces/${queryArg.contentPieceId}`,
+          method: "DELETE",
+          params: {
+            expectedFingerprint: queryArg?.expectedFingerprint,
+          },
+        }),
         invalidatesTags: ["ContentPiece_contentPieces"],
       }),
       getPatterns: build.query<GetPatternsApiResponse, GetPatternsApiArg>({
@@ -12252,7 +12258,7 @@ export type ListContentPiecesApiResponse = /** status 200 Content piece page */ 
     organizationId: string;
     /** Subject of the owning profile. */
     profile: string;
-    /** Row number of the content within the owning profile. */
+    /** Row number of the content piece, unique across the live content pieces of the organization. */
     rowNumber: number;
     /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
     fingerprint: string;
@@ -12289,7 +12295,7 @@ export type InsertContentPieceApiResponse = /** status 201 Content piece created
   organizationId: string;
   /** Subject of the owning profile. */
   profile: string;
-  /** Row number of the content within the owning profile. */
+  /** Row number of the content piece, unique across the live content pieces of the organization. */
   rowNumber: number;
   /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
   fingerprint: string;
@@ -12308,8 +12314,12 @@ export type InsertContentPieceApiArg = {
     id?: string;
     /** Subject of the owning profile. */
     profile: string;
-    /** Row number of the content within the owning profile. */
-    rowNumber: number;
+    /** Row number of the content piece, unique across the live content
+        pieces of the organization. Optional: omitted on insert, the
+        server assigns the next row number of the organization; omitted
+        on update, the stored row number is kept.
+         */
+    rowNumber?: number;
     /** Content values, stored as a JSON blob. */
     data?: object;
     /** Optimistic-concurrency precondition for update: when supplied,
@@ -12327,7 +12337,7 @@ export type GetContentPieceApiResponse = /** status 200 Content piece response *
   organizationId: string;
   /** Subject of the owning profile. */
   profile: string;
-  /** Row number of the content within the owning profile. */
+  /** Row number of the content piece, unique across the live content pieces of the organization. */
   rowNumber: number;
   /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
   fingerprint: string;
@@ -12351,7 +12361,7 @@ export type UpdateContentPieceApiResponse = /** status 200 Content piece updated
   organizationId: string;
   /** Subject of the owning profile. */
   profile: string;
-  /** Row number of the content within the owning profile. */
+  /** Row number of the content piece, unique across the live content pieces of the organization. */
   rowNumber: number;
   /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
   fingerprint: string;
@@ -12372,8 +12382,12 @@ export type UpdateContentPieceApiArg = {
     id?: string;
     /** Subject of the owning profile. */
     profile: string;
-    /** Row number of the content within the owning profile. */
-    rowNumber: number;
+    /** Row number of the content piece, unique across the live content
+        pieces of the organization. Optional: omitted on insert, the
+        server assigns the next row number of the organization; omitted
+        on update, the stored row number is kept.
+         */
+    rowNumber?: number;
     /** Content values, stored as a JSON blob. */
     data?: object;
     /** Optimistic-concurrency precondition for update: when supplied,
@@ -12388,6 +12402,10 @@ export type DeleteContentPieceApiResponse = unknown;
 export type DeleteContentPieceApiArg = {
   /** Content piece ID */
   contentPieceId: string;
+  /** Optional optimistic-concurrency precondition for delete: the
+    delete applies only when the stored fingerprint still matches.
+     */
+  expectedFingerprint?: string;
 };
 export type GetPatternsApiResponse = /** status 200 Designs response */ {
   /** Current page number of the result set. */
