@@ -98,7 +98,8 @@ Endpoints are grouped into logical categories under `/api`:
 |---|---|
 | `/api/identity/` | Users, orgs, roles, teams, invitations |
 | `/api/integrations/` | Connections, environments, credentials |
-| `/api/content/` | Designs, views, components, models, content pieces (`/api/content/pieces`) |
+| `/api/content/` | Designs, views, components, models |
+| `/api/content-items` | Content items (a single kebab-case collection, outside `/api/content/`; it replaced `/api/content/pieces`) |
 | `/api/entitlement/` | Plans, subscriptions, features |
 | `/api/auth/` | Tokens, keychains, keys |
 | `/api/system/` | Operational endpoints (database, version, session sync, adapters, meshsync, telemetry config, file IO, GraphQL transport) |

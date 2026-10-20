@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "4b82183578f6b499c156caba33a8256d0d1e9d4d440f41745fb97850f781b0f4" as const;
+export const PERMISSIONS_INDEX_ID = "b6719e8c3b67424743df4072b23c96e8b3e4b7cad768784e405f4fde74ec52fd" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -502,47 +502,47 @@ export const Keys = {
   },
 
   /**
-   * View the content pieces of the organization
+   * View the content items of the organization
    */
-  CatalogManagementViewContentPieces: {
+  CatalogManagementViewContentItems: {
     id: "5cd87dc9-02c6-44a0-a019-281f7295ad08" as PermissionKey,
     category: "Catalog Management",
-    subcategory: "Content Pieces",
-    function: "View Content Pieces",
-    description: "View the content pieces of the organization"
+    subcategory: "Content Items",
+    function: "View Content Items",
+    description: "View the content items of the organization"
   },
 
   /**
-   * Create a content piece in the organization
+   * Create a content item in the organization
    */
-  CatalogManagementCreateContentPiece: {
+  CatalogManagementCreateContentItem: {
     id: "5fb97ae1-49ed-490c-b17a-377bf5558585" as PermissionKey,
     category: "Catalog Management",
-    subcategory: "Content Pieces",
-    function: "Create Content Piece",
-    description: "Create a content piece in the organization"
+    subcategory: "Content Items",
+    function: "Create Content Item",
+    description: "Create a content item in the organization"
   },
 
   /**
-   * Edit a content piece of the organization
+   * Edit a content item of the organization
    */
-  CatalogManagementEditContentPiece: {
+  CatalogManagementEditContentItem: {
     id: "06858261-c7eb-464a-a4b7-e29792a7ae54" as PermissionKey,
     category: "Catalog Management",
-    subcategory: "Content Pieces",
-    function: "Edit Content Piece",
-    description: "Edit a content piece of the organization"
+    subcategory: "Content Items",
+    function: "Edit Content Item",
+    description: "Edit a content item of the organization"
   },
 
   /**
-   * Delete a content piece of the organization
+   * Delete a content item of the organization
    */
-  CatalogManagementDeleteContentPiece: {
+  CatalogManagementDeleteContentItem: {
     id: "129d0297-1091-40e4-8d4a-5262b3378305" as PermissionKey,
     category: "Catalog Management",
-    subcategory: "Content Pieces",
-    function: "Delete Content Piece",
-    description: "Delete a content piece of the organization"
+    subcategory: "Content Items",
+    function: "Delete Content Item",
+    description: "Delete a content item of the organization"
   },
 
   /**
@@ -5195,24 +5195,24 @@ export const PermissionKeys = {
   CatalogManagementDeleteWasmFilter: "9225d5a7-7255-49be-9233-daeabefae306" as PermissionKey,
 
   /**
-   * View the content pieces of the organization
+   * View the content items of the organization
    */
-  CatalogManagementViewContentPieces: "5cd87dc9-02c6-44a0-a019-281f7295ad08" as PermissionKey,
+  CatalogManagementViewContentItems: "5cd87dc9-02c6-44a0-a019-281f7295ad08" as PermissionKey,
 
   /**
-   * Create a content piece in the organization
+   * Create a content item in the organization
    */
-  CatalogManagementCreateContentPiece: "5fb97ae1-49ed-490c-b17a-377bf5558585" as PermissionKey,
+  CatalogManagementCreateContentItem: "5fb97ae1-49ed-490c-b17a-377bf5558585" as PermissionKey,
 
   /**
-   * Edit a content piece of the organization
+   * Edit a content item of the organization
    */
-  CatalogManagementEditContentPiece: "06858261-c7eb-464a-a4b7-e29792a7ae54" as PermissionKey,
+  CatalogManagementEditContentItem: "06858261-c7eb-464a-a4b7-e29792a7ae54" as PermissionKey,
 
   /**
-   * Delete a content piece of the organization
+   * Delete a content item of the organization
    */
-  CatalogManagementDeleteContentPiece: "129d0297-1091-40e4-8d4a-5262b3378305" as PermissionKey,
+  CatalogManagementDeleteContentItem: "129d0297-1091-40e4-8d4a-5262b3378305" as PermissionKey,
 
   /**
    * Invite any Meshery Cloud user, or all Meshery users, to work with you on a public design that control – including making changes and releasing new versions.

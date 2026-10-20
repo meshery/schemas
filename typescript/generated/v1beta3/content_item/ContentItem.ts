@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/content/pieces": {
+    "/api/content-items": {
         parameters: {
             query?: never;
             header?: never;
@@ -12,67 +12,67 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * List content pieces
-         * @description Returns a paginated list of the live content pieces in the
+         * List content items
+         * @description Returns a paginated list of the live content items in the
          *     organization of the authenticated session, ordered by `rowNumber`
          *     unless `order` names another column (`rowNumber`, `createdAt`,
          *     `updatedAt`). `search` matches the profile or the content values,
          *     case-insensitively.
          */
-        get: operations["listContentPieces"];
+        get: operations["listContentItems"];
         put?: never;
         /**
-         * Insert a content piece
-         * @description Inserts a new content piece. Insert-only: any supplied
+         * Insert a content item
+         * @description Inserts a new content item. Insert-only: any supplied
          *     `id` and `expectedFingerprint` are ignored; existing rows change
-         *     only through the conditional `updateContentPiece`. The
+         *     only through the conditional `updateContentItem`. The
          *     `fingerprint` is server-computed. Row numbers are unique across
-         *     the live content pieces of the organization, whatever their
+         *     the live content items of the organization, whatever their
          *     `profile`. When `rowNumber` is omitted the server assigns the next
          *     row number of the organization (one more than the highest row
          *     number the organization has used, counting soft-deleted content
-         *     pieces so a deleted piece's number is not handed out again by
+         *     items so a deleted item's number is not handed out again by
          *     assignment), atomically with the insert, so
          *     concurrent inserts never receive the same number. An organization
-         *     that has never had a content piece is assigned row number 1 first
+         *     that has never had a content item is assigned row number 1 first
          *     (an explicit `rowNumber` of 0 is still accepted). A supplied
-         *     `rowNumber` that another live content piece of the organization
+         *     `rowNumber` that another live content item of the organization
          *     already holds refuses the insert with a 409.
          */
-        post: operations["insertContentPiece"];
+        post: operations["insertContentItem"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/content/pieces/{contentPieceId}": {
+    "/api/content-items/{contentItemId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get a content piece by ID */
-        get: operations["getContentPiece"];
+        /** Get a content item by ID */
+        get: operations["getContentItem"];
         /**
-         * Update a content piece
-         * @description Conditionally updates the content piece. When
+         * Update a content item
+         * @description Conditionally updates the content item. When
          *     `expectedFingerprint` is supplied and stale, the update is
-         *     refused with a 409, as is an update that would move the piece
-         *     onto a `rowNumber` another live content piece of the organization
+         *     refused with a 409, as is an update that would move the item
+         *     onto a `rowNumber` another live content item of the organization
          *     holds. An omitted `rowNumber` keeps the stored one.
          */
-        put: operations["updateContentPiece"];
+        put: operations["updateContentItem"];
         post?: never;
         /**
-         * Delete a content piece
-         * @description Soft-deletes the content piece. When `expectedFingerprint` is
+         * Delete a content item
+         * @description Soft-deletes the content item. When `expectedFingerprint` is
          *     supplied, the delete applies only when the stored fingerprint
          *     still matches and is refused with a 409 otherwise; without it the
          *     delete is unconditional.
          */
-        delete: operations["deleteContentPiece"];
+        delete: operations["deleteContentItem"];
         options?: never;
         head?: never;
         patch?: never;
@@ -83,16 +83,16 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
-         * Content Piece Schema
-         * @description Server-returned content piece as persisted by meshery-cloud.
-         *     Content pieces carry a row number and a server-computed fingerprint over
+         * Content Item Schema
+         * @description Server-returned content item as persisted by meshery-cloud.
+         *     Content items carry a row number and a server-computed fingerprint over
          *     their canonical values; updates are conditional on the fingerprint the
          *     writer read, so stale writes are refused rather than silently applied.
          */
-        ContentPiece: {
+        ContentItem: {
             /**
              * Format: uuid
-             * @description Server-generated content piece ID.
+             * @description Server-generated content item ID.
              */
             id: string;
             /**
@@ -102,7 +102,7 @@ export interface components {
             organizationId: string;
             /** @description Subject of the owning profile. */
             profile: string;
-            /** @description Row number of the content piece, unique across the live content pieces of the organization. */
+            /** @description Row number of the content item, unique across the live content items of the organization. */
             rowNumber: number;
             /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
             fingerprint: string;
@@ -110,38 +110,38 @@ export interface components {
             data?: Record<string, never>;
             /**
              * Format: date-time
-             * @description Timestamp of content piece creation.
+             * @description Timestamp of content item creation.
              */
             createdAt: string;
             /**
              * Format: date-time
-             * @description Timestamp of last content piece modification.
+             * @description Timestamp of last content item modification.
              */
             updatedAt: string;
             /**
              * Format: date-time
-             * @description Timestamp when the content piece was soft-deleted.
+             * @description Timestamp when the content item was soft-deleted.
              */
             deletedAt?: string | null;
         };
         /**
-         * @description Payload for inserting or updating a content piece.
+         * @description Payload for inserting or updating a content item.
          *     Contains only client-settable fields; the owning
          *     `organizationId` (derived from the authenticated session), the
          *     server-computed `fingerprint` and the server-generated
          *     `createdAt` / `updatedAt` timestamps are intentionally excluded.
          */
-        ContentPiecePayload: {
+        ContentItemPayload: {
             /**
              * Format: uuid
-             * @description Existing content piece ID for updates; ignored on insert.
+             * @description Existing content item ID for updates; ignored on insert.
              */
             id?: string;
             /** @description Subject of the owning profile. */
             profile: string;
             /**
-             * @description Row number of the content piece, unique across the live content
-             *     pieces of the organization. Optional: omitted on insert, the
+             * @description Row number of the content item, unique across the live content
+             *     items of the organization. Optional: omitted on insert, the
              *     server assigns the next row number of the organization; omitted
              *     on update, the stored row number is kept.
              */
@@ -156,19 +156,19 @@ export interface components {
              */
             expectedFingerprint?: string;
         };
-        /** @description Paginated collection of content pieces. */
-        ContentPiecePage: {
+        /** @description Paginated collection of content items. */
+        ContentItemPage: {
             /** @description Current page number of the result set. */
             page?: number;
             /** @description Number of items per page. */
             pageSize?: number;
             /** @description Total number of items available. */
             totalCount?: number;
-            /** @description Content pieces included on this page of results. */
-            contentPieces?: {
+            /** @description Content items included on this page of results. */
+            contentItems?: {
                 /**
                  * Format: uuid
-                 * @description Server-generated content piece ID.
+                 * @description Server-generated content item ID.
                  */
                 id: string;
                 /**
@@ -178,7 +178,7 @@ export interface components {
                 organizationId: string;
                 /** @description Subject of the owning profile. */
                 profile: string;
-                /** @description Row number of the content piece, unique across the live content pieces of the organization. */
+                /** @description Row number of the content item, unique across the live content items of the organization. */
                 rowNumber: number;
                 /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
                 fingerprint: string;
@@ -186,17 +186,17 @@ export interface components {
                 data?: Record<string, never>;
                 /**
                  * Format: date-time
-                 * @description Timestamp of content piece creation.
+                 * @description Timestamp of content item creation.
                  */
                 createdAt: string;
                 /**
                  * Format: date-time
-                 * @description Timestamp of last content piece modification.
+                 * @description Timestamp of last content item modification.
                  */
                 updatedAt: string;
                 /**
                  * Format: date-time
-                 * @description Timestamp when the content piece was soft-deleted.
+                 * @description Timestamp when the content item was soft-deleted.
                  */
                 deletedAt?: string | null;
             }[];
@@ -239,7 +239,7 @@ export interface components {
                 "text/plain": string;
             };
         };
-        /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber */
+        /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber */
         409: {
             headers: {
                 [name: string]: unknown;
@@ -264,8 +264,8 @@ export interface components {
          *     delete applies only when the stored fingerprint still matches.
          */
         expectedFingerprint: string;
-        /** @description Content piece ID */
-        contentPieceId: string;
+        /** @description Content item ID */
+        contentItemId: string;
         /** @description Get responses by page */
         page: number;
         /** @description Number of items per page (canonical camelCase form). */
@@ -287,7 +287,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    listContentPieces: {
+    listContentItems: {
         parameters: {
             query?: {
                 /** @description Get responses by page */
@@ -313,7 +313,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Content piece page */
+            /** @description Content item page */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -326,11 +326,11 @@ export interface operations {
                         pageSize?: number;
                         /** @description Total number of items available. */
                         totalCount?: number;
-                        /** @description Content pieces included on this page of results. */
-                        contentPieces?: {
+                        /** @description Content items included on this page of results. */
+                        contentItems?: {
                             /**
                              * Format: uuid
-                             * @description Server-generated content piece ID.
+                             * @description Server-generated content item ID.
                              */
                             id: string;
                             /**
@@ -340,7 +340,7 @@ export interface operations {
                             organizationId: string;
                             /** @description Subject of the owning profile. */
                             profile: string;
-                            /** @description Row number of the content piece, unique across the live content pieces of the organization. */
+                            /** @description Row number of the content item, unique across the live content items of the organization. */
                             rowNumber: number;
                             /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
                             fingerprint: string;
@@ -348,17 +348,17 @@ export interface operations {
                             data?: Record<string, never>;
                             /**
                              * Format: date-time
-                             * @description Timestamp of content piece creation.
+                             * @description Timestamp of content item creation.
                              */
                             createdAt: string;
                             /**
                              * Format: date-time
-                             * @description Timestamp of last content piece modification.
+                             * @description Timestamp of last content item modification.
                              */
                             updatedAt: string;
                             /**
                              * Format: date-time
-                             * @description Timestamp when the content piece was soft-deleted.
+                             * @description Timestamp when the content item was soft-deleted.
                              */
                             deletedAt?: string | null;
                         }[];
@@ -403,7 +403,7 @@ export interface operations {
             };
         };
     };
-    insertContentPiece: {
+    insertContentItem: {
         parameters: {
             query?: never;
             header?: never;
@@ -415,14 +415,14 @@ export interface operations {
                 "application/json": {
                     /**
                      * Format: uuid
-                     * @description Existing content piece ID for updates; ignored on insert.
+                     * @description Existing content item ID for updates; ignored on insert.
                      */
                     id?: string;
                     /** @description Subject of the owning profile. */
                     profile: string;
                     /**
-                     * @description Row number of the content piece, unique across the live content
-                     *     pieces of the organization. Optional: omitted on insert, the
+                     * @description Row number of the content item, unique across the live content
+                     *     items of the organization. Optional: omitted on insert, the
                      *     server assigns the next row number of the organization; omitted
                      *     on update, the stored row number is kept.
                      */
@@ -440,7 +440,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Content piece created */
+            /** @description Content item created */
             201: {
                 headers: {
                     [name: string]: unknown;
@@ -449,7 +449,7 @@ export interface operations {
                     "application/json": {
                         /**
                          * Format: uuid
-                         * @description Server-generated content piece ID.
+                         * @description Server-generated content item ID.
                          */
                         id: string;
                         /**
@@ -459,7 +459,7 @@ export interface operations {
                         organizationId: string;
                         /** @description Subject of the owning profile. */
                         profile: string;
-                        /** @description Row number of the content piece, unique across the live content pieces of the organization. */
+                        /** @description Row number of the content item, unique across the live content items of the organization. */
                         rowNumber: number;
                         /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
                         fingerprint: string;
@@ -467,17 +467,17 @@ export interface operations {
                         data?: Record<string, never>;
                         /**
                          * Format: date-time
-                         * @description Timestamp of content piece creation.
+                         * @description Timestamp of content item creation.
                          */
                         createdAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp of last content piece modification.
+                         * @description Timestamp of last content item modification.
                          */
                         updatedAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp when the content piece was soft-deleted.
+                         * @description Timestamp when the content item was soft-deleted.
                          */
                         deletedAt?: string | null;
                     };
@@ -519,7 +519,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber */
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -539,19 +539,19 @@ export interface operations {
             };
         };
     };
-    getContentPiece: {
+    getContentItem: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                /** @description Content piece ID */
-                contentPieceId: string;
+                /** @description Content item ID */
+                contentItemId: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Content piece response */
+            /** @description Content item response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -560,7 +560,7 @@ export interface operations {
                     "application/json": {
                         /**
                          * Format: uuid
-                         * @description Server-generated content piece ID.
+                         * @description Server-generated content item ID.
                          */
                         id: string;
                         /**
@@ -570,7 +570,7 @@ export interface operations {
                         organizationId: string;
                         /** @description Subject of the owning profile. */
                         profile: string;
-                        /** @description Row number of the content piece, unique across the live content pieces of the organization. */
+                        /** @description Row number of the content item, unique across the live content items of the organization. */
                         rowNumber: number;
                         /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
                         fingerprint: string;
@@ -578,17 +578,17 @@ export interface operations {
                         data?: Record<string, never>;
                         /**
                          * Format: date-time
-                         * @description Timestamp of content piece creation.
+                         * @description Timestamp of content item creation.
                          */
                         createdAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp of last content piece modification.
+                         * @description Timestamp of last content item modification.
                          */
                         updatedAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp when the content piece was soft-deleted.
+                         * @description Timestamp when the content item was soft-deleted.
                          */
                         deletedAt?: string | null;
                     };
@@ -641,13 +641,13 @@ export interface operations {
             };
         };
     };
-    updateContentPiece: {
+    updateContentItem: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                /** @description Content piece ID */
-                contentPieceId: string;
+                /** @description Content item ID */
+                contentItemId: string;
             };
             cookie?: never;
         };
@@ -656,14 +656,14 @@ export interface operations {
                 "application/json": {
                     /**
                      * Format: uuid
-                     * @description Existing content piece ID for updates; ignored on insert.
+                     * @description Existing content item ID for updates; ignored on insert.
                      */
                     id?: string;
                     /** @description Subject of the owning profile. */
                     profile: string;
                     /**
-                     * @description Row number of the content piece, unique across the live content
-                     *     pieces of the organization. Optional: omitted on insert, the
+                     * @description Row number of the content item, unique across the live content
+                     *     items of the organization. Optional: omitted on insert, the
                      *     server assigns the next row number of the organization; omitted
                      *     on update, the stored row number is kept.
                      */
@@ -681,7 +681,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Content piece updated */
+            /** @description Content item updated */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -690,7 +690,7 @@ export interface operations {
                     "application/json": {
                         /**
                          * Format: uuid
-                         * @description Server-generated content piece ID.
+                         * @description Server-generated content item ID.
                          */
                         id: string;
                         /**
@@ -700,7 +700,7 @@ export interface operations {
                         organizationId: string;
                         /** @description Subject of the owning profile. */
                         profile: string;
-                        /** @description Row number of the content piece, unique across the live content pieces of the organization. */
+                        /** @description Row number of the content item, unique across the live content items of the organization. */
                         rowNumber: number;
                         /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
                         fingerprint: string;
@@ -708,17 +708,17 @@ export interface operations {
                         data?: Record<string, never>;
                         /**
                          * Format: date-time
-                         * @description Timestamp of content piece creation.
+                         * @description Timestamp of content item creation.
                          */
                         createdAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp of last content piece modification.
+                         * @description Timestamp of last content item modification.
                          */
                         updatedAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp when the content piece was soft-deleted.
+                         * @description Timestamp when the content item was soft-deleted.
                          */
                         deletedAt?: string | null;
                     };
@@ -760,7 +760,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber */
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -780,7 +780,7 @@ export interface operations {
             };
         };
     };
-    deleteContentPiece: {
+    deleteContentItem: {
         parameters: {
             query?: {
                 /**
@@ -791,14 +791,14 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description Content piece ID */
-                contentPieceId: string;
+                /** @description Content item ID */
+                contentItemId: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Content piece deleted */
+            /** @description Content item deleted */
             204: {
                 headers: {
                     [name: string]: unknown;
@@ -841,7 +841,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber */
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber */
             409: {
                 headers: {
                     [name: string]: unknown;

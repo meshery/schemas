@@ -87,9 +87,9 @@
     "extension": false
   },
   {
-    "construct": "content_piece",
+    "construct": "content_item",
     "version": "v1beta3",
-    "href": "/schemas/constructs/v1beta3/content_piece/content_piece.yaml",
+    "href": "/schemas/constructs/v1beta3/content_item/content_item.yaml",
     "core": false,
     "extension": true
   },
