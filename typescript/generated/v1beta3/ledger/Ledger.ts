@@ -24,7 +24,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/ledgers/{ledger}/entries/claim": {
+    "/api/ledgers/{ledger}/claims": {
         parameters: {
             query?: never;
             header?: never;

@@ -377,7 +377,7 @@ const LedgerSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/ledgers/{ledger}/entries/claim": {
+    "/api/ledgers/{ledger}/claims": {
       "post": {
         "x-internal": [
           "cloud"
