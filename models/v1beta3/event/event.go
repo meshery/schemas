@@ -90,6 +90,9 @@ type EventPayload struct {
 	// Description Description of the event.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
 
+	// IdempotencyKey Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
+	IdempotencyKey *string `json:"idempotencyKey,omitempty" yaml:"idempotencyKey,omitempty"`
+
 	// Owner UUID of the user associated with the event.
 	Owner                *uuid.UUID             `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
@@ -271,6 +274,14 @@ func (a *EventPayload) UnmarshalJSON(b []byte) error {
 		delete(object, "description")
 	}
 
+	if raw, found := object["idempotencyKey"]; found {
+		err = json.Unmarshal(raw, &a.IdempotencyKey)
+		if err != nil {
+			return fmt.Errorf("error reading 'idempotencyKey': %w", err)
+		}
+		delete(object, "idempotencyKey")
+	}
+
 	if raw, found := object["owner"]; found {
 		err = json.Unmarshal(raw, &a.Owner)
 		if err != nil {
@@ -316,6 +327,13 @@ func (a EventPayload) MarshalJSON() ([]byte, error) {
 		object["description"], err = json.Marshal(a.Description)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'description': %w", err)
+		}
+	}
+
+	if a.IdempotencyKey != nil {
+		object["idempotencyKey"], err = json.Marshal(a.IdempotencyKey)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'idempotencyKey': %w", err)
 		}
 	}
 
