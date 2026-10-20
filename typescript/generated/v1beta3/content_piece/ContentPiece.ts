@@ -34,7 +34,8 @@ export interface paths {
          *     pieces so a deleted piece's number is not handed out again by
          *     assignment), atomically with the insert, so
          *     concurrent inserts never receive the same number. An organization
-         *     that has never had a content piece is assigned row number 0 first. A supplied
+         *     that has never had a content piece is assigned row number 1 first
+         *     (an explicit `rowNumber` of 0 is still accepted). A supplied
          *     `rowNumber` that another live content piece of the organization
          *     already holds refuses the insert with a 409.
          */
