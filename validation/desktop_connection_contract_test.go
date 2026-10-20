@@ -75,13 +75,13 @@ func TestClientHandshakeContract(t *testing.T) {
 		}
 	}
 	compat := mustLookup(t, schemas, "ClientCompatibility", "properties")
-	for _, name := range []string{"clientName", "clientVersion", "minimumVersion", "compatible", "contractVersion", "upgradeUrl"} {
+	for _, name := range []string{"clientName", "clientVersion", "minimumVersion", "compatible", "upgradeUrl"} {
 		if _, ok := mappingValue(compat, name); !ok {
 			t.Errorf("ClientCompatibility must define %q", name)
 		}
 	}
 	session := mustLookup(t, schemas, "ProviderSession", "properties")
-	for _, name := range []string{"userId", "organizationId", "providerRoles", "organizationRoles", "plan", "entitlements", "deviceUsage"} {
+	for _, name := range []string{"userId", "providerRoles", "organizationRoles", "plan", "entitlements", "deviceUsage"} {
 		if _, ok := mappingValue(session, name); !ok {
 			t.Errorf("ProviderSession must define %q", name)
 		}

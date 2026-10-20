@@ -95,7 +95,7 @@ paths:
 
 
         Desktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install
-        registers itself on sign-in with kind `desktop`, type `platform`,
+        registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`,
         sub_type `management`, status `connected`, and `metadata` matching
         `DesktopConnectionMetadata`. Servers implementing this contract must
         take the organization from the `X-Current-Orgid` header, refuse a
@@ -114,7 +114,9 @@ paths:
         body; the connection, when it exists, is set to `maintenance`.
         Servers must link the API token that authenticated the registration
         to the connection (`metadata.tokenId`, server-written) and revoke
-        that token when the connection is deregistered or deleted.
+        that token when the connection is deregistered or deleted. When a
+        later registration of the same connection authenticates with a
+        different token, the server revokes the token previously linked to it.
         Registrations beyond the organization's device limit are accepted;
         the organization is flagged through the capabilities document's
         `session.deviceUsage` instead.
@@ -296,7 +298,7 @@ paths:
         - Connections
       operationId: deleteConnection
       summary: Delete a connection
-      description: Delete a specific connection
+      description: Delete a specific connection. Deleting a connection that has a `metadata.tokenId` revokes that token.
       parameters:
         - $ref: "#/components/parameters/connectionId"
       responses:
@@ -408,8 +410,9 @@ paths:
         than 3 minutes as `disconnected` until its next heartbeat. The request
         has no body, so a heartbeat cannot change anything else about the
         connection. When the connection's `metadata.clientName` and
-        `metadata.appVersion` fall below the server's minimum version for
-        that client, servers must answer `426` with a
+        `metadata.appVersion`, as stored by the latest registration (which
+        every connect makes before its first heartbeat), fall below the
+        server's minimum version for that client, servers must answer `426` with a
         `ClientUpgradeRequiredError` body and set the connection to
         `maintenance` instead of recording the heartbeat.
       parameters:
@@ -1064,7 +1067,7 @@ components:
       type: object
       description: >
         Metadata of a `desktop` connection: a desktop app install that
-        registered itself on sign-in. Servers implementing this contract must
+        registered itself on every connect to Cloud. Servers implementing this contract must
         validate `metadata` against this schema when a registration has kind
         `desktop`. The deduplication key is (organization, owner, `machineId`).
         `lastSeenAt` is set by the server on registration and on each
@@ -1072,6 +1075,8 @@ components:
         only to the connection's owner and to organization admins.
       required:
         - machineId
+        - clientName
+        - appVersion
       additionalProperties: false
       properties:
         machineId:
@@ -1094,9 +1099,7 @@ components:
           description: Operating system, for example `macos`.
           maxLength: 64
         appVersion:
-          type: string
-          description: Version of the desktop app, for example `v1.25.0`. Compared with the server's minimum for `clientName`.
-          maxLength: 64
+          $ref: "../provider_capability/api.yml#/components/schemas/ClientVersion"
         clientName:
           type: string
           description: >

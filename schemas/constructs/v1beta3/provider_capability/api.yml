@@ -21,8 +21,9 @@ info:
     always answered with 200 for an outdated client, so the client learns
     from it that it must update. An authenticated request additionally
     receives `session`: the caller's roles, the plan and the entitlements of
-    the organization in `X-Current-Orgid`, and that organization's registered
-    device usage.
+    the caller's roles and, when the caller is a live member of the
+    organization in `X-Current-Orgid`, that organization's plan, entitlements
+    and registered device usage.
   version: v1beta3
   contact:
     name: Meshery Maintainers
@@ -56,7 +57,9 @@ paths:
         `X-Current-Orgid` is a client error and returns 400. With `client`,
         the document carries `compatibility` for that client at `{version}`;
         an outdated client still receives 200 with `compatible` false. With a
-        valid token the document carries `session`.
+        valid token the document carries `session`; for a live member of the
+        `X-Current-Orgid` organization it includes that organization's plan,
+        entitlements and device usage.
       parameters:
         - $ref: "#/components/parameters/version"
         - $ref: "#/components/parameters/currentOrgId"
@@ -164,6 +167,16 @@ components:
           type: boolean
           description: True when the caller is a live member of the organization.
 
+    ClientVersion:
+      type: string
+      description: >
+        Version of a client application, as `MAJOR.MINOR.PATCH` with an
+        optional leading `v` and an optional pre-release or build suffix.
+        Versions are ordered by their numeric parts, so `v1.9.0` is older than
+        `v1.25.0`.
+      maxLength: 64
+      pattern: '^v?[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
+
     ClientName:
       type: string
       description: >
@@ -187,14 +200,11 @@ components:
         - clientName
         - clientVersion
         - compatible
-        - contractVersion
       properties:
         clientName:
           $ref: "#/components/schemas/ClientName"
         clientVersion:
-          type: string
-          description: The client's version as it reported it, for example `v1.25.0`.
-          maxLength: 64
+          $ref: "#/components/schemas/ClientVersion"
         minimumVersion:
           type: string
           description: Oldest client version the provider accepts for this client. Absent when the provider sets no minimum.
@@ -202,11 +212,6 @@ components:
         compatible:
           type: boolean
           description: True when `clientVersion` is at or above `minimumVersion`, or when there is no minimum.
-        contractVersion:
-          type: string
-          description: The provider's contract version, as in the capabilities document.
-          pattern: '^[0-9]+\.[0-9]+$'
-          maxLength: 32
         upgradeUrl:
           type: string
           description: Where the client can get an update, when the provider knows one.
@@ -248,13 +253,9 @@ components:
           type: integer
           minimum: 0
           description: Live `desktop` connections registered in the organization.
-        limit:
-          type: integer
-          minimum: 0
-          description: Devices the organization's subscriptions allow. Absent when unlimited or when no subscription sets a device limit.
         overLimit:
           type: boolean
-          description: True when `limit` is present and `registered` exceeds it.
+          description: True when `registered` exceeds the organization's device limit.
 
     ProviderSession:
       type: object
@@ -272,9 +273,6 @@ components:
         userId:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
           description: The caller's user id.
-        organizationId:
-          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
-          description: The organization the organization-scoped fields describe. Absent when no organization was named or the caller is not a live member.
         providerRoles:
           type: array
           description: The caller's provider-wide role names.

@@ -376,8 +376,7 @@ components:
       description: Version of the client application, for example `v1.25.0`.
       required: false
       schema:
-        type: string
-        maxLength: 64
+        $ref: ../provider_capability/api.yml#/components/schemas/ClientVersion
     nativePort:
       name: port
       in: query
