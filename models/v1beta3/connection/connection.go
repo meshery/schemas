@@ -91,10 +91,10 @@ type Connection struct {
 	Name string `db:"name" json:"name" yaml:"name"`
 
 	// Description Human-readable description of the connection and its purpose.
-	Description *string `db:"description" json:"description" yaml:"description"`
+	Description *string `db:"description" json:"description,omitempty" yaml:"description,omitempty"`
 
 	// Url URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).
-	Url *string `db:"url" json:"url" yaml:"url"`
+	Url *string `db:"url" json:"url,omitempty" yaml:"url,omitempty"`
 
 	// CredentialId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	CredentialID *core.Uuid `db:"credential_id" json:"credentialId" yaml:"credentialId,omitempty"`
