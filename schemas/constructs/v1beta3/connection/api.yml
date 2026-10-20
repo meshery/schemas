@@ -1050,10 +1050,13 @@ components:
         only to the connection's owner and to organization admins.
       required:
         - machineId
-      additionalProperties: true
+      additionalProperties: false
       properties:
         machineId:
-          $ref: "#/components/schemas/DesktopMachineId"
+          type: string
+          description: Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key.
+          minLength: 1
+          maxLength: 255
         hostname:
           type: string
           description: Host name of the machine.

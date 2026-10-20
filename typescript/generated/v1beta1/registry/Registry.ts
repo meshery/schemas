@@ -3037,7 +3037,7 @@ export interface components {
                 type: string;
                 /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
                 subType: string;
-                /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+                /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
                 kind: string;
                 /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
                 modelReference?: {
@@ -3285,11 +3285,6 @@ export interface components {
                  * @description Timestamp when the connection was soft-deleted, if applicable.
                  */
                 deletedAt?: string | null;
-                /**
-                 * Format: uuid
-                 * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
-                 */
-                organizationId?: string;
                 /** @description Associated environments for this connection */
                 environments?: {
                     /**
@@ -12133,7 +12128,7 @@ export interface operations {
                         type: string;
                         /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
                         subType: string;
-                        /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+                        /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
                         kind: string;
                         /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
                         modelReference?: {
@@ -12381,11 +12376,6 @@ export interface operations {
                          * @description Timestamp when the connection was soft-deleted, if applicable.
                          */
                         deletedAt?: string | null;
-                        /**
-                         * Format: uuid
-                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
-                         */
-                        organizationId?: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -13425,7 +13415,7 @@ export interface operations {
                         type: string;
                         /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
                         subType: string;
-                        /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+                        /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
                         kind: string;
                         /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
                         modelReference?: {
@@ -13673,11 +13663,6 @@ export interface operations {
                          * @description Timestamp when the connection was soft-deleted, if applicable.
                          */
                         deletedAt?: string | null;
-                        /**
-                         * Format: uuid
-                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
-                         */
-                        organizationId?: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**

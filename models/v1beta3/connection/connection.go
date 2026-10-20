@@ -4,8 +4,6 @@
 package connection
 
 import (
-	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -387,12 +385,11 @@ type DesktopConnectionMetadata struct {
 	// LastSeenAt Server time of the last registration or heartbeat.
 	LastSeenAt *time.Time `json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
 
-	// MachineId Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key and the `machineId` path parameter.
-	MachineId DesktopMachineId `json:"machineId" yaml:"machineId"`
+	// MachineId Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key.
+	MachineId string `json:"machineId" yaml:"machineId"`
 
 	// Os Operating system, for example `macos`.
-	Os                   *string                `json:"os,omitempty" yaml:"os,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+	Os *string `json:"os,omitempty" yaml:"os,omitempty"`
 }
 
 // DestinationKind A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.
@@ -551,129 +548,3 @@ type Search = string
 
 // CoreMeshkitError409 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError409 = core.MeshkitError
-
-// Getter for additional properties for DesktopConnectionMetadata. Returns the specified
-// element and whether it was found
-func (a DesktopConnectionMetadata) Get(fieldName string) (value interface{}, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for DesktopConnectionMetadata
-func (a *DesktopConnectionMetadata) Set(fieldName string, value interface{}) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]interface{})
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for DesktopConnectionMetadata to handle AdditionalProperties
-func (a *DesktopConnectionMetadata) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["appVersion"]; found {
-		err = json.Unmarshal(raw, &a.AppVersion)
-		if err != nil {
-			return fmt.Errorf("error reading 'appVersion': %w", err)
-		}
-		delete(object, "appVersion")
-	}
-
-	if raw, found := object["hostname"]; found {
-		err = json.Unmarshal(raw, &a.Hostname)
-		if err != nil {
-			return fmt.Errorf("error reading 'hostname': %w", err)
-		}
-		delete(object, "hostname")
-	}
-
-	if raw, found := object["lastSeenAt"]; found {
-		err = json.Unmarshal(raw, &a.LastSeenAt)
-		if err != nil {
-			return fmt.Errorf("error reading 'lastSeenAt': %w", err)
-		}
-		delete(object, "lastSeenAt")
-	}
-
-	if raw, found := object["machineId"]; found {
-		err = json.Unmarshal(raw, &a.MachineId)
-		if err != nil {
-			return fmt.Errorf("error reading 'machineId': %w", err)
-		}
-		delete(object, "machineId")
-	}
-
-	if raw, found := object["os"]; found {
-		err = json.Unmarshal(raw, &a.Os)
-		if err != nil {
-			return fmt.Errorf("error reading 'os': %w", err)
-		}
-		delete(object, "os")
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]interface{})
-		for fieldName, fieldBuf := range object {
-			var fieldVal interface{}
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for DesktopConnectionMetadata to handle AdditionalProperties
-func (a DesktopConnectionMetadata) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	if a.AppVersion != nil {
-		object["appVersion"], err = json.Marshal(a.AppVersion)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'appVersion': %w", err)
-		}
-	}
-
-	if a.Hostname != nil {
-		object["hostname"], err = json.Marshal(a.Hostname)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'hostname': %w", err)
-		}
-	}
-
-	if a.LastSeenAt != nil {
-		object["lastSeenAt"], err = json.Marshal(a.LastSeenAt)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'lastSeenAt': %w", err)
-		}
-	}
-
-	object["machineId"], err = json.Marshal(a.MachineId)
-	if err != nil {
-		return nil, fmt.Errorf("error marshaling 'machineId': %w", err)
-	}
-
-	if a.Os != nil {
-		object["os"], err = json.Marshal(a.Os)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'os': %w", err)
-		}
-	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}
