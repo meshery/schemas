@@ -246,6 +246,13 @@
     "extension": true
   },
   {
+    "construct": "provider_capability",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/provider_capability/provider_capability.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "registry",
     "version": "v1beta1",
     "href": "/schemas/constructs/v1beta1/registry/api.yml",

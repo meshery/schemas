@@ -35,6 +35,7 @@ export const addTagTypes = [
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
+  "ProviderCapability_capabilities",
   "Schedule_schedules",
   "Subscription_Subscriptions",
   "Subscription_Payment Processors",
@@ -1895,6 +1896,18 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["Plan_Plans"],
+      }),
+      getProviderCapabilities: build.query<GetProviderCapabilitiesApiResponse, GetProviderCapabilitiesApiArg>({
+        query: (queryArg) => ({
+          url: `/${queryArg.version}/capabilities`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+          params: {
+            os: queryArg?.os,
+          },
+        }),
+        providesTags: ["ProviderCapability_capabilities"],
       }),
       listSchedules: build.query<ListSchedulesApiResponse, ListSchedulesApiArg>({
         query: (queryArg) => ({
@@ -18089,6 +18102,63 @@ export type GetPlansApiArg = {
   /** Get responses by pagesize */
   pagesize?: number;
 };
+export type GetProviderCapabilitiesApiResponse = /** status 200 The capabilities document */ {
+  /** Provider type, for example `remote`. */
+  providerType: string;
+  /** Version of the extension package the provider offers this client. */
+  packageVersion?: string;
+  /** Download URL of that package. */
+  packageUrl?: string;
+  /** Display name of the provider. */
+  providerName?: string;
+  /** Lines describing the provider. */
+  providerDescription?: string[];
+  /** Home page URL of the provider. */
+  providerUrl?: string;
+  /** Redirect targets the provider serves to this client, keyed by name. */
+  redirects?: {
+    [key: string]: string;
+  };
+  /** Version of the provider's REST contract for native clients, as
+    `MAJOR.MINOR`. A client refuses a provider whose major differs from the
+    one it was built against. A provider that predates this field omits
+    it, which a client treats as not serving the contract.
+     */
+  contractVersion?: string;
+  /** Whether the authenticated caller is a live member of the organization
+    named by `X-Current-Orgid`. Present only on an authenticated request
+    that carried that header.
+     */
+  membership?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** True when the caller is a live member of the organization. */
+    bound: boolean;
+  };
+  /** Extension points; shape owned by the provider. */
+  extensions?: {
+    [key: string]: any;
+  };
+  /** Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. */
+  capabilities?: {
+    /** Feature name, for example `persist-connection`. */
+    feature: string;
+    /** Path that serves the feature, relative to the provider's base URL. */
+    endpoint?: string;
+  }[];
+  /** Access restrictions applied to this client; shape owned by the provider. */
+  restrictedAccess?: {
+    [key: string]: any;
+  };
+};
+export type GetProviderCapabilitiesApiArg = {
+  /** Version of the requesting client, for example `v0.8.0`. */
+  version: string;
+  /** Organization whose membership the caller wants reported. */
+  "X-Current-Orgid"?: string;
+  /** Operating system of the client, used to select packages. */
+  os?: string;
+};
 export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
   /** Current page number of the result set. */
   page: number;
@@ -21732,6 +21802,8 @@ export const {
   useLazyGetPerformanceResultsQuery,
   useGetPlansQuery,
   useLazyGetPlansQuery,
+  useGetProviderCapabilitiesQuery,
+  useLazyGetProviderCapabilitiesQuery,
   useListSchedulesQuery,
   useLazyListSchedulesQuery,
   useCreateScheduleMutation,
