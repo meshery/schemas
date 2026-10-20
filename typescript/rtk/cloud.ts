@@ -1677,11 +1677,7 @@ const injectedRtkApi = api
         invalidatesTags: ["Ledger_ledgers"],
       }),
       claimLedgerEntry: build.mutation<ClaimLedgerEntryApiResponse, ClaimLedgerEntryApiArg>({
-        query: (queryArg) => ({
-          url: `/api/ledgers/${queryArg.ledger}/entries/claim`,
-          method: "POST",
-          body: queryArg.body,
-        }),
+        query: (queryArg) => ({ url: `/api/ledgers/${queryArg.ledger}/claims`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Ledger_ledgers"],
       }),
       getLedgerEntry: build.query<GetLedgerEntryApiResponse, GetLedgerEntryApiArg>({

@@ -19,7 +19,7 @@ func TestLedgerContract(t *testing.T) {
 			t.Errorf("recordLedgerEntry must document %s", code)
 		}
 	}
-	claim := mustLookup(t, doc, "paths", "/api/ledgers/{ledger}/entries/claim", "post")
+	claim := mustLookup(t, doc, "paths", "/api/ledgers/{ledger}/claims", "post")
 	claimResponses := mustLookup(t, claim, "responses")
 	for _, code := range []string{"200", "201", "409"} {
 		if _, ok := mappingValue(claimResponses, code); !ok {
@@ -33,6 +33,9 @@ func TestLedgerContract(t *testing.T) {
 		if _, ok := mappingValue(op, "operationId"); !ok {
 			t.Errorf("%s on /entries/{entryKey} must declare an operationId", method)
 		}
+	}
+	if _, ok := mappingValue(paths, "/api/ledgers/{ledger}/entries/claim"); ok {
+		t.Error("claim must live on /claims so a key named claim cannot collide with /entries/{entryKey}")
 	}
 	if _, ok := mappingValue(paths, "/api/ledgers/{ledger}/entries/{ledgerEntryId}"); ok {
 		t.Error("ledger entries must be addressed by entryKey, not ledgerEntryId")

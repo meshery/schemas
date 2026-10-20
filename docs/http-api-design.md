@@ -281,8 +281,9 @@ and does not use a separate health endpoint.
 been done" sets shared by several workers. Record is `POST
 /api/ledgers/{ledger}/entries` and is idempotent on (organization, ledger,
 entryKey): `201` for a new key, `200` with the stored entry, unchanged, for an
-existing one. `POST /api/ledgers/{ledger}/entries/claim` gives a key to
-exactly one claimant: `201` when it created the entry, `200` when the claimant
+existing one. `POST /api/ledgers/{ledger}/claims` (body: `entryKey`, `claimant`, optional
+`value`) gives a key to exactly one claimant. The claim lives on its own
+collection so it cannot collide with the `{entryKey}` route: `201` when it created the entry, `200` when the claimant
 now holds an existing entry or already held it, `409` when another claimant
 holds it. `GET` and `DELETE /api/ledgers/{ledger}/entries/{entryKey}` read and
 release a key; a key outside that ledger is `404`. Product data such as
