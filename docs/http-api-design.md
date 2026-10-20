@@ -50,7 +50,7 @@ post:
 | 202 | Accepted | Request received; operation will complete asynchronously |
 | 204 | No Content | Request succeeded; no response body (e.g., a single-resource `DELETE`) |
 
-Use **201** (not 200) for `POST` endpoints that exclusively create a new resource. Use **200** for upsert operations where the resource may already exist.
+Use **201** (not 200) for `POST` endpoints that exclusively create a new resource. Use **200** for upsert operations where the resource may already exist. A create `POST` that accepts an `idempotencyKey` (for example `createEvent`) answers **201** on first creation and **200** with the originally recorded resource when the same caller repeats the key.
 
 Response descriptions and response message text must not include the word `successfully`. Use neutral wording such as `Connection deleted`, `Webhook processed`, or `Plans response`.
 

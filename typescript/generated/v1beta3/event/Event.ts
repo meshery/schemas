@@ -102,7 +102,10 @@ export interface paths {
         /** Get events aggregate summary */
         get: operations["getEventsAggregate"];
         put?: never;
-        /** Create a new event */
+        /**
+         * Create a new event
+         * @description Records an event and answers 201 with it. When the payload carries an `idempotencyKey` the authenticated caller already used, nothing new is recorded and the answer is 200 with the event first recorded under that key.
+         */
         post: operations["createEvent"];
         delete?: never;
         options?: never;
@@ -178,6 +181,8 @@ export interface components {
             action?: string;
             /** @description Description of the event. */
             description?: string;
+            /** @description Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication. */
+            idempotencyKey?: string;
         } & {
             [key: string]: unknown;
         };
@@ -946,18 +951,141 @@ export interface operations {
                     action?: string;
                     /** @description Description of the event. */
                     description?: string;
+                    /** @description Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication. */
+                    idempotencyKey?: string;
                 } & {
                     [key: string]: unknown;
                 };
             };
         };
         responses: {
+            /** @description An event with this `idempotencyKey` was already recorded by the same caller; it is returned unchanged and no new event is recorded. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Event ID.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the entity on which the event was performed.
+                         */
+                        actedUpon: string;
+                        /** @description Action taken on the resource, for example `import`. */
+                        action: string;
+                        /** @description Resource kind the operation was invoked on, for example `pattern`. */
+                        category: string;
+                        /** @description Human-readable summary of what happened. */
+                        description: string;
+                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. */
+                        metadata: {
+                            [key: string]: unknown;
+                        } | null;
+                        /**
+                         * Format: uuid
+                         * @description ID correlating the events one operation emitted.
+                         */
+                        operationId: string;
+                        /** @description Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values. */
+                        severity: string;
+                        /** @description Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values. */
+                        status: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the system instance that emitted the event.
+                         */
+                        systemId: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        owner?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the event was recorded.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the event was last updated.
+                         */
+                        updatedAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the event was soft-deleted; omitted when it was not.
+                         */
+                        deletedAt?: string | null;
+                    };
+                };
+            };
             /** @description Event created */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Event ID.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the entity on which the event was performed.
+                         */
+                        actedUpon: string;
+                        /** @description Action taken on the resource, for example `import`. */
+                        action: string;
+                        /** @description Resource kind the operation was invoked on, for example `pattern`. */
+                        category: string;
+                        /** @description Human-readable summary of what happened. */
+                        description: string;
+                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. */
+                        metadata: {
+                            [key: string]: unknown;
+                        } | null;
+                        /**
+                         * Format: uuid
+                         * @description ID correlating the events one operation emitted.
+                         */
+                        operationId: string;
+                        /** @description Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values. */
+                        severity: string;
+                        /** @description Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values. */
+                        status: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the system instance that emitted the event.
+                         */
+                        systemId: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        owner?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the event was recorded.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the event was last updated.
+                         */
+                        updatedAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the event was soft-deleted; omitted when it was not.
+                         */
+                        deletedAt?: string | null;
+                    };
+                };
             };
             /** @description Invalid request body or request param */
             400: {

@@ -194,9 +194,26 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/EventPayload'
+      description: >
+        Records an event and answers 201 with it. When the payload carries an
+        `idempotencyKey` the authenticated caller already used, nothing new is
+        recorded and the answer is 200 with the event first recorded under that
+        key.
       responses:
+        '200':
+          description: >
+            An event with this `idempotencyKey` was already recorded by the same
+            caller; it is returned unchanged and no new event is recorded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
         '201':
           description: Event created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -374,6 +391,22 @@ components:
           type: string
           description: Description of the event.
           maxLength: 5000
+        idempotencyKey:
+          type: string
+          description: >
+            Optional client-chosen key that makes recording this event safe to
+            retry. Keys are scoped to the authenticated caller (organization and
+            user), never to the client-settable `owner` field, so `owner` may be
+            omitted without affecting deduplication. The first event a caller
+            records with a key is kept, and a later create with the same key
+            records nothing and answers 200 with that event, whatever the rest of
+            the payload says. Use a value that names the occurrence, for example
+            a run id, so a client replaying a local queue after a timeout never
+            records a duplicate. Omit it for events that need no deduplication.
+          minLength: 1
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "idempotencyKey,omitempty"
     UpdateEventStatusRequest:
       type: object
       description: Payload for updating the status of a single event.
