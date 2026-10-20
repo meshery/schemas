@@ -82,9 +82,14 @@ paths:
         Inserts a new content piece. Insert-only: any supplied
         `id` and `expectedFingerprint` are ignored; existing rows change
         only through the conditional `updateContentPiece`. The
-        `fingerprint` is server-computed. A live content piece of the
-        organization that already holds the same `profile` and
-        `rowNumber` refuses the insert with a 409.
+        `fingerprint` is server-computed. Row numbers are unique across
+        the live content pieces of the organization, whatever their
+        `profile`. When `rowNumber` is omitted the server assigns the next
+        row number of the organization (one more than the highest row
+        number the organization has used), atomically with the insert, so
+        concurrent inserts never receive the same number. A supplied
+        `rowNumber` that another live content piece of the organization
+        already holds refuses the insert with a 409.
       requestBody:
         required: true
         content:
@@ -147,8 +152,8 @@ paths:
         Conditionally updates the content piece. When
         `expectedFingerprint` is supplied and stale, the update is
         refused with a 409, as is an update that would move the piece
-        onto a `profile` and `rowNumber` another live content piece of
-        the organization holds.
+        onto a `rowNumber` another live content piece of the organization
+        holds. An omitted `rowNumber` keeps the stored one.
       parameters:
         - $ref: "#/components/parameters/contentPieceId"
       requestBody:
@@ -182,18 +187,27 @@ paths:
         - contentPieces
       summary: Delete a content piece
       operationId: deleteContentPiece
-      description: Soft-deletes the content piece.
+      description: |
+        Soft-deletes the content piece. When `expectedFingerprint` is
+        supplied, the delete applies only when the stored fingerprint
+        still matches and is refused with a 409 otherwise; without it the
+        delete is unconditional.
       parameters:
         - $ref: "#/components/parameters/contentPieceId"
+        - $ref: "#/components/parameters/expectedFingerprint"
       responses:
         "204":
           description: Content piece deleted
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "403":
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
 
@@ -214,7 +228,7 @@ components:
     403:
       $ref: "../../v1beta2/core/api.yml#/components/responses/403"
     409:
-      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same profile and rowNumber
+      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber
       content:
         text/plain:
           schema:
@@ -223,6 +237,17 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
 
   parameters:
+    expectedFingerprint:
+      name: expectedFingerprint
+      in: query
+      description: |
+        Optional optimistic-concurrency precondition for delete: the
+        delete applies only when the stored fingerprint still matches.
+      required: false
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 255
     contentPieceId:
       name: contentPieceId
       in: path
@@ -268,7 +293,6 @@ components:
         `createdAt` / `updatedAt` timestamps are intentionally excluded.
       required:
         - profile
-        - rowNumber
       properties:
         id:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
@@ -282,7 +306,11 @@ components:
           maxLength: 255
         rowNumber:
           type: integer
-          description: Row number of the content within the owning profile.
+          description: |
+            Row number of the content piece, unique across the live content
+            pieces of the organization. Optional: omitted on insert, the
+            server assigns the next row number of the organization; omitted
+            on update, the stored row number is kept.
           minimum: 0
         data:
           type: object

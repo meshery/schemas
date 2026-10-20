@@ -21,7 +21,7 @@ type ContentPiece struct {
 	// Profile Subject of the owning profile.
 	Profile string `db:"profile" json:"profile" yaml:"profile"`
 
-	// RowNumber Row number of the content within the owning profile.
+	// RowNumber Row number of the content piece, unique across the live content pieces of the organization.
 	RowNumber int `db:"row_number" json:"rowNumber" yaml:"rowNumber"`
 
 	// Fingerprint Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates.
@@ -72,12 +72,18 @@ type ContentPiecePayload struct {
 	// Profile Subject of the owning profile.
 	Profile string `json:"profile" yaml:"profile"`
 
-	// RowNumber Row number of the content within the owning profile.
-	RowNumber int `json:"rowNumber" yaml:"rowNumber"`
+	// RowNumber Row number of the content piece, unique across the live content
+	// pieces of the organization. Optional: omitted on insert, the
+	// server assigns the next row number of the organization; omitted
+	// on update, the stored row number is kept.
+	RowNumber *int `json:"rowNumber,omitempty" yaml:"rowNumber,omitempty"`
 }
 
 // ContentPieceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type ContentPieceId = core.Uuid
+
+// ExpectedFingerprint defines model for expectedFingerprint.
+type ExpectedFingerprint = string
 
 // Order defines model for order.
 type Order = string
