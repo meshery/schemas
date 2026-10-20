@@ -3,7 +3,7 @@ info:
   title: ContentPiece
   description: |
     OpenAPI schema for content pieces - fingerprinted content
-    values keyed by owning profile and row number, with conditional
+    values keyed by organization and row number, with conditional
     updates.
     Organization scope: every operation acts only in the organization the
     session resolved to (X-Current-Orgid, then the user's selected
