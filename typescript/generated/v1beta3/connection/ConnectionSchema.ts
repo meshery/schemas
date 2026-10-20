@@ -1318,7 +1318,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "registerConnection",
         "summary": "Register a new connection",
-        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.\n\nDesktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on sign-in with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.machineId`): registering the same machine again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `machineId` is refused with `400`. The kind names the connection type, never the product that runs on the machine.\n",
+        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.\n\nDesktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.machineId`): registering the same machine again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `machineId` is refused with `400`. The kind names the connection type, never the product that runs on the machine.\n\nA `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.\n",
         "parameters": [
           {
             "name": "X-Current-Orgid",
@@ -4097,6 +4097,72 @@ const ConnectionSchema: Record<string, unknown> = {
                       "description": "MeshKit's suggested remediations for the error.",
                       "items": {
                         "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "426": {
+            "description": "The client's version is below the provider's minimum for that client. The client must update before it can register or keep a connection alive; the body names the minimum and where to get an update.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Body of a 426 answer: a MeshKit error sentence plus the client's compatibility, so the client can show the minimum and where to update.\n",
+                  "additionalProperties": false,
+                  "required": [
+                    "error",
+                    "compatibility"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code allocated by the emitting service; not a stable part of this contract."
+                    },
+                    "compatibility": {
+                      "type": "object",
+                      "description": "Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`.\n",
+                      "additionalProperties": false,
+                      "required": [
+                        "clientName",
+                        "clientVersion",
+                        "compatible"
+                      ],
+                      "properties": {
+                        "clientName": {
+                          "type": "string",
+                          "description": "Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.\n",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "pattern": "^[a-z0-9][a-z0-9-]*$"
+                        },
+                        "clientVersion": {
+                          "type": "string",
+                          "description": "The client's version as it reported it, as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Versions are ordered by their numeric parts, so `v1.9.0` is older than `v1.25.0`.",
+                          "maxLength": 64
+                        },
+                        "minimumVersion": {
+                          "type": "string",
+                          "description": "Oldest client version the provider accepts for this client. Absent when the provider sets no minimum.",
+                          "maxLength": 64
+                        },
+                        "compatible": {
+                          "type": "boolean",
+                          "description": "True when `clientVersion` is at or above `minimumVersion`, or when there is no minimum."
+                        },
+                        "upgradeUrl": {
+                          "type": "string",
+                          "description": "Where the client can get an update, when the provider knows one.",
+                          "maxLength": 2048
+                        }
                       }
                     }
                   }
@@ -7266,7 +7332,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "deleteConnection",
         "summary": "Delete a connection",
-        "description": "Delete a specific connection",
+        "description": "Delete a specific connection. Deleting a connection that has a `metadata.tokenId` revokes that token.",
         "parameters": [
           {
             "name": "connectionId",
@@ -8561,7 +8627,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "deregisterDesktopConnection",
         "summary": "Deregister a desktop app install",
-        "description": "Delete the caller's `desktop` connection whose `metadata.machineId` matches, as a desktop app install does on sign-out or uninstall. Servers implementing this contract must scope the deletion to the caller: a connection registered by another user is not found.\n",
+        "description": "Delete the caller's `desktop` connection whose `metadata.machineId` matches, as a desktop app install does on sign-out or uninstall. Servers implementing this contract must scope the deletion to the caller: a connection registered by another user is not found. Servers must revoke the API token linked to each deleted connection (`metadata.tokenId`).\n",
         "parameters": [
           {
             "name": "machineId",
@@ -8623,7 +8689,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "recordConnectionHeartbeat",
         "summary": "Record a connection heartbeat",
-        "description": "Mark the caller's connection as alive. Servers implementing this contract must set `metadata.lastSeenAt` to the current time and, when the connection is `disconnected`, set its status back to `connected`. Servers must report a connection whose `metadata.lastSeenAt` is older than 3 minutes as `disconnected` until its next heartbeat. The request has no body, so a heartbeat cannot change anything else about the connection.\n",
+        "description": "Mark the caller's connection as alive. Servers implementing this contract must set `metadata.lastSeenAt` to the current time and, when the connection is `disconnected`, set its status back to `connected`. Servers must report a connection whose `metadata.lastSeenAt` is older than 3 minutes as `disconnected` until its next heartbeat. The request has no body, so a heartbeat cannot change anything else about the connection. When the connection's `metadata.clientName` and `metadata.appVersion`, as stored by the latest registration (which every connect makes before its first heartbeat), fall below the server's minimum version for that client, servers must answer `426` with a `ClientUpgradeRequiredError` body and set the connection to `maintenance` instead of recording the heartbeat.\n",
         "parameters": [
           {
             "name": "connectionId",
@@ -9722,6 +9788,72 @@ const ConnectionSchema: Record<string, unknown> = {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "426": {
+            "description": "The client's version is below the provider's minimum for that client. The client must update before it can register or keep a connection alive; the body names the minimum and where to get an update.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Body of a 426 answer: a MeshKit error sentence plus the client's compatibility, so the client can show the minimum and where to update.\n",
+                  "additionalProperties": false,
+                  "required": [
+                    "error",
+                    "compatibility"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code allocated by the emitting service; not a stable part of this contract."
+                    },
+                    "compatibility": {
+                      "type": "object",
+                      "description": "Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`.\n",
+                      "additionalProperties": false,
+                      "required": [
+                        "clientName",
+                        "clientVersion",
+                        "compatible"
+                      ],
+                      "properties": {
+                        "clientName": {
+                          "type": "string",
+                          "description": "Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.\n",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "pattern": "^[a-z0-9][a-z0-9-]*$"
+                        },
+                        "clientVersion": {
+                          "type": "string",
+                          "description": "The client's version as it reported it, as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Versions are ordered by their numeric parts, so `v1.9.0` is older than `v1.25.0`.",
+                          "maxLength": 64
+                        },
+                        "minimumVersion": {
+                          "type": "string",
+                          "description": "Oldest client version the provider accepts for this client. Absent when the provider sets no minimum.",
+                          "maxLength": 64
+                        },
+                        "compatible": {
+                          "type": "boolean",
+                          "description": "True when `clientVersion` is at or above `minimumVersion`, or when there is no minimum."
+                        },
+                        "upgradeUrl": {
+                          "type": "string",
+                          "description": "Where the client can get an update, when the provider knows one.",
+                          "maxLength": 2048
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -15306,7 +15438,7 @@ const ConnectionSchema: Record<string, unknown> = {
       },
       "DesktopConnectionMetadata": {
         "type": "object",
-        "description": "Metadata of a `desktop` connection: a desktop app install that registered itself on sign-in. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `machineId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins.\n",
+        "description": "Metadata of a `desktop` connection: a desktop app install that registered itself on every connect to Cloud. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `machineId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins.\n",
         "required": [
           "machineId"
         ],
@@ -15314,7 +15446,7 @@ const ConnectionSchema: Record<string, unknown> = {
         "properties": {
           "machineId": {
             "type": "string",
-            "description": "Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key.",
+            "description": "Stable identifier of a desktop app install: generated once on the install's first launch (a UUID is recommended), kept with the app's local state, and never derived from the host name, a process id or a hardware serial. A reinstall that discards local state is a new install. It is the machine part of the deduplication key.\n",
             "minLength": 1,
             "maxLength": 255
           },
@@ -15330,8 +15462,31 @@ const ConnectionSchema: Record<string, unknown> = {
           },
           "appVersion": {
             "type": "string",
-            "description": "Version of the desktop app.",
+            "description": "Version of the desktop app as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Compared with the server's minimum for `clientName`.",
+            "maxLength": 64,
+            "pattern": "^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+          },
+          "clientName": {
+            "type": "string",
+            "description": "Identifier of the desktop app, for example its product name, lowercase. A value, never a kind: it selects the server's minimum version for this client.\n",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "buildSha": {
+            "type": "string",
+            "description": "Source revision the desktop app was built from.",
             "maxLength": 64
+          },
+          "osVersion": {
+            "type": "string",
+            "description": "Operating system version, for example `26.0.1`.",
+            "maxLength": 64
+          },
+          "tokenId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token. A value sent by the client is ignored.\n"
           },
           "lastSeenAt": {
             "type": "string",
