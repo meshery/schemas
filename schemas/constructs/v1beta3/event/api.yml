@@ -194,9 +194,26 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/EventPayload'
+      description: >
+        Records an event and answers 201 with it. When the payload carries an
+        `idempotencyKey` the event's owner already recorded, nothing new is
+        recorded and the answer is 200 with the event first recorded under that
+        key.
       responses:
+        '200':
+          description: >
+            An event with this `idempotencyKey` was already recorded for the
+            same owner; it is returned unchanged and no new event is recorded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
         '201':
           description: Event created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -374,6 +391,22 @@ components:
           type: string
           description: Description of the event.
           maxLength: 5000
+        idempotencyKey:
+          type: string
+          description: >
+            Optional client-chosen key that makes recording this event safe to
+            retry. Keys are scoped to the event's owner: the first event an
+            owner records with a key is kept, and a later create with the same key
+            records nothing and answers 200 with the event already recorded,
+            whatever the rest of the payload says. Use a value that names the
+            occurrence, for example a run id, so a client replaying a local
+            queue after a timeout never records a duplicate. Omit it for
+            events that need no deduplication.
+          minLength: 1
+          maxLength: 255
+          pattern: '^[A-Za-z0-9._:/-]+$'
+          x-oapi-codegen-extra-tags:
+            json: "idempotencyKey,omitempty"
     UpdateEventStatusRequest:
       type: object
       description: Payload for updating the status of a single event.
@@ -553,6 +586,13 @@ components:
           description: ID of the user the event belongs to; omitted when the event has no owner.
           x-oapi-codegen-extra-tags:
             db: owner
+        idempotencyKey:
+          type: string
+          description: Key the event was recorded under for safe retries; omitted when it has none. Unique per owner.
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            db: idempotency_key
+            json: "idempotencyKey,omitempty"
         createdAt:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
           description: Timestamp when the event was recorded.
