@@ -94,7 +94,7 @@ paths:
         reserved GitHub App connection identity.
 
 
-        Desktop registration is Cloud-only. A client desktop app install
+        Desktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install
         registers itself on sign-in with kind `desktop`, type `platform`,
         sub_type `management`, status `connected`, and `metadata` matching
         `DesktopConnectionMetadata`. Servers implementing this contract must
