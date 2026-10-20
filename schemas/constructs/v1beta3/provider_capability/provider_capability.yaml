@@ -4,8 +4,11 @@ description: |
   The remote provider's capabilities document. Existing fields describe the
   provider and its extensions; `contractVersion` and `membership` let a
   native client gate on the provider's contract and on its organization
-  membership after authenticating. New fields arrive only with a new
-  `contractVersion`.
+  membership after authenticating; `compatibility` tells a client that
+  named itself whether its version is still accepted, and `session`
+  describes the authenticated caller's roles, plan and entitlements. New
+  fields arrive only with a new `contractVersion` (1.1 added
+  `compatibility` and `session`).
 type: object
 additionalProperties: false
 required:
@@ -52,6 +55,10 @@ properties:
     maxLength: 32
   membership:
     $ref: "./api.yml#/components/schemas/ProviderMembership"
+  compatibility:
+    $ref: "./api.yml#/components/schemas/ClientCompatibility"
+  session:
+    $ref: "./api.yml#/components/schemas/ProviderSession"
   extensions:
     type: object
     description: Extension points; shape owned by the provider.
@@ -63,7 +70,12 @@ properties:
     x-go-type-skip-optional-pointer: true
   capabilities:
     type: array
-    description: Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them.
+    description: >
+      Features the provider serves and their endpoints. Clients read paths
+      from here instead of hard-coding them. A provider serving desktop
+      connections lists `register-connection`, `connection-heartbeat` and
+      `deregister-desktop-connection`; an endpoint may hold `{connectionId}`
+      or `{machineId}` placeholders.
     items:
       $ref: "./api.yml#/components/schemas/ProviderFeature"
   restrictedAccess:

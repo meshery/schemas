@@ -160,9 +160,14 @@ paths:
         redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in
         user, never URL credentials. Validates the request and renders a consent
         page that asks the user to allow the named local client to act on their
-        behalf. Nothing is issued by this call.
+        behalf. Nothing is issued by this call. When the request names the
+        client application (`client`) and its version (`clientVersion`) and
+        that version is below the provider's minimum for that client, an
+        update page is rendered with status 426 instead of the consent page.
       parameters:
       - $ref: '#/components/parameters/nativeClientName'
+      - $ref: '#/components/parameters/nativeClient'
+      - $ref: '#/components/parameters/nativeClientVersion'
       - $ref: '#/components/parameters/nativePort'
       - $ref: '#/components/parameters/nativeCodeChallenge'
       - $ref: '#/components/parameters/nativeCodeChallengeMethod'
@@ -178,6 +183,12 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '426':
+          description: Update page; the client's version is below the provider's minimum for that client.
+          content:
+            text/html:
+              schema:
+                type: string
     post:
       x-internal:
       - cloud
@@ -352,6 +363,21 @@ components:
       schema:
         type: string
         pattern: ^[A-Za-z0-9][A-Za-z0-9 ._-]{0,62}$
+    nativeClient:
+      name: client
+      in: query
+      description: Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`.
+      required: false
+      schema:
+        $ref: ../provider_capability/api.yml#/components/schemas/ClientName
+    nativeClientVersion:
+      name: clientVersion
+      in: query
+      description: Version of the client application, for example `v1.25.0`.
+      required: false
+      schema:
+        type: string
+        maxLength: 64
     nativePort:
       name: port
       in: query

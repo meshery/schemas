@@ -311,7 +311,7 @@ func TestConnectionWritesDeclareReservedIdentity409(t *testing.T) {
 		path, method, operationID string
 		codes                     []string
 	}{
-		{"/api/integrations/connections", "post", "registerConnection", []string{"200", "201", "400", "401", "403", "409", "500"}},
+		{"/api/integrations/connections", "post", "registerConnection", []string{"200", "201", "400", "401", "403", "409", "426", "500"}},
 		{"/api/integrations/connections/{connectionId}", "put", "updateConnection", []string{"200", "400", "401", "404", "409", "500"}},
 	} {
 		operation := mustLookup(t, doc, "paths", op.path, op.method)

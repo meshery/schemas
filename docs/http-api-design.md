@@ -197,7 +197,10 @@ pattern bound by RFC 7636 PKCE, defined in `v1beta3/token`:
 
 1. `GET /api/identity/native/authorize` (session cookie required) validates
    `clientName`, `port`, `codeChallenge`, `codeChallengeMethod=S256` and `state`
-   and renders a consent page. Nothing is issued.
+   and renders a consent page. Nothing is issued. Optional `client` and
+   `clientVersion` name the client application and its version; when the version
+   is below the provider's minimum for that client, an update page is rendered
+   with `426` instead of the consent page.
 2. The consent form posts (same origin) to `POST /api/identity/native/authorize`,
    which stores a single-use code (60 second TTL) bound to the user, client name
    and challenge, then redirects to
@@ -272,8 +275,14 @@ sends `X-Current-Orgid`, `membership { organizationId, bound }`. The three
 cases stay distinguishable: no `contractVersion` means an older provider, no
 `membership` means the request was not authenticated or named no
 organization, and `bound: false` means the caller is signed in but not a live
-member. A client reads paths from `capabilities` instead of hard-coding them,
-and does not use a separate health endpoint.
+member. A client that sends `client` also receives `compatibility`, whether
+its `{version}` meets the provider's minimum for that client; an outdated
+client still gets `200` with `compatible: false` and must update before it
+registers or keeps a connection alive. An authenticated request also receives
+`session` (the caller's roles, plan and entitlements, and the organization's
+plan, entitlements and device usage for a live member of `X-Current-Orgid`).
+A client reads paths from `capabilities` instead of hard-coding them, and does
+not use a separate health endpoint.
 
 ## Ledgers
 
