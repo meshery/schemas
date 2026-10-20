@@ -35,3 +35,12 @@ func (e Environment) EffectivePurpose() EnvironmentPurpose {
 	}
 	return e.Purpose
 }
+
+// IsClientSettable reports whether a client may give an environment this
+// purpose on create or update. Only the non-privileged values qualify; the
+// test is positive for the same fail-closed reason as IsAdministrative, so an
+// empty, unrecognised or privileged value answers false. A server must refuse
+// a payload whose Purpose is set and not client-settable.
+func (p EnvironmentPayloadPurpose) IsClientSettable() bool {
+	return p == EnvironmentPayloadPurposeUser || p == EnvironmentPayloadPurposeProfile
+}

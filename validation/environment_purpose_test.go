@@ -45,13 +45,26 @@ func TestEnvironmentPayloadOmitsPurpose(t *testing.T) {
 
 	got := mappingKeys(properties)
 	sort.Strings(got)
-	want := []string{"description", "name", "organizationId"}
+	want := []string{"description", "metadata", "name", "organizationId", "purpose"}
 
 	if strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("EnvironmentPayload properties = %v, want exactly %v. "+
-			"The payload is the set of fields a client may supply; purpose is "+
-			"server-owned and every other field here is server-generated.",
+			"The payload is the set of fields a client may supply; every other "+
+			"field here is server-generated.",
 			got, want)
+	}
+
+	// purpose may appear on the payload only as the non-privileged subset.
+	// Widening this enum to administrative (or any later privileged value)
+	// hands the designation to whoever can create an environment.
+	ref, _ := mappingValue(mustLookup(t, properties, "purpose"), "$ref")
+	if ref != "#/components/schemas/EnvironmentPayloadPurpose" {
+		t.Fatalf("EnvironmentPayload.purpose must reference EnvironmentPayloadPurpose, got %v", ref)
+	}
+	gotEnum := stringSliceOf(mustLookup(t, doc, "components", "schemas", "EnvironmentPayloadPurpose", "enum"))
+	if strings.Join(gotEnum, ",") != "user,profile" {
+		t.Errorf("EnvironmentPayloadPurpose enum = %v, want exactly [user profile]; "+
+			"a privileged purpose must never be client-settable", gotEnum)
 	}
 }
 
@@ -93,7 +106,7 @@ func TestEnvironmentEntityPurposeShape(t *testing.T) {
 	}
 
 	gotEnum := stringSliceOf(mustLookup(t, purpose, "enum"))
-	wantEnum := []string{"user", "administrative", "blowhorn"}
+	wantEnum := []string{"user", "administrative", "profile"}
 	if strings.Join(gotEnum, ",") != strings.Join(wantEnum, ",") {
 		t.Errorf("purpose enum = %v, want %v in that order - x-enum-varnames is "+
 			"positional, so reordering silently renames the generated constants",
