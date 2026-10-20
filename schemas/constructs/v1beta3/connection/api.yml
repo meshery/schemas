@@ -1075,8 +1075,6 @@ components:
         only to the connection's owner and to organization admins.
       required:
         - machineId
-        - clientName
-        - appVersion
       additionalProperties: false
       properties:
         machineId:
@@ -1099,7 +1097,10 @@ components:
           description: Operating system, for example `macos`.
           maxLength: 64
         appVersion:
-          $ref: "../provider_capability/api.yml#/components/schemas/ClientVersion"
+          type: string
+          description: Version of the desktop app as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Compared with the server's minimum for `clientName`.
+          maxLength: 64
+          pattern: '^v?[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
         clientName:
           type: string
           description: >

@@ -167,16 +167,6 @@ components:
           type: boolean
           description: True when the caller is a live member of the organization.
 
-    ClientVersion:
-      type: string
-      description: >
-        Version of a client application, as `MAJOR.MINOR.PATCH` with an
-        optional leading `v` and an optional pre-release or build suffix.
-        Versions are ordered by their numeric parts, so `v1.9.0` is older than
-        `v1.25.0`.
-      maxLength: 64
-      pattern: '^v?[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
-
     ClientName:
       type: string
       description: >
@@ -204,7 +194,9 @@ components:
         clientName:
           $ref: "#/components/schemas/ClientName"
         clientVersion:
-          $ref: "#/components/schemas/ClientVersion"
+          type: string
+          description: The client's version as it reported it, as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Versions are ordered by their numeric parts, so `v1.9.0` is older than `v1.25.0`.
+          maxLength: 64
         minimumVersion:
           type: string
           description: Oldest client version the provider accepts for this client. Absent when the provider sets no minimum.
@@ -253,9 +245,13 @@ components:
           type: integer
           minimum: 0
           description: Live `desktop` connections registered in the organization.
+        limit:
+          type: integer
+          minimum: 0
+          description: Devices the organization's subscriptions allow. Absent when unlimited or when no subscription sets a device limit.
         overLimit:
           type: boolean
-          description: True when `registered` exceeds the organization's device limit.
+          description: True when `limit` is present and `registered` exceeds it.
 
     ProviderSession:
       type: object
