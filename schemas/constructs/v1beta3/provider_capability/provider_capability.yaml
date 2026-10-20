@@ -1,0 +1,69 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Provider Capability Schema
+description: |
+  The remote provider's capabilities document. Existing fields describe the
+  provider and its extensions; `contractVersion` and `membership` let a
+  native client gate on the provider's contract and on its organization
+  membership after authenticating. Readers should ignore fields they do
+  not know, so the document can grow without breaking them.
+type: object
+additionalProperties: false
+required:
+  - providerType
+  - contractVersion
+properties:
+  providerType:
+    type: string
+    description: Provider type, for example `remote`.
+    maxLength: 64
+  packageVersion:
+    type: string
+    description: Version of the extension package the provider offers this client.
+    maxLength: 64
+  packageUrl:
+    type: string
+    description: Download URL of that package.
+    maxLength: 2048
+  providerName:
+    type: string
+    description: Display name of the provider.
+    maxLength: 255
+  providerDescription:
+    type: array
+    description: Lines describing the provider.
+    items:
+      type: string
+  contractVersion:
+    type: string
+    description: |
+      Version of the provider's REST contract for native clients, as
+      `MAJOR.MINOR`. A client refuses a provider whose major differs from the
+      one it was built against. A provider that predates this field omits
+      it, which a client treats as not serving the contract.
+    pattern: '^[0-9]+\.[0-9]+$'
+    maxLength: 32
+  membership:
+    $ref: "./api.yml#/components/schemas/ProviderMembership"
+  extensions:
+    type: object
+    description: Extension points (navigator, user preferences, GraphQL, account, collaborator); shape owned by the provider.
+    additionalProperties: true
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
+  capabilities:
+    type: array
+    description: Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them.
+    items:
+      $ref: "./api.yml#/components/schemas/ProviderFeature"
+  restrictedAccess:
+    type: object
+    description: Access restrictions applied to this client; shape owned by the provider.
+    additionalProperties: true
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
