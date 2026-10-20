@@ -39,7 +39,7 @@ properties:
     x-order: 3
   rowNumber:
     type: integer
-    description: Row number of the content within the owning profile.
+    description: Row number of the content piece, unique across the live content pieces of the organization.
     minimum: 0
     x-oapi-codegen-extra-tags:
       db: row_number
