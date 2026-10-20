@@ -6,7 +6,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "4b82183578f6b499c156caba33a8256d0d1e9d4d440f41745fb97850f781b0f4"
+const IndexID = "e9a85341d041813617c6ffd36da4983d34d7843af3a77df1700e4655f0a9884c"
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -1104,6 +1104,12 @@ var (
 	// WorkspaceManagementRemoveDesignsFromWorkspaces - Remove designs from workspaces
 	WorkspaceManagementRemoveDesignsFromWorkspaces = PermissionKey(uuid.Must(uuid.FromString("076515f1-f696-4211-ae27-58d5463a229e")))
 
+	// WorkspaceManagementAssignProfileToWorkspace - Add a profile to a workspace
+	WorkspaceManagementAssignProfileToWorkspace = PermissionKey(uuid.Must(uuid.FromString("d02cab86-8c22-411e-a82a-50b7a8446b6c")))
+
+	// WorkspaceManagementRemoveProfileFromWorkspace - Remove a profile from a workspace
+	WorkspaceManagementRemoveProfileFromWorkspace = PermissionKey(uuid.Must(uuid.FromString("1d8adb54-5e28-419f-83b6-2ea5ab6843a0")))
+
 	// WorkspaceManagementConnectGithubAccountToWorkspace - No description available
 	WorkspaceManagementConnectGithubAccountToWorkspace = PermissionKey(uuid.Must(uuid.FromString("410b2d3c-8194-44d1-9f80-7b5fea689b4f")))
 
@@ -1130,6 +1136,18 @@ var (
 
 	// WorkspaceManagementRemoveConnectionsFromEnvironment - Remove connections from environment,
 	WorkspaceManagementRemoveConnectionsFromEnvironment = PermissionKey(uuid.Must(uuid.FromString("65648682-e47f-43d7-a5ad-dc042803f951")))
+
+	// WorkspaceManagementViewProfiles - See profiles assigned to your workspaces. Org admins see every profile in the organization.
+	WorkspaceManagementViewProfiles = PermissionKey(uuid.Must(uuid.FromString("77f8a444-f9ac-4cb5-bb26-832b53addf01")))
+
+	// WorkspaceManagementCreateProfile - Create a new profile
+	WorkspaceManagementCreateProfile = PermissionKey(uuid.Must(uuid.FromString("b71221e9-3247-4510-9175-14b9de4fb06e")))
+
+	// WorkspaceManagementDeleteProfile - Delete a profile and its workspace and connection memberships. Leave associated connections intact.
+	WorkspaceManagementDeleteProfile = PermissionKey(uuid.Must(uuid.FromString("cad76a9d-5718-4503-8293-570b495d82bc")))
+
+	// WorkspaceManagementEditProfile - Edit a profile, transfer its owner, and link or unlink its connections
+	WorkspaceManagementEditProfile = PermissionKey(uuid.Must(uuid.FromString("b8f0c75c-39f6-488f-92c0-ab6add761266")))
 
 	// WorkspaceManagementViewProjects - View all of your projects
 	WorkspaceManagementViewProjects = PermissionKey(uuid.Must(uuid.FromString("141a5f3d-b5e2-4f36-8f83-df7f73744ee1")))
