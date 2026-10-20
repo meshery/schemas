@@ -43,7 +43,7 @@ const injectedRtkApi = api
         GetConnectionControllersConfigApiResponse,
         GetConnectionControllersConfigApiArg
       >({
-        query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}/controllers/config` }),
+        query: (queryArg) => ({ url: `/api/integrations/connections/${encodeURIComponent(queryArg.connectionId)}/controllers/config` }),
         providesTags: ["Meshery_Controllers_Configuration_controllers"],
       }),
       updateConnectionControllersConfig: build.mutation<
@@ -51,7 +51,7 @@ const injectedRtkApi = api
         UpdateConnectionControllersConfigApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/integrations/connections/${queryArg.connectionId}/controllers/config`,
+          url: `/api/integrations/connections/${encodeURIComponent(queryArg.connectionId)}/controllers/config`,
           method: "PUT",
           body: queryArg.body,
         }),
@@ -59,7 +59,7 @@ const injectedRtkApi = api
       }),
       getConsoleCapabilities: build.query<GetConsoleCapabilitiesApiResponse, GetConsoleCapabilitiesApiArg>({
         query: (queryArg) => ({
-          url: `/api/integrations/connections/${queryArg.connectionId}/console/capabilities`,
+          url: `/api/integrations/connections/${encodeURIComponent(queryArg.connectionId)}/console/capabilities`,
           params: {
             resource: queryArg?.resource,
             name: queryArg?.name,
@@ -71,7 +71,7 @@ const injectedRtkApi = api
       }),
       openTerminalConsole: build.query<OpenTerminalConsoleApiResponse, OpenTerminalConsoleApiArg>({
         query: (queryArg) => ({
-          url: `/api/integrations/connections/${queryArg.connectionId}/console/terminal`,
+          url: `/api/integrations/connections/${encodeURIComponent(queryArg.connectionId)}/console/terminal`,
           params: {
             resource: queryArg?.resource,
             name: queryArg?.name,
@@ -84,7 +84,7 @@ const injectedRtkApi = api
       }),
       openLogConsole: build.query<OpenLogConsoleApiResponse, OpenLogConsoleApiArg>({
         query: (queryArg) => ({
-          url: `/api/integrations/connections/${queryArg.connectionId}/console/logs`,
+          url: `/api/integrations/connections/${encodeURIComponent(queryArg.connectionId)}/console/logs`,
           params: {
             resource: queryArg?.resource,
             name: queryArg?.name,
@@ -126,7 +126,7 @@ const injectedRtkApi = api
       }),
       getRegistryModelsByName: build.query<GetRegistryModelsByNameApiResponse, GetRegistryModelsByNameApiArg>({
         query: (queryArg) => ({
-          url: `/api/registry/models/${queryArg.model}`,
+          url: `/api/registry/models/${encodeURIComponent(queryArg.model)}`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -142,7 +142,7 @@ const injectedRtkApi = api
         providesTags: ["Registry_Registry"],
       }),
       deleteRegistryModel: build.mutation<DeleteRegistryModelApiResponse, DeleteRegistryModelApiArg>({
-        query: (queryArg) => ({ url: `/api/registry/models/${queryArg.model}`, method: "DELETE" }),
+        query: (queryArg) => ({ url: `/api/registry/models/${encodeURIComponent(queryArg.model)}`, method: "DELETE" }),
         invalidatesTags: ["Registry_Registry"],
       }),
       getRegistryComponentsByModel: build.query<
@@ -150,7 +150,7 @@ const injectedRtkApi = api
         GetRegistryComponentsByModelApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/models/${queryArg.model}/components`,
+          url: `/api/registry/models/${encodeURIComponent(queryArg.model)}/components`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -170,7 +170,7 @@ const injectedRtkApi = api
         GetRegistryComponentsByModelAndNameApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/models/${queryArg.model}/components/${queryArg.name}`,
+          url: `/api/registry/models/${encodeURIComponent(queryArg.model)}/components/${encodeURIComponent(queryArg.name)}`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -190,7 +190,7 @@ const injectedRtkApi = api
         GetRegistryRelationshipsByModelApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/models/${queryArg.model}/relationships`,
+          url: `/api/registry/models/${encodeURIComponent(queryArg.model)}/relationships`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -207,7 +207,7 @@ const injectedRtkApi = api
         GetRegistryRelationshipsByModelAndNameApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/models/${queryArg.model}/relationships/${queryArg.name}`,
+          url: `/api/registry/models/${encodeURIComponent(queryArg.model)}/relationships/${encodeURIComponent(queryArg.name)}`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -221,7 +221,7 @@ const injectedRtkApi = api
       }),
       getRegistryPoliciesByModel: build.query<GetRegistryPoliciesByModelApiResponse, GetRegistryPoliciesByModelApiArg>({
         query: (queryArg) => ({
-          url: `/api/registry/models/${queryArg.model}/policies`,
+          url: `/api/registry/models/${encodeURIComponent(queryArg.model)}/policies`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -237,7 +237,7 @@ const injectedRtkApi = api
         GetRegistryPoliciesByModelAndNameApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/models/${queryArg.model}/policies/${queryArg.name}`,
+          url: `/api/registry/models/${encodeURIComponent(queryArg.model)}/policies/${encodeURIComponent(queryArg.name)}`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -266,7 +266,7 @@ const injectedRtkApi = api
         GetRegistryCategoriesByNameApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/categories/${queryArg.category}`,
+          url: `/api/registry/categories/${encodeURIComponent(queryArg.category)}`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -282,7 +282,7 @@ const injectedRtkApi = api
         GetRegistryModelsByCategoryApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/categories/${queryArg.category}/models`,
+          url: `/api/registry/categories/${encodeURIComponent(queryArg.category)}/models`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -302,7 +302,7 @@ const injectedRtkApi = api
         GetRegistryModelsByCategoryAndModelApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/categories/${queryArg.category}/models/${queryArg.model}`,
+          url: `/api/registry/categories/${encodeURIComponent(queryArg.category)}/models/${encodeURIComponent(queryArg.model)}`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -322,7 +322,7 @@ const injectedRtkApi = api
         GetRegistryComponentsByCategoryAndModelApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/categories/${queryArg.category}/models/${queryArg.model}/components`,
+          url: `/api/registry/categories/${encodeURIComponent(queryArg.category)}/models/${encodeURIComponent(queryArg.model)}/components`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -342,7 +342,7 @@ const injectedRtkApi = api
         GetRegistryComponentsByCategoryAndModelAndNameApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/categories/${queryArg.category}/models/${queryArg.model}/components/${queryArg.name}`,
+          url: `/api/registry/categories/${encodeURIComponent(queryArg.category)}/models/${encodeURIComponent(queryArg.model)}/components/${encodeURIComponent(queryArg.name)}`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -362,7 +362,7 @@ const injectedRtkApi = api
         GetRegistryComponentsByCategoryApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/categories/${queryArg.category}/components`,
+          url: `/api/registry/categories/${encodeURIComponent(queryArg.category)}/components`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -382,7 +382,7 @@ const injectedRtkApi = api
         GetRegistryComponentsByCategoryAndNameApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/categories/${queryArg.category}/components/${queryArg.name}`,
+          url: `/api/registry/categories/${encodeURIComponent(queryArg.category)}/components/${encodeURIComponent(queryArg.name)}`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -423,7 +423,7 @@ const injectedRtkApi = api
         GetRegistryComponentsByNameApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/components/${queryArg.name}`,
+          url: `/api/registry/components/${encodeURIComponent(queryArg.name)}`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -507,7 +507,7 @@ const injectedRtkApi = api
         UpdateRegistryEntityStatusApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/${queryArg.entityType}/status`,
+          url: `/api/registry/${encodeURIComponent(queryArg.entityType)}/status`,
           method: "POST",
           body: queryArg.body,
         }),
@@ -641,12 +641,12 @@ const injectedRtkApi = api
         invalidatesTags: ["credential_credentials"],
       }),
       getCredentialById: build.query<GetCredentialByIdApiResponse, GetCredentialByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/credentials/${queryArg.credentialId}` }),
+        query: (queryArg) => ({ url: `/api/integrations/credentials/${encodeURIComponent(queryArg.credentialId)}` }),
         providesTags: ["credential_credentials"],
       }),
       getUserKeys: build.query<GetUserKeysApiResponse, GetUserKeysApiArg>({
         query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/users/keys`,
+          url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}/users/keys`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -682,20 +682,20 @@ const injectedRtkApi = api
         providesTags: ["Organization_Organizations"],
       }),
       getOrg: build.query<GetOrgApiResponse, GetOrgApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}` }),
+        query: (queryArg) => ({ url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}` }),
         providesTags: ["Organization_Organizations"],
       }),
       deleteOrg: build.mutation<DeleteOrgApiResponse, DeleteOrgApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "DELETE" }),
+        query: (queryArg) => ({ url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}`, method: "DELETE" }),
         invalidatesTags: ["Organization_Organizations"],
       }),
       updateOrg: build.mutation<UpdateOrgApiResponse, UpdateOrgApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Organization_Organizations"],
       }),
       getChildOrgs: build.query<GetChildOrgsApiResponse, GetChildOrgsApiArg>({
         query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}/children`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -705,14 +705,14 @@ const injectedRtkApi = api
       }),
       createChildOrg: build.mutation<CreateChildOrgApiResponse, CreateChildOrgApiArg>({
         query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}/children`,
           method: "POST",
           body: queryArg.body,
         }),
         invalidatesTags: ["Organization_Organizations"],
       }),
       getOrgPreferences: build.query<GetOrgPreferencesApiResponse, GetOrgPreferencesApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/preferences` }),
+        query: (queryArg) => ({ url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}/preferences` }),
         providesTags: ["Organization_Organizations"],
       }),
       patchOrgPreferences: build.mutation<PatchOrgPreferencesApiResponse, PatchOrgPreferencesApiArg>({
@@ -728,7 +728,7 @@ const injectedRtkApi = api
       }),
       addTeamToOrg: build.mutation<AddTeamToOrgApiResponse, AddTeamToOrgApiArg>({
         query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
+          url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}/teams/${encodeURIComponent(queryArg.teamId)}`,
           method: "POST",
           body: queryArg.body,
         }),
@@ -736,25 +736,25 @@ const injectedRtkApi = api
       }),
       removeTeamFromOrg: build.mutation<RemoveTeamFromOrgApiResponse, RemoveTeamFromOrgApiArg>({
         query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/remove`,
+          url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}/teams/${encodeURIComponent(queryArg.teamId)}/remove`,
           method: "POST",
         }),
         invalidatesTags: ["Organization_Organizations"],
       }),
       addUserToOrg: build.mutation<AddUserToOrgApiResponse, AddUserToOrgApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/users/${queryArg.userId}`, method: "POST" }),
+        query: (queryArg) => ({ url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}/users/${encodeURIComponent(queryArg.userId)}`, method: "POST" }),
         invalidatesTags: ["Organization_Organizations"],
       }),
       deleteUserFromOrg: build.mutation<DeleteUserFromOrgApiResponse, DeleteUserFromOrgApiArg>({
         query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/users/${queryArg.userId}`,
+          url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}/users/${encodeURIComponent(queryArg.userId)}`,
           method: "DELETE",
         }),
         invalidatesTags: ["Organization_Organizations"],
       }),
       getUsersForOrg: build.query<GetUsersForOrgApiResponse, GetUsersForOrgApiArg>({
         query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/users`,
+          url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}/users`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -767,7 +767,7 @@ const injectedRtkApi = api
         providesTags: ["User_users"],
       }),
       getUserProfileById: build.query<GetUserProfileByIdApiResponse, GetUserProfileByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/users/profile/${queryArg.id}` }),
+        query: (queryArg) => ({ url: `/api/identity/users/profile/${encodeURIComponent(queryArg.id)}` }),
         providesTags: ["User_users"],
       }),
       getUser: build.query<GetUserApiResponse, GetUserApiArg>({
@@ -775,7 +775,7 @@ const injectedRtkApi = api
         providesTags: ["User_users"],
       }),
       getUserEmailAddresses: build.query<GetUserEmailAddressesApiResponse, GetUserEmailAddressesApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/users/${queryArg.userId}/emails` }),
+        query: (queryArg) => ({ url: `/api/identity/users/${encodeURIComponent(queryArg.userId)}/emails` }),
         providesTags: ["User_users"],
       }),
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
@@ -816,30 +816,30 @@ const injectedRtkApi = api
       }),
       cancelConnectionRegister: build.mutation<CancelConnectionRegisterApiResponse, CancelConnectionRegisterApiArg>({
         query: (queryArg) => ({
-          url: `/api/integrations/connections/register/${queryArg.registrationId}`,
+          url: `/api/integrations/connections/register/${encodeURIComponent(queryArg.registrationId)}`,
           method: "DELETE",
         }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
       getConnectionById: build.query<GetConnectionByIdApiResponse, GetConnectionByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}` }),
+        query: (queryArg) => ({ url: `/api/integrations/connections/${encodeURIComponent(queryArg.connectionId)}` }),
         providesTags: ["Connection_API_Connections"],
       }),
       updateConnection: build.mutation<UpdateConnectionApiResponse, UpdateConnectionApiArg>({
         query: (queryArg) => ({
-          url: `/api/integrations/connections/${queryArg.connectionId}`,
+          url: `/api/integrations/connections/${encodeURIComponent(queryArg.connectionId)}`,
           method: "PUT",
           body: queryArg.body,
         }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
       deleteConnection: build.mutation<DeleteConnectionApiResponse, DeleteConnectionApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}`, method: "DELETE" }),
+        query: (queryArg) => ({ url: `/api/integrations/connections/${encodeURIComponent(queryArg.connectionId)}`, method: "DELETE" }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
       performConnectionAction: build.mutation<PerformConnectionActionApiResponse, PerformConnectionActionApiArg>({
         query: (queryArg) => ({
-          url: `/api/integrations/connections/${queryArg.connectionId}/actions`,
+          url: `/api/integrations/connections/${encodeURIComponent(queryArg.connectionId)}/actions`,
           method: "POST",
           body: queryArg.body,
         }),
@@ -847,13 +847,13 @@ const injectedRtkApi = api
       }),
       deleteMesheryConnection: build.mutation<DeleteMesheryConnectionApiResponse, DeleteMesheryConnectionApiArg>({
         query: (queryArg) => ({
-          url: `/api/integrations/connections/meshery/${queryArg.mesheryServerId}`,
+          url: `/api/integrations/connections/meshery/${encodeURIComponent(queryArg.mesheryServerId)}`,
           method: "DELETE",
         }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
       getKubernetesContext: build.query<GetKubernetesContextApiResponse, GetKubernetesContextApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/connections/kubernetes/${queryArg.connectionId}/context` }),
+        query: (queryArg) => ({ url: `/api/integrations/connections/kubernetes/${encodeURIComponent(queryArg.connectionId)}/context` }),
         providesTags: ["Connection_API_Connections"],
       }),
       addConnectionToEnvironment: build.mutation<
@@ -861,7 +861,7 @@ const injectedRtkApi = api
         AddConnectionToEnvironmentApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/environments/${queryArg.environmentId}/connections/${queryArg.connectionId}`,
+          url: `/api/environments/${encodeURIComponent(queryArg.environmentId)}/connections/${encodeURIComponent(queryArg.connectionId)}`,
           method: "POST",
         }),
         invalidatesTags: ["Connection_API_Connections"],
@@ -871,7 +871,7 @@ const injectedRtkApi = api
         RemoveConnectionFromEnvironmentApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/environments/${queryArg.environmentId}/connections/${queryArg.connectionId}`,
+          url: `/api/environments/${encodeURIComponent(queryArg.environmentId)}/connections/${encodeURIComponent(queryArg.connectionId)}`,
           method: "DELETE",
         }),
         invalidatesTags: ["Connection_API_Connections"],
@@ -898,7 +898,7 @@ const injectedRtkApi = api
         invalidatesTags: ["Connection_API_ConnectionDefinitions"],
       }),
       getConnectionDefinition: build.query<GetConnectionDefinitionApiResponse, GetConnectionDefinitionApiArg>({
-        query: (queryArg) => ({ url: `/api/registry/connections/${queryArg.connectionDefinitionId}` }),
+        query: (queryArg) => ({ url: `/api/registry/connections/${encodeURIComponent(queryArg.connectionDefinitionId)}` }),
         providesTags: ["Connection_API_ConnectionDefinitions"],
       }),
       updateConnectionDefinition: build.mutation<
@@ -906,7 +906,7 @@ const injectedRtkApi = api
         UpdateConnectionDefinitionApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/connections/${queryArg.connectionDefinitionId}`,
+          url: `/api/registry/connections/${encodeURIComponent(queryArg.connectionDefinitionId)}`,
           method: "PUT",
           body: queryArg.body,
         }),
@@ -917,7 +917,7 @@ const injectedRtkApi = api
         DeleteConnectionDefinitionApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/registry/connections/${queryArg.connectionDefinitionId}`,
+          url: `/api/registry/connections/${encodeURIComponent(queryArg.connectionDefinitionId)}`,
           method: "DELETE",
         }),
         invalidatesTags: ["Connection_API_ConnectionDefinitions"],
@@ -947,7 +947,7 @@ const injectedRtkApi = api
       }),
       getEnvironmentById: build.query<GetEnvironmentByIdApiResponse, GetEnvironmentByIdApiArg>({
         query: (queryArg) => ({
-          url: `/api/environments/${queryArg.environmentId}`,
+          url: `/api/environments/${encodeURIComponent(queryArg.environmentId)}`,
           params: {
             orgId: queryArg?.orgId,
           },
@@ -956,19 +956,19 @@ const injectedRtkApi = api
       }),
       updateEnvironment: build.mutation<UpdateEnvironmentApiResponse, UpdateEnvironmentApiArg>({
         query: (queryArg) => ({
-          url: `/api/environments/${queryArg.environmentId}`,
+          url: `/api/environments/${encodeURIComponent(queryArg.environmentId)}`,
           method: "PUT",
           body: queryArg.body,
         }),
         invalidatesTags: ["Environment_environments"],
       }),
       deleteEnvironment: build.mutation<DeleteEnvironmentApiResponse, DeleteEnvironmentApiArg>({
-        query: (queryArg) => ({ url: `/api/environments/${queryArg.environmentId}`, method: "DELETE" }),
+        query: (queryArg) => ({ url: `/api/environments/${encodeURIComponent(queryArg.environmentId)}`, method: "DELETE" }),
         invalidatesTags: ["Environment_environments"],
       }),
       getEnvironmentConnections: build.query<GetEnvironmentConnectionsApiResponse, GetEnvironmentConnectionsApiArg>({
         query: (queryArg) => ({
-          url: `/api/environments/${queryArg.environmentId}/connections`,
+          url: `/api/environments/${encodeURIComponent(queryArg.environmentId)}/connections`,
           params: {
             search: queryArg?.search,
             order: queryArg?.order,
@@ -981,7 +981,7 @@ const injectedRtkApi = api
         providesTags: ["Environment_environments"],
       }),
       deleteEvent: build.mutation<DeleteEventApiResponse, DeleteEventApiArg>({
-        query: (queryArg) => ({ url: `/api/events/${queryArg.eventId}`, method: "DELETE" }),
+        query: (queryArg) => ({ url: `/api/events/${encodeURIComponent(queryArg.eventId)}`, method: "DELETE" }),
         invalidatesTags: ["Events_events"],
       }),
       bulkDeleteEvents: build.mutation<BulkDeleteEventsApiResponse, BulkDeleteEventsApiArg>({
@@ -993,7 +993,7 @@ const injectedRtkApi = api
         invalidatesTags: ["Events_events"],
       }),
       updateEventStatus: build.mutation<UpdateEventStatusApiResponse, UpdateEventStatusApiArg>({
-        query: (queryArg) => ({ url: `/api/events/${queryArg.eventId}/status`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/${encodeURIComponent(queryArg.eventId)}/status`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
       createEvent: build.mutation<CreateEventApiResponse, CreateEventApiArg>({
@@ -1017,19 +1017,19 @@ const injectedRtkApi = api
         invalidatesTags: ["Performance_Profile_performance"],
       }),
       getPerformanceProfile: build.query<GetPerformanceProfileApiResponse, GetPerformanceProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/performance/profiles/${queryArg.performanceProfileId}` }),
+        query: (queryArg) => ({ url: `/api/performance/profiles/${encodeURIComponent(queryArg.performanceProfileId)}` }),
         providesTags: ["Performance_Profile_performance"],
       }),
       updatePerformanceProfile: build.mutation<UpdatePerformanceProfileApiResponse, UpdatePerformanceProfileApiArg>({
         query: (queryArg) => ({
-          url: `/api/performance/profiles/${queryArg.performanceProfileId}`,
+          url: `/api/performance/profiles/${encodeURIComponent(queryArg.performanceProfileId)}`,
           method: "PUT",
           body: queryArg.body,
         }),
         invalidatesTags: ["Performance_Profile_performance"],
       }),
       deletePerformanceProfile: build.mutation<DeletePerformanceProfileApiResponse, DeletePerformanceProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/performance/profiles/${queryArg.performanceProfileId}`, method: "DELETE" }),
+        query: (queryArg) => ({ url: `/api/performance/profiles/${encodeURIComponent(queryArg.performanceProfileId)}`, method: "DELETE" }),
         invalidatesTags: ["Performance_Profile_performance"],
       }),
       getPerformanceProfileResults: build.query<
@@ -1037,7 +1037,7 @@ const injectedRtkApi = api
         GetPerformanceProfileResultsApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/performance/profiles/${queryArg.performanceProfileId}/results`,
+          url: `/api/performance/profiles/${encodeURIComponent(queryArg.performanceProfileId)}/results`,
           params: {
             page: queryArg?.page,
             pagesize: queryArg?.pagesize,
@@ -1107,20 +1107,20 @@ const injectedRtkApi = api
         invalidatesTags: ["Workspace_workspaces"],
       }),
       getWorkspaceById: build.query<GetWorkspaceByIdApiResponse, GetWorkspaceByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.workspaceId}` }),
+        query: (queryArg) => ({ url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}` }),
         providesTags: ["Workspace_workspaces"],
       }),
       updateWorkspace: build.mutation<UpdateWorkspaceApiResponse, UpdateWorkspaceApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.workspaceId}`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Workspace_workspaces"],
       }),
       deleteWorkspace: build.mutation<DeleteWorkspaceApiResponse, DeleteWorkspaceApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.workspaceId}`, method: "DELETE" }),
+        query: (queryArg) => ({ url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}`, method: "DELETE" }),
         invalidatesTags: ["Workspace_workspaces"],
       }),
       getTeamsOfWorkspace: build.query<GetTeamsOfWorkspaceApiResponse, GetTeamsOfWorkspaceApiArg>({
         query: (queryArg) => ({
-          url: `/api/workspaces/${queryArg.workspaceId}/teams`,
+          url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}/teams`,
           params: {
             search: queryArg?.search,
             order: queryArg?.order,
@@ -1134,21 +1134,21 @@ const injectedRtkApi = api
       }),
       assignTeamToWorkspace: build.mutation<AssignTeamToWorkspaceApiResponse, AssignTeamToWorkspaceApiArg>({
         query: (queryArg) => ({
-          url: `/api/workspaces/${queryArg.workspaceId}/teams/${queryArg.teamId}`,
+          url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}/teams/${encodeURIComponent(queryArg.teamId)}`,
           method: "POST",
         }),
         invalidatesTags: ["Workspace_workspaces"],
       }),
       unassignTeamFromWorkspace: build.mutation<UnassignTeamFromWorkspaceApiResponse, UnassignTeamFromWorkspaceApiArg>({
         query: (queryArg) => ({
-          url: `/api/workspaces/${queryArg.workspaceId}/teams/${queryArg.teamId}`,
+          url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}/teams/${encodeURIComponent(queryArg.teamId)}`,
           method: "DELETE",
         }),
         invalidatesTags: ["Workspace_workspaces"],
       }),
       getEnvironmentsOfWorkspace: build.query<GetEnvironmentsOfWorkspaceApiResponse, GetEnvironmentsOfWorkspaceApiArg>({
         query: (queryArg) => ({
-          url: `/api/workspaces/${queryArg.workspaceId}/environments`,
+          url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}/environments`,
           params: {
             search: queryArg?.search,
             order: queryArg?.order,
@@ -1165,7 +1165,7 @@ const injectedRtkApi = api
         AssignEnvironmentToWorkspaceApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/workspaces/${queryArg.workspaceId}/environments/${queryArg.environmentId}`,
+          url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}/environments/${encodeURIComponent(queryArg.environmentId)}`,
           method: "POST",
         }),
         invalidatesTags: ["Workspace_workspaces"],
@@ -1175,14 +1175,14 @@ const injectedRtkApi = api
         UnassignEnvironmentFromWorkspaceApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/workspaces/${queryArg.workspaceId}/environments/${queryArg.environmentId}`,
+          url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}/environments/${encodeURIComponent(queryArg.environmentId)}`,
           method: "DELETE",
         }),
         invalidatesTags: ["Workspace_workspaces"],
       }),
       getDesignsOfWorkspace: build.query<GetDesignsOfWorkspaceApiResponse, GetDesignsOfWorkspaceApiArg>({
         query: (queryArg) => ({
-          url: `/api/workspaces/${queryArg.workspaceId}/designs`,
+          url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}/designs`,
           params: {
             search: queryArg?.search,
             order: queryArg?.order,
@@ -1196,7 +1196,7 @@ const injectedRtkApi = api
       }),
       assignDesignToWorkspace: build.mutation<AssignDesignToWorkspaceApiResponse, AssignDesignToWorkspaceApiArg>({
         query: (queryArg) => ({
-          url: `/api/workspaces/${queryArg.workspaceId}/designs/${queryArg.designId}`,
+          url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}/designs/${encodeURIComponent(queryArg.designId)}`,
           method: "POST",
         }),
         invalidatesTags: ["Workspace_workspaces", "Workspace_designs"],
@@ -1206,14 +1206,14 @@ const injectedRtkApi = api
         UnassignDesignFromWorkspaceApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/workspaces/${queryArg.workspaceId}/designs/${queryArg.designId}`,
+          url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}/designs/${encodeURIComponent(queryArg.designId)}`,
           method: "DELETE",
         }),
         invalidatesTags: ["Workspace_workspaces", "Workspace_designs"],
       }),
       getViewsOfWorkspace: build.query<GetViewsOfWorkspaceApiResponse, GetViewsOfWorkspaceApiArg>({
         query: (queryArg) => ({
-          url: `/api/workspaces/${queryArg.workspaceId}/views`,
+          url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}/views`,
           params: {
             search: queryArg?.search,
             order: queryArg?.order,
@@ -1227,14 +1227,14 @@ const injectedRtkApi = api
       }),
       assignViewToWorkspace: build.mutation<AssignViewToWorkspaceApiResponse, AssignViewToWorkspaceApiArg>({
         query: (queryArg) => ({
-          url: `/api/workspaces/${queryArg.workspaceId}/views/${queryArg.viewId}`,
+          url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}/views/${encodeURIComponent(queryArg.viewId)}`,
           method: "POST",
         }),
         invalidatesTags: ["Workspace_workspaces", "Workspace_views"],
       }),
       unassignViewFromWorkspace: build.mutation<UnassignViewFromWorkspaceApiResponse, UnassignViewFromWorkspaceApiArg>({
         query: (queryArg) => ({
-          url: `/api/workspaces/${queryArg.workspaceId}/views/${queryArg.viewId}`,
+          url: `/api/workspaces/${encodeURIComponent(queryArg.workspaceId)}/views/${encodeURIComponent(queryArg.viewId)}`,
           method: "DELETE",
         }),
         invalidatesTags: ["Workspace_workspaces", "Workspace_views"],

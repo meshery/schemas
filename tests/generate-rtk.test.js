@@ -5,6 +5,7 @@ const os = require("node:os");
 const path = require("node:path");
 
 const {
+  encodePathParams,
   findUnguardedQueryParamAccesses,
   guardOptionalQueryParams,
 } = require("../build/generate-rtk");
@@ -45,4 +46,24 @@ test("guardOptionalQueryParams fails loudly when a params block still contains a
       /unguarded queryArg access\(es\) remain/,
     );
   });
+});
+
+test("encodePathParams URL-encodes path parameter interpolations so reserved characters address their own entry", () => {
+  const generated = [
+    "query: (queryArg) => ({ url: `/api/ledgers/${queryArg.ledger}/entries/${queryArg.entryKey}` }),",
+    'query: (queryArg) => ({ url: `/api/x/${queryArg["class"]}` }),',
+  ].join("\n");
+  const rewritten = encodePathParams(generated);
+  const build = new Function(
+    `const queryArg = { ledger: "processed-profiles", entryKey: "a/b c", class: "x?y" };
+     const q = ${rewritten.split("\n")[0].replace(/^query: /, "").replace(/,$/, "")};
+     return q(queryArg).url;`,
+  );
+  assert.equal(build(), "/api/ledgers/processed-profiles/entries/a%2Fb%20c");
+  const bracket = new Function(
+    `const queryArg = { class: "x?y" };
+     const q = ${rewritten.split("\n")[1].replace(/^query: /, "").replace(/,$/, "")};
+     return q(queryArg).url;`,
+  );
+  assert.equal(bracket(), "/api/x/x%3Fy");
 });
