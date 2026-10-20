@@ -45,7 +45,7 @@ properties:
     $ref: "./api.yml#/components/schemas/ProviderMembership"
   extensions:
     type: object
-    description: Extension points (navigator, user preferences, GraphQL, account, collaborator); shape owned by the provider.
+    description: Extension points; shape owned by the provider.
     additionalProperties: true
     x-go-type: core.Map
     x-go-type-import:
