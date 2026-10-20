@@ -27,6 +27,20 @@ func TestLedgerContract(t *testing.T) {
 		}
 	}
 
+	paths := mustLookup(t, doc, "paths")
+	for _, method := range []string{"get", "delete"} {
+		op := mustLookup(t, paths, "/api/ledgers/{ledger}/entries/{entryKey}", method)
+		if _, ok := mappingValue(op, "operationId"); !ok {
+			t.Errorf("%s on /entries/{entryKey} must declare an operationId", method)
+		}
+	}
+	if _, ok := mappingValue(paths, "/api/ledgers/{ledger}/entries/{ledgerEntryId}"); ok {
+		t.Error("ledger entries must be addressed by entryKey, not ledgerEntryId")
+	}
+	if _, ok := mappingValue(mustLookup(t, paths, "/api/ledgers/{ledger}/entries"), "get"); ok {
+		t.Error("the ledger list endpoint must be removed")
+	}
+
 	for _, gone := range []string{"blowhorn_ledger", "blowhorn_binding"} {
 		if _, err := os.Stat(filepath.Join(root, "schemas/constructs/v1beta3", gone)); err == nil {
 			t.Errorf("construct v1beta3/%s must be removed", gone)

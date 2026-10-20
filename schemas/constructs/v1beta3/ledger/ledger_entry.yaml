@@ -1,11 +1,12 @@
 $schema: http://json-schema.org/draft-07/schema#
 title: Ledger Entry Schema
-description: |
+description: >
   Server-returned ledger entry. An organization keeps any number of named
   ledgers, each an idempotent set keyed by entryKey: recording an existing
-  key never creates a second entry (it merges the supplied value into the
-  stored one and returns it), and claim-if-absent
-  gives a key to exactly one claimant, so two workers never both act on it.
+  key never creates a second entry and returns the stored entry unchanged,
+  and claim-if-absent gives a key to exactly one claimant, so two workers
+  never both act on it. Any organization member may read, claim and delete
+  entries; claimedBy is an advisory label, not an authorization principal.
 type: object
 additionalProperties: false
 required:

@@ -8,6 +8,13 @@ info:
     (ledger, entryKey), and claim-if-absent hands a key to exactly one
     claimant atomically. Ledgers belong to the organization of the
     authenticated session; any client-supplied organization is ignored.
+
+    Authorization: ledgers are organization-shared bookkeeping. Any member of
+    the organization may record, claim, read and delete entries in that
+    organization's ledgers. `claimant` is an advisory worker label, not an
+    authorization principal: it is not bound to the caller, and a claim or
+    delete never checks who holds the key. A key is scoped to (organization,
+    ledger), so an entry in another ledger is `404`.
   version: v1beta3
   contact:
     name: Meshery Maintainers
@@ -25,42 +32,6 @@ tags:
 
 paths:
   /api/ledgers/{ledger}/entries:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - ledgers
-      summary: List ledger entries
-      operationId: listLedgerEntries
-      description: >
-        Returns a page of the ledger's entries in the organization of the
-        authenticated session. `entryKey` filters to one exact key, which is
-        how a worker asks whether a key is already recorded.
-      parameters:
-        - $ref: "#/components/parameters/ledger"
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
-        - $ref: "#/components/parameters/order"
-        - name: entryKey
-          in: query
-          required: false
-          description: Return only the entry with exactly this key.
-          schema:
-            type: string
-            minLength: 1
-            maxLength: 1024
-      responses:
-        "200":
-          description: Ledger entries page
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LedgerEntryPage"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud"]
       tags:
@@ -69,10 +40,10 @@ paths:
       operationId: recordLedgerEntry
       description: >
         Records `entryKey` in the ledger. A new key creates the entry and
-        returns `201`. An existing key never creates a second entry: the
-        supplied `value` is merged into the stored value (top-level fields of
-        the request replace the stored ones) and the entry is returned with
-        `200`. Recording never changes `claimedBy` or `claimedAt`.
+        returns `201`. An existing key never creates a second entry and is not
+        changed: the stored entry is returned unchanged with `200`, and the
+        supplied `value` is ignored. Recording never changes `claimedBy` or
+        `claimedAt`.
       parameters:
         - $ref: "#/components/parameters/ledger"
       requestBody:
@@ -83,7 +54,7 @@ paths:
               $ref: "#/components/schemas/LedgerEntryPayload"
       responses:
         "200":
-          description: The key was already recorded; the stored entry, after the merge
+          description: The key was already recorded; the stored entry, unchanged
           content:
             application/json:
               schema:
@@ -146,16 +117,17 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/ledgers/{ledger}/entries/{ledgerEntryId}:
+  /api/ledgers/{ledger}/entries/{entryKey}:
     get:
       x-internal: ["cloud"]
       tags:
         - ledgers
       summary: Get a ledger entry
       operationId: getLedgerEntry
+      description: Returns the entry recorded under `entryKey` in the ledger, or `404` when the key is not in this ledger.
       parameters:
         - $ref: "#/components/parameters/ledger"
-        - $ref: "#/components/parameters/ledgerEntryId"
+        - $ref: "#/components/parameters/entryKey"
       responses:
         "200":
           description: Ledger entry
@@ -175,10 +147,10 @@ paths:
         - ledgers
       summary: Delete a ledger entry
       operationId: deleteLedgerEntry
-      description: Removes the entry, and with it any claim, so its key can be recorded or claimed again.
+      description: Removes the entry, and with it any claim, so its key can be recorded or claimed again. Returns `404` when the key is not in this ledger.
       parameters:
         - $ref: "#/components/parameters/ledger"
-        - $ref: "#/components/parameters/ledgerEntryId"
+        - $ref: "#/components/parameters/entryKey"
       responses:
         "204":
           description: Ledger entry deleted
@@ -223,24 +195,15 @@ components:
         pattern: '^[a-z0-9][a-z0-9._-]*$'
         minLength: 1
         maxLength: 255
-    ledgerEntryId:
-      name: ledgerEntryId
+    entryKey:
+      name: entryKey
       in: path
-      description: Ledger entry ID
+      description: Key within the ledger. URL-encode keys that contain reserved characters such as `/`.
       required: true
       schema:
-        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
-    page:
-      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
-    pageSize:
-      name: pageSize
-      in: query
-      description: Number of items per page.
-      schema:
-        type: integer
-        minimum: 1
-    order:
-      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
+        type: string
+        minLength: 1
+        maxLength: 1024
 
   schemas:
     LedgerEntry:
@@ -285,7 +248,7 @@ components:
           x-go-name: EntryKey
         claimant:
           type: string
-          description: Claimant taking the key, for example a registered machine connection ID.
+          description: Advisory label naming the worker taking the key, for example a worker name. It is not bound to the caller.
           minLength: 1
           maxLength: 255
         value:
@@ -296,29 +259,3 @@ components:
             path: github.com/meshery/schemas/models/core
             name: core
           x-go-type-skip-optional-pointer: true
-
-    LedgerEntryPage:
-      type: object
-      description: A page of ledger entries.
-      required:
-        - page
-        - pageSize
-        - totalCount
-        - entries
-      properties:
-        page:
-          type: integer
-          minimum: 0
-          description: Zero-based page index.
-        pageSize:
-          type: integer
-          minimum: 1
-          description: Entries per page.
-        totalCount:
-          type: integer
-          minimum: 0
-          description: Entries matching the request across all pages.
-        entries:
-          type: array
-          items:
-            $ref: "#/components/schemas/LedgerEntry"
