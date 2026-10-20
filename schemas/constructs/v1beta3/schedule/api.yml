@@ -499,9 +499,9 @@ components:
         Payload for creating or updating a schedule. Contains only
         client-settable fields; the owning `organizationId`, the claim,
         `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError` and the
-        timestamps are server-managed. The server ignores them on input, so a
-        fetched schedule can be sent back unchanged apart from the fields being edited. Pausing is a field, not an operation:
-        `paused` pauses or resumes the schedule. `status` accepts only `pending`,
+        timestamps are server-managed. The server ignores them on input. Pausing
+        is a field, not an operation: `paused` pauses or resumes the schedule.
+        `status` accepts only `pending`,
         `scheduled` and `cancelled` here; the other values are set by the
         claim and release operations.
       required:
