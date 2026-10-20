@@ -304,7 +304,14 @@ key; a key outside that ledger is `404`. Product data such as contacts is a
 ledger with a composite key (for example `platform:handle`) and a JSON value,
 not its own route tree.
 
+`GET /api/ledgers/{ledger}/entries` (`listLedgerEntries`) lists a ledger with
+the shared list conventions: the core `page`, `pageSize`, `search` and `order`
+parameters and a `LedgerEntryPage` envelope (`page`, `pageSize`, `totalCount`,
+`ledgerEntries`). `search` matches entry keys containing the term, ignoring
+case; `order` takes `entryKey`, `createdAt` or `updatedAt` and defaults to
+`entryKey asc`. An empty ledger is an empty page; a non-member gets `404`.
+
 Ledgers are organization-shared bookkeeping: any organization member may
-record, claim, read and delete. `claimant` is an advisory worker label, not an
-authorization principal, so a claim or delete is not checked against who sent
-it.
+record, claim, list, read and delete. `claimant` is an advisory worker label,
+not an authorization principal, so a claim or delete is not checked against
+who sent it.

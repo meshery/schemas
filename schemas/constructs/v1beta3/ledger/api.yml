@@ -10,7 +10,7 @@ info:
     authenticated session; any client-supplied organization is ignored.
 
     Authorization: ledgers are organization-shared bookkeeping. Any member of
-    the organization may record, claim, read and delete entries in that
+    the organization may record, claim, list, read and delete entries in that
     organization's ledgers. `claimant` is an advisory worker label, not an
     authorization principal: it is not bound to the caller, and a claim or
     delete never checks who holds the key. A key is scoped to (organization,
@@ -32,6 +32,40 @@ tags:
 
 paths:
   /api/ledgers/{ledger}/entries:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - ledgers
+      summary: List ledger entries
+      operationId: listLedgerEntries
+      description: >
+        Returns a paginated list of the entries in the ledger, in the
+        organization of the authenticated session. `search` matches entry keys
+        that contain the term, ignoring case. `order` sorts by `entryKey`,
+        `createdAt` or `updatedAt` (`asc` or `desc`); the default is
+        `entryKey asc`. A ledger with no entries returns an empty page, and a
+        caller who is not a member of the session organization gets `404`.
+      parameters:
+        - $ref: "#/components/parameters/ledger"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Ledger entries page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntryPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud"]
       tags:
@@ -185,6 +219,14 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
 
   parameters:
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/pageSize"
+    search:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
     ledger:
       name: ledger
       in: path
@@ -210,6 +252,34 @@ components:
   schemas:
     LedgerEntry:
       $ref: "./ledger_entry.yaml"
+
+    LedgerEntryPage:
+      type: object
+      description: Paginated collection of ledger entries.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - ledgerEntries
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        ledgerEntries:
+          type: array
+          items:
+            $ref: "#/components/schemas/LedgerEntry"
+            x-go-type: LedgerEntry
+          description: Ledger entries included on this page of results.
 
     LedgerEntryPayload:
       type: object
