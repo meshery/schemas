@@ -38164,7 +38164,7 @@ const RegistrySchema: Record<string, unknown> = {
                       "description": {
                         "x-oapi-codegen-extra-tags": {
                           "db": "description",
-                          "json": "description"
+                          "json": "description,omitempty"
                         },
                         "x-order": 3,
                         "type": "string",
@@ -38174,7 +38174,7 @@ const RegistrySchema: Record<string, unknown> = {
                       "url": {
                         "x-oapi-codegen-extra-tags": {
                           "db": "url",
-                          "json": "url"
+                          "json": "url,omitempty"
                         },
                         "x-order": 4,
                         "type": "string",
@@ -49280,7 +49280,7 @@ const RegistrySchema: Record<string, unknown> = {
                       "description": {
                         "x-oapi-codegen-extra-tags": {
                           "db": "description",
-                          "json": "description"
+                          "json": "description,omitempty"
                         },
                         "x-order": 3,
                         "type": "string",
@@ -49290,7 +49290,7 @@ const RegistrySchema: Record<string, unknown> = {
                       "url": {
                         "x-oapi-codegen-extra-tags": {
                           "db": "url",
-                          "json": "url"
+                          "json": "url,omitempty"
                         },
                         "x-order": 4,
                         "type": "string",
@@ -69378,7 +69378,7 @@ const RegistrySchema: Record<string, unknown> = {
               "description": {
                 "x-oapi-codegen-extra-tags": {
                   "db": "description",
-                  "json": "description"
+                  "json": "description,omitempty"
                 },
                 "x-order": 3,
                 "type": "string",
@@ -69388,7 +69388,7 @@ const RegistrySchema: Record<string, unknown> = {
               "url": {
                 "x-oapi-codegen-extra-tags": {
                   "db": "url",
-                  "json": "url"
+                  "json": "url,omitempty"
                 },
                 "x-order": 4,
                 "type": "string",
