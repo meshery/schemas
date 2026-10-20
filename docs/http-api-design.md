@@ -261,3 +261,16 @@ registration, heartbeat and deregistration routes under
 the deduplication key, organization handling and `lastSeenAt` semantics, is
 owned by `schemas/constructs/v1beta3/connection/api.yml` and
 `DesktopConnectionMetadata` there.
+
+## Provider capabilities document
+
+`GET /{version}/capabilities` (`v1beta3/provider_capability`) is the first
+call a native client makes after it authenticates. Besides the provider's
+features and their endpoints, it carries `contractVersion` (`MAJOR.MINOR`;
+a client refuses a different major) and, on an authenticated request that
+sends `X-Current-Orgid`, `membership { organizationId, bound }`. The three
+cases stay distinguishable: no `contractVersion` means an older provider, no
+`membership` means the request was not authenticated or named no
+organization, and `bound: false` means the caller is signed in but not a live
+member. A client reads paths from `capabilities` instead of hard-coding them,
+and does not use a separate health endpoint.
