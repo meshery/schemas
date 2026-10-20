@@ -318,7 +318,7 @@ paths:
         - name: purpose
           in: query
           required: false
-          description: Return only environments with this purpose; absent returns every purpose the caller may see.
+          description: Return only environments with this purpose; absent returns every purpose the caller may see. The filter only narrows the environments the caller can already list and grants no visibility - a caller who cannot see administrative environments receives an empty page for purpose=administrative.
           schema:
             $ref: "./environment.yaml#/properties/purpose"
       responses:

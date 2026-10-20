@@ -11,6 +11,8 @@ organization-level configuration key on.
 | `profile` | An ordinary, non-privileged environment that holds one profile. By convention there is one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections through the existing environment-connection mapping. It carries no authority and a client may choose it on create or update. The schema does not enforce one-per-profile; no uniqueness constraint is added for it. |
 | absent | Identical to `user`. Every environment written before the column existed is in this state. |
 
+No server has ever written a privileged value other than `administrative`: meshery-cloud writes only `user` and `administrative`. A consumer that holds a row carrying a removed privileged value migrates that row to `profile`.
+
 The property is optional on the wire and omitted when empty. It is deliberately
 **not** in the entity's `required` list, and carries neither `default:` nor
 `readOnly:` - see [Two annotations this property deliberately does not
