@@ -238,12 +238,17 @@ The rules a consumer must enforce:
   (and optionally `pauseReason`) on `PUT /api/schedules/{scheduleId}`, and the organization-wide
   pause is set or lifted by updating the organization's preferences. There are no `/pause` or
   `/resume` routes.
+- To change one preference member without resending the others, use
+  `PATCH /api/identity/orgs/{orgId}/preferences` (`PreferencesPatchPayload`): a present member
+  replaces that member, an omitted one stays unchanged. Send the `ETag` from the preferences read
+  back as `If-Match` to make the write conditional (412 when the preferences changed since).
 - On schedule payloads, the claim, `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError`,
   `organizationId` and the timestamps are server-managed and ignored on input, not refused. A
   schedule payload accepts `status` only as `pending`, `scheduled` or `cancelled`, so the
   claim-set statuses are rejected. Organization preference writes use the closed
-  `PreferencesPayload`, whose `schedulePause` is `SchedulePausePayload` (`paused` required, `reason`
-  only): an echoed `pausedAt` or `pausedBy` is refused with 400.
+  `PreferencesPayload` (or the closed `PreferencesPatchPayload` on PATCH), whose `schedulePause` is
+  `SchedulePausePayload` (`paused` required, `reason` only): an echoed `pausedAt` or `pausedBy` is
+  refused with 400.
 - Servers MUST omit `preferences.schedulePause` from the unauthenticated `getOrgByDomain` response.
 
 `v1beta3/job_lease` was removed in favour of these two constructs; no consumer served or called it.

@@ -266,6 +266,27 @@ type Preferences struct {
 	Theme Theme `json:"theme" yaml:"theme"`
 }
 
+// PreferencesPatchPayload Partial update of organization preferences (patchOrgPreferences). Every member is optional: a present member replaces that member of the stored preferences as a whole, and an omitted member stays unchanged. Members are those of PreferencesPayload, with the same schemas, and may not be null.
+type PreferencesPatchPayload struct {
+	// AuthBranding Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.
+	AuthBranding *AuthBranding `json:"authBranding,omitempty" yaml:"authBranding,omitempty"`
+
+	// Dashboard Preferences specific to dashboard behavior.
+	Dashboard *DashboardPrefs `json:"dashboard,omitempty" yaml:"dashboard,omitempty"`
+
+	// Links Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults.
+	Links *Links `json:"links,omitempty" yaml:"links,omitempty"`
+
+	// SchedulePause Client-settable organization pause. Carries only `paused` and `reason`; `pausedAt` and `pausedBy` are recorded by the server and refused here. `paused` is required whenever `schedulePause` is sent, so a write can never lift the pause by omission.
+	SchedulePause *SchedulePausePayload `json:"schedulePause,omitempty" yaml:"schedulePause,omitempty"`
+
+	// ShowAuthCarousel Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value.
+	ShowAuthCarousel *bool `json:"showAuthCarousel,omitempty" yaml:"showAuthCarousel,omitempty"`
+
+	// Theme UI theme configured for an organization.
+	Theme *Theme `json:"theme,omitempty" yaml:"theme,omitempty"`
+}
+
 // PreferencesPayload Client-settable organization preferences. Identical to Preferences except that schedulePause is SchedulePausePayload.
 type PreferencesPayload struct {
 	// AuthBranding Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.
@@ -422,6 +443,9 @@ type UsersOrganizationsMappingPage struct {
 
 // All defines model for all.
 type All = bool
+
+// IfMatch defines model for ifMatch.
+type IfMatch = string
 
 // Order defines model for order.
 type Order = string
