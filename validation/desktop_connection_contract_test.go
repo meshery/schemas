@@ -109,4 +109,3 @@ func TestClientHandshakeContract(t *testing.T) {
 		t.Error("getProviderCapabilities must take the client query parameter")
 	}
 }
-
