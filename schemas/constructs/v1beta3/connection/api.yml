@@ -104,8 +104,8 @@ paths:
         deduplicate on (organization, owner, `metadata.machineId`): registering
         the same machine again updates that connection and returns `200`, while
         a new connection returns `201`. A `desktop` body whose metadata lacks
-        `machineId` is refused with `400`. The product the machine runs is a
-        metadata value (`metadata.appName`), never a kind.
+        `machineId` is refused with `400`. The kind names the connection type,
+        never the product that runs on the machine.
       parameters:
         - name: X-Current-Orgid
           in: header

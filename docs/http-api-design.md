@@ -239,24 +239,9 @@ The rules a consumer must enforce:
 
 ## Desktop app connections
 
-A desktop app install registers itself the way a Meshery Server does: on
-sign-in it POSTs `/api/integrations/connections` with kind `desktop`, type
-`platform`, sub_type `management` and `metadata` matching
-`DesktopConnectionMetadata` (`machineId` generated once per install, plus host,
-OS and app version). Desktop registration is Cloud-only; the heartbeat and
-deregistration routes are Cloud-only as well.
-
-The contract requires the server to take the organization from the
-`X-Current-Orgid` header (400 when a `desktop` registration omits it, 403 when
-the caller is not a member), to deduplicate on (organization, owner,
-`machineId`), and to answer `200` when it updates an existing connection or
-`201` when it creates one. `organizationId` records the organization so an
-organization can list and count its desktop installs. Only the owner and
-organization admins may read that metadata in organization listings.
-
-The install keeps itself live with `POST
-/api/integrations/connections/{connectionId}/heartbeat` (no body). The server
-sets `metadata.lastSeenAt` and restores `connected` from `disconnected`. A
-connection whose `lastSeenAt` is older than 3 minutes reads `disconnected`.
-On sign-out or uninstall the install calls `DELETE
-/api/integrations/connections/desktop/{machineId}`.
+A desktop app install registers as a connection of kind `desktop`, using the
+registration, heartbeat and deregistration routes under
+`/api/integrations/connections`. The request and response contract, including
+the deduplication key, organization handling and `lastSeenAt` semantics, is
+owned by `schemas/constructs/v1beta3/connection/api.yml` and
+`DesktopConnectionMetadata` there.
