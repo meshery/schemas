@@ -44,6 +44,19 @@ func TestLedgerContract(t *testing.T) {
 		t.Error("the ledger list endpoint must be removed")
 	}
 
+	excluded, _ := mustLookup(t, doc, "components", "parameters", "entryKey", "schema", "not", "enum").([]any)
+	for _, segment := range []string{".", ".."} {
+		found := false
+		for _, value := range excluded {
+			if value == segment {
+				found = true
+			}
+		}
+		if !found {
+			t.Errorf("entryKey must exclude dot-segment %q: URL normalization would address a different route", segment)
+		}
+	}
+
 	for _, gone := range []string{"blowhorn_ledger", "blowhorn_binding"} {
 		if _, err := os.Stat(filepath.Join(root, "schemas/constructs/v1beta3", gone)); err == nil {
 			t.Errorf("construct v1beta3/%s must be removed", gone)
