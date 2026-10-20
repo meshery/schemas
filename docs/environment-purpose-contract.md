@@ -11,7 +11,9 @@ organization-level configuration key on.
 | `profile` | An ordinary, non-privileged environment that holds one profile. By convention there is one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections through the existing environment-connection mapping. It carries no authority and a client may choose it on create or update. The schema does not enforce one-per-profile; no uniqueness constraint is added for it. |
 | absent | Identical to `user`. Every environment written before the column existed is in this state. |
 
-No server has ever written a privileged value other than `administrative`: meshery-cloud writes only `user` and `administrative`. A consumer that holds a row carrying a removed privileged value migrates that row to `profile`.
+An omitted purpose means `user` on create, and the server normalises it to `user` on write, as `EnvironmentPayload` specifies.
+
+The former privileged `blowhorn` value is removed from the enum. Servers must not store it, and any consumer that created such rows should move them to `profile`.
 
 The property is optional on the wire and omitted when empty. It is deliberately
 **not** in the entity's `required` list, and carries neither `default:` nor
@@ -185,12 +187,12 @@ each consumer, **never through the API**:
 
    Neither half of that constrains what later writes store. The `gorm` tag is
    inert outside GORM - a Pop-based consumer such as meshery-cloud names every
-   `db`-tagged column in its `INSERT`, so the column `DEFAULT` never fires and
-   an environment created through the API stores `''` when the client omits
-   `purpose`, because `EnvironmentPayload` accepts only `user` or `profile` and
-   nothing normalises an omitted value on write. `NOT NULL` does not reject
-   `''` either. Normalising on write is what keeps the column
-   holding `user`; see [Uniqueness](#uniqueness).
+   `db`-tagged column in its `INSERT`, so the column `DEFAULT` never fires.
+   An environment created through the API stores `user` when the client omits
+   `purpose`: an omitted value means `user` on create, and the server
+   normalises it on write. A consumer that writes the column itself must apply
+   the same normalisation. `NOT NULL` does not reject `''` either, so an
+   un-normalised write would store `''`; see [Uniqueness](#uniqueness).
 2. Set `purpose = 'administrative'` on the rows that the previous name-based
    convention selected, scoped per organization.
 3. Add the partial unique index over the privileged values -
