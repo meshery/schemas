@@ -7,10 +7,11 @@ description: |
   linked to a workspace. A worker takes a schedule through a claim (the
   generic `claim` construct, nested under the schedule); while the claim is
   live no other worker can take it, and a claim past its `expiresAt` is
-  stale and the schedule is claimable again. The `claim`, the status
-  values `assigned`, `claimed` and `running`, and the pause fields are
-  server-managed: they change only through the claim, release, pause and
-  resume operations and are refused on create and update.
+  stale and the schedule is claimable again. The `claim` and the status
+  values `assigned`, `claimed` and `running` are server-managed and change
+  only through the claim and release operations. Pausing is data, not an
+  operation: a client sets `paused` (and optionally `pauseReason`) on create
+  or update, and the server records `pausedAt` and `pausedBy`.
 type: object
 additionalProperties: false
 required:
@@ -201,7 +202,7 @@ properties:
     x-order: 19
   pauseReason:
     type: string
-    description: Reason given for pausing the schedule. Server-managed.
+    description: Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.
     x-oapi-codegen-extra-tags:
       db: pause_reason
     x-order: 20

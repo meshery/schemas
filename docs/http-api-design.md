@@ -230,9 +230,20 @@ The rules a consumer must enforce:
   claiming the next due schedule answers 204 when nothing qualifies, never an error.
 - Only the holder renews or releases; anyone else gets 409 and the claim is never taken back.
 - A claim past `expiresAt` is stale and the resource is claimable again.
-- A schedule is claimed only when neither the organization-wide pause (`/api/schedules/pause`) nor
-  its own pause says paused, unless the request carries `ignorePause`.
-- The claim, the `assigned`/`claimed`/`running` statuses and the pause fields are server-managed
-  and refused on create and update.
+- Only organization admins may set or lift the organization-wide pause. A create or update that
+  changes `schedulePause` from anyone else is refused with 403. Omitting `schedulePause` from a
+  preferences write keeps the current pause unchanged. Lifting it (`paused` false) clears
+  `reason`, `pausedAt` and `pausedBy`, so a stored `paused` false never carries a stale pause.
+- Pause state is data, never a path segment: a schedule is paused or resumed by setting `paused`
+  (and optionally `pauseReason`) on `PUT /api/schedules/{scheduleId}`, and the organization-wide
+  pause is set or lifted by updating the organization's preferences. There are no `/pause` or
+  `/resume` routes.
+- On schedule payloads, the claim, `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError`,
+  `organizationId` and the timestamps are server-managed and ignored on input, not refused. A
+  schedule payload accepts `status` only as `pending`, `scheduled` or `cancelled`, so the
+  claim-set statuses are rejected. Organization preference writes use the closed
+  `PreferencesPayload`, whose `schedulePause` is `SchedulePausePayload` (`paused` required, `reason`
+  only): an echoed `pausedAt` or `pausedBy` is refused with 400.
+- Servers MUST omit `preferences.schedulePause` from the unauthenticated `getOrgByDomain` response.
 
 `v1beta3/job_lease` was removed in favour of these two constructs; no consumer served or called it.
