@@ -1,0 +1,356 @@
+openapi: 3.0.0
+info:
+  title: ContentPiece
+  description: |
+    OpenAPI schema for content pieces - fingerprinted content
+    values keyed by organization and row number, with conditional
+    updates.
+    Organization scope: every operation acts only in the organization the
+    session resolved to (X-Current-Orgid, then the user's selected
+    organization), and only when the caller is a live member of it.
+    Authorization: each operation requires one permission key in that
+    organization (Catalog Management / Content Pieces: View Content
+    Pieces for the reads, Create Content Piece, Edit Content Piece and
+    Delete Content Piece for the writes); a caller without it receives a
+    403 before any row is read. Past that check, an id that does not name
+    a live content piece of the organization, and a caller who is not a
+    live member of it, receive the same 404, so the existence of another
+    organization's rows is never disclosed.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: contentPieces
+    description: Operations related to content pieces.
+
+paths:
+  /api/content/pieces:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - contentPieces
+      summary: List content pieces
+      operationId: listContentPieces
+      description: |
+        Returns a paginated list of the live content pieces in the
+        organization of the authenticated session, ordered by `rowNumber`
+        unless `order` names another column (`rowNumber`, `createdAt`,
+        `updatedAt`). `search` matches the profile or the content values,
+        case-insensitively.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: profile
+          in: query
+          required: false
+          description: Filter by owning profile subject (exact match).
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Content piece page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContentPiecePage"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - contentPieces
+      summary: Insert a content piece
+      operationId: insertContentPiece
+      description: |
+        Inserts a new content piece. Insert-only: any supplied
+        `id` and `expectedFingerprint` are ignored; existing rows change
+        only through the conditional `updateContentPiece`. The
+        `fingerprint` is server-computed. Row numbers are unique across
+        the live content pieces of the organization, whatever their
+        `profile`. When `rowNumber` is omitted the server assigns the next
+        row number of the organization (one more than the highest row
+        number the organization has used, counting soft-deleted content
+        pieces so a deleted piece's number is not handed out again by
+        assignment), atomically with the insert, so
+        concurrent inserts never receive the same number. An organization
+        that has never had a content piece is assigned row number 1 first
+        (an explicit `rowNumber` of 0 is still accepted). A supplied
+        `rowNumber` that another live content piece of the organization
+        already holds refuses the insert with a 409.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContentPiecePayload"
+      responses:
+        "201":
+          description: Content piece created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContentPiece"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/content/pieces/{contentPieceId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - contentPieces
+      summary: Get a content piece by ID
+      operationId: getContentPiece
+      parameters:
+        - $ref: "#/components/parameters/contentPieceId"
+      responses:
+        "200":
+          description: Content piece response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContentPiece"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - contentPieces
+      summary: Update a content piece
+      operationId: updateContentPiece
+      description: |
+        Conditionally updates the content piece. When
+        `expectedFingerprint` is supplied and stale, the update is
+        refused with a 409, as is an update that would move the piece
+        onto a `rowNumber` another live content piece of the organization
+        holds. An omitted `rowNumber` keeps the stored one.
+      parameters:
+        - $ref: "#/components/parameters/contentPieceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContentPiecePayload"
+      responses:
+        "200":
+          description: Content piece updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContentPiece"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - contentPieces
+      summary: Delete a content piece
+      operationId: deleteContentPiece
+      description: |
+        Soft-deletes the content piece. When `expectedFingerprint` is
+        supplied, the delete applies only when the stored fingerprint
+        still matches and is refused with a 409 otherwise; without it the
+        delete is unconditional.
+      parameters:
+        - $ref: "#/components/parameters/contentPieceId"
+        - $ref: "#/components/parameters/expectedFingerprint"
+      responses:
+        "204":
+          description: Content piece deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer [REDACTED]
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    403:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/403"
+    409:
+      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber
+      content:
+        text/plain:
+          schema:
+            type: string
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    expectedFingerprint:
+      name: expectedFingerprint
+      in: query
+      description: |
+        Optional optimistic-concurrency precondition for delete: the
+        delete applies only when the stored fingerprint still matches.
+      required: false
+      schema:
+        type: string
+        maxLength: 255
+    contentPieceId:
+      name: contentPieceId
+      in: path
+      description: Content piece ID
+      required: true
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      name: pageSize
+      in: query
+      description: Number of items per page (canonical camelCase form).
+      schema:
+        type: integer
+        minimum: 1
+    pagesize:
+      name: pagesize
+      in: query
+      description: |
+        Number of items per page. Deprecated alias of pageSize;
+        canonical `pageSize` wins when both are present.
+      deprecated: true
+      schema:
+        type: integer
+        minimum: 1
+    search:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
+
+  schemas:
+    ContentPiece:
+      $ref: "./content_piece.yaml"
+
+    ContentPiecePayload:
+      type: object
+      description: |
+        Payload for inserting or updating a content piece.
+        Contains only client-settable fields; the owning
+        `organizationId` (derived from the authenticated session), the
+        server-computed `fingerprint` and the server-generated
+        `createdAt` / `updatedAt` timestamps are intentionally excluded.
+      required:
+        - profile
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Existing content piece ID for updates; ignored on insert.
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        profile:
+          type: string
+          description: Subject of the owning profile.
+          minLength: 1
+          maxLength: 255
+        rowNumber:
+          type: integer
+          description: |
+            Row number of the content piece, unique across the live content
+            pieces of the organization. Optional: omitted on insert, the
+            server assigns the next row number of the organization; omitted
+            on update, the stored row number is kept.
+          minimum: 0
+        data:
+          type: object
+          description: Content values, stored as a JSON blob.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+        expectedFingerprint:
+          type: string
+          description: |
+            Optimistic-concurrency precondition for update: when supplied,
+            the update applies only when the stored fingerprint still
+            matches, and is refused with a 409 otherwise. Ignored on
+            insert.
+          maxLength: 255
+
+    ContentPiecePage:
+      type: object
+      description: Paginated collection of content pieces.
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        contentPieces:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContentPiece"
+            x-go-type: ContentPiece
+          description: Content pieces included on this page of results.

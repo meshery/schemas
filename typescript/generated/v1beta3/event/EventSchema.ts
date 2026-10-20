@@ -693,8 +693,66 @@ const EventSchema: Record<string, unknown> = {
           "401": {
             "description": "Unauthorized"
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Not found"
+            "description": "Not found - the caller is not a provider-wide Provider Admin",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "Server error"
@@ -748,15 +806,382 @@ const EventSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "Description of the event.",
                     "maxLength": 5000
+                  },
+                  "idempotencyKey": {
+                    "type": "string",
+                    "description": "Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.\n",
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "idempotencyKey,omitempty"
+                    }
                   }
                 }
               }
             }
           }
         },
+        "description": "Records an event and answers 201 with it. When the payload carries an `idempotencyKey` the authenticated caller already used, nothing new is recorded and the answer is 200 with the event first recorded under that key.\n",
         "responses": {
+          "200": {
+            "description": "An event with this `idempotencyKey` was already recorded by the same caller; it is returned unchanged and no new event is recorded.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields.\n",
+                  "required": [
+                    "id",
+                    "actedUpon",
+                    "action",
+                    "category",
+                    "description",
+                    "metadata",
+                    "operationId",
+                    "severity",
+                    "status",
+                    "systemId",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "Event ID.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "actedUpon": {
+                      "description": "ID of the entity on which the event was performed.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "acted_upon"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "action": {
+                      "type": "string",
+                      "description": "Action taken on the resource, for example `import`.",
+                      "maxLength": 500,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "action"
+                      }
+                    },
+                    "category": {
+                      "type": "string",
+                      "description": "Resource kind the operation was invoked on, for example `pattern`.",
+                      "maxLength": 500,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "category"
+                      }
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Human-readable summary of what happened.",
+                      "maxLength": 5000,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description"
+                      }
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none.\n",
+                      "additionalProperties": true,
+                      "nullable": true,
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "metadata"
+                      }
+                    },
+                    "operationId": {
+                      "description": "ID correlating the events one operation emitted.",
+                      "x-go-name": "OperationID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "operation_id"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.\n",
+                      "maxLength": 255,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "severity"
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.\n",
+                      "maxLength": 255,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "status"
+                      }
+                    },
+                    "systemId": {
+                      "description": "ID of the system instance that emitted the event.",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "system_id"
+                      },
+                      "x-go-name": "SystemID",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "owner": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner"
+                      }
+                    },
+                    "createdAt": {
+                      "description": "Timestamp when the event was recorded.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "Timestamp when the event was last updated.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "deletedAt": {
+                      "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at"
+                      },
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true,
+                      "x-go-type-skip-optional-pointer": true
+                    }
+                  }
+                }
+              }
+            }
+          },
           "201": {
-            "description": "Event created"
+            "description": "Event created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields.\n",
+                  "required": [
+                    "id",
+                    "actedUpon",
+                    "action",
+                    "category",
+                    "description",
+                    "metadata",
+                    "operationId",
+                    "severity",
+                    "status",
+                    "systemId",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "Event ID.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "actedUpon": {
+                      "description": "ID of the entity on which the event was performed.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "acted_upon"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "action": {
+                      "type": "string",
+                      "description": "Action taken on the resource, for example `import`.",
+                      "maxLength": 500,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "action"
+                      }
+                    },
+                    "category": {
+                      "type": "string",
+                      "description": "Resource kind the operation was invoked on, for example `pattern`.",
+                      "maxLength": 500,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "category"
+                      }
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Human-readable summary of what happened.",
+                      "maxLength": 5000,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description"
+                      }
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none.\n",
+                      "additionalProperties": true,
+                      "nullable": true,
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "metadata"
+                      }
+                    },
+                    "operationId": {
+                      "description": "ID correlating the events one operation emitted.",
+                      "x-go-name": "OperationID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "operation_id"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.\n",
+                      "maxLength": 255,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "severity"
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.\n",
+                      "maxLength": 255,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "status"
+                      }
+                    },
+                    "systemId": {
+                      "description": "ID of the system instance that emitted the event.",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "system_id"
+                      },
+                      "x-go-name": "SystemID",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "owner": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner"
+                      }
+                    },
+                    "createdAt": {
+                      "description": "Timestamp when the event was recorded.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "Timestamp when the event was last updated.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "deletedAt": {
+                      "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at"
+                      },
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true,
+                      "x-go-type-skip-optional-pointer": true
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid request body or request param",
@@ -1210,6 +1635,57 @@ const EventSchema: Record<string, unknown> = {
             }
           }
         }
+      },
+      "MeshkitError403": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "required": [
+                "error"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                  "enum": [
+                    "emergency",
+                    "alert",
+                    "critical",
+                    "fatal"
+                  ]
+                },
+                "probableCause": {
+                  "type": "array",
+                  "description": "MeshKit's probable causes of the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "description": "MeshKit's suggested remediations for the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "parameters": {
@@ -1361,6 +1837,15 @@ const EventSchema: Record<string, unknown> = {
             "type": "string",
             "description": "Description of the event.",
             "maxLength": 5000
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "description": "Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.\n",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "json": "idempotencyKey,omitempty"
+            }
           }
         }
       },
@@ -1565,6 +2050,179 @@ const EventSchema: Record<string, unknown> = {
           "category",
           "action"
         ]
+      },
+      "Event": {
+        "type": "object",
+        "description": "One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields.\n",
+        "required": [
+          "id",
+          "actedUpon",
+          "action",
+          "category",
+          "description",
+          "metadata",
+          "operationId",
+          "severity",
+          "status",
+          "systemId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "description": "Event ID.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "actedUpon": {
+            "description": "ID of the entity on which the event was performed.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "acted_upon"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "action": {
+            "type": "string",
+            "description": "Action taken on the resource, for example `import`.",
+            "maxLength": 500,
+            "x-oapi-codegen-extra-tags": {
+              "db": "action"
+            }
+          },
+          "category": {
+            "type": "string",
+            "description": "Resource kind the operation was invoked on, for example `pattern`.",
+            "maxLength": 500,
+            "x-oapi-codegen-extra-tags": {
+              "db": "category"
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable summary of what happened.",
+            "maxLength": 5000,
+            "x-oapi-codegen-extra-tags": {
+              "db": "description"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none.\n",
+            "additionalProperties": true,
+            "nullable": true,
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "metadata"
+            }
+          },
+          "operationId": {
+            "description": "ID correlating the events one operation emitted.",
+            "x-go-name": "OperationID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "operation_id"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "severity": {
+            "type": "string",
+            "description": "Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.\n",
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "db": "severity"
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.\n",
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "db": "status"
+            }
+          },
+          "systemId": {
+            "description": "ID of the system instance that emitted the event.",
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "system_id"
+            },
+            "x-go-name": "SystemID",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "owner": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner"
+            }
+          },
+          "createdAt": {
+            "description": "Timestamp when the event was recorded.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updatedAt": {
+            "description": "Timestamp when the event was last updated.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "deletedAt": {
+            "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at"
+            },
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "x-go-type-skip-optional-pointer": true
+          }
+        }
       },
       "EventsPage": {
         "type": "object",

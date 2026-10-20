@@ -75,7 +75,7 @@ properties:
       db: kind
     x-order: 8
     type: string
-    description: Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)
+    description: Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)
     maxLength: 255
 
   modelReference:
@@ -194,6 +194,20 @@ properties:
       db: deleted_at
       json: deletedAt
     x-order: 14
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      Organization the connection is registered in, taken from the
+      `X-Current-Orgid` header on registration. Servers implementing this
+      contract use it, with the owner and `metadata.machineId`, as the
+      deduplication key for `desktop` connections. Lets an organization list
+      and count its connections (for example its registered desktop installs)
+      without going through each owner. Absent on connections that predate it.
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+      json: organizationId,omitempty
+    x-go-type-skip-optional-pointer: false
+    x-order: 19
   environments:
     type: array
     description: Associated environments for this connection

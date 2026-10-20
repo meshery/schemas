@@ -1,0 +1,232 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Schedule Schema
+description: |
+  Server-returned schedule. A schedule is a job: an action to run with its
+  parameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry
+  budget and its outcome. Schedules belong to an organization and may be
+  linked to a workspace. A worker takes a schedule through a claim (the
+  generic `claim` construct, nested under the schedule); while the claim is
+  live no other worker can take it, and a claim past its `expiresAt` is
+  stale and the schedule is claimable again. The `claim` and the status
+  values `assigned`, `claimed` and `running` are server-managed and change
+  only through the claim and release operations. Pausing is data, not an
+  operation: a client sets `paused` (and optionally `pauseReason`) on create
+  or update, and the server records `pausedAt` and `pausedBy`.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - name
+  - action
+  - enabled
+  - status
+  - retryCount
+  - maxRetries
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated schedule ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  workspaceId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Workspace the schedule is linked to. Omitted when the schedule is not linked to a workspace.
+    x-oapi-codegen-extra-tags:
+      db: workspace_id
+      json: "workspaceId,omitempty"
+    x-order: 3
+  name:
+    type: string
+    description: Human-readable name for the schedule.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: name
+    x-order: 4
+  action:
+    type: string
+    description: The action the worker runs when it holds the schedule's claim, for example a command name.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: action
+    x-order: 5
+  params:
+    type: object
+    description: Action parameters, stored as a JSON blob.
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: params
+    x-order: 6
+  enabled:
+    type: boolean
+    description: Whether the schedule is eligible to run. A disabled schedule is never claimed.
+    x-oapi-codegen-extra-tags:
+      db: enabled
+    x-order: 7
+  runAt:
+    type: string
+    format: date-time
+    description: Time the schedule first becomes due.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: run_at
+    x-order: 8
+  nextRunAt:
+    type: string
+    format: date-time
+    description: Next time a recurring or retrying schedule becomes due.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: next_run_at
+    x-order: 9
+  recurrence:
+    type: string
+    description: Recurrence rule for repeating schedules. Empty for a run-once schedule.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: recurrence
+    x-order: 10
+  status:
+    type: string
+    description: |
+      Lifecycle status. `pending`: created, not yet due-scheduled.
+      `scheduled`: waiting for its due time. `assigned`: designated for a
+      particular worker but not yet claimed. `claimed`: a worker holds the
+      claim and has not started. `running`: the claim holder is executing
+      it. `retrying`: the last attempt failed and another is due.
+      `completed`, `failed` and `cancelled` are terminal for a run-once
+      schedule; a recurring schedule returns to `scheduled`.
+    enum:
+      - pending
+      - scheduled
+      - assigned
+      - claimed
+      - running
+      - retrying
+      - completed
+      - failed
+      - cancelled
+    x-oapi-codegen-extra-tags:
+      db: status
+    x-order: 11
+  retryCount:
+    type: integer
+    description: Attempts already retried for the current run.
+    minimum: 0
+    x-oapi-codegen-extra-tags:
+      db: retry_count
+    x-order: 12
+  maxRetries:
+    type: integer
+    description: Maximum retries before the run is marked failed.
+    minimum: 0
+    x-oapi-codegen-extra-tags:
+      db: max_retries
+    x-order: 13
+  retryDelayMinutes:
+    type: integer
+    description: Minutes to wait before a retry becomes due.
+    minimum: 0
+    x-oapi-codegen-extra-tags:
+      db: retry_delay_minutes
+    x-order: 14
+  lastRunAt:
+    type: string
+    format: date-time
+    description: Time of the most recent attempt.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: last_run_at
+    x-order: 15
+  lastError:
+    type: string
+    description: Error reported by the most recent attempt.
+    x-oapi-codegen-extra-tags:
+      db: last_error
+    x-order: 16
+  claim:
+    $ref: ../claim/api.yml#/components/schemas/Claim
+    x-go-type: "*claimv1beta3.Claim"
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/v1beta3/claim
+      name: claimv1beta3
+    description: The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.
+    x-oapi-codegen-extra-tags:
+      db: "-"
+      json: "claim,omitempty"
+    x-order: 17
+  pausedAt:
+    type: string
+    format: date-time
+    description: Time the schedule was paused. Null when the schedule is not paused. Server-managed.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: paused_at
+    x-order: 18
+  pausedBy:
+    type: string
+    description: Identity that paused the schedule. Server-managed.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: paused_by
+    x-order: 19
+  pauseReason:
+    type: string
+    description: Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.
+    x-oapi-codegen-extra-tags:
+      db: pause_reason
+    x-order: 20
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of schedule creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 21
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last schedule modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 22
+  deletedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the schedule was soft-deleted. Null while live.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+    x-order: 23

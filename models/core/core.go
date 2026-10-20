@@ -24,6 +24,14 @@ const (
 	MesheryDesign IaCFileTypes = "meshery-design"
 )
 
+// Defines values for MeshkitErrorSeverity.
+const (
+	Alert     MeshkitErrorSeverity = "alert"
+	Critical  MeshkitErrorSeverity = "critical"
+	Emergency MeshkitErrorSeverity = "emergency"
+	Fatal     MeshkitErrorSeverity = "fatal"
+)
+
 // Defines values for Visibility.
 const (
 	Private   Visibility = "private"
@@ -196,6 +204,27 @@ type Id = uuid.UUID
 
 // MapObject defines model for MapObject.
 type MapObject map[string]string
+
+// MeshkitError A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type MeshkitError struct {
+	// Code MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error.
+	Code *string `json:"code,omitempty" yaml:"code,omitempty"`
+
+	// Error The sentence the caller is shown.
+	Error string `json:"error" yaml:"error"`
+
+	// ProbableCause MeshKit's probable causes of the error.
+	ProbableCause *[]string `json:"probableCause,omitempty" yaml:"probableCause,omitempty"`
+
+	// Severity MeshKit severity name. Omitted when MeshKit reports none.
+	Severity *MeshkitErrorSeverity `json:"severity,omitempty" yaml:"severity,omitempty"`
+
+	// SuggestedRemediation MeshKit's suggested remediations for the error.
+	SuggestedRemediation *[]string `json:"suggestedRemediation,omitempty" yaml:"suggestedRemediation,omitempty"`
+}
+
+// MeshkitErrorSeverity MeshKit severity name. Omitted when MeshKit reports none.
+type MeshkitErrorSeverity string
 
 // NonResolvedAlias An alias is an component that acts as an ref/pointer to a field in another component, nonResolvedAlias are not aware of there immediate parents
 type NonResolvedAlias struct {

@@ -1102,6 +1102,12 @@ export interface components {
                  */
                 acceptanceOutcome: "direct_membership" | "child_organization";
                 /**
+                 * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+                 * @default parent
+                 * @enum {string}
+                 */
+                childOrganizationBranding: "parent" | "provider" | "none";
+                /**
                  * @description Activation status of the invitation.
                  * @enum {string}
                  */
@@ -6710,6 +6716,12 @@ export interface operations {
                              */
                             acceptanceOutcome: "direct_membership" | "child_organization";
                             /**
+                             * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+                             * @default parent
+                             * @enum {string}
+                             */
+                            childOrganizationBranding: "parent" | "provider" | "none";
+                            /**
                              * @description Activation status of the invitation.
                              * @enum {string}
                              */
@@ -7208,6 +7220,12 @@ export interface operations {
                              * @enum {string}
                              */
                             acceptanceOutcome: "direct_membership" | "child_organization";
+                            /**
+                             * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+                             * @default parent
+                             * @enum {string}
+                             */
+                            childOrganizationBranding: "parent" | "provider" | "none";
                             /**
                              * @description Activation status of the invitation.
                              * @enum {string}
