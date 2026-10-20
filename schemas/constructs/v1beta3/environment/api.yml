@@ -320,11 +320,7 @@ paths:
           required: false
           description: Return only environments with this purpose; absent returns every purpose the caller may see.
           schema:
-            type: string
-            enum:
-              - user
-              - administrative
-              - profile
+            $ref: "./environment.yaml#/properties/purpose"
       responses:
         "200":
           description: Environments

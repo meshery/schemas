@@ -8,7 +8,7 @@ organization-level configuration key on.
 | --- | --- |
 | `user` | An ordinary environment. People create these to logically group Connections and their Credentials. This is what an environment is unless something says otherwise. |
 | `administrative` | An environment the platform itself provisions to hold organization-level configuration. Resolvers of that configuration trust it. |
-| `profile` | An ordinary, non-privileged environment that holds one profile: the profile's settings in `metadata` and the profile's accounts as its Connections. It carries no authority, a client may choose it on create or update, and any number may exist per organization. |
+| `profile` | An ordinary, non-privileged environment that holds one profile. By convention there is one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections through the existing environment-connection mapping. It carries no authority and a client may choose it on create or update. The schema does not enforce one-per-profile; no uniqueness constraint is added for it. |
 | absent | Identical to `user`. Every environment written before the column existed is in this state. |
 
 The property is optional on the wire and omitted when empty. It is deliberately

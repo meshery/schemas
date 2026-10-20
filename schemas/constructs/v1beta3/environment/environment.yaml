@@ -112,9 +112,11 @@ properties:
       `administrative` designates an environment the platform itself
       provisions to hold organization-level configuration, and which resolvers
       of that configuration therefore trust. `profile` is an ordinary,
-      non-privileged environment that holds one profile: the profile's
-      settings in `metadata` and the profile's accounts as its Connections.
-      Like `user`, it carries no authority and a client may choose it.
+      non-privileged environment that holds one profile, by convention one per
+      profile: `name` is the profile's short name, `owner` is the profile's
+      user, `metadata` holds the profile's settings, and the profile's accounts
+      are linked as Connections. Like `user`, it carries no authority and a
+      client may choose it.
 
 
       Absent means `user`. Nothing may read an unset or unrecognised value as
