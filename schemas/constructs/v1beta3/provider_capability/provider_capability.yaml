@@ -32,6 +32,15 @@ properties:
     description: Lines describing the provider.
     items:
       type: string
+  providerUrl:
+    type: string
+    description: Home page URL of the provider.
+    maxLength: 2048
+  redirects:
+    type: object
+    description: Redirect targets the provider serves to this client, keyed by name.
+    additionalProperties:
+      type: string
   contractVersion:
     type: string
     description: |

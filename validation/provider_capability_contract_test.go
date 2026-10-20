@@ -16,10 +16,18 @@ func TestProviderCapabilityContract(t *testing.T) {
 	}
 	entity := loadYAMLMap(t, "schemas/constructs/v1beta3/provider_capability/provider_capability.yaml")
 	props := entity["properties"].(map[string]any)
-	for _, name := range []string{"contractVersion", "membership", "capabilities"} {
+	for _, name := range []string{"contractVersion", "membership", "capabilities", "providerUrl", "redirects"} {
 		if _, ok := props[name]; !ok {
 			t.Errorf("ProviderCapability must define %q", name)
 		}
+	}
+	redirects, _ := props["redirects"].(map[string]any)
+	redirectValues, _ := redirects["additionalProperties"].(map[string]any)
+	if redirects["type"] != "object" || redirectValues["type"] != "string" {
+		t.Errorf("redirects must be an object of strings, got %v", redirects)
+	}
+	if v, _ := entity["additionalProperties"].(bool); v != false {
+		t.Errorf("ProviderCapability additionalProperties = %v, want false", entity["additionalProperties"])
 	}
 	if requiredHas(t, entity, "contractVersion") {
 		t.Error("contractVersion must be optional: a provider that predates the contract omits it")
