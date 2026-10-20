@@ -152,3 +152,62 @@ func TestSchedulePayloadAcceptsEchoedServerPauseFields(t *testing.T) {
 		})
 	}
 }
+
+// PATCH /preferences is a partial update: every member optional, the body
+// closed, and schedulePause still the closed SchedulePausePayload.
+func TestOrgPreferencesPatchContract(t *testing.T) {
+	doc, err := loadAPISpec(filepath.Join(repoRootDir(t), organizationSpec))
+	if err != nil {
+		t.Fatalf("load %s: %v", organizationSpec, err)
+	}
+	item := doc.Paths.Find("/api/identity/orgs/{orgId}/preferences")
+	if item == nil || item.Patch == nil {
+		t.Fatal("patchOrgPreferences is not defined")
+	}
+	op := item.Patch
+	if op.OperationID != "patchOrgPreferences" {
+		t.Errorf("operationId = %q", op.OperationID)
+	}
+	if op.Responses.Value("412") == nil {
+		t.Error("patchOrgPreferences must document 412 for a stale If-Match")
+	}
+	var ifMatch bool
+	for _, p := range op.Parameters {
+		if p.Value != nil && p.Value.Name == "If-Match" && p.Value.In == "header" && !p.Value.Required {
+			ifMatch = true
+		}
+	}
+	if !ifMatch {
+		t.Error("patchOrgPreferences must take an optional If-Match header")
+	}
+
+	payload := doc.Components.Schemas["PreferencesPatchPayload"].Value
+	if len(payload.Required) != 0 {
+		t.Errorf("PreferencesPatchPayload must not require members, got %v", payload.Required)
+	}
+	if payload.Properties["schedulePause"].Value != doc.Components.Schemas["SchedulePausePayload"].Value {
+		t.Error("PreferencesPatchPayload.schedulePause must resolve to SchedulePausePayload")
+	}
+	request := []openapi3.SchemaValidationOption{openapi3.VisitAsRequest()}
+	cases := []struct {
+		name    string
+		body    map[string]any
+		wantErr bool
+	}{
+		{"empty body", map[string]any{}, false},
+		{"pause only", map[string]any{"schedulePause": map[string]any{"paused": true, "reason": "freeze"}}, false},
+		{"carousel only", map[string]any{"showAuthCarousel": false}, false},
+		{"pause omits paused", map[string]any{"schedulePause": map[string]any{"reason": "freeze"}}, true},
+		{"pause forges pausedBy", map[string]any{"schedulePause": map[string]any{"paused": true, "pausedBy": "mallory"}}, true},
+		{"unknown member", map[string]any{"themes": map[string]any{}}, true},
+		{"null member", map[string]any{"dashboard": nil}, true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := payload.VisitJSON(tc.body, request...)
+			if (err != nil) != tc.wantErr {
+				t.Errorf("VisitJSON(%v) error = %v, wantErr %v", tc.body, err, tc.wantErr)
+			}
+		})
+	}
+}
