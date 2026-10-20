@@ -772,7 +772,13 @@ const LedgerSchema: Record<string, unknown> = {
             "schema": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 1024
+              "maxLength": 1024,
+              "not": {
+                "enum": [
+                  ".",
+                  ".."
+                ]
+              }
             }
           }
         ],
@@ -967,7 +973,13 @@ const LedgerSchema: Record<string, unknown> = {
             "schema": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 1024
+              "maxLength": 1024,
+              "not": {
+                "enum": [
+                  ".",
+                  ".."
+                ]
+              }
             }
           }
         ],
@@ -1090,7 +1102,13 @@ const LedgerSchema: Record<string, unknown> = {
         "schema": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 1024
+          "maxLength": 1024,
+          "not": {
+            "enum": [
+              ".",
+              ".."
+            ]
+          }
         }
       }
     },

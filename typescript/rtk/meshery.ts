@@ -717,7 +717,7 @@ const injectedRtkApi = api
       }),
       patchOrgPreferences: build.mutation<PatchOrgPreferencesApiResponse, PatchOrgPreferencesApiArg>({
         query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/preferences`,
+          url: `/api/identity/orgs/${encodeURIComponent(queryArg.orgId)}/preferences`,
           method: "PATCH",
           body: queryArg.body,
           headers: {
