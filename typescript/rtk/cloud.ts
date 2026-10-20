@@ -17,9 +17,7 @@ export const addTagTypes = [
   "User_users",
   "View_views",
   "Academy_API_Academy",
-  "BlowhornBinding_blowhornBindings",
   "BlowhornHealth_blowhornHealth",
-  "BlowhornLedger_blowhornLedger",
   "BlowhornProfile_blowhornProfiles",
   "Claim_claims",
   "Connection_API_Connections",
@@ -32,6 +30,7 @@ export const addTagTypes = [
   "Filter_filters",
   "GitHub_github",
   "Invitation_Invitation",
+  "Ledger_ledgers",
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
@@ -870,119 +869,9 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
         providesTags: ["Academy_API_Academy"],
       }),
-      listBlowhornBindings: build.query<ListBlowhornBindingsApiResponse, ListBlowhornBindingsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/bindings`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            profile: queryArg?.profile,
-            host: queryArg?.host,
-          },
-        }),
-        providesTags: ["BlowhornBinding_blowhornBindings"],
-      }),
-      bindBlowhornBinding: build.mutation<BindBlowhornBindingApiResponse, BindBlowhornBindingApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/bindings`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["BlowhornBinding_blowhornBindings"],
-      }),
-      unbindBlowhornBinding: build.mutation<UnbindBlowhornBindingApiResponse, UnbindBlowhornBindingApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/bindings/${queryArg.blowhornBindingId}`, method: "DELETE" }),
-        invalidatesTags: ["BlowhornBinding_blowhornBindings"],
-      }),
       getBlowhornHealth: build.query<GetBlowhornHealthApiResponse, GetBlowhornHealthApiArg>({
         query: () => ({ url: `/api/blowhorn/health` }),
         providesTags: ["BlowhornHealth_blowhornHealth"],
-      }),
-      listBlowhornLedger: build.query<ListBlowhornLedgerApiResponse, ListBlowhornLedgerApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/ledger`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            ledger: queryArg?.ledger,
-          },
-        }),
-        providesTags: ["BlowhornLedger_blowhornLedger"],
-      }),
-      recordBlowhornLedgerEntry: build.mutation<RecordBlowhornLedgerEntryApiResponse, RecordBlowhornLedgerEntryApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/ledger`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
-      }),
-      getBlowhornLedgerEntry: build.query<GetBlowhornLedgerEntryApiResponse, GetBlowhornLedgerEntryApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/ledger/${queryArg.blowhornLedgerEntryId}` }),
-        providesTags: ["BlowhornLedger_blowhornLedger"],
-      }),
-      deleteBlowhornLedgerEntry: build.mutation<DeleteBlowhornLedgerEntryApiResponse, DeleteBlowhornLedgerEntryApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/ledger/${queryArg.blowhornLedgerEntryId}`, method: "DELETE" }),
-        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
-      }),
-      claimIfAbsentBlowhornLedgerEntry: build.mutation<
-        ClaimIfAbsentBlowhornLedgerEntryApiResponse,
-        ClaimIfAbsentBlowhornLedgerEntryApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/ledger/${queryArg.blowhornLedgerEntryId}/claim`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
-      }),
-      listBlowhornContacts: build.query<ListBlowhornContactsApiResponse, ListBlowhornContactsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/contacts`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            platform: queryArg?.platform,
-          },
-        }),
-        providesTags: ["BlowhornLedger_blowhornLedger"],
-      }),
-      upsertBlowhornContact: build.mutation<UpsertBlowhornContactApiResponse, UpsertBlowhornContactApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/contacts`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
-      }),
-      listBlowhornMentees: build.query<ListBlowhornMenteesApiResponse, ListBlowhornMenteesApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/mentees`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-          },
-        }),
-        providesTags: ["BlowhornLedger_blowhornLedger"],
-      }),
-      upsertBlowhornMentee: build.mutation<UpsertBlowhornMenteeApiResponse, UpsertBlowhornMenteeApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/mentees`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
-      }),
-      deleteBlowhornMentee: build.mutation<DeleteBlowhornMenteeApiResponse, DeleteBlowhornMenteeApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/mentees/${queryArg.blowhornMenteeId}`, method: "DELETE" }),
-        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
-      }),
-      recordAndDropBlowhornMentee: build.mutation<
-        RecordAndDropBlowhornMenteeApiResponse,
-        RecordAndDropBlowhornMenteeApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/mentees/${queryArg.blowhornMenteeId}/drop`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["BlowhornLedger_blowhornLedger"],
       }),
       listBlowhornProfiles: build.query<ListBlowhornProfilesApiResponse, ListBlowhornProfilesApiArg>({
         query: (queryArg) => ({
@@ -1782,6 +1671,25 @@ const injectedRtkApi = api
       >({
         query: () => ({ url: `/api/identity/users/request/notification` }),
         providesTags: ["Invitation_Invitation"],
+      }),
+      recordLedgerEntry: build.mutation<RecordLedgerEntryApiResponse, RecordLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Ledger_ledgers"],
+      }),
+      claimLedgerEntry: build.mutation<ClaimLedgerEntryApiResponse, ClaimLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/claims`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Ledger_ledgers"],
+      }),
+      getLedgerEntry: build.query<GetLedgerEntryApiResponse, GetLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}` }),
+        providesTags: ["Ledger_ledgers"],
+      }),
+      deleteLedgerEntry: build.mutation<DeleteLedgerEntryApiResponse, DeleteLedgerEntryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Ledger_ledgers"],
       }),
       getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
         query: (queryArg) => ({
@@ -8871,82 +8779,6 @@ export type GetCertificateByIdApiArg = {
   /** The ID of the certificate to retrieve */
   certificateId: string;
 };
-export type ListBlowhornBindingsApiResponse = /** status 200 Blowhorn bindings page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** Blowhorn bindings included on this page of results. */
-  blowhornBindings?: {
-    /** Server-generated Blowhorn binding ID. */
-    id: string;
-    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-    organizationId: string;
-    /** Subject of the bound Blowhorn profile. */
-    profile: string;
-    /** Host the profile is bound on. An identity, not a permission. */
-    host: string;
-    /** Profile directory on the host. */
-    directory: string;
-    /** Timestamp of Blowhorn binding creation. */
-    createdAt: string;
-    /** Timestamp of last Blowhorn binding modification. */
-    updatedAt: string;
-  }[];
-};
-export type ListBlowhornBindingsApiArg = {
-  /** Get responses by page */
-  page?: number;
-  /** Number of items per page (canonical camelCase form). */
-  pageSize?: number;
-  /** Number of items per page. Deprecated alias of pageSize;
-    canonical `pageSize` wins when both are present.
-     */
-  pagesize?: number;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Filter by bound profile subject. */
-  profile?: string;
-  /** Filter by host. */
-  host?: string;
-};
-export type BindBlowhornBindingApiResponse = /** status 200 Blowhorn binding saved */ {
-  /** Server-generated Blowhorn binding ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Subject of the bound Blowhorn profile. */
-  profile: string;
-  /** Host the profile is bound on. An identity, not a permission. */
-  host: string;
-  /** Profile directory on the host. */
-  directory: string;
-  /** Timestamp of Blowhorn binding creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn binding modification. */
-  updatedAt: string;
-};
-export type BindBlowhornBindingApiArg = {
-  body: {
-    /** Existing Blowhorn binding ID for updates; omit on bind. */
-    id?: string;
-    /** Subject of the Blowhorn profile to bind. */
-    profile: string;
-    /** Host the profile is bound on. An identity, not a permission. */
-    host: string;
-    /** Profile directory on the host. */
-    directory: string;
-  };
-};
-export type UnbindBlowhornBindingApiResponse = unknown;
-export type UnbindBlowhornBindingApiArg = {
-  /** Blowhorn binding ID */
-  blowhornBindingId: string;
-};
 export type GetBlowhornHealthApiResponse = /** status 200 Blowhorn health response */ {
   /** Frozen Blowhorn contract version the server speaks. */
   contractVersion: string;
@@ -8958,323 +8790,6 @@ export type GetBlowhornHealthApiResponse = /** status 200 Blowhorn health respon
   checkedAt?: string;
 };
 export type GetBlowhornHealthApiArg = void;
-export type ListBlowhornLedgerApiResponse = /** status 200 Blowhorn ledger entries page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** Blowhorn ledger entries included on this page of results. */
-  blowhornLedgerEntries?: {
-    /** Server-generated Blowhorn ledger entry ID. */
-    id: string;
-    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-    organizationId: string;
-    /** Ledger discriminator naming the idempotent set. */
-    ledger: string;
-    /** Key within the ledger. Unique per ledger. */
-    entryKey: string;
-    /** Entry value, stored as a JSON blob. */
-    value?: object;
-    /** Holder that claimed the entry, if any. Set only by claim-if-absent. */
-    claimedBy?: string;
-    /** Time the entry was claimed, if any. Set only by claim-if-absent. */
-    claimedAt?: string | null;
-    /** Timestamp of Blowhorn ledger entry creation. */
-    createdAt: string;
-    /** Timestamp of last Blowhorn ledger entry modification. */
-    updatedAt: string;
-  }[];
-};
-export type ListBlowhornLedgerApiArg = {
-  /** Get responses by page */
-  page?: number;
-  /** Number of items per page (canonical camelCase form). */
-  pageSize?: number;
-  /** Number of items per page. Deprecated alias of pageSize;
-    canonical `pageSize` wins when both are present.
-     */
-  pagesize?: number;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Filter by ledger discriminator. */
-  ledger?: string;
-};
-export type RecordBlowhornLedgerEntryApiResponse = /** status 200 Blowhorn ledger entry recorded */ {
-  /** Server-generated Blowhorn ledger entry ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Ledger discriminator naming the idempotent set. */
-  ledger: string;
-  /** Key within the ledger. Unique per ledger. */
-  entryKey: string;
-  /** Entry value, stored as a JSON blob. */
-  value?: object;
-  /** Holder that claimed the entry, if any. Set only by claim-if-absent. */
-  claimedBy?: string;
-  /** Time the entry was claimed, if any. Set only by claim-if-absent. */
-  claimedAt?: string | null;
-  /** Timestamp of Blowhorn ledger entry creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn ledger entry modification. */
-  updatedAt: string;
-};
-export type RecordBlowhornLedgerEntryApiArg = {
-  body: {
-    /** Existing Blowhorn ledger entry ID for updates; omit on record. */
-    id?: string;
-    /** Ledger discriminator naming the idempotent set. */
-    ledger: string;
-    /** Key within the ledger. Unique per ledger. */
-    entryKey: string;
-    /** Entry value, stored as a JSON blob. */
-    value?: object;
-  };
-};
-export type GetBlowhornLedgerEntryApiResponse = /** status 200 Blowhorn ledger entry response */ {
-  /** Server-generated Blowhorn ledger entry ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Ledger discriminator naming the idempotent set. */
-  ledger: string;
-  /** Key within the ledger. Unique per ledger. */
-  entryKey: string;
-  /** Entry value, stored as a JSON blob. */
-  value?: object;
-  /** Holder that claimed the entry, if any. Set only by claim-if-absent. */
-  claimedBy?: string;
-  /** Time the entry was claimed, if any. Set only by claim-if-absent. */
-  claimedAt?: string | null;
-  /** Timestamp of Blowhorn ledger entry creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn ledger entry modification. */
-  updatedAt: string;
-};
-export type GetBlowhornLedgerEntryApiArg = {
-  /** Blowhorn ledger entry ID */
-  blowhornLedgerEntryId: string;
-};
-export type DeleteBlowhornLedgerEntryApiResponse = unknown;
-export type DeleteBlowhornLedgerEntryApiArg = {
-  /** Blowhorn ledger entry ID */
-  blowhornLedgerEntryId: string;
-};
-export type ClaimIfAbsentBlowhornLedgerEntryApiResponse = /** status 200 Blowhorn ledger entry claimed */ {
-  /** Server-generated Blowhorn ledger entry ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** Ledger discriminator naming the idempotent set. */
-  ledger: string;
-  /** Key within the ledger. Unique per ledger. */
-  entryKey: string;
-  /** Entry value, stored as a JSON blob. */
-  value?: object;
-  /** Holder that claimed the entry, if any. Set only by claim-if-absent. */
-  claimedBy?: string;
-  /** Time the entry was claimed, if any. Set only by claim-if-absent. */
-  claimedAt?: string | null;
-  /** Timestamp of Blowhorn ledger entry creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn ledger entry modification. */
-  updatedAt: string;
-};
-export type ClaimIfAbsentBlowhornLedgerEntryApiArg = {
-  /** Blowhorn ledger entry ID */
-  blowhornLedgerEntryId: string;
-  body: {
-    /** Holder taking the entry. Refused with a 409 when the entry is already claimed. */
-    holder: string;
-  };
-};
-export type ListBlowhornContactsApiResponse = /** status 200 Blowhorn contacts page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** Blowhorn contacts included on this page of results. */
-  blowhornContacts?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    organizationId: string;
-    /** Platform the contact belongs to (e.g. linkedin, github). */
-    platform: string;
-    /** Platform-side handle identifying the contact. Unique per platform within the organization. */
-    handle: string;
-    /** Human-readable contact name. */
-    displayName?: string;
-    /** Platform-side profile URL for the contact. */
-    profileUrl?: string;
-    /** Contact metadata, stored as a JSON blob. */
-    metadata?: object;
-    /** Timestamp of Blowhorn contact creation. */
-    createdAt: string;
-    /** Timestamp of last Blowhorn contact modification. */
-    updatedAt: string;
-  }[];
-};
-export type ListBlowhornContactsApiArg = {
-  /** Get responses by page */
-  page?: number;
-  /** Number of items per page (canonical camelCase form). */
-  pageSize?: number;
-  /** Number of items per page. Deprecated alias of pageSize;
-    canonical `pageSize` wins when both are present.
-     */
-  pagesize?: number;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Filter by platform (e.g. linkedin, github). */
-  platform?: string;
-};
-export type UpsertBlowhornContactApiResponse = /** status 200 Blowhorn contact saved */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** Platform the contact belongs to (e.g. linkedin, github). */
-  platform: string;
-  /** Platform-side handle identifying the contact. Unique per platform within the organization. */
-  handle: string;
-  /** Human-readable contact name. */
-  displayName?: string;
-  /** Platform-side profile URL for the contact. */
-  profileUrl?: string;
-  /** Contact metadata, stored as a JSON blob. */
-  metadata?: object;
-  /** Timestamp of Blowhorn contact creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn contact modification. */
-  updatedAt: string;
-};
-export type UpsertBlowhornContactApiArg = {
-  body: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id?: string;
-    /** Platform the contact belongs to (e.g. linkedin, github). */
-    platform: string;
-    /** Platform-side handle identifying the contact. Unique per platform within the organization. */
-    handle: string;
-    /** Human-readable contact name. */
-    displayName?: string;
-    /** Platform-side profile URL for the contact. */
-    profileUrl?: string;
-    /** Contact metadata, stored as a JSON blob. */
-    metadata?: object;
-  };
-};
-export type ListBlowhornMenteesApiResponse = /** status 200 Blowhorn mentees page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** Blowhorn mentees included on this page of results. */
-  blowhornMentees?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    organizationId: string;
-    /** Mentored subject. */
-    subject: string;
-    /** Mentorship stage of the subject. */
-    stage?: string;
-    /** Mentee metadata, stored as a JSON blob. */
-    metadata?: object;
-    /** Time the mentee was recorded and dropped, if any. Set only by the record-and-drop operation. */
-    droppedAt?: string | null;
-    /** Timestamp of Blowhorn mentee creation. */
-    createdAt: string;
-    /** Timestamp of last Blowhorn mentee modification. */
-    updatedAt: string;
-  }[];
-};
-export type ListBlowhornMenteesApiArg = {
-  /** Get responses by page */
-  page?: number;
-  /** Number of items per page (canonical camelCase form). */
-  pageSize?: number;
-  /** Number of items per page. Deprecated alias of pageSize;
-    canonical `pageSize` wins when both are present.
-     */
-  pagesize?: number;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-};
-export type UpsertBlowhornMenteeApiResponse = /** status 200 Blowhorn mentee saved */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** Mentored subject. */
-  subject: string;
-  /** Mentorship stage of the subject. */
-  stage?: string;
-  /** Mentee metadata, stored as a JSON blob. */
-  metadata?: object;
-  /** Time the mentee was recorded and dropped, if any. Set only by the record-and-drop operation. */
-  droppedAt?: string | null;
-  /** Timestamp of Blowhorn mentee creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn mentee modification. */
-  updatedAt: string;
-};
-export type UpsertBlowhornMenteeApiArg = {
-  body: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id?: string;
-    /** Mentored subject. */
-    subject: string;
-    /** Mentorship stage of the subject. */
-    stage?: string;
-    /** Mentee metadata, stored as a JSON blob. */
-    metadata?: object;
-  };
-};
-export type DeleteBlowhornMenteeApiResponse = unknown;
-export type DeleteBlowhornMenteeApiArg = {
-  /** Blowhorn mentee ID */
-  blowhornMenteeId: string;
-};
-export type RecordAndDropBlowhornMenteeApiResponse = /** status 200 Blowhorn mentee recorded and dropped */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** Mentored subject. */
-  subject: string;
-  /** Mentorship stage of the subject. */
-  stage?: string;
-  /** Mentee metadata, stored as a JSON blob. */
-  metadata?: object;
-  /** Time the mentee was recorded and dropped, if any. Set only by the record-and-drop operation. */
-  droppedAt?: string | null;
-  /** Timestamp of Blowhorn mentee creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn mentee modification. */
-  updatedAt: string;
-};
-export type RecordAndDropBlowhornMenteeApiArg = {
-  /** Blowhorn mentee ID */
-  blowhornMenteeId: string;
-  body: {
-    /** Final mentorship stage recorded with the drop. */
-    stage?: string;
-  };
-};
 export type ListBlowhornProfilesApiResponse = /** status 200 Blowhorn profiles page */ {
   /** Current page number of the result set. */
   page?: number;
@@ -17480,6 +16995,143 @@ export type GetSignupRequestNotificationApiResponse = /** status 200 Signup requ
   preProcessed: boolean;
 };
 export type GetSignupRequestNotificationApiArg = void;
+export type RecordLedgerEntryApiResponse = /** status 200 The key was already recorded; the stored entry, unchanged */
+  | {
+      /** Server-generated ledger entry ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Name of the ledger (the idempotent set) the entry belongs to. */
+      ledger: string;
+      /** Key within the ledger. Unique per (organization, ledger). */
+      entryKey: string;
+      /** Entry value, stored as a JSON blob. */
+      value?: object;
+      /** Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
+      claimedBy?: string;
+      /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+      claimedAt?: string | null;
+      /** Timestamp of ledger entry creation. */
+      createdAt: string;
+      /** Timestamp of last ledger entry modification. */
+      updatedAt: string;
+    }
+  | /** status 201 The key was recorded */ {
+      /** Server-generated ledger entry ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Name of the ledger (the idempotent set) the entry belongs to. */
+      ledger: string;
+      /** Key within the ledger. Unique per (organization, ledger). */
+      entryKey: string;
+      /** Entry value, stored as a JSON blob. */
+      value?: object;
+      /** Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
+      claimedBy?: string;
+      /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+      claimedAt?: string | null;
+      /** Timestamp of ledger entry creation. */
+      createdAt: string;
+      /** Timestamp of last ledger entry modification. */
+      updatedAt: string;
+    };
+export type RecordLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  body: {
+    /** Key within the ledger. */
+    entryKey: string;
+    /** Entry value, stored as a JSON object. */
+    value?: object;
+  };
+};
+export type ClaimLedgerEntryApiResponse = /** status 200 The caller's claimant now holds the existing entry */
+  | {
+      /** Server-generated ledger entry ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Name of the ledger (the idempotent set) the entry belongs to. */
+      ledger: string;
+      /** Key within the ledger. Unique per (organization, ledger). */
+      entryKey: string;
+      /** Entry value, stored as a JSON blob. */
+      value?: object;
+      /** Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
+      claimedBy?: string;
+      /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+      claimedAt?: string | null;
+      /** Timestamp of ledger entry creation. */
+      createdAt: string;
+      /** Timestamp of last ledger entry modification. */
+      updatedAt: string;
+    }
+  | /** status 201 The key was absent; it was recorded and claimed */ {
+      /** Server-generated ledger entry ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Name of the ledger (the idempotent set) the entry belongs to. */
+      ledger: string;
+      /** Key within the ledger. Unique per (organization, ledger). */
+      entryKey: string;
+      /** Entry value, stored as a JSON blob. */
+      value?: object;
+      /** Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
+      claimedBy?: string;
+      /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+      claimedAt?: string | null;
+      /** Timestamp of ledger entry creation. */
+      createdAt: string;
+      /** Timestamp of last ledger entry modification. */
+      updatedAt: string;
+    };
+export type ClaimLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  body: {
+    /** Key to claim. */
+    entryKey: string;
+    /** Advisory label naming the worker taking the key, for example a worker name. It is not bound to the caller. */
+    claimant: string;
+    /** Value stored when the claim creates the entry; ignored when the entry already exists. */
+    value?: object;
+  };
+};
+export type GetLedgerEntryApiResponse = /** status 200 Ledger entry */ {
+  /** Server-generated ledger entry ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Name of the ledger (the idempotent set) the entry belongs to. */
+  ledger: string;
+  /** Key within the ledger. Unique per (organization, ledger). */
+  entryKey: string;
+  /** Entry value, stored as a JSON blob. */
+  value?: object;
+  /** Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
+  claimedBy?: string;
+  /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+  claimedAt?: string | null;
+  /** Timestamp of ledger entry creation. */
+  createdAt: string;
+  /** Timestamp of last ledger entry modification. */
+  updatedAt: string;
+};
+export type GetLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
+  entryKey: string;
+};
+export type DeleteLedgerEntryApiResponse = unknown;
+export type DeleteLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
+  entryKey: string;
+};
 export type GetPatternResourcesApiResponse = /** status 200 Pattern resources page */ {
   /** Current page number of the result set. */
   page?: number;
@@ -21622,27 +21274,8 @@ export const {
   useLazyGetAcademyAdminRegistrationsQuery,
   useGetCertificateByIdQuery,
   useLazyGetCertificateByIdQuery,
-  useListBlowhornBindingsQuery,
-  useLazyListBlowhornBindingsQuery,
-  useBindBlowhornBindingMutation,
-  useUnbindBlowhornBindingMutation,
   useGetBlowhornHealthQuery,
   useLazyGetBlowhornHealthQuery,
-  useListBlowhornLedgerQuery,
-  useLazyListBlowhornLedgerQuery,
-  useRecordBlowhornLedgerEntryMutation,
-  useGetBlowhornLedgerEntryQuery,
-  useLazyGetBlowhornLedgerEntryQuery,
-  useDeleteBlowhornLedgerEntryMutation,
-  useClaimIfAbsentBlowhornLedgerEntryMutation,
-  useListBlowhornContactsQuery,
-  useLazyListBlowhornContactsQuery,
-  useUpsertBlowhornContactMutation,
-  useListBlowhornMenteesQuery,
-  useLazyListBlowhornMenteesQuery,
-  useUpsertBlowhornMenteeMutation,
-  useDeleteBlowhornMenteeMutation,
-  useRecordAndDropBlowhornMenteeMutation,
   useListBlowhornProfilesQuery,
   useLazyListBlowhornProfilesQuery,
   useUpsertBlowhornProfileMutation,
@@ -21781,6 +21414,11 @@ export const {
   useDenySignupRequestMutation,
   useGetSignupRequestNotificationQuery,
   useLazyGetSignupRequestNotificationQuery,
+  useRecordLedgerEntryMutation,
+  useClaimLedgerEntryMutation,
+  useGetLedgerEntryQuery,
+  useLazyGetLedgerEntryQuery,
+  useDeleteLedgerEntryMutation,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,

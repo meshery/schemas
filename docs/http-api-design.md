@@ -274,3 +274,28 @@ cases stay distinguishable: no `contractVersion` means an older provider, no
 organization, and `bound: false` means the caller is signed in but not a live
 member. A client reads paths from `capabilities` instead of hard-coding them,
 and does not use a separate health endpoint.
+
+## Ledgers
+
+`v1beta3/ledger` is one generic, organization-scoped construct for "has this
+been done" sets shared by several workers. Record is `POST
+/api/ledgers/{ledger}/entries` and is idempotent on (organization, ledger,
+entryKey): `201` for a new key, `200` with the stored entry, unchanged, for an
+existing one.
+
+`POST /api/ledgers/{ledger}/claims` (body: `entryKey`, `claimant`, optional
+`value`) gives a key to exactly one claimant. `value` is stored only when the
+claim creates the entry and is ignored otherwise. The claim lives on its own
+collection so it cannot collide with the `{entryKey}` route. It returns `201`
+when it created the entry, `200` when the claimant now holds an existing entry
+or already held it, and `409` when another claimant holds it.
+
+`GET` and `DELETE /api/ledgers/{ledger}/entries/{entryKey}` read and release a
+key; a key outside that ledger is `404`. Product data such as contacts is a
+ledger with a composite key (for example `platform:handle`) and a JSON value,
+not its own route tree.
+
+Ledgers are organization-shared bookkeeping: any organization member may
+record, claim, read and delete. `claimant` is an advisory worker label, not an
+authorization principal, so a claim or delete is not checked against who sent
+it.

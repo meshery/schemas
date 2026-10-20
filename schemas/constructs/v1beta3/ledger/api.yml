@@ -1,0 +1,263 @@
+openapi: 3.0.0
+info:
+  title: Ledger
+  description: |
+    OpenAPI schema for organization ledgers: named idempotent sets of keyed
+    entries that several workers share, so work done once (a record processed,
+    a contact reached) is never done twice. Recording is idempotent on
+    (ledger, entryKey), and claim-if-absent hands a key to exactly one
+    claimant atomically. Ledgers belong to the organization of the
+    authenticated session; any client-supplied organization is ignored.
+
+    Authorization: ledgers are organization-shared bookkeeping. Any member of
+    the organization may record, claim, read and delete entries in that
+    organization's ledgers. `claimant` is an advisory worker label, not an
+    authorization principal: it is not bound to the caller, and a claim or
+    delete never checks who holds the key. A key is scoped to (organization,
+    ledger), so an entry in another ledger is `404`.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: ledgers
+    description: Operations related to organization ledgers and their entries.
+
+paths:
+  /api/ledgers/{ledger}/entries:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - ledgers
+      summary: Record a ledger entry
+      operationId: recordLedgerEntry
+      description: >
+        Records `entryKey` in the ledger. A new key creates the entry and
+        returns `201`. An existing key never creates a second entry and is not
+        changed: the stored entry is returned unchanged with `200`, and the
+        supplied `value` is ignored. Recording never changes `claimedBy` or
+        `claimedAt`.
+      parameters:
+        - $ref: "#/components/parameters/ledger"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LedgerEntryPayload"
+      responses:
+        "200":
+          description: The key was already recorded; the stored entry, unchanged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntry"
+        "201":
+          description: The key was recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntry"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/ledgers/{ledger}/claims:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - ledgers
+      summary: Claim a ledger key if absent
+      operationId: claimLedgerEntry
+      description: >
+        Atomically gives `entryKey` to `claimant`. When the key is not in the
+        ledger, the entry is created already claimed and returned with `201`.
+        When it is recorded but unclaimed, it is claimed and returned with
+        `200`. When `claimant` already holds it, the call is a replay and
+        returns the entry with `200`. When another claimant holds it, the
+        call is refused with `409` and nothing changes. A claim is permanent:
+        it ends only when the entry is deleted.
+      parameters:
+        - $ref: "#/components/parameters/ledger"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LedgerClaimPayload"
+      responses:
+        "200":
+          description: The caller's claimant now holds the existing entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntry"
+        "201":
+          description: The key was absent; it was recorded and claimed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntry"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/ledgers/{ledger}/entries/{entryKey}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - ledgers
+      summary: Get a ledger entry
+      operationId: getLedgerEntry
+      description: Returns the entry recorded under `entryKey` in the ledger, or `404` when the key is not in this ledger.
+      parameters:
+        - $ref: "#/components/parameters/ledger"
+        - $ref: "#/components/parameters/entryKey"
+      responses:
+        "200":
+          description: Ledger entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntry"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - ledgers
+      summary: Delete a ledger entry
+      operationId: deleteLedgerEntry
+      description: Removes the entry, and with it any claim, so its key can be recorded or claimed again. Returns `404` when the key is not in this ledger.
+      parameters:
+        - $ref: "#/components/parameters/ledger"
+        - $ref: "#/components/parameters/entryKey"
+      responses:
+        "204":
+          description: Ledger entry deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    409:
+      description: Conflict - another claimant holds the ledger entry
+      content:
+        text/plain:
+          schema:
+            type: string
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    ledger:
+      name: ledger
+      in: path
+      description: Name of the ledger, for example `processed-profiles`.
+      required: true
+      schema:
+        type: string
+        pattern: '^[a-z0-9][a-z0-9._-]*$'
+        minLength: 1
+        maxLength: 255
+    entryKey:
+      name: entryKey
+      in: path
+      description: Key within the ledger. URL-encode keys that contain reserved characters such as `/`.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 1024
+        not:
+          enum: [".", ".."]
+
+  schemas:
+    LedgerEntry:
+      $ref: "./ledger_entry.yaml"
+
+    LedgerEntryPayload:
+      type: object
+      description: >
+        Payload for recording a ledger entry. The ledger comes from the path
+        and the organization from the session; claim fields and timestamps are
+        server-owned.
+      required:
+        - entryKey
+      properties:
+        entryKey:
+          type: string
+          description: Key within the ledger.
+          minLength: 1
+          maxLength: 1024
+          x-go-name: EntryKey
+        value:
+          type: object
+          description: Entry value, stored as a JSON object.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+
+    LedgerClaimPayload:
+      type: object
+      description: Claim-if-absent payload giving a key to one claimant.
+      required:
+        - entryKey
+        - claimant
+      properties:
+        entryKey:
+          type: string
+          description: Key to claim.
+          minLength: 1
+          maxLength: 1024
+          x-go-name: EntryKey
+        claimant:
+          type: string
+          description: Advisory label naming the worker taking the key, for example a worker name. It is not bound to the caller.
+          minLength: 1
+          maxLength: 255
+        value:
+          type: object
+          description: Value stored when the claim creates the entry; ignored when the entry already exists.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true

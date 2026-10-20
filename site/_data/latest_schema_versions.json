@@ -22,23 +22,9 @@
     "extension": true
   },
   {
-    "construct": "blowhorn_binding",
-    "version": "v1beta3",
-    "href": "/schemas/constructs/v1beta3/blowhorn_binding/blowhorn_binding.yaml",
-    "core": false,
-    "extension": true
-  },
-  {
     "construct": "blowhorn_health",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/blowhorn_health/api.yml",
-    "core": false,
-    "extension": true
-  },
-  {
-    "construct": "blowhorn_ledger",
-    "version": "v1beta3",
-    "href": "/schemas/constructs/v1beta3/blowhorn_ledger/blowhorn_ledger.yaml",
     "core": false,
     "extension": true
   },
@@ -198,6 +184,13 @@
     "construct": "keychain",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/keychain/keychain.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "ledger",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/ledger/ledger_entry.yaml",
     "core": false,
     "extension": true
   },

@@ -1,10 +1,12 @@
 $schema: http://json-schema.org/draft-07/schema#
-title: Blowhorn Ledger Entry Schema
-description: |
-  Server-returned Blowhorn ledger entry as persisted by meshery-cloud.
-  Ledger entries form ledger-discriminated idempotent sets keyed by
-  (ledger, key): recording the same pair replays idempotently, and
-  claim-if-absent takes the entry for a holder exactly once.
+title: Ledger Entry Schema
+description: >
+  Server-returned ledger entry. An organization keeps any number of named
+  ledgers, each an idempotent set keyed by entryKey: recording an existing
+  key never creates a second entry and returns the stored entry unchanged,
+  and claim-if-absent gives a key to exactly one claimant, so two workers
+  never both act on it. Any organization member may read, claim and delete
+  entries; claimedBy is an advisory label, not an authorization principal.
 type: object
 additionalProperties: false
 required:
@@ -17,7 +19,7 @@ required:
 properties:
   id:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
-    description: Server-generated Blowhorn ledger entry ID.
+    description: Server-generated ledger entry ID.
     x-order: 1
   organizationId:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
@@ -28,7 +30,7 @@ properties:
     x-order: 2
   ledger:
     type: string
-    description: Ledger discriminator naming the idempotent set.
+    description: Name of the ledger (the idempotent set) the entry belongs to.
     minLength: 1
     maxLength: 255
     x-oapi-codegen-extra-tags:
@@ -36,7 +38,7 @@ properties:
     x-order: 3
   entryKey:
     type: string
-    description: Key within the ledger. Unique per ledger.
+    description: Key within the ledger. Unique per (organization, ledger).
     minLength: 1
     maxLength: 1024
     x-go-name: EntryKey
@@ -56,7 +58,7 @@ properties:
     x-order: 5
   claimedBy:
     type: string
-    description: Holder that claimed the entry, if any. Set only by claim-if-absent.
+    description: Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards.
     maxLength: 255
     x-oapi-codegen-extra-tags:
       db: claimed_by
@@ -75,13 +77,13 @@ properties:
     x-order: 7
   createdAt:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
-    description: Timestamp of Blowhorn ledger entry creation.
+    description: Timestamp of ledger entry creation.
     x-oapi-codegen-extra-tags:
       db: created_at
     x-order: 8
   updatedAt:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
-    description: Timestamp of last Blowhorn ledger entry modification.
+    description: Timestamp of last ledger entry modification.
     x-oapi-codegen-extra-tags:
       db: updated_at
     x-order: 9
