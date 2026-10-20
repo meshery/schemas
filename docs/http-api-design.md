@@ -284,7 +284,8 @@ entryKey): `201` for a new key, `200` with the stored entry, unchanged, for an
 existing one.
 
 `POST /api/ledgers/{ledger}/claims` (body: `entryKey`, `claimant`, optional
-`value`) gives a key to exactly one claimant. The claim lives on its own
+`value`) gives a key to exactly one claimant. `value` is stored only when the
+claim creates the entry and is ignored otherwise. The claim lives on its own
 collection so it cannot collide with the `{entryKey}` route. It returns `201`
 when it created the entry, `200` when the claimant now holds an existing entry
 or already held it, and `409` when another claimant holds it.
