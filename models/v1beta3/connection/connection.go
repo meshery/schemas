@@ -105,7 +105,7 @@ type Connection struct {
 	// SubType Connection Subtype (cloud, identity, metrics, chat, git, orchestration)
 	SubType string `db:"sub_type" json:"subType" yaml:"subType"`
 
-	// Kind Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)
+	// Kind Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)
 	Kind string `db:"kind" json:"kind" yaml:"kind"`
 
 	// ModelReference Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
@@ -142,6 +142,9 @@ type Connection struct {
 
 	// TransitionMap Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition.
 	TransitionMap map[string][]ConnectionStateTransition `db:"-" gorm:"type:bytes;serializer:json" json:"transitionMap,omitempty" yaml:"transitionMap,omitempty"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationId *core.Uuid `db:"organization_id" json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
 }
 
 // ConnectionStatus Connection Status
@@ -371,6 +374,24 @@ type ConnectionsStatusPage struct {
 // CoreKind A core connection kind that receives bespoke, kind-specific handling in Meshery. The `kind` field itself remains an open-ended string; this names only the kinds with special behavior.
 type CoreKind string
 
+// DesktopConnectionMetadata Metadata of a `desktop` connection: a desktop app install that registered itself on sign-in. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `machineId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins.
+type DesktopConnectionMetadata struct {
+	// AppVersion Version of the desktop app.
+	AppVersion *string `json:"appVersion,omitempty" yaml:"appVersion,omitempty"`
+
+	// Hostname Host name of the machine.
+	Hostname *string `json:"hostname,omitempty" yaml:"hostname,omitempty"`
+
+	// LastSeenAt Server time of the last registration or heartbeat.
+	LastSeenAt *time.Time `json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
+
+	// MachineId Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key.
+	MachineId string `json:"machineId" yaml:"machineId"`
+
+	// Os Operating system, for example `macos`.
+	Os *string `json:"os,omitempty" yaml:"os,omitempty"`
+}
+
 // DestinationKind A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.
 type DestinationKind string
 
@@ -502,6 +523,10 @@ type ConnectionKind = string
 
 // EnvironmentId defines model for environmentId.
 type EnvironmentId = uuid.UUID
+
+// MachineId Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key and the `machineId` path parameter.
+// MachineId defines model for machineId.
+type MachineId = string
 
 // MesheryServerId defines model for mesheryServerId.
 type MesheryServerId = uuid.UUID

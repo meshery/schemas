@@ -247,3 +247,12 @@ The rules a consumer must enforce:
 - Servers MUST omit `preferences.schedulePause` from the unauthenticated `getOrgByDomain` response.
 
 `v1beta3/job_lease` was removed in favour of these two constructs; no consumer served or called it.
+
+## Desktop app connections
+
+A desktop app install registers as a connection of kind `desktop`, using the
+registration, heartbeat and deregistration routes under
+`/api/integrations/connections`. The request and response contract, including
+the deduplication key, organization handling and `lastSeenAt` semantics, is
+owned by `schemas/constructs/v1beta3/connection/api.yml` and
+`DesktopConnectionMetadata` there.
