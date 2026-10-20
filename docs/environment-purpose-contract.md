@@ -186,9 +186,10 @@ each consumer, **never through the API**:
    Neither half of that constrains what later writes store. The `gorm` tag is
    inert outside GORM - a Pop-based consumer such as meshery-cloud names every
    `db`-tagged column in its `INSERT`, so the column `DEFAULT` never fires and
-   an environment created through the API, correctly carrying no purpose
-   because `EnvironmentPayload` has no such field, stores `''`. `NOT NULL` does
-   not reject `''` either. Normalising on write is what keeps the column
+   an environment created through the API stores `''` when the client omits
+   `purpose`, because `EnvironmentPayload` accepts only `user` or `profile` and
+   nothing normalises an omitted value on write. `NOT NULL` does not reject
+   `''` either. Normalising on write is what keeps the column
    holding `user`; see [Uniqueness](#uniqueness).
 2. Set `purpose = 'administrative'` on the rows that the previous name-based
    convention selected, scoped per organization.
