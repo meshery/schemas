@@ -715,6 +715,17 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/preferences` }),
         providesTags: ["Organization_Organizations"],
       }),
+      patchOrgPreferences: build.mutation<PatchOrgPreferencesApiResponse, PatchOrgPreferencesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/preferences`,
+          method: "PATCH",
+          body: queryArg.body,
+          headers: {
+            "If-Match": queryArg["If-Match"],
+          },
+        }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
       addTeamToOrg: build.mutation<AddTeamToOrgApiResponse, AddTeamToOrgApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
@@ -12703,6 +12714,207 @@ export type GetOrgPreferencesApiArg = {
   /** Organization ID. */
   orgId: string;
 };
+export type PatchOrgPreferencesApiResponse = /** status 200 Organization metadata with the merged preferences */ {
+  /** Organization-level user experience preferences. */
+  preferences: {
+    /** UI theme configured for an organization. */
+    theme: {
+      /** Theme identifier. */
+      id: string;
+      /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+      logo: {
+        /** Image asset anchored to a named location within an organization theme. */
+        desktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        mobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkDesktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkMobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+      };
+      /** Arbitrary theme variables keyed by name. */
+      vars?: {
+        [key: string]: any;
+      };
+    };
+    /** Preferences specific to dashboard behavior. */
+    dashboard: {
+      [key: string]: any;
+    };
+    /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+    authBranding?: {
+      /** Ordered slides rendered in the auth-page feature carousel. */
+      carousel?: {
+        /** URL of the slide image asset. */
+        imageUrl: string;
+        /** Slide title. */
+        title: string;
+        /** Slide description text. */
+        description: string;
+      }[];
+      /** FAQ entries rendered on the auth pages. */
+      faqs?: {
+        /** The question text. */
+        question: string;
+        /** The answer text. */
+        answer: string;
+      }[];
+    };
+    /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+    links?: {
+      /** URL of the organization's Terms of Service page. */
+      termsOfService?: string;
+      /** URL of the organization's Privacy Policy page. */
+      privacy?: string;
+      /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+      support?: {
+        [key: string]: string;
+      };
+      /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+      social?: {
+        /** URL of the organization's LinkedIn profile. */
+        linkedin?: string;
+        /** URL of the organization's X (formerly Twitter) profile. */
+        x?: string;
+        /** URL of the organization's YouTube channel. */
+        youtube?: string;
+      };
+    };
+    /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+    showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused?: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+      /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedAt?: string;
+      /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedBy?: string;
+    };
+  };
+};
+export type PatchOrgPreferencesApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Entity tag of the organization's preferences as last read, from the `ETag` header of getOrgPreferences or patchOrgPreferences. When present the write applies only if it still matches; otherwise 412. */
+  "If-Match"?: string;
+  body: {
+    /** UI theme configured for an organization. */
+    theme?: {
+      /** Theme identifier. */
+      id: string;
+      /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+      logo: {
+        /** Image asset anchored to a named location within an organization theme. */
+        desktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        mobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkDesktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkMobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+      };
+      /** Arbitrary theme variables keyed by name. */
+      vars?: {
+        [key: string]: any;
+      };
+    };
+    /** Preferences specific to dashboard behavior. */
+    dashboard?: {
+      [key: string]: any;
+    };
+    /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+    authBranding?: {
+      /** Ordered slides rendered in the auth-page feature carousel. */
+      carousel?: {
+        /** URL of the slide image asset. */
+        imageUrl: string;
+        /** Slide title. */
+        title: string;
+        /** Slide description text. */
+        description: string;
+      }[];
+      /** FAQ entries rendered on the auth pages. */
+      faqs?: {
+        /** The question text. */
+        question: string;
+        /** The answer text. */
+        answer: string;
+      }[];
+    };
+    /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+    links?: {
+      /** URL of the organization's Terms of Service page. */
+      termsOfService?: string;
+      /** URL of the organization's Privacy Policy page. */
+      privacy?: string;
+      /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+      support?: {
+        [key: string]: string;
+      };
+      /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+      social?: {
+        /** URL of the organization's LinkedIn profile. */
+        linkedin?: string;
+        /** URL of the organization's X (formerly Twitter) profile. */
+        x?: string;
+        /** URL of the organization's YouTube channel. */
+        youtube?: string;
+      };
+    };
+    /** Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value. */
+    showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitted keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+    };
+  };
+};
 export type AddTeamToOrgApiResponse = /** status 201 Team added to organization or team tombstoned */
   | {
       /** Zero-based page index returned in this response. */
@@ -18785,6 +18997,7 @@ export const {
   useCreateChildOrgMutation,
   useGetOrgPreferencesQuery,
   useLazyGetOrgPreferencesQuery,
+  usePatchOrgPreferencesMutation,
   useAddTeamToOrgMutation,
   useRemoveTeamFromOrgMutation,
   useAddUserToOrgMutation,
