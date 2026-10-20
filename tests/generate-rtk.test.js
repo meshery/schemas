@@ -59,3 +59,9 @@ test("encodePathParams URL-encodes path parameter interpolations so reserved cha
   );
   assert.equal(build(), "/api/ledgers/processed-profiles/entries/a%2Fb%20c");
 });
+
+test("encodePathParams leaves non-ledger path interpolations unchanged", () => {
+  const generated =
+    "query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/entries/${queryArg.entryKey}` }),";
+  assert.equal(encodePathParams(generated), generated);
+});
