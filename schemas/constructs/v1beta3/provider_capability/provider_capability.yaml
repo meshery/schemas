@@ -4,13 +4,12 @@ description: |
   The remote provider's capabilities document. Existing fields describe the
   provider and its extensions; `contractVersion` and `membership` let a
   native client gate on the provider's contract and on its organization
-  membership after authenticating. Readers should ignore fields they do
-  not know, so the document can grow without breaking them.
+  membership after authenticating. New fields arrive only with a new
+  `contractVersion`.
 type: object
 additionalProperties: false
 required:
   - providerType
-  - contractVersion
 properties:
   providerType:
     type: string

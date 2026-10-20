@@ -43,7 +43,8 @@ paths:
         Authentication is optional: with a valid token the document reflects
         the caller's roles, and with a valid token plus `X-Current-Orgid` it
         also carries `membership`. An invalid or absent token is not an error;
-        the document is returned without `membership`.
+        the document is returned without `membership`. A malformed
+        `X-Current-Orgid` is a client error and returns 400.
       parameters:
         - $ref: "#/components/parameters/version"
         - $ref: "#/components/parameters/currentOrgId"
@@ -60,6 +61,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProviderCapability"
+        "400":
+          $ref: "../../v1beta2/core/api.yml#/components/responses/400"
         "500":
           $ref: "#/components/responses/500"
 
@@ -98,6 +101,7 @@ components:
     ProviderFeature:
       type: object
       description: One feature the provider serves and the endpoint that serves it.
+      additionalProperties: false
       required:
         - feature
       properties:
@@ -116,6 +120,7 @@ components:
         Whether the authenticated caller is a live member of the organization
         named by `X-Current-Orgid`. Present only on an authenticated request
         that carried that header.
+      additionalProperties: false
       required:
         - organizationId
         - bound
