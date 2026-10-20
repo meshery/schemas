@@ -736,6 +736,38 @@ components:
           description: >-
             Whether the feature carousel renders on the organization's auth
             pages. Unset is treated as true (shown); set false to hide it.
+        schedulePause:
+          x-go-type: "SchedulePause"
+          $ref: "#/components/schemas/SchedulePause"
+
+    SchedulePause:
+      type: object
+      x-internal: ["cloud"]
+      description: >-
+        Organization-wide pause of scheduled work, stored in
+        organization.metadata.preferences. While `paused` is true no schedule
+        in the organization is claimed unless the claim carries the operator
+        override `ignorePause` (v1beta3 schedule). Set or lift it by updating
+        the organization's preferences; there is no pause route. Unset is
+        treated as not paused. `pausedAt` and `pausedBy` are recorded by the
+        server when `paused` turns true and are ignored on input.
+      properties:
+        paused:
+          type: boolean
+          default: false
+          description: Whether every schedule in the organization is paused.
+        reason:
+          type: string
+          maxLength: 1000
+          description: Reason given for the pause. Cleared when the pause is lifted.
+        pausedAt:
+          type: string
+          format: date-time
+          description: Time the pause was set. Server-managed.
+        pausedBy:
+          type: string
+          maxLength: 255
+          description: Identity that set the pause. Server-managed.
 
     OrgMetadata:
       type: object

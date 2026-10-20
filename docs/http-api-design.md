@@ -230,9 +230,14 @@ The rules a consumer must enforce:
   claiming the next due schedule answers 204 when nothing qualifies, never an error.
 - Only the holder renews or releases; anyone else gets 409 and the claim is never taken back.
 - A claim past `expiresAt` is stale and the resource is claimable again.
-- A schedule is claimed only when neither the organization-wide pause (`/api/schedules/pause`) nor
-  its own pause says paused, unless the request carries `ignorePause`.
-- The claim, the `assigned`/`claimed`/`running` statuses and the pause fields are server-managed
-  and refused on create and update.
+- A schedule is claimed only when neither the organization-wide pause (the `schedulePause`
+  organization preference, v1beta2 organization) nor its own pause says paused, unless the request
+  carries `ignorePause`.
+- Pause state is data, never a path segment: a schedule is paused or resumed by setting `paused`
+  (and optionally `pauseReason`) on `PUT /api/schedules/{scheduleId}`, and the organization-wide
+  pause is set or lifted by updating the organization's preferences. There are no `/pause` or
+  `/resume` routes.
+- The claim, the `assigned`/`claimed`/`running` statuses, `pausedAt` and `pausedBy` are
+  server-managed and refused on create and update.
 
 `v1beta3/job_lease` was removed in favour of these two constructs; no consumer served or called it.

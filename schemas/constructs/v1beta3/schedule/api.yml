@@ -11,7 +11,10 @@ info:
     only the holder renews or releases, and a claim past its `expiresAt` is
     stale so the schedule is claimable again. Pausing has two server scopes,
     the organization-wide pause and a per-schedule pause; a schedule is
-    claimed only when neither says paused. Supersedes the per-user
+    claimed only when neither says paused. Pause state is data, never a
+    path: a schedule is paused or resumed with `paused` on
+    `PUT /api/schedules/{scheduleId}`, and the organization-wide pause is the
+    `schedulePause` organization preference (v1beta2 organization). Supersedes the per-user
     `/user/schedules` routes of v1beta2, which remain as a deprecated alias.
     Organization scope: every operation acts only in the organization the
     session resolved to (X-Current-Orgid, then the user's selected
@@ -74,7 +77,8 @@ paths:
       description: |
         Creates a schedule in the organization of the authenticated session. The
         claim, the server-managed status values (`assigned`, `claimed`, `running`)
-        and the pause fields are refused here.
+        and the server-managed pause fields (`pausedAt`, `pausedBy`) are refused
+        here. Send `paused: true` to create the schedule already paused.
       requestBody:
         required: true
         content:
@@ -134,81 +138,6 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/schedules/pause:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - schedules
-      summary: Get the organization-wide schedule pause
-      operationId: getSchedulePause
-      description: |
-        Returns the organization-wide pause, or 204 when every schedule in the
-        organization may be claimed.
-      responses:
-        "200":
-          description: The organization-wide pause
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SchedulePause"
-        "204":
-          description: The organization is not paused
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-    put:
-      x-internal: ["cloud"]
-      tags:
-        - schedules
-      summary: Pause every schedule in the organization
-      operationId: setSchedulePause
-      description: |
-        Sets the organization-wide pause. While it exists no schedule in the
-        organization is claimed unless the claim request carries `ignorePause`.
-        Setting it again updates the reason and keeps the original time.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SchedulePausePayload"
-      responses:
-        "200":
-          description: The organization-wide pause
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SchedulePause"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-    delete:
-      x-internal: ["cloud"]
-      tags:
-        - schedules
-      summary: Lift the organization-wide schedule pause
-      operationId: clearSchedulePause
-      description: |
-        Lifts the organization-wide pause. Lifting a pause that does not exist
-        is a no-op.
-      responses:
-        "204":
-          description: The organization is not paused
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-
   /api/schedules/{scheduleId}:
     get:
       x-internal: ["cloud"]
@@ -241,7 +170,12 @@ paths:
       operationId: updateSchedule
       description: |
         Updates the client-settable fields of a schedule. The claim, the
-        server-managed status values and the pause fields are refused here.
+        server-managed status values and the server-managed pause fields
+        (`pausedAt`, `pausedBy`) are refused here. Pause or resume the
+        schedule by setting `paused` (with an optional `pauseReason`); the
+        server then records `pausedAt` and `pausedBy`. Pausing a paused
+        schedule keeps its original `pausedAt`; omitting `paused` leaves the
+        pause unchanged.
       parameters:
         - $ref: "#/components/parameters/scheduleId"
       requestBody:
@@ -394,65 +328,6 @@ paths:
           $ref: "#/components/responses/404"
         "409":
           $ref: "#/components/responses/409"
-        "500":
-          $ref: "#/components/responses/500"
-
-  /api/schedules/{scheduleId}/pause:
-    post:
-      x-internal: ["cloud"]
-      tags:
-        - schedules
-      summary: Pause a schedule
-      operationId: pauseSchedule
-      description: |
-        Pauses this schedule so it is never claimed until resumed. Pausing a
-        paused schedule keeps its original pause time.
-      parameters:
-        - $ref: "#/components/parameters/scheduleId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SchedulePausePayload"
-      responses:
-        "200":
-          description: The paused schedule
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Schedule"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-
-  /api/schedules/{scheduleId}/resume:
-    post:
-      x-internal: ["cloud"]
-      tags:
-        - schedules
-      summary: Resume a schedule
-      operationId: resumeSchedule
-      description: |
-        Clears this schedule's pause. Resuming a schedule that is not paused is a no-op.
-      parameters:
-        - $ref: "#/components/parameters/scheduleId"
-      responses:
-        "200":
-          description: The resumed schedule
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Schedule"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
@@ -616,16 +491,14 @@ components:
     Schedule:
       $ref: "./schedule.yaml"
 
-    SchedulePause:
-      $ref: "./schedule_pause.yaml"
-
     SchedulePayload:
       type: object
       description: |
         Payload for creating or updating a schedule. Contains only
-        client-settable fields; the owning `organizationId`, the claim, the
-        pause fields, `retryCount`, `lastRunAt`, `lastError` and the
-        timestamps are server-managed. `status` accepts only `pending`,
+        client-settable fields; the owning `organizationId`, the claim,
+        `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError` and the
+        timestamps are server-managed. Pausing is a field, not an operation:
+        `paused` pauses or resumes the schedule. `status` accepts only `pending`,
         `scheduled` and `cancelled` here; the other values are set by the
         claim and release operations.
       required:
@@ -691,6 +564,16 @@ components:
           type: integer
           description: Minutes to wait before a retry becomes due.
           minimum: 0
+        paused:
+          type: boolean
+          description: |
+            `true` pauses the schedule so it is never claimed (unless a claim
+            carries `ignorePause`); `false` resumes it. Omit to leave the pause
+            unchanged. The server records `pausedAt` and `pausedBy`.
+        pauseReason:
+          type: string
+          description: Reason for pausing; stored only while `paused` is true and cleared on resume.
+          maxLength: 1000
 
     ScheduleClaimRequest:
       type: object
@@ -785,19 +668,6 @@ components:
           type: integer
           description: Retries used so far for the current run.
           minimum: 0
-
-    SchedulePausePayload:
-      type: object
-      description: Request to pause a schedule or every schedule in the organization.
-      properties:
-        pausedBy:
-          type: string
-          description: Identity setting the pause; defaults to the authenticated user.
-          maxLength: 255
-        reason:
-          type: string
-          description: Reason for the pause.
-          maxLength: 1000
 
     SchedulePage:
       type: object

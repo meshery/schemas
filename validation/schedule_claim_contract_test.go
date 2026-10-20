@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 
 	"gopkg.in/yaml.v3"
@@ -72,17 +73,12 @@ func TestScheduleClaimContract(t *testing.T) {
 		{"/api/schedules", "get", "listSchedules"},
 		{"/api/schedules", "post", "createSchedule"},
 		{"/api/schedules/claim", "post", "claimNextSchedule"},
-		{"/api/schedules/pause", "get", "getSchedulePause"},
-		{"/api/schedules/pause", "put", "setSchedulePause"},
-		{"/api/schedules/pause", "delete", "clearSchedulePause"},
 		{"/api/schedules/{scheduleId}", "get", "getScheduleById"},
 		{"/api/schedules/{scheduleId}", "put", "updateSchedule"},
 		{"/api/schedules/{scheduleId}", "delete", "deleteScheduleById"},
 		{"/api/schedules/{scheduleId}/claim", "post", "claimSchedule"},
 		{"/api/schedules/{scheduleId}/claim/renew", "post", "renewScheduleClaim"},
 		{"/api/schedules/{scheduleId}/claim/release", "post", "releaseScheduleClaim"},
-		{"/api/schedules/{scheduleId}/pause", "post", "pauseSchedule"},
-		{"/api/schedules/{scheduleId}/resume", "post", "resumeSchedule"},
 		{"/api/workspaces/{workspaceId}/schedules", "get", "getSchedulesOfWorkspace"},
 		{"/api/workspaces/{workspaceId}/schedules/{scheduleId}", "post", "assignScheduleToWorkspace"},
 		{"/api/workspaces/{workspaceId}/schedules/{scheduleId}", "delete", "unassignScheduleFromWorkspace"},
@@ -113,9 +109,21 @@ func TestScheduleClaimContract(t *testing.T) {
 	if got := props["claim"].(map[string]any)["$ref"]; got != "../claim/api.yml#/components/schemas/Claim" {
 		t.Errorf("Schedule.claim = %v, want the claim construct", got)
 	}
-	// Claim and pause state are server-managed: never in the payload.
+	// Status never goes in a path: pause and resume are fields, not routes.
+	paths := mustValue(doc, "paths").(map[string]any)
+	for path := range paths {
+		if strings.HasSuffix(path, "/pause") || strings.HasSuffix(path, "/resume") {
+			t.Errorf("schedule contract must not route pause state: %s", path)
+		}
+	}
+	// Claim state and pause bookkeeping are server-managed: never in the payload.
 	payload := mustLookup(t, doc, "components", "schemas", "SchedulePayload", "properties")
-	for _, name := range []string{"claim", "pausedAt", "pausedBy", "pauseReason", "retryCount", "organizationId"} {
+	for _, name := range []string{"paused", "pauseReason"} {
+		if _, has := mappingValue(payload, name); !has {
+			t.Errorf("SchedulePayload must carry client-settable %q", name)
+		}
+	}
+	for _, name := range []string{"claim", "pausedAt", "pausedBy", "retryCount", "organizationId"} {
 		if _, has := mappingValue(payload, name); has {
 			t.Errorf("SchedulePayload must not carry server-managed %q", name)
 		}
