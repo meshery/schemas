@@ -8,8 +8,12 @@ organization-level configuration key on.
 | --- | --- |
 | `user` | An ordinary environment. People create these to logically group Connections and their Credentials. This is what an environment is unless something says otherwise. |
 | `administrative` | An environment the platform itself provisions to hold organization-level configuration. Resolvers of that configuration trust it. |
-| `blowhorn` | An environment the platform itself provisions to hold an organization's Blowhorn configuration and secrets, resolved by the purpose-typed credential chain. Privileged in the same sense as `administrative`: the uniqueness invariant, the explicit-predicate reads, and the server-side provisioning rule all generalise to it unchanged. |
+| `profile` | An ordinary, non-privileged environment that holds one profile. By convention there is one per profile: `name` is the profile's short name, `owner` is the profile's user, `metadata` holds the profile's settings, and the profile's accounts are linked as Connections through the existing environment-connection mapping. It carries no authority and a client may choose it on create or update. The schema does not enforce one-per-profile; no uniqueness constraint is added for it. |
 | absent | Identical to `user`. Every environment written before the column existed is in this state. |
+
+An omitted purpose means `user` on create, and the server normalises it to `user` on write, as `EnvironmentPayload` specifies.
+
+The former privileged `blowhorn` value is removed from the enum. Servers must not store it, and any consumer that created such rows should move them to `profile`.
 
 The property is optional on the wire and omitted when empty. It is deliberately
 **not** in the entity's `required` list, and carries neither `default:` nor
@@ -44,19 +48,22 @@ If that does not hold, the original escalation ships again under a new spelling.
 
 Two independent things enforce it, and they are not substitutes for each other.
 
-### 1. Schema: `purpose` is off every client-supplied surface
+### 1. Schema: privileged purposes are off every client-supplied surface
 
-- `EnvironmentPayload` in `api.yml` has no `purpose` property, and it is the
-  schema every environment `POST` and `PUT` `requestBody` references. The
-  generated Go, TypeScript and RTK clients therefore have no field for it on the
-  environment create and update endpoints, and a body that supplies one decodes
-  to nothing.
+- `EnvironmentPayload` in `api.yml`, the schema every environment `POST` and
+  `PUT` `requestBody` references, carries `purpose` only as
+  `EnvironmentPayloadPurpose`, whose enum is the non-privileged values (`user`
+  and `profile`). The generated Go, TypeScript and RTK clients therefore have
+  no way to spell a privileged value on the environment create and update
+  endpoints, and a server refuses any other value with `400`. A server also
+  never lets this field change an environment that already carries a
+  privileged purpose.
 - `forms/createOrEdit.json` (the RJSF create-or-edit modal) has no `purpose`
   field, so no UI control offers it.
 - The property description states the obligation, so it travels into every
   generated artifact and into the published OpenAPI documentation.
 
-`validation/environment_purpose_test.go` fails if the payload exclusion, the
+`validation/environment_purpose_test.go` fails if the payload restriction, the
 entity property's declared shape, or the form omission changes. It does not
 assert the wording of the description. The `blocking-validation` job in
 `.github/workflows/schema-audit.yml` runs it, the helper tests under `models/`,
@@ -122,7 +129,7 @@ resolver queries, for the database index predicate under
 ## Uniqueness
 
 **At most one live environment per organization may carry any single privileged
-purpose** - `administrative`, `blowhorn`, and each privileged value the enum later gains.
+purpose** - `administrative`, and each privileged value the enum later gains.
 
 The rule is stated over the privileged values rather than as "not `user`", for
 the reason given under [Reading the value](#reading-the-value): `''` is a real
@@ -133,8 +140,8 @@ stored value that means ordinary, and a negative predicate sweeps it in.
   description, and enforced nowhere in this repo.
 - **Database** is where it is enforced: a partial unique index over
   (`organization_id`, `purpose`) restricted to live rows carrying a privileged
-  purpose - `WHERE deleted_at IS NULL AND purpose IN ('administrative',
-  'blowhorn')`, widened further as additional privileged values are added.
+  purpose - `WHERE deleted_at IS NULL AND purpose IN ('administrative')`,
+  widened further as additional privileged values are added.
   Each consumer adds it in its own migration. `WHERE purpose <> 'user'` is the predicate to avoid: it
   indexes ordinary rows stored as `''`, so the second ordinary environment an
   organization creates collides with the first and fails to insert.
@@ -180,16 +187,16 @@ each consumer, **never through the API**:
 
    Neither half of that constrains what later writes store. The `gorm` tag is
    inert outside GORM - a Pop-based consumer such as meshery-cloud names every
-   `db`-tagged column in its `INSERT`, so the column `DEFAULT` never fires and
-   an environment created through the API, correctly carrying no purpose
-   because `EnvironmentPayload` has no such field, stores `''`. `NOT NULL` does
-   not reject `''` either. Normalising on write is what keeps the column
-   holding `user`; see [Uniqueness](#uniqueness).
+   `db`-tagged column in its `INSERT`, so the column `DEFAULT` never fires.
+   An environment created through the API stores `user` when the client omits
+   `purpose`: an omitted value means `user` on create, and the server
+   normalises it on write. A consumer that writes the column itself must apply
+   the same normalisation. `NOT NULL` does not reject `''` either, so an
+   un-normalised write would store `''`; see [Uniqueness](#uniqueness).
 2. Set `purpose = 'administrative'` on the rows that the previous name-based
    convention selected, scoped per organization.
 3. Add the partial unique index over the privileged values -
-   `... WHERE deleted_at IS NULL AND purpose IN ('administrative',
-   'blowhorn')`, not `WHERE purpose <> 'user'`. If step 2 produced a
+   `... WHERE deleted_at IS NULL AND purpose IN ('administrative')`, not `WHERE purpose <> 'user'`. If step 2 produced a
    duplicate for any organization, the index creation fails - resolve that
    data before the migration lands rather than dropping the index.
 4. Repoint the resolver at `purpose` and delete the name-based lookup. Until the
