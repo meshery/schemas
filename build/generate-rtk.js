@@ -250,23 +250,17 @@ function guardOptionalQueryParams(filePath) {
 /**
  * Percent-encode path parameter interpolations in generated ledger URL templates.
  * Ledger entry keys are arbitrary client strings, so a key such as `a/b` would
- * otherwise address a different path. Wrapping each `${queryArg.X}` (or
- * `${queryArg["X"]}`) in `encodeURIComponent` keeps the value a single path
- * segment. Other constructs' URLs are left unchanged.
+ * otherwise address a different path. Wrapping each `${queryArg.X}` in
+ * `encodeURIComponent` keeps the value a single path segment.
  * @param {string} content - Generated TS source
  * @returns {string} source with ledger path parameter interpolations encoded
  */
 function encodePathParams(content) {
   return content.replace(/`\/api\/ledgers\/[^`]*`/g, (template) =>
-    template
-      .replace(
-        /\$\{queryArg\.([A-Za-z_$][A-Za-z0-9_$]*)\}/g,
-        (_hit, prop) => `\${encodeURIComponent(queryArg.${prop})}`
-      )
-      .replace(
-        /\$\{queryArg\[(['"])([^'"\]]+)\1\]\}/g,
-        (_hit, quote, prop) => `\${encodeURIComponent(queryArg[${quote}${prop}${quote}])}`
-      )
+    template.replace(
+      /\$\{queryArg\.([A-Za-z_$][A-Za-z0-9_$]*)\}/g,
+      (_hit, prop) => `\${encodeURIComponent(queryArg.${prop})}`
+    )
   );
 }
 

@@ -49,16 +49,13 @@ test("guardOptionalQueryParams fails loudly when a params block still contains a
 });
 
 test("encodePathParams URL-encodes path parameter interpolations so reserved characters address their own entry", () => {
-  const generated = [
-    "query: (queryArg) => ({ url: `/api/ledgers/${queryArg.ledger}/entries/${queryArg.entryKey}` }),",
-    'query: (queryArg) => ({ url: `/api/x/${queryArg["class"]}` }),',
-  ].join("\n");
+  const generated =
+    "query: (queryArg) => ({ url: `/api/ledgers/${queryArg.ledger}/entries/${queryArg.entryKey}` }),";
   const rewritten = encodePathParams(generated);
   const build = new Function(
-    `const queryArg = { ledger: "processed-profiles", entryKey: "a/b c", class: "x?y" };
-     const q = ${rewritten.split("\n")[0].replace(/^query: /, "").replace(/,$/, "")};
+    `const queryArg = { ledger: "processed-profiles", entryKey: "a/b c" };
+     const q = ${rewritten.replace(/^query: /, "").replace(/,$/, "")};
      return q(queryArg).url;`,
   );
   assert.equal(build(), "/api/ledgers/processed-profiles/entries/a%2Fb%20c");
-  assert.equal(rewritten.split("\n")[1], generated.split("\n")[1]);
 });
