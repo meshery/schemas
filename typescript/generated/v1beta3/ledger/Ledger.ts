@@ -11,7 +11,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * List ledger entries
+         * @description Returns a paginated list of the entries in the ledger, in the organization of the authenticated session. `search` matches entry keys that contain the term, ignoring case. `order` sorts by `entryKey`, `createdAt` or `updatedAt` (`asc` or `desc`); the default is `entryKey asc`. A ledger with no entries returns an empty page, and a caller who is not a member of the session organization gets `404`.
+         */
+        get: operations["listLedgerEntries"];
         put?: never;
         /**
          * Record a ledger entry
@@ -111,6 +115,51 @@ export interface components {
              */
             updatedAt: string;
         };
+        /** @description Paginated collection of ledger entries. */
+        LedgerEntryPage: {
+            /** @description Current page number of the result set. */
+            page: number;
+            /** @description Number of items per page. */
+            pageSize: number;
+            /** @description Total number of items available. */
+            totalCount: number;
+            /** @description Ledger entries included on this page of results. */
+            ledgerEntries: {
+                /**
+                 * Format: uuid
+                 * @description Server-generated ledger entry ID.
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description Owning organization ID. Derived from the authenticated session, never client-settable.
+                 */
+                organizationId: string;
+                /** @description Name of the ledger (the idempotent set) the entry belongs to. */
+                ledger: string;
+                /** @description Key within the ledger. Unique per (organization, ledger). */
+                entryKey: string;
+                /** @description Entry value, stored as a JSON blob. */
+                value?: Record<string, never>;
+                /** @description Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
+                claimedBy?: string;
+                /**
+                 * Format: date-time
+                 * @description Time the entry was claimed, if any. Set only by claim-if-absent.
+                 */
+                claimedAt?: string | null;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of ledger entry creation.
+                 */
+                createdAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of last ledger entry modification.
+                 */
+                updatedAt: string;
+            }[];
+        };
         /** @description Payload for recording a ledger entry. The ledger comes from the path and the organization from the session; claim fields and timestamps are server-owned. */
         LedgerEntryPayload: {
             /** @description Key within the ledger. */
@@ -176,6 +225,14 @@ export interface components {
         };
     };
     parameters: {
+        /** @description Get responses by page */
+        page: number;
+        /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+        pageSize: number;
+        /** @description Get responses that match search param value */
+        search: string;
+        /** @description Get ordered responses */
+        order: string;
         /** @description Name of the ledger, for example `processed-profiles`. */
         ledger: string;
         /** @description Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
@@ -187,6 +244,117 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    listLedgerEntries: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: number;
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Name of the ledger, for example `processed-profiles`. */
+                ledger: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ledger entries page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page: number;
+                        /** @description Number of items per page. */
+                        pageSize: number;
+                        /** @description Total number of items available. */
+                        totalCount: number;
+                        /** @description Ledger entries included on this page of results. */
+                        ledgerEntries: {
+                            /**
+                             * Format: uuid
+                             * @description Server-generated ledger entry ID.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description Owning organization ID. Derived from the authenticated session, never client-settable.
+                             */
+                            organizationId: string;
+                            /** @description Name of the ledger (the idempotent set) the entry belongs to. */
+                            ledger: string;
+                            /** @description Key within the ledger. Unique per (organization, ledger). */
+                            entryKey: string;
+                            /** @description Entry value, stored as a JSON blob. */
+                            value?: Record<string, never>;
+                            /** @description Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
+                            claimedBy?: string;
+                            /**
+                             * Format: date-time
+                             * @description Time the entry was claimed, if any. Set only by claim-if-absent.
+                             */
+                            claimedAt?: string | null;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of ledger entry creation.
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of last ledger entry modification.
+                             */
+                            updatedAt: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
     recordLedgerEntry: {
         parameters: {
             query?: never;
