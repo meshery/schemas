@@ -1449,7 +1449,7 @@ const ProfileSchema: Record<string, unknown> = {
         ],
         "operationId": "getProfileConnections",
         "summary": "Get profile connections",
-        "description": "Gets the connections linked to the profile. Requires View Profiles and visibility of the profile. Visibility of the profile alone does not grant access to the linked connections, which follow their own access rules.",
+        "description": "Gets the connections linked to a profile visible to the caller: its owner (whether or not the profile is assigned to any workspace), an organization admin, or a member of a workspace it is assigned to. The owner needs no permission key; organization admins and workspace members also need View Profiles. Provider admins are not granted visibility automatically. A profile the caller cannot see returns 404. Seeing the profile does not grant access to its linked connections, which follow their own access rules.",
         "parameters": [
           {
             "name": "profileId",
