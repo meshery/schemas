@@ -75,7 +75,7 @@ properties:
       from here instead of hard-coding them. A provider serving desktop
       connections lists `register-connection`, `connection-heartbeat` and
       `deregister-desktop-connection`; an endpoint may hold `{connectionId}`
-      or `{machineId}` placeholders.
+      or `{installationId}` placeholders.
     items:
       $ref: "./api.yml#/components/schemas/ProviderFeature"
   restrictedAccess:

@@ -6,7 +6,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "e9a85341d041813617c6ffd36da4983d34d7843af3a77df1700e4655f0a9884c"
+const IndexID = "fb2f3275d706b0bbe7db5884ebf64f3de3a9bef2c81d3dc1deaeed1f8b6255bb"
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -153,17 +153,17 @@ var (
 	// CatalogManagementDeleteWasmFilter - Delete WASM filter permanently from catalog.
 	CatalogManagementDeleteWasmFilter = PermissionKey(uuid.Must(uuid.FromString("9225d5a7-7255-49be-9233-daeabefae306")))
 
-	// CatalogManagementViewContentPieces - View the content pieces of the organization
-	CatalogManagementViewContentPieces = PermissionKey(uuid.Must(uuid.FromString("5cd87dc9-02c6-44a0-a019-281f7295ad08")))
+	// CatalogManagementViewContentItems - View the content items of the organization
+	CatalogManagementViewContentItems = PermissionKey(uuid.Must(uuid.FromString("5cd87dc9-02c6-44a0-a019-281f7295ad08")))
 
-	// CatalogManagementCreateContentPiece - Create a content piece in the organization
-	CatalogManagementCreateContentPiece = PermissionKey(uuid.Must(uuid.FromString("5fb97ae1-49ed-490c-b17a-377bf5558585")))
+	// CatalogManagementCreateContentItem - Create a content item in the organization
+	CatalogManagementCreateContentItem = PermissionKey(uuid.Must(uuid.FromString("5fb97ae1-49ed-490c-b17a-377bf5558585")))
 
-	// CatalogManagementEditContentPiece - Edit a content piece of the organization
-	CatalogManagementEditContentPiece = PermissionKey(uuid.Must(uuid.FromString("06858261-c7eb-464a-a4b7-e29792a7ae54")))
+	// CatalogManagementEditContentItem - Edit a content item of the organization
+	CatalogManagementEditContentItem = PermissionKey(uuid.Must(uuid.FromString("06858261-c7eb-464a-a4b7-e29792a7ae54")))
 
-	// CatalogManagementDeleteContentPiece - Delete a content piece of the organization
-	CatalogManagementDeleteContentPiece = PermissionKey(uuid.Must(uuid.FromString("129d0297-1091-40e4-8d4a-5262b3378305")))
+	// CatalogManagementDeleteContentItem - Delete a content item of the organization
+	CatalogManagementDeleteContentItem = PermissionKey(uuid.Must(uuid.FromString("129d0297-1091-40e4-8d4a-5262b3378305")))
 
 	// CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers - Invite any Meshery Cloud user, or all Meshery users, to work with you on a public design that control – including making changes and releasing new versions.
 	CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers = PermissionKey(uuid.Must(uuid.FromString("ccc4bc8d-f484-42b3-8a62-2667284605c3")))
@@ -1319,6 +1319,33 @@ var (
 
 	// WorkflowManagementSingleAndMultipleApprovers - No description available
 	WorkflowManagementSingleAndMultipleApprovers = PermissionKey(uuid.Must(uuid.FromString("8b8b8eb2-00d5-4501-8c94-529f1b0b0f27")))
+
+	// WorkflowManagementViewClaims - See the claims in your organization, active and past, and which connection and member holds each.
+	WorkflowManagementViewClaims = PermissionKey(uuid.Must(uuid.FromString("93696d4c-48db-415e-aac9-778390896093")))
+
+	// WorkflowManagementTakeAndRenewClaims - Take a claim on a resource of your organization with one of your own connections, and renew it.
+	WorkflowManagementTakeAndRenewClaims = PermissionKey(uuid.Must(uuid.FromString("1450f30c-6664-4107-9818-eca7508182d5")))
+
+	// WorkflowManagementReleaseClaim - Release a claim you hold and record its outcome.
+	WorkflowManagementReleaseClaim = PermissionKey(uuid.Must(uuid.FromString("6789de53-1b28-407f-90dc-bf290eb28cf6")))
+
+	// WorkflowManagementReleaseClaimsOfOtherMembers - Release a claim another member of your organization holds, for example a hold left by a computer that went offline.
+	WorkflowManagementReleaseClaimsOfOtherMembers = PermissionKey(uuid.Must(uuid.FromString("2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7")))
+
+	// WorkflowManagementViewSchedules - View the schedules of the organization, when each runs next and which connection holds each one
+	WorkflowManagementViewSchedules = PermissionKey(uuid.Must(uuid.FromString("9eba0b6a-08d1-42a2-a2fa-dd5fc5aeb542")))
+
+	// WorkflowManagementCreateSchedule - Create a schedule in the organization
+	WorkflowManagementCreateSchedule = PermissionKey(uuid.Must(uuid.FromString("135c39f9-0a98-4db6-a7cd-42e903ab9d32")))
+
+	// WorkflowManagementEditSchedule - Change a schedule of the organization, including pausing and resuming it
+	WorkflowManagementEditSchedule = PermissionKey(uuid.Must(uuid.FromString("6767b9a0-d138-4672-a8ba-26ce6e217c48")))
+
+	// WorkflowManagementDeleteSchedule - Delete a schedule of the organization
+	WorkflowManagementDeleteSchedule = PermissionKey(uuid.Must(uuid.FromString("d2ab90ab-7abb-4aa3-a38a-24ed4b6b1665")))
+
+	// WorkflowManagementAssignSchedulesToWorkspaces - Link a schedule of the organization to a workspace, or remove the link
+	WorkflowManagementAssignSchedulesToWorkspaces = PermissionKey(uuid.Must(uuid.FromString("264bda82-2676-41a2-bfff-2d90c7bf52f0")))
 
 	// BusinessPerformanceShoppingCartBasedRealTimeDiscount - No description available
 	BusinessPerformanceShoppingCartBasedRealTimeDiscount = PermissionKey(uuid.Must(uuid.FromString("b1e81301-0726-4d62-a920-c10ee5d563b0")))
