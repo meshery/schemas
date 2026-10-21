@@ -4781,47 +4781,47 @@ export const Keys = {
   },
 
   /**
-   * View claims held in the organization and which connection holds each one
+   * See the claims in your organization, active and past, and which connection and member holds each.
    */
   WorkflowManagementViewClaims: {
     id: "93696d4c-48db-415e-aac9-778390896093" as PermissionKey,
     category: "Workflow Management",
     subcategory: "Claims",
     function: "View Claims",
-    description: "View claims held in the organization and which connection holds each one"
+    description: "See the claims in your organization, active and past, and which connection and member holds each."
   },
 
   /**
-   * Take a claim on a resource, or renew a claim you hold, so no other computer acts on it at the same time
+   * Take a claim on a resource of your organization with one of your own connections, and renew it.
    */
   WorkflowManagementTakeAndRenewClaims: {
     id: "1450f30c-6664-4107-9818-eca7508182d5" as PermissionKey,
     category: "Workflow Management",
     subcategory: "Claims",
     function: "Take and renew claims",
-    description: "Take a claim on a resource, or renew a claim you hold, so no other computer acts on it at the same time"
+    description: "Take a claim on a resource of your organization with one of your own connections, and renew it."
   },
 
   /**
-   * Release a claim you hold
+   * Release a claim you hold and record its outcome.
    */
   WorkflowManagementReleaseClaim: {
     id: "6789de53-1b28-407f-90dc-bf290eb28cf6" as PermissionKey,
     category: "Workflow Management",
     subcategory: "Claims",
     function: "Release claim",
-    description: "Release a claim you hold"
+    description: "Release a claim you hold and record its outcome."
   },
 
   /**
-   * Release a claim held by another member of the organization
+   * Release a claim another member of your organization holds, for example a hold left by a computer that went offline.
    */
   WorkflowManagementReleaseClaimsOfOtherMembers: {
     id: "2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7" as PermissionKey,
     category: "Workflow Management",
     subcategory: "Claims",
     function: "Release claims of other members",
-    description: "Release a claim held by another member of the organization"
+    description: "Release a claim another member of your organization holds, for example a hold left by a computer that went offline."
   },
 
   /**
@@ -7305,22 +7305,22 @@ export const PermissionKeys = {
   WorkflowManagementSingleAndMultipleApprovers: "8b8b8eb2-00d5-4501-8c94-529f1b0b0f27" as PermissionKey,
 
   /**
-   * View claims held in the organization and which connection holds each one
+   * See the claims in your organization, active and past, and which connection and member holds each.
    */
   WorkflowManagementViewClaims: "93696d4c-48db-415e-aac9-778390896093" as PermissionKey,
 
   /**
-   * Take a claim on a resource, or renew a claim you hold, so no other computer acts on it at the same time
+   * Take a claim on a resource of your organization with one of your own connections, and renew it.
    */
   WorkflowManagementTakeAndRenewClaims: "1450f30c-6664-4107-9818-eca7508182d5" as PermissionKey,
 
   /**
-   * Release a claim you hold
+   * Release a claim you hold and record its outcome.
    */
   WorkflowManagementReleaseClaim: "6789de53-1b28-407f-90dc-bf290eb28cf6" as PermissionKey,
 
   /**
-   * Release a claim held by another member of the organization
+   * Release a claim another member of your organization holds, for example a hold left by a computer that went offline.
    */
   WorkflowManagementReleaseClaimsOfOtherMembers: "2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7" as PermissionKey,
 

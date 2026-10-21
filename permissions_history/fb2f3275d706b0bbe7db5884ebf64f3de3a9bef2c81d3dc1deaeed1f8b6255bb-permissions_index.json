@@ -3884,38 +3884,38 @@
     {
       "name": "WorkflowManagementViewClaims",
       "uuid": "93696d4c-48db-415e-aac9-778390896093",
-      "feature": "View claims held in the organization and which connection holds each one",
+      "feature": "See the claims in your organization, active and past, and which connection and member holds each.",
       "category": "Workflow Management",
       "subcategory": "Claims",
       "function": "View Claims",
-      "description": "View claims held in the organization and which connection holds each one"
+      "description": "See the claims in your organization, active and past, and which connection and member holds each."
     },
     {
       "name": "WorkflowManagementTakeAndRenewClaims",
       "uuid": "1450f30c-6664-4107-9818-eca7508182d5",
-      "feature": "Take a claim on a resource, or renew a claim you hold, so no other computer acts on it at the same time",
+      "feature": "Take a claim on a resource of your organization with one of your own connections, and renew it.",
       "category": "Workflow Management",
       "subcategory": "Claims",
       "function": "Take and renew claims",
-      "description": "Take a claim on a resource, or renew a claim you hold, so no other computer acts on it at the same time"
+      "description": "Take a claim on a resource of your organization with one of your own connections, and renew it."
     },
     {
       "name": "WorkflowManagementReleaseClaim",
       "uuid": "6789de53-1b28-407f-90dc-bf290eb28cf6",
-      "feature": "Release a claim you hold",
+      "feature": "Release a claim you hold and record its outcome.",
       "category": "Workflow Management",
       "subcategory": "Claims",
       "function": "Release claim",
-      "description": "Release a claim you hold"
+      "description": "Release a claim you hold and record its outcome."
     },
     {
       "name": "WorkflowManagementReleaseClaimsOfOtherMembers",
       "uuid": "2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7",
-      "feature": "Release a claim held by another member of the organization",
+      "feature": "Release a claim another member of your organization holds, for example a hold left by a computer that went offline.",
       "category": "Workflow Management",
       "subcategory": "Claims",
       "function": "Release claims of other members",
-      "description": "Release a claim held by another member of the organization"
+      "description": "Release a claim another member of your organization holds, for example a hold left by a computer that went offline."
     },
     {
       "name": "WorkflowManagementViewSchedules",
