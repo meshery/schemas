@@ -40,8 +40,46 @@ func TestLedgerContract(t *testing.T) {
 	if _, ok := mappingValue(paths, "/api/ledgers/{ledger}/entries/{ledgerEntryId}"); ok {
 		t.Error("ledger entries must be addressed by entryKey, not ledgerEntryId")
 	}
-	if _, ok := mappingValue(mustLookup(t, paths, "/api/ledgers/{ledger}/entries"), "get"); ok {
-		t.Error("the ledger list endpoint must be removed")
+	list := mustLookup(t, paths, "/api/ledgers/{ledger}/entries", "get")
+	if id, _ := mappingValue(list, "operationId"); id != "listLedgerEntries" {
+		t.Errorf("GET /entries must be listLedgerEntries, got %v", id)
+	}
+	// The list reuses the shared pagination parameters and page envelope.
+	params, _ := mustLookup(t, list, "parameters").([]any)
+	refs := map[string]bool{}
+	for _, p := range params {
+		if ref, ok := mappingValue(p, "$ref"); ok {
+			refs[ref.(string)] = true
+		}
+	}
+	for _, name := range []string{"ledger", "page", "pageSize", "search", "order"} {
+		if !refs["#/components/parameters/"+name] {
+			t.Errorf("listLedgerEntries must take the %s parameter", name)
+		}
+	}
+	for _, name := range []string{"page", "pageSize", "search", "order"} {
+		ref, _ := mustLookup(t, doc, "components", "parameters", name, "$ref").(string)
+		if ref != "../../v1beta2/core/api.yml#/components/parameters/"+name {
+			t.Errorf("parameter %s must reference the shared core parameter, got %q", name, ref)
+		}
+	}
+	listResponses := mustLookup(t, list, "responses")
+	for _, code := range []string{"200", "404"} {
+		if _, ok := mappingValue(listResponses, code); !ok {
+			t.Errorf("listLedgerEntries must document %s", code)
+		}
+	}
+	required, _ := mustLookup(t, doc, "components", "schemas", "LedgerEntryPage", "required").([]any)
+	want := map[string]bool{"page": false, "pageSize": false, "totalCount": false, "ledgerEntries": false}
+	for _, r := range required {
+		if _, ok := want[r.(string)]; ok {
+			want[r.(string)] = true
+		}
+	}
+	for field, ok := range want {
+		if !ok {
+			t.Errorf("LedgerEntryPage must require %s", field)
+		}
 	}
 
 	excluded, _ := mustLookup(t, doc, "components", "parameters", "entryKey", "schema", "not", "enum").([]any)

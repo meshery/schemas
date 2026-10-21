@@ -1674,6 +1674,18 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/identity/users/request/notification` }),
         providesTags: ["Invitation_Invitation"],
       }),
+      listLedgerEntries: build.query<ListLedgerEntriesApiResponse, ListLedgerEntriesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["Ledger_ledgers"],
+      }),
       recordLedgerEntry: build.mutation<RecordLedgerEntryApiResponse, RecordLedgerEntryApiArg>({
         query: (queryArg) => ({ url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Ledger_ledgers"],
@@ -17092,6 +17104,47 @@ export type GetSignupRequestNotificationApiResponse = /** status 200 Signup requ
   preProcessed: boolean;
 };
 export type GetSignupRequestNotificationApiArg = void;
+export type ListLedgerEntriesApiResponse = /** status 200 Ledger entries page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Ledger entries included on this page of results. */
+  ledgerEntries: {
+    /** Server-generated ledger entry ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Name of the ledger (the idempotent set) the entry belongs to. */
+    ledger: string;
+    /** Key within the ledger. Unique per (organization, ledger). */
+    entryKey: string;
+    /** Entry value, stored as a JSON blob. */
+    value?: object;
+    /** Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
+    claimedBy?: string;
+    /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+    claimedAt?: string | null;
+    /** Timestamp of ledger entry creation. */
+    createdAt: string;
+    /** Timestamp of last ledger entry modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListLedgerEntriesApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
 export type RecordLedgerEntryApiResponse = /** status 200 The key was already recorded; the stored entry, unchanged */
   | {
       /** Server-generated ledger entry ID. */
@@ -22207,6 +22260,8 @@ export const {
   useDenySignupRequestMutation,
   useGetSignupRequestNotificationQuery,
   useLazyGetSignupRequestNotificationQuery,
+  useListLedgerEntriesQuery,
+  useLazyListLedgerEntriesQuery,
   useRecordLedgerEntryMutation,
   useClaimLedgerEntryMutation,
   useGetLedgerEntryQuery,

@@ -45,6 +45,21 @@ type LedgerEntry struct {
 	UpdatedAt core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 }
 
+// LedgerEntryPage Paginated collection of ledger entries.
+type LedgerEntryPage struct {
+	// LedgerEntries Ledger entries included on this page of results.
+	LedgerEntries []LedgerEntry `json:"ledgerEntries" yaml:"ledgerEntries"`
+
+	// Page Current page number of the result set.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Number of items per page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of items available.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
 // LedgerEntryPayload Payload for recording a ledger entry. The ledger comes from the path and the organization from the session; claim fields and timestamps are server-owned.
 type LedgerEntryPayload struct {
 	// EntryKey Key within the ledger.
@@ -59,3 +74,15 @@ type EntryKey = string
 
 // Ledger defines model for ledger.
 type Ledger = string
+
+// Order defines model for order.
+type Order = string
+
+// Page defines model for page.
+type Page = int
+
+// PageSize defines model for pageSize.
+type PageSize = int
+
+// Search defines model for search.
+type Search = string
