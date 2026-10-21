@@ -43,12 +43,17 @@ It is the "in progress" set. The ledger (`v1beta3/ledger`) stays the
 ## Resource types
 
 `resourceType` is the construct name in snake_case. A provider verifies the
-types it serves and refuses others with `400`. Layer5 Cloud serves
-`content_item` (the hold a desktop client takes on an activity) and
-`schedule` (the hold a worker takes on a due schedule before it runs it), and
-verifies that the resource is live in the session organization. A schedule
-claim is taken, renewed and released through `/api/claims` like any other;
-the schedule reads it back as its nested `claim`.
+types it serves and refuses others with `400`, and verifies that the resource
+is live in the session organization; for example `content_item` (the hold a
+desktop client takes on an activity) and `schedule` (the hold a worker takes
+on a due schedule before it runs it). Every claim, a schedule's included, is
+taken, renewed and released through `/api/claims`; no construct defines its
+own claim routes. The schedule reads its live claim back as the read-only
+`claim` field. Releasing a `schedule` claim also records the run's outcome on
+the schedule in the same transaction (`lastRunAt`, `lastError`, `status`,
+`retryCount`, `nextRunAt`; see the schedule construct). Deleting a claimed
+resource, soft or hard, expires its active claim; released and expired claims
+keep their `resourceId` as history after the resource is gone.
 
 ## Permission keys (build/permissions.csv, "Workflow Management / Claims")
 
@@ -69,5 +74,9 @@ No anonymous role holds any of them.
   `lastSeenAt`) of every desktop connection in the organization. Nothing else
   of another member's connection is exposed.
 - `v1beta3/content_item`: `createdBy`, the session user who created it.
-- `v1beta3/schedule`: the schedule claim requests name `connectionId` in place
-  of the free-text `claimant`, matching the nested claim.
+- `v1beta3/schedule`: the nested schedule claim routes
+  (`/api/schedules/claim`, `/api/schedules/{scheduleId}/claim`, `/claim/renew`,
+  `/claim/release`) and their request schemas are removed in favor of
+  `/api/claims`. The schedule gains `createdBy`, `timezone`, a typed target
+  (`targetType`, `targetId`), a defined `recurrence` grammar, a user-ID
+  `pausedBy`, and an `ETag` with `If-Match` on update.

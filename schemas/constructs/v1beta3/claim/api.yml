@@ -4,8 +4,8 @@ info:
   description: |
     OpenAPI schema for claims - generic, time-bound holds that one connection
     takes on one resource so competing workers never act on it twice. Any
-    construct can be claimed; schedules nest the same claim under
-    `/api/schedules/{scheduleId}/claim`. A claim is held by the caller's own
+    construct can be claimed, schedules included, through these routes
+    alone; no construct defines its own claim routes. A claim is held by the caller's own
     live connection in the session organization (`connectionId` on the
     request, `claimantConnectionId` on the claim) on behalf of the session
     user (`claimantUserId`). At most one claim per resource is active in an

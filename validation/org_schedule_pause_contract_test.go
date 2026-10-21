@@ -117,16 +117,16 @@ func TestSchedulePayloadDeclaresNoServerManagedFields(t *testing.T) {
 		t.Fatalf("load %s: %v", scheduleV1beta3Spec, err)
 	}
 	payload := doc.Components.Schemas["SchedulePayload"].Value
-	for _, name := range []string{"claim", "pausedAt", "pausedBy", "retryCount", "lastRunAt", "lastError", "organizationId", "createdAt", "updatedAt"} {
+	for _, name := range []string{"claim", "pausedAt", "pausedBy", "lastRunAt", "lastError", "organizationId", "createdBy", "createdAt", "updatedAt"} {
 		if _, ok := payload.Properties[name]; ok {
 			t.Errorf("SchedulePayload must not declare server-managed property %q", name)
 		}
 	}
 }
 
-// A schedule payload stays open, so a read-modify-write update that echoes
-// server-managed pause bookkeeping back is accepted; the server ignores it.
-func TestSchedulePayloadAcceptsEchoedServerPauseFields(t *testing.T) {
+// A schedule payload is closed: server-managed pause bookkeeping is refused
+// rather than silently ignored, so a client cannot believe it set it.
+func TestSchedulePayloadRefusesServerPauseFields(t *testing.T) {
 	doc, err := loadAPISpec(filepath.Join(repoRootDir(t), scheduleV1beta3Spec))
 	if err != nil {
 		t.Fatalf("load %s: %v", scheduleV1beta3Spec, err)
@@ -140,8 +140,8 @@ func TestSchedulePayloadAcceptsEchoedServerPauseFields(t *testing.T) {
 		wantErr bool
 	}{
 		{"client pauses with reason", map[string]any{"name": "nightly", "action": "sync", "paused": true, "pauseReason": "maintenance"}, false},
-		{"echoed pausedBy is ignored", map[string]any{"name": "nightly", "action": "sync", "pausedBy": "mallory"}, false},
-		{"echoed pausedAt is ignored", map[string]any{"name": "nightly", "action": "sync", "pausedAt": "2026-10-20T00:00:00Z"}, false},
+		{"echoed pausedBy is refused", map[string]any{"name": "nightly", "action": "sync", "pausedBy": "mallory"}, true},
+		{"echoed pausedAt is refused", map[string]any{"name": "nightly", "action": "sync", "pausedAt": "2026-10-20T00:00:00Z"}, true},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
