@@ -222,11 +222,6 @@ const (
 	contextProperty
 )
 
-var freeFormKeywords = []string{
-	"free-form", "freeform", "arbitrary", "opaque", "key-value",
-	"metadata", "dictionary", "map",
-}
-
 var freeFormRegex = regexp.MustCompile(`(?i)\b(free-form|freeform|arbitrary|opaque|key-value|metadata|dictionary|map)\b`)
 
 var allHTTPMethods = []string{"get", "post", "put", "delete", "options", "head", "patch", "trace"}
