@@ -8,12 +8,13 @@ organization-level configuration key on.
 | --- | --- |
 | `user` | An ordinary environment. People create these to logically group Connections and their Credentials. This is what an environment is unless something says otherwise. |
 | `administrative` | An environment the platform itself provisions to hold organization-level configuration. Resolvers of that configuration trust it. |
-| `profile` | **Deprecated.** Profiles are their own construct, [`schemas/constructs/v1beta3/profile`](../schemas/constructs/v1beta3/profile/api.yml), served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`, so access to a profile is controlled through workspaces. New profiles must not be stored as environments. The value stays in the enum only so environments written with it still read back: such an environment is ordinary and non-privileged, carries no authority, and a client may still send the value on create or update until it is removed. Consumers should move these environments to profiles (see [docs/profile-contract.md](profile-contract.md#moving-off-purpose-profile)), then stop accepting the value. |
 | absent | Identical to `user`. Every environment written before the column existed is in this state. |
 
 An omitted purpose means `user` on create, and the server normalises it to `user` on write, as `EnvironmentPayload` specifies.
 
-The former privileged `blowhorn` value is removed from the enum. Servers must not store it, and any consumer that created such rows should move them to the profile construct.
+Profiles are not environments. They are their own construct, [`schemas/constructs/v1beta3/profile`](../schemas/constructs/v1beta3/profile/api.yml), served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles` (see [docs/profile-contract.md](profile-contract.md)). The former `profile` value is removed from the enum with no migration: environments that carried it are discarded, and servers must not store or accept it.
+
+The former privileged `blowhorn` value is removed from the enum. Servers must not store it, and rows that carried it are discarded rather than migrated.
 
 The property is optional on the wire and omitted when empty. It is deliberately
 **not** in the entity's `required` list, and carries neither `default:` nor
@@ -52,8 +53,7 @@ Two independent things enforce it, and they are not substitutes for each other.
 
 - `EnvironmentPayload` in `api.yml`, the schema every environment `POST` and
   `PUT` `requestBody` references, carries `purpose` only as
-  `EnvironmentPayloadPurpose`, whose enum is the non-privileged values (`user`
-  and `profile`). The generated Go, TypeScript and RTK clients therefore have
+  `EnvironmentPayloadPurpose`, whose enum is the non-privileged value `user`. The generated Go, TypeScript and RTK clients therefore have
   no way to spell a privileged value on the environment create and update
   endpoints, and a server refuses any other value with `400`. A server also
   never lets this field change an environment that already carries a

@@ -59,7 +59,7 @@ func TestEnvironmentPayloadCannotCarryPrivilegedPurpose(t *testing.T) {
 	if err := json.Unmarshal(body, &payload); err == nil {
 		t.Fatalf("decoding a privileged purpose must fail, got purpose %v", payload.Purpose)
 	}
-	for _, value := range []string{"user", "profile"} {
+	for _, value := range []string{"user"} {
 		var ok EnvironmentPayload
 		if err := json.Unmarshal([]byte(`{"name":"ok","purpose":"`+value+`"}`), &ok); err != nil {
 			t.Fatalf("decoding client-settable purpose %q: %v", value, err)
@@ -68,7 +68,7 @@ func TestEnvironmentPayloadCannotCarryPrivilegedPurpose(t *testing.T) {
 			t.Fatalf("decoded purpose = %v, want %q", ok.Purpose, value)
 		}
 	}
-	for _, bad := range []string{"", "Profile", " user", "administrative"} {
+	for _, bad := range []string{"", "profile", "Profile", " user", "administrative"} {
 		var p EnvironmentPayloadPurpose
 		if err := json.Unmarshal([]byte(`"`+bad+`"`), &p); err == nil {
 			t.Errorf("decoding purpose %q must fail", bad)
