@@ -6,7 +6,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "ce365f0c712015aef44036dacc43dcfebe7acc8ae2824d9e506c1d50339f070f"
+const IndexID = "73f063ccfe2ea3e525a7e7388425f57611b5e042f00105a1ad878f746429f2c7"
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -153,17 +153,17 @@ var (
 	// CatalogManagementDeleteWasmFilter - Delete WASM filter permanently from catalog.
 	CatalogManagementDeleteWasmFilter = PermissionKey(uuid.Must(uuid.FromString("9225d5a7-7255-49be-9233-daeabefae306")))
 
-	// CatalogManagementViewContentItems - View the content items of the organization
-	CatalogManagementViewContentItems = PermissionKey(uuid.Must(uuid.FromString("5cd87dc9-02c6-44a0-a019-281f7295ad08")))
+	// CatalogManagementViewContentPieces - View the content pieces of the organization
+	CatalogManagementViewContentPieces = PermissionKey(uuid.Must(uuid.FromString("5cd87dc9-02c6-44a0-a019-281f7295ad08")))
 
-	// CatalogManagementCreateContentItem - Create a content item in the organization
-	CatalogManagementCreateContentItem = PermissionKey(uuid.Must(uuid.FromString("5fb97ae1-49ed-490c-b17a-377bf5558585")))
+	// CatalogManagementCreateContentPiece - Create a content piece in the organization
+	CatalogManagementCreateContentPiece = PermissionKey(uuid.Must(uuid.FromString("5fb97ae1-49ed-490c-b17a-377bf5558585")))
 
-	// CatalogManagementEditContentItem - Edit a content item of the organization
-	CatalogManagementEditContentItem = PermissionKey(uuid.Must(uuid.FromString("06858261-c7eb-464a-a4b7-e29792a7ae54")))
+	// CatalogManagementEditContentPiece - Edit a content piece of the organization
+	CatalogManagementEditContentPiece = PermissionKey(uuid.Must(uuid.FromString("06858261-c7eb-464a-a4b7-e29792a7ae54")))
 
-	// CatalogManagementDeleteContentItem - Delete a content item of the organization
-	CatalogManagementDeleteContentItem = PermissionKey(uuid.Must(uuid.FromString("129d0297-1091-40e4-8d4a-5262b3378305")))
+	// CatalogManagementDeleteContentPiece - Delete a content piece of the organization
+	CatalogManagementDeleteContentPiece = PermissionKey(uuid.Must(uuid.FromString("129d0297-1091-40e4-8d4a-5262b3378305")))
 
 	// CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers - Invite any Meshery Cloud user, or all Meshery users, to work with you on a public design that control – including making changes and releasing new versions.
 	CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers = PermissionKey(uuid.Must(uuid.FromString("ccc4bc8d-f484-42b3-8a62-2667284605c3")))
