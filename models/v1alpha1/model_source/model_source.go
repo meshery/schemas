@@ -119,10 +119,10 @@ type ComponentOverride struct {
 	// IsAnnotation Whether this component represents an annotation.
 	IsAnnotation *bool `json:"isAnnotation,omitempty" yaml:"isAnnotation,omitempty"`
 
-	// PrimaryColor Primary hex color code for UI representation (e.g.,
+	// PrimaryColor Primary hex color code for UI representation (e.g., #00B39F).
 	PrimaryColor *string `json:"primaryColor,omitempty" yaml:"primaryColor,omitempty"`
 
-	// SecondaryColor Secondary hex color code for UI representation (e.g.,
+	// SecondaryColor Secondary hex color code for UI representation (e.g., #00D3A9).
 	SecondaryColor *string `json:"secondaryColor,omitempty" yaml:"secondaryColor,omitempty"`
 
 	// Shape UI shape token for the component (e.g., circle, round-rectangle).
@@ -219,10 +219,10 @@ type ModelSourceMetadata struct {
 	// IsAnnotation Whether components of this model are annotations by default.
 	IsAnnotation *bool `json:"isAnnotation,omitempty" yaml:"isAnnotation,omitempty"`
 
-	// PrimaryColor Primary hex color code for UI representation (e.g.,
+	// PrimaryColor Primary hex color code for UI representation (e.g., #00B39F).
 	PrimaryColor *string `json:"primaryColor,omitempty" yaml:"primaryColor,omitempty"`
 
-	// SecondaryColor Secondary hex color code for UI representation (e.g.,
+	// SecondaryColor Secondary hex color code for UI representation (e.g., #00D3A9).
 	SecondaryColor *string `json:"secondaryColor,omitempty" yaml:"secondaryColor,omitempty"`
 
 	// Shape UI shape token for model components (e.g., circle, round-rectangle).

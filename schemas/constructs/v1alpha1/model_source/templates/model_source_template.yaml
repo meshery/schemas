@@ -22,7 +22,6 @@ metadata:
   capabilities:
     - mutation
     - validation
-  styleOverrides: ""
 publish:
   registry: true
   sites: true

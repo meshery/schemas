@@ -24,8 +24,7 @@
     "capabilities": [
       "mutation",
       "validation"
-    ],
-    "styleOverrides": ""
+    ]
   },
   "publish": {
     "registry": true,

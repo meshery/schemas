@@ -6,11 +6,9 @@ secondaryColor: "#00D3A9"
 svgColor: ./svg/certificate.svg
 svgWhite: ./svg/certificate-white.svg
 svgComplete: ./svg/certificate-complete.svg
-styleOverrides: ""
 styles: {}
 capabilities:
   - mutation
   - validation
-genealogy: ""
 isAnnotation: false
 status: enabled

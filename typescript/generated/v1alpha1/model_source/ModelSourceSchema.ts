@@ -148,13 +148,13 @@ const ModelSourceSchema: Record<string, unknown> = {
               },
               "primaryColor": {
                 "type": "string",
-                "description": "Primary hex color code for UI representation (e.g.,",
+                "description": "Primary hex color code for UI representation (e.g., #00B39F).",
                 "minLength": 1,
                 "maxLength": 30
               },
               "secondaryColor": {
                 "type": "string",
-                "description": "Secondary hex color code for UI representation (e.g.,",
+                "description": "Secondary hex color code for UI representation (e.g., #00D3A9).",
                 "minLength": 1,
                 "maxLength": 30
               },
@@ -357,13 +357,13 @@ const ModelSourceSchema: Record<string, unknown> = {
           },
           "primaryColor": {
             "type": "string",
-            "description": "Primary hex color code for UI representation (e.g.,",
+            "description": "Primary hex color code for UI representation (e.g., #00B39F).",
             "minLength": 1,
             "maxLength": 30
           },
           "secondaryColor": {
             "type": "string",
-            "description": "Secondary hex color code for UI representation (e.g.,",
+            "description": "Secondary hex color code for UI representation (e.g., #00D3A9).",
             "minLength": 1,
             "maxLength": 30
           },
@@ -544,13 +544,13 @@ const ModelSourceSchema: Record<string, unknown> = {
           },
           "primaryColor": {
             "type": "string",
-            "description": "Primary hex color code for UI representation (e.g.,",
+            "description": "Primary hex color code for UI representation (e.g., #00B39F).",
             "minLength": 1,
             "maxLength": 30
           },
           "secondaryColor": {
             "type": "string",
-            "description": "Secondary hex color code for UI representation (e.g.,",
+            "description": "Secondary hex color code for UI representation (e.g., #00D3A9).",
             "minLength": 1,
             "maxLength": 30
           },

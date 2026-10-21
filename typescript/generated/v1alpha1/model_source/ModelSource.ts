@@ -49,9 +49,9 @@ export interface components {
             metadata?: {
                 /** @description UI shape token for model components (e.g., circle, round-rectangle). */
                 shape?: string;
-                /** @description Primary hex color code for UI representation (e.g., */
+                /** @description Primary hex color code for UI representation (e.g., #00B39F). */
                 primaryColor?: string;
-                /** @description Secondary hex color code for UI representation (e.g., */
+                /** @description Secondary hex color code for UI representation (e.g., #00D3A9). */
                 secondaryColor?: string;
                 /** @description Relative path to colored SVG file (e.g., ./svg/color.svg or color.svg). */
                 svgColor?: string;
@@ -128,9 +128,9 @@ export interface components {
         ModelSourceMetadata: {
             /** @description UI shape token for model components (e.g., circle, round-rectangle). */
             shape?: string;
-            /** @description Primary hex color code for UI representation (e.g., */
+            /** @description Primary hex color code for UI representation (e.g., #00B39F). */
             primaryColor?: string;
-            /** @description Secondary hex color code for UI representation (e.g., */
+            /** @description Secondary hex color code for UI representation (e.g., #00D3A9). */
             secondaryColor?: string;
             /** @description Relative path to colored SVG file (e.g., ./svg/color.svg or color.svg). */
             svgColor?: string;
@@ -199,9 +199,9 @@ export interface components {
             displayName?: string;
             /** @description UI shape token for the component (e.g., circle, round-rectangle). */
             shape?: string;
-            /** @description Primary hex color code for UI representation (e.g., */
+            /** @description Primary hex color code for UI representation (e.g., #00B39F). */
             primaryColor?: string;
-            /** @description Secondary hex color code for UI representation (e.g., */
+            /** @description Secondary hex color code for UI representation (e.g., #00D3A9). */
             secondaryColor?: string;
             /** @description Relative file path to colored SVG file. */
             svgColor?: string;
