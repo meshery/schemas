@@ -1883,7 +1883,9 @@ components:
         users:
           type: array
           items:
-            $ref: "../user/api.yml#/components/schemas/User"
+            type: object
+            description: Free-form key-value map entry representing a user access actor.
+            additionalProperties: true
           description: The users of the resourceaccessactorsresponse.
 
 
