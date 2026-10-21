@@ -7751,7 +7751,7 @@ const WorkspaceSchema: Record<string, unknown> = {
         ],
         "operationId": "getProfilesOfWorkspace",
         "summary": "Get profiles assigned to a workspace",
-        "description": "Gets profiles assigned to or available for a workspace depending on the filter. A profile can be assigned to many workspaces; members of each one can read it.",
+        "description": "Gets profiles assigned to or available for a workspace depending on the filter. A profile can be assigned to many workspaces; members of each one can read it, as can its owner and organization admins.",
         "parameters": [
           {
             "name": "workspaceId",
@@ -7865,7 +7865,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                         "$id": "https://schemas.meshery.io/profile.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "title": "Profile",
-                        "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is granted: a profile is readable by members of the workspaces it is assigned to and by organization admins.",
+                        "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is shared: a profile is readable by its owner (whether or not it is assigned to any workspace), by organization admins, and by members of the workspaces it is assigned to. Provider admins do not see profiles automatically, and seeing a profile does not grant access to its linked connections.",
                         "additionalProperties": false,
                         "type": "object",
                         "example": {
@@ -8110,7 +8110,7 @@ const WorkspaceSchema: Record<string, unknown> = {
         ],
         "operationId": "assignProfileToWorkspace",
         "summary": "Assign a profile to a workspace",
-        "description": "Assigns a profile to a workspace, granting the workspace's members read access to it. The profile and the workspace must belong to the same organization, and a profile can be assigned to many workspaces.",
+        "description": "Assigns a profile to a workspace, granting the workspace's members read access to it (not to its linked connections). The profile and the workspace must belong to the same organization, and a profile can be assigned to many workspaces.",
         "parameters": [
           {
             "name": "workspaceId",

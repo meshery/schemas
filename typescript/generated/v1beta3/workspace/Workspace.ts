@@ -197,7 +197,7 @@ export interface paths {
         };
         /**
          * Get profiles assigned to a workspace
-         * @description Gets profiles assigned to or available for a workspace depending on the filter. A profile can be assigned to many workspaces; members of each one can read it.
+         * @description Gets profiles assigned to or available for a workspace depending on the filter. A profile can be assigned to many workspaces; members of each one can read it, as can its owner and organization admins.
          */
         get: operations["getProfilesOfWorkspace"];
         put?: never;
@@ -219,7 +219,7 @@ export interface paths {
         put?: never;
         /**
          * Assign a profile to a workspace
-         * @description Assigns a profile to a workspace, granting the workspace's members read access to it. The profile and the workspace must belong to the same organization, and a profile can be assigned to many workspaces.
+         * @description Assigns a profile to a workspace, granting the workspace's members read access to it (not to its linked connections). The profile and the workspace must belong to the same organization, and a profile can be assigned to many workspaces.
          */
         post: operations["assignProfileToWorkspace"];
         /**

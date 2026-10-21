@@ -7,7 +7,7 @@ const ProfileSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Profile",
-    "description": "OpenAPI schema for profiles: publishing or persona profiles owned by an\norganization and assigned to workspaces. A profile here is not the user\naccount profile (`/api/identity/users/profile`) and not a performance\nprofile (`/api/performance/profiles`).\nWorkspaces: like an environment, a profile can be assigned to any number\nof workspaces through `/api/workspaces/{workspaceId}/profiles`, and that\nassignment is how access to it is granted.\nRead access: a profile is visible to members of the workspaces it is\nassigned to, and to organization admins, provided they also hold\nWorkspace Management / Profiles: View Profiles. A profile assigned to no\nworkspace is visible to its owner and to organization admins only.\nWrite access: Create Profile, Edit Profile and Delete Profile. Edit\nProfile also governs linking and unlinking the profile's connections and\ntransferring its owner; the owner may always edit their own profile.\nAccounts: the platform accounts a profile acts through are existing\nConnections, linked by a profile-to-connection mapping that mirrors the\nenvironment-to-connection mapping.\nA caller without the required key receives a 403. An id that does not name\na live profile the caller can see receives a 404, whether it does not\nexist or belongs to another organization or workspace.\n",
+    "description": "OpenAPI schema for profiles: publishing or persona profiles owned by an\norganization and assigned to workspaces. A profile here is not the user\naccount profile (`/api/identity/users/profile`) and not a performance\nprofile (`/api/performance/profiles`).\nWorkspaces: like an environment, a profile can be assigned to any number\nof workspaces through `/api/workspaces/{workspaceId}/profiles`, and that\nassignment is how access to it is granted.\nRead access: a profile is visible to its owner, to organization admins,\nand to members of the workspaces it is assigned to. The owner sees their\nown profile whether or not it is assigned to any workspace. Organization\nadmins and workspace members also need Workspace Management / Profiles:\nView Profiles. Provider admins do not see profiles automatically. Seeing\na profile does not grant access to its linked connections, which keep\ntheir own access rules.\nWrite access: Create Profile, Edit Profile and Delete Profile. Edit\nProfile also governs linking and unlinking the profile's connections and\ntransferring its owner; the owner may always edit their own profile.\nAccounts: the platform accounts a profile acts through are existing\nConnections, linked by a profile-to-connection mapping that mirrors the\nenvironment-to-connection mapping.\nA caller without the required key receives a 403. An id that does not name\na live profile the caller can see receives a 404, whether it does not\nexist or belongs to another organization or workspace.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -148,7 +148,7 @@ const ProfileSchema: Record<string, unknown> = {
                   "$id": "https://schemas.meshery.io/profile.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Profile",
-                  "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is granted: a profile is readable by members of the workspaces it is assigned to and by organization admins.",
+                  "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is shared: a profile is readable by its owner (whether or not it is assigned to any workspace), by organization admins, and by members of the workspaces it is assigned to. Provider admins do not see profiles automatically, and seeing a profile does not grant access to its linked connections.",
                   "additionalProperties": false,
                   "type": "object",
                   "example": {
@@ -387,7 +387,7 @@ const ProfileSchema: Record<string, unknown> = {
         ],
         "operationId": "getProfiles",
         "summary": "Get all profiles",
-        "description": "Gets the live profiles the caller can see: those assigned to a workspace the caller is a member of, those the caller owns, and, for organization admins, every profile of the organization. `search` matches the name or description case-insensitively.",
+        "description": "Gets the live profiles the caller can see: those the caller owns (including profiles assigned to no workspace), those assigned to a workspace the caller is a member of, and, for organization admins, every profile of the organization. Provider admins are not granted visibility automatically. `search` matches the name or description case-insensitively.",
         "parameters": [
           {
             "name": "search",
@@ -494,7 +494,7 @@ const ProfileSchema: Record<string, unknown> = {
                         "$id": "https://schemas.meshery.io/profile.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "title": "Profile",
-                        "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is granted: a profile is readable by members of the workspaces it is assigned to and by organization admins.",
+                        "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is shared: a profile is readable by its owner (whether or not it is assigned to any workspace), by organization admins, and by members of the workspaces it is assigned to. Provider admins do not see profiles automatically, and seeing a profile does not grant access to its linked connections.",
                         "additionalProperties": false,
                         "type": "object",
                         "example": {
@@ -729,6 +729,7 @@ const ProfileSchema: Record<string, unknown> = {
         ],
         "operationId": "getProfileById",
         "summary": "Get profile by ID",
+        "description": "Gets a profile visible to the caller: its owner (whether or not the profile is assigned to any workspace), an organization admin, or a member of a workspace it is assigned to. Provider admins are not granted visibility automatically. A profile the caller cannot see returns 404. Seeing the profile does not grant access to its linked connections.",
         "parameters": [
           {
             "name": "profileId",
@@ -755,7 +756,7 @@ const ProfileSchema: Record<string, unknown> = {
                   "$id": "https://schemas.meshery.io/profile.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Profile",
-                  "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is granted: a profile is readable by members of the workspaces it is assigned to and by organization admins.",
+                  "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is shared: a profile is readable by its owner (whether or not it is assigned to any workspace), by organization admins, and by members of the workspaces it is assigned to. Provider admins do not see profiles automatically, and seeing a profile does not grant access to its linked connections.",
                   "additionalProperties": false,
                   "type": "object",
                   "example": {
@@ -1114,7 +1115,7 @@ const ProfileSchema: Record<string, unknown> = {
                   "$id": "https://schemas.meshery.io/profile.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Profile",
-                  "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is granted: a profile is readable by members of the workspaces it is assigned to and by organization admins.",
+                  "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is shared: a profile is readable by its owner (whether or not it is assigned to any workspace), by organization admins, and by members of the workspaces it is assigned to. Provider admins do not see profiles automatically, and seeing a profile does not grant access to its linked connections.",
                   "additionalProperties": false,
                   "type": "object",
                   "example": {
@@ -1448,7 +1449,7 @@ const ProfileSchema: Record<string, unknown> = {
         ],
         "operationId": "getProfileConnections",
         "summary": "Get profile connections",
-        "description": "Gets the connections linked to the profile. Requires View Profiles and visibility of the profile.",
+        "description": "Gets the connections linked to the profile. Requires View Profiles and visibility of the profile. Visibility of the profile alone does not grant access to the linked connections, which follow their own access rules.",
         "parameters": [
           {
             "name": "profileId",
@@ -3146,7 +3147,7 @@ const ProfileSchema: Record<string, unknown> = {
         "$id": "https://schemas.meshery.io/profile.yaml",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Profile",
-        "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is granted: a profile is readable by members of the workspaces it is assigned to and by organization admins.",
+        "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is shared: a profile is readable by its owner (whether or not it is assigned to any workspace), by organization admins, and by members of the workspaces it is assigned to. Provider admins do not see profiles automatically, and seeing a profile does not grant access to its linked connections.",
         "additionalProperties": false,
         "type": "object",
         "example": {
@@ -3439,7 +3440,7 @@ const ProfileSchema: Record<string, unknown> = {
               "$id": "https://schemas.meshery.io/profile.yaml",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "title": "Profile",
-              "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is granted: a profile is readable by members of the workspaces it is assigned to and by organization admins.",
+              "description": "A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is shared: a profile is readable by its owner (whether or not it is assigned to any workspace), by organization admins, and by members of the workspaces it is assigned to. Provider admins do not see profiles automatically, and seeing a profile does not grant access to its linked connections.",
               "additionalProperties": false,
               "type": "object",
               "example": {

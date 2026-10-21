@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Get all profiles
-         * @description Gets the live profiles the caller can see: those assigned to a workspace the caller is a member of, those the caller owns, and, for organization admins, every profile of the organization. `search` matches the name or description case-insensitively.
+         * @description Gets the live profiles the caller can see: those the caller owns (including profiles assigned to no workspace), those assigned to a workspace the caller is a member of, and, for organization admins, every profile of the organization. Provider admins are not granted visibility automatically. `search` matches the name or description case-insensitively.
          */
         get: operations["getProfiles"];
         put?: never;
@@ -35,7 +35,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get profile by ID */
+        /**
+         * Get profile by ID
+         * @description Gets a profile visible to the caller: its owner (whether or not the profile is assigned to any workspace), an organization admin, or a member of a workspace it is assigned to. Provider admins are not granted visibility automatically. A profile the caller cannot see returns 404. Seeing the profile does not grant access to its linked connections.
+         */
         get: operations["getProfileById"];
         /**
          * Update a profile
@@ -62,7 +65,7 @@ export interface paths {
         };
         /**
          * Get profile connections
-         * @description Gets the connections linked to the profile. Requires View Profiles and visibility of the profile.
+         * @description Gets the connections linked to the profile. Requires View Profiles and visibility of the profile. Visibility of the profile alone does not grant access to the linked connections, which follow their own access rules.
          */
         get: operations["getProfileConnections"];
         put?: never;
@@ -103,7 +106,7 @@ export interface components {
     schemas: {
         /**
          * Profile
-         * @description A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is granted: a profile is readable by members of the workspaces it is assigned to and by organization admins.
+         * @description A profile is a publishing or persona profile: a named set of settings, owned by an organization, that a person or brand publishes as, with the platform accounts it acts through linked to it as Connections. It is not the user account profile (`/api/identity/users/profile`) and not a performance profile (`/api/performance/profiles`), and it is neither an environment nor a workspace. Like environments, a profile is assigned to any number of workspaces, and workspace assignment is how access to it is shared: a profile is readable by its owner (whether or not it is assigned to any workspace), by organization admins, and by members of the workspaces it is assigned to. Provider admins do not see profiles automatically, and seeing a profile does not grant access to its linked connections.
          * @example {
          *       "id": "00000000-0000-0000-0000-000000000000",
          *       "schemaVersion": "profiles.meshery.io/v1beta3",
