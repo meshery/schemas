@@ -26,12 +26,22 @@ func TestUpdateUserPreferencesOperation(t *testing.T) {
 	if op.OperationID != "updateUserPreferences" {
 		t.Errorf("operationId = %q, want updateUserPreferences", op.OperationID)
 	}
-	body := op.RequestBody.Value.Content.Get("application/json").Schema
-	if body.Value != doc.Components.Schemas["PreferencePayload"].Value {
+	payload := doc.Components.Schemas["PreferencePayload"]
+	if payload == nil || payload.Value == nil {
+		t.Fatal("components.schemas.PreferencePayload is not declared")
+	}
+	if op.RequestBody == nil || op.RequestBody.Value == nil {
+		t.Fatal("PUT /api/identity/users/preferences declares no requestBody")
+	}
+	media := op.RequestBody.Value.Content.Get("application/json")
+	if media == nil || media.Schema == nil {
+		t.Fatal("requestBody declares no application/json schema")
+	}
+	if media.Schema.Value != payload.Value {
 		t.Error("requestBody does not resolve to PreferencePayload")
 	}
 	created := op.Responses.Status(201)
-	if created == nil || len(created.Value.Content) != 0 {
+	if created == nil || created.Value == nil || len(created.Value.Content) != 0 {
 		t.Error("201 must be declared with no body")
 	}
 }
@@ -41,7 +51,11 @@ func TestPreferencePayloadRequestValidation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load %s: %v", userV1beta2Spec, err)
 	}
-	payload := doc.Components.Schemas["PreferencePayload"].Value
+	ref := doc.Components.Schemas["PreferencePayload"]
+	if ref == nil || ref.Value == nil {
+		t.Fatal("components.schemas.PreferencePayload is not declared")
+	}
+	payload := ref.Value
 	request := []openapi3.SchemaValidationOption{openapi3.VisitAsRequest()}
 	cases := []struct {
 		name    string
