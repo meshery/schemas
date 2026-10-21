@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "1842d28fff5ae8af85366dd952d0d47c8e78c48d4bff56cf67fb856ac1b95463" as const;
+export const PERMISSIONS_INDEX_ID = "ce365f0c712015aef44036dacc43dcfebe7acc8ae2824d9e506c1d50339f070f" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -4781,6 +4781,50 @@ export const Keys = {
   },
 
   /**
+   * See the claims in your organization, active and past, and which connection and member holds each.
+   */
+  WorkflowManagementViewClaims: {
+    id: "93696d4c-48db-415e-aac9-778390896093" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Claims",
+    function: "View Claims",
+    description: "See the claims in your organization, active and past, and which connection and member holds each."
+  },
+
+  /**
+   * Take a claim on a resource of your organization with one of your own connections, and renew it.
+   */
+  WorkflowManagementTakeAndRenewClaims: {
+    id: "1450f30c-6664-4107-9818-eca7508182d5" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Claims",
+    function: "Take and renew claims",
+    description: "Take a claim on a resource of your organization with one of your own connections, and renew it."
+  },
+
+  /**
+   * Release a claim you hold and record its outcome.
+   */
+  WorkflowManagementReleaseClaim: {
+    id: "6789de53-1b28-407f-90dc-bf290eb28cf6" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Claims",
+    function: "Release claim",
+    description: "Release a claim you hold and record its outcome."
+  },
+
+  /**
+   * Release a claim another member of your organization holds, for example a hold left by a computer that went offline.
+   */
+  WorkflowManagementReleaseClaimsOfOtherMembers: {
+    id: "2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Claims",
+    function: "Release claims of other members",
+    description: "Release a claim another member of your organization holds, for example a hold left by a computer that went offline."
+  },
+
+  /**
    * No description available
    */
   BusinessPerformanceShoppingCartBasedRealTimeDiscount: {
@@ -7204,6 +7248,26 @@ export const PermissionKeys = {
    * No description available
    */
   WorkflowManagementSingleAndMultipleApprovers: "8b8b8eb2-00d5-4501-8c94-529f1b0b0f27" as PermissionKey,
+
+  /**
+   * See the claims in your organization, active and past, and which connection and member holds each.
+   */
+  WorkflowManagementViewClaims: "93696d4c-48db-415e-aac9-778390896093" as PermissionKey,
+
+  /**
+   * Take a claim on a resource of your organization with one of your own connections, and renew it.
+   */
+  WorkflowManagementTakeAndRenewClaims: "1450f30c-6664-4107-9818-eca7508182d5" as PermissionKey,
+
+  /**
+   * Release a claim you hold and record its outcome.
+   */
+  WorkflowManagementReleaseClaim: "6789de53-1b28-407f-90dc-bf290eb28cf6" as PermissionKey,
+
+  /**
+   * Release a claim another member of your organization holds, for example a hold left by a computer that went offline.
+   */
+  WorkflowManagementReleaseClaimsOfOtherMembers: "2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7" as PermissionKey,
 
   /**
    * No description available

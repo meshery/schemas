@@ -6,7 +6,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "1842d28fff5ae8af85366dd952d0d47c8e78c48d4bff56cf67fb856ac1b95463"
+const IndexID = "ce365f0c712015aef44036dacc43dcfebe7acc8ae2824d9e506c1d50339f070f"
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -1319,6 +1319,18 @@ var (
 
 	// WorkflowManagementSingleAndMultipleApprovers - No description available
 	WorkflowManagementSingleAndMultipleApprovers = PermissionKey(uuid.Must(uuid.FromString("8b8b8eb2-00d5-4501-8c94-529f1b0b0f27")))
+
+	// WorkflowManagementViewClaims - See the claims in your organization, active and past, and which connection and member holds each.
+	WorkflowManagementViewClaims = PermissionKey(uuid.Must(uuid.FromString("93696d4c-48db-415e-aac9-778390896093")))
+
+	// WorkflowManagementTakeAndRenewClaims - Take a claim on a resource of your organization with one of your own connections, and renew it.
+	WorkflowManagementTakeAndRenewClaims = PermissionKey(uuid.Must(uuid.FromString("1450f30c-6664-4107-9818-eca7508182d5")))
+
+	// WorkflowManagementReleaseClaim - Release a claim you hold and record its outcome.
+	WorkflowManagementReleaseClaim = PermissionKey(uuid.Must(uuid.FromString("6789de53-1b28-407f-90dc-bf290eb28cf6")))
+
+	// WorkflowManagementReleaseClaimsOfOtherMembers - Release a claim another member of your organization holds, for example a hold left by a computer that went offline.
+	WorkflowManagementReleaseClaimsOfOtherMembers = PermissionKey(uuid.Must(uuid.FromString("2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7")))
 
 	// BusinessPerformanceShoppingCartBasedRealTimeDiscount - No description available
 	BusinessPerformanceShoppingCartBasedRealTimeDiscount = PermissionKey(uuid.Must(uuid.FromString("b1e81301-0726-4d62-a920-c10ee5d563b0")))

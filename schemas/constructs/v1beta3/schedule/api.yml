@@ -110,8 +110,8 @@ paths:
       summary: Claim the next due schedule
       operationId: claimNextSchedule
       description: |
-        Claims one due, enabled, unclaimed and unpaused schedule for `claimant`
-        in a single server-side statement, optionally restricted to one
+        Claims one due, enabled, unclaimed and unpaused schedule for the connection
+        `connectionId` in a single server-side statement, optionally restricted to one
         workspace, and answers it with its new claim. When no schedule
         qualifies the answer is 204: a lost race is never an error.
         `ignorePause` is the single operator override over the pause scopes.
@@ -229,9 +229,9 @@ paths:
       summary: Claim a schedule
       operationId: claimSchedule
       description: |
-        Claims this schedule for `claimant`. Without `force` the schedule must be
+        Claims this schedule for the connection `connectionId`. Without `force` the schedule must be
         due; `force` drops only the due test (trigger now), and a live claim held
-        by another claimant still answers 409. Pauses refuse the claim unless
+        by another connection still answers 409. Pauses refuse the claim unless
         `ignorePause` is set. Answers the schedule with its new claim.
       parameters:
         - $ref: "#/components/parameters/scheduleId"
@@ -268,7 +268,7 @@ paths:
       operationId: renewScheduleClaim
       description: |
         Moves the claim's `expiresAt` forward for the holder only. A claim that
-        is not live or belongs to another claimant answers 409 and is never
+        is not live or belongs to another connection answers 409 and is never
         taken back.
       parameters:
         - $ref: "#/components/parameters/scheduleId"
@@ -306,7 +306,7 @@ paths:
       description: |
         Releases the holder's claim and applies the run's outcome in the same
         statement (`status`, `lastRunAt`, `lastError`, `nextRunAt`,
-        `retryCount`). A release by another claimant answers 409.
+        `retryCount`). A release by another connection answers 409.
       parameters:
         - $ref: "#/components/parameters/scheduleId"
       requestBody:
@@ -428,7 +428,7 @@ components:
     404:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
     409:
-      description: Conflict - the schedule is held by another claimant's live claim, or the caller is not the holder of the claim it tried to renew or release
+      description: Conflict - the schedule is held by another connection's live claim, or the caller is not the holder of the claim it tried to renew or release
       content:
         text/plain:
           schema:
@@ -582,13 +582,13 @@ components:
       type: object
       description: Request to claim the next due schedule.
       required:
-        - claimant
+        - connectionId
       properties:
-        claimant:
-          type: string
-          description: Identity of the worker taking the claim.
-          minLength: 1
-          maxLength: 255
+        connectionId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: ID of the connection taking the claim; must be the caller's own live connection in the session organization.
+          x-go-name: ConnectionID
+          x-go-type-skip-optional-pointer: true
         durationMinutes:
           type: integer
           description: Requested claim duration in minutes; the server applies its default when omitted and may cap it.
@@ -607,13 +607,13 @@ components:
       type: object
       description: Request to claim one named schedule.
       required:
-        - claimant
+        - connectionId
       properties:
-        claimant:
-          type: string
-          description: Identity of the worker taking the claim.
-          minLength: 1
-          maxLength: 255
+        connectionId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: ID of the connection taking the claim; must be the caller's own live connection in the session organization.
+          x-go-name: ConnectionID
+          x-go-type-skip-optional-pointer: true
         durationMinutes:
           type: integer
           description: Requested claim duration in minutes; the server applies its default when omitted and may cap it.
@@ -621,7 +621,7 @@ components:
           maximum: 1440
         force:
           type: boolean
-          description: Claim even though the schedule is not yet due (trigger now). A live claim held by another claimant still refuses.
+          description: Claim even though the schedule is not yet due (trigger now). A live claim held by another connection still refuses.
         ignorePause:
           type: boolean
           description: Operator override that claims through the organization-wide and per-schedule pauses.
@@ -630,13 +630,13 @@ components:
       type: object
       description: Request to release a schedule's claim and record the run's outcome.
       required:
-        - claimant
+        - connectionId
       properties:
-        claimant:
-          type: string
-          description: Identity of the holder releasing the claim.
-          minLength: 1
-          maxLength: 255
+        connectionId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: ID of the connection that holds the claim; must be the caller's own live connection in the session organization.
+          x-go-name: ConnectionID
+          x-go-type-skip-optional-pointer: true
         status:
           type: string
           description: Outcome status to record with the release.

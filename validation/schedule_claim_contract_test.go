@@ -55,7 +55,7 @@ func TestClaimContract(t *testing.T) {
 
 	entity := loadYAMLMap(t, claimV1beta3Entity)
 	props := entity["properties"].(map[string]any)
-	for _, name := range []string{"resourceType", "resourceId", "claimant", "claimedAt", "expiresAt", "status"} {
+	for _, name := range []string{"resourceType", "resourceId", "claimantConnectionId", "claimantUserId", "claimedAt", "expiresAt", "status"} {
 		if _, ok := props[name]; !ok {
 			t.Errorf("Claim must carry %q", name)
 		}
