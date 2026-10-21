@@ -161,4 +161,22 @@ func TestProfileVisibilityWording(t *testing.T) {
 	if s, _ := desc.(string); !strings.Contains(s, "its owner") {
 		t.Error("getProfileById description must name the owner as able to see the profile")
 	}
+
+	// The owner reads their own profile's connections without View Profiles,
+	// so getProfileConnections must not demand that key of every caller.
+	connDesc, _ := mappingValue(mustLookup(t, doc, "paths", "/api/profiles/{profileId}/connections", "get"), "description")
+	cs, _ := connDesc.(string)
+	if strings.Contains(cs, "Requires View Profiles and visibility of the profile") {
+		t.Error("getProfileConnections description must not require View Profiles of the profile owner")
+	}
+	for _, want := range []string{
+		"its owner",
+		"The owner needs no permission key",
+		"Provider admins are not granted visibility automatically",
+		"does not grant access to its linked connections",
+	} {
+		if !strings.Contains(cs, want) {
+			t.Errorf("getProfileConnections description must state %q", want)
+		}
+	}
 }
