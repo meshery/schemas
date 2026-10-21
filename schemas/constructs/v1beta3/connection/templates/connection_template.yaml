@@ -23,6 +23,9 @@ transitionMap:
   connected:
     - nextState: disconnected
       description: Connectivity to the resource is lost or intentionally torn down.
+  disconnected:
+    - nextState: connected
+      description: A heartbeat from the connection's owner restores connectivity.
 owner: 00000000-0000-0000-0000-000000000000
 createdAt: '0001-01-01T00:00:00Z'
 updatedAt: '0001-01-01T00:00:00Z'

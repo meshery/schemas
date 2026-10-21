@@ -1,0 +1,371 @@
+openapi: 3.0.0
+info:
+  title: ActivityResult
+  description: |
+    OpenAPI schema for the result of one activity: delivery per profile and
+    platform, reception where it is collected, and derived follower context.
+    Contract only; it declares no endpoints. Clients that assemble a result
+    locally (a command line, a desktop panel) and a server that later serves
+    it share these types.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths: {}
+components:
+  schemas:
+    ActivityResult:
+      $ref: "./activity_result.yaml"
+
+    ActivityResultEntry:
+      type: object
+      description: The result of an activity for one profile on one platform.
+      additionalProperties: false
+      required:
+        - profile
+        - platform
+        - delivery
+        - reception
+        - followerChange
+      properties:
+        profile:
+          type: string
+          description: Profile the entry is for.
+          minLength: 1
+          maxLength: 255
+        platform:
+          type: string
+          description: Platform the entry is for.
+          minLength: 1
+          maxLength: 64
+        delivery:
+          $ref: "#/components/schemas/ActivityDelivery"
+        reception:
+          $ref: "#/components/schemas/ActivityReception"
+        followerChange:
+          $ref: "#/components/schemas/ActivityFollowerChange"
+
+    ActivityDelivery:
+      type: object
+      description: |
+        Whether the activity went out for this profile and platform, from the
+        recorded outcome and the run log. Measured, never derived.
+      additionalProperties: false
+      required:
+        - status
+        - evidence
+      properties:
+        status:
+          type: string
+          description: |
+            delivered (it went out), unconfirmed (the action was taken but its
+            outcome could not be read), failed (the last attempt failed and it
+            has not gone out), scheduled (due later), pending (due and not yet
+            run), draft (not approved, so it will not run).
+          enum:
+            - delivered
+            - unconfirmed
+            - failed
+            - scheduled
+            - pending
+            - draft
+        evidence:
+          type: string
+          description: |
+            What the status rests on: recorded (the outcome stored on the
+            activity), run (a run log entry), or none (nothing has happened yet).
+          enum:
+            - recorded
+            - run
+            - none
+        deliveredAt:
+          type: string
+          format: date-time
+          description: When it went out, as recorded.
+          nullable: true
+        scheduledFor:
+          type: string
+          format: date-time
+          description: When it is due, for a scheduled or pending activity.
+          nullable: true
+        link:
+          type: string
+          description: Link to the live item on the platform.
+          maxLength: 2048
+          nullable: true
+        computer:
+          type: string
+          description: Host name of the computer whose run delivered or attempted it.
+          maxLength: 255
+          nullable: true
+        browserProfile:
+          $ref: "#/components/schemas/ActivityBrowserProfile"
+        runId:
+          type: string
+          description: Run log identifier of the run that delivered or attempted it.
+          maxLength: 255
+          nullable: true
+        attemptedAt:
+          type: string
+          format: date-time
+          description: When the matched run ended.
+          nullable: true
+        durationSeconds:
+          type: number
+          description: How long the matched run took.
+          minimum: 0
+          nullable: true
+        error:
+          type: string
+          description: The error the last failed attempt reported.
+          maxLength: 4096
+          nullable: true
+        fix:
+          $ref: "#/components/schemas/ActivityFix"
+        logPath:
+          type: string
+          description: Log file of the matched run, on the computer that ran it.
+          maxLength: 2048
+          nullable: true
+
+    ActivityBrowserProfile:
+      type: object
+      description: The browser profile a run used on its computer, when one was mapped. Null when unknown.
+      nullable: true
+      additionalProperties: false
+      required:
+        - directory
+      properties:
+        directory:
+          type: string
+          description: Browser profile directory name.
+          minLength: 1
+          maxLength: 255
+        displayName:
+          type: string
+          description: Name the browser showed for the profile.
+          maxLength: 255
+
+    ActivityFix:
+      type: object
+      description: What to do about a failed delivery. Null when nothing failed.
+      nullable: true
+      additionalProperties: false
+      required:
+        - summary
+      properties:
+        summary:
+          type: string
+          description: One plain sentence saying what to do next.
+          minLength: 1
+          maxLength: 1024
+        command:
+          type: string
+          description: A command line that performs the fix, when there is one.
+          maxLength: 1024
+          nullable: true
+
+    ActivityMetrics:
+      type: object
+      description: |
+        Per-activity engagement figures. The known keys are declared and are
+        null when the source did not report them, never zero. A
+        platform-specific figure not listed here is carried under its own key
+        only when it was reported.
+      additionalProperties:
+        type: number
+      properties:
+        impressions:
+          type: number
+          nullable: true
+          description: Times the activity was shown.
+        views:
+          type: number
+          nullable: true
+          description: Views, for media activities.
+        offsiteViews:
+          type: number
+          nullable: true
+          description: Views outside the platform.
+        clicks:
+          type: number
+          nullable: true
+          description: Clicks on the activity.
+        clickThroughRate:
+          type: number
+          nullable: true
+          description: Clicks divided by impressions, as a fraction.
+        likes:
+          type: number
+          nullable: true
+          description: Likes or reactions.
+        comments:
+          type: number
+          nullable: true
+          description: Comments.
+        reposts:
+          type: number
+          nullable: true
+          description: Reposts or shares.
+        follows:
+          type: number
+          nullable: true
+          description: Follows attributed to the activity.
+        engagementRate:
+          type: number
+          nullable: true
+          description: Engagements divided by impressions, as a fraction.
+
+    ActivityComparison:
+      type: object
+      description: |
+        Derived. How this activity's figures compare with the same subject's
+        other activities: the median of each figure and this activity's ratio
+        to it. Null when there are too few other activities to compare with.
+      nullable: true
+      additionalProperties: false
+      required:
+        - basis
+        - sampleSize
+        - median
+        - ratio
+      properties:
+        basis:
+          type: string
+          description: How the typical activity is computed.
+          enum:
+            - median
+        sampleSize:
+          type: integer
+          description: How many other activities the median is taken over.
+          minimum: 0
+        median:
+          $ref: "#/components/schemas/ActivityMetrics"
+        ratio:
+          $ref: "#/components/schemas/ActivityMetrics"
+
+    ActivityReception:
+      type: object
+      description: |
+        How the activity was received. Measured figures with the date they were
+        read, or collected false with a reason. Never zeros for missing data.
+      additionalProperties: false
+      required:
+        - collected
+        - measured
+      properties:
+        collected:
+          type: boolean
+          description: Whether any reception figures exist for this entry.
+        measured:
+          type: boolean
+          description: Always true; reception figures are read from the platform, not computed.
+        reason:
+          type: string
+          description: |
+            Why reception is not collected: platform (nothing collects reception
+            for this platform yet), notdelivered (it has not gone out),
+            nolink (no live link to match on), notmatched (no collected figures
+            match its link yet), unavailable (the store does not hold reception
+            figures).
+          enum:
+            - platform
+            - notdelivered
+            - nolink
+            - notmatched
+            - unavailable
+        message:
+          type: string
+          description: One plain sentence for a person explaining the reason.
+          maxLength: 1024
+        subject:
+          type: string
+          description: Account or page the figures belong to.
+          maxLength: 255
+        source:
+          type: string
+          description: Where the figures came from, for example a platform analytics export.
+          maxLength: 255
+        asOf:
+          type: string
+          format: date
+          description: Date the figures were read; they do not change after it.
+          nullable: true
+        metrics:
+          $ref: "#/components/schemas/ActivityMetrics"
+        comparison:
+          $ref: "#/components/schemas/ActivityComparison"
+
+    ActivityFollowerChange:
+      type: object
+      description: |
+        Derived. The subject's follower count at the reading before the activity
+        and the first reading at least the stated number of days after it.
+        Correlation only; it does not claim the activity caused the change.
+      additionalProperties: false
+      required:
+        - collected
+        - derived
+      properties:
+        collected:
+          type: boolean
+          description: Whether follower readings exist on both sides of the activity.
+        derived:
+          type: boolean
+          description: Always true; the change is computed from two measured readings.
+        reason:
+          type: string
+          description: |
+            Why there is no change: platform (followers are not collected for
+            this subject's platform), notdelivered, noreadings (no reading on
+            one side of the activity yet).
+          enum:
+            - platform
+            - notdelivered
+            - noreadings
+        message:
+          type: string
+          description: One plain sentence for a person explaining the reason.
+          maxLength: 1024
+        subject:
+          type: string
+          description: Account or page whose followers were read.
+          maxLength: 255
+        formula:
+          type: string
+          description: How the change is computed.
+          maxLength: 512
+        windowDays:
+          type: integer
+          description: Days after the activity the later reading is taken from, at least.
+          minimum: 0
+        before:
+          $ref: "#/components/schemas/ActivityFollowerReading"
+        after:
+          $ref: "#/components/schemas/ActivityFollowerReading"
+        change:
+          type: integer
+          description: after.followers minus before.followers.
+          nullable: true
+
+    ActivityFollowerReading:
+      type: object
+      description: One measured follower reading. Null when there is none.
+      nullable: true
+      additionalProperties: false
+      required:
+        - date
+        - followers
+      properties:
+        date:
+          type: string
+          format: date
+          description: Date of the reading.
+        followers:
+          type: integer
+          description: Followers at that reading.
+          minimum: 0

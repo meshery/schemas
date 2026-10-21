@@ -1,0 +1,701 @@
+openapi: 3.0.0
+info:
+  title: Schedule
+  description: |
+    OpenAPI schema for organization schedules. A schedule is a job: an action
+    with parameters, a due time, an optional recurrence, a retry budget and a
+    status. Schedules belong to an organization and may be linked to a
+    workspace. Workers take a schedule through a claim, the generic `claim`
+    construct nested under the schedule at `/api/schedules/{scheduleId}/claim`:
+    the race between workers is decided server-side in a single statement,
+    only the holder renews or releases, and a claim past its `expiresAt` is
+    stale so the schedule is claimable again. Pausing has two server scopes,
+    the organization-wide pause and a per-schedule pause; a schedule is
+    claimed only when neither says paused. Pause state is data, never a
+    path: a schedule is paused or resumed with `paused` on
+    `PUT /api/schedules/{scheduleId}`, and the organization-wide pause is the
+    `schedulePause` organization preference (v1beta2 organization). Supersedes the per-user
+    `/user/schedules` routes of v1beta2, which remain as a deprecated alias.
+    Organization scope: every operation acts only in the organization the
+    session resolved to (X-Current-Orgid, then the user's selected
+    organization), and only when the caller is a live member of it. A
+    caller who is not a member receives the same 404 as an unknown id, so
+    the existence of another organization's schedules is never disclosed.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: schedules
+    description: Operations related to organization schedules and their claims.
+
+paths:
+  /api/schedules:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: List schedules
+      operationId: listSchedules
+      description: |
+        Returns a paginated list of the schedules in the organization of the
+        authenticated session, optionally filtered by workspace or status. Each
+        schedule carries its live claim, when one is held.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/workspaceIdQuery"
+        - $ref: "#/components/parameters/statusQuery"
+      responses:
+        "200":
+          description: Schedules page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchedulePage"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: Create a schedule
+      operationId: createSchedule
+      description: |
+        Creates a schedule in the organization of the authenticated session. The
+        server-managed fields (the claim, `pausedAt`, `pausedBy`, `retryCount`,
+        `lastRunAt`, `lastError`, `organizationId` and the timestamps) are ignored
+        on input. `status` accepts only `pending`, `scheduled` and `cancelled`.
+        Send `paused: true` to create the schedule already paused.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SchedulePayload"
+      responses:
+        "201":
+          description: Schedule created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/schedules/claim:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: Claim the next due schedule
+      operationId: claimNextSchedule
+      description: |
+        Claims one due, enabled, unclaimed and unpaused schedule for `claimant`
+        in a single server-side statement, optionally restricted to one
+        workspace, and answers it with its new claim. When no schedule
+        qualifies the answer is 204: a lost race is never an error.
+        `ignorePause` is the single operator override over the pause scopes.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleClaimRequest"
+      responses:
+        "200":
+          description: The claimed schedule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+        "204":
+          description: No schedule was due and claimable
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/schedules/{scheduleId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: Get a schedule by ID
+      operationId: getScheduleById
+      description: |
+        Returns the schedule with its live claim, when one is held.
+      parameters:
+        - $ref: "#/components/parameters/scheduleId"
+      responses:
+        "200":
+          description: Schedule response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: Update a schedule
+      operationId: updateSchedule
+      description: |
+        Updates the client-settable fields of a schedule. The server-managed
+        fields (the claim, `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`,
+        `lastError`, `organizationId` and the timestamps) are ignored on input.
+        `status` accepts only `pending`, `scheduled` and `cancelled`. Pause or resume the
+        schedule by setting `paused` (with an optional `pauseReason`); the
+        server then records `pausedAt` and `pausedBy`. Pausing a paused
+        schedule keeps its original `pausedAt`; omitting `paused` leaves the
+        pause unchanged.
+      parameters:
+        - $ref: "#/components/parameters/scheduleId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SchedulePayload"
+      responses:
+        "200":
+          description: Schedule updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: Delete a schedule
+      operationId: deleteScheduleById
+      description: |
+        Soft-deletes the schedule. A schedule with a live claim is deleted all the same; its claim is released.
+      parameters:
+        - $ref: "#/components/parameters/scheduleId"
+      responses:
+        "204":
+          description: Schedule deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/schedules/{scheduleId}/claim:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: Claim a schedule
+      operationId: claimSchedule
+      description: |
+        Claims this schedule for `claimant`. Without `force` the schedule must be
+        due; `force` drops only the due test (trigger now), and a live claim held
+        by another claimant still answers 409. Pauses refuse the claim unless
+        `ignorePause` is set. Answers the schedule with its new claim.
+      parameters:
+        - $ref: "#/components/parameters/scheduleId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleTargetedClaimRequest"
+      responses:
+        "200":
+          description: The claimed schedule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/schedules/{scheduleId}/claim/renew:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: Renew a schedule's claim
+      operationId: renewScheduleClaim
+      description: |
+        Moves the claim's `expiresAt` forward for the holder only. A claim that
+        is not live or belongs to another claimant answers 409 and is never
+        taken back.
+      parameters:
+        - $ref: "#/components/parameters/scheduleId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../claim/api.yml#/components/schemas/ClaimRenewPayload"
+      responses:
+        "200":
+          description: The schedule with its renewed claim
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/schedules/{scheduleId}/claim/release:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: Release a schedule's claim
+      operationId: releaseScheduleClaim
+      description: |
+        Releases the holder's claim and applies the run's outcome in the same
+        statement (`status`, `lastRunAt`, `lastError`, `nextRunAt`,
+        `retryCount`). A release by another claimant answers 409.
+      parameters:
+        - $ref: "#/components/parameters/scheduleId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleClaimReleaseRequest"
+      responses:
+        "200":
+          description: The released schedule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/workspaces/{workspaceId}/schedules:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: List a workspace's schedules
+      operationId: getSchedulesOfWorkspace
+      description: |
+        Returns a paginated list of the schedules linked to the workspace.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/statusQuery"
+      responses:
+        "200":
+          description: Schedules page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchedulePage"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/workspaces/{workspaceId}/schedules/{scheduleId}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: Link a schedule to a workspace
+      operationId: assignScheduleToWorkspace
+      description: |
+        Links the schedule to the workspace, replacing any previous workspace link: a schedule belongs to at most one workspace.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/scheduleId"
+      responses:
+        "200":
+          description: The linked schedule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - schedules
+      summary: Unlink a schedule from a workspace
+      operationId: unassignScheduleFromWorkspace
+      description: |
+        Removes the schedule's link to the workspace. The schedule itself is kept.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/scheduleId"
+      responses:
+        "200":
+          description: The unlinked schedule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer [REDACTED]
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    409:
+      description: Conflict - the schedule is held by another claimant's live claim, or the caller is not the holder of the claim it tried to renew or release
+      content:
+        text/plain:
+          schema:
+            type: string
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    scheduleId:
+      name: scheduleId
+      in: path
+      description: Schedule ID
+      required: true
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    workspaceId:
+      name: workspaceId
+      in: path
+      description: Workspace ID
+      required: true
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    workspaceIdQuery:
+      name: workspaceId
+      in: query
+      required: false
+      description: Only schedules linked to this workspace.
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    statusQuery:
+      name: status
+      in: query
+      required: false
+      description: Only schedules in this status.
+      schema:
+        type: string
+        enum:
+          - pending
+          - scheduled
+          - assigned
+          - claimed
+          - running
+          - retrying
+          - completed
+          - failed
+          - cancelled
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      name: pageSize
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        minimum: 1
+    search:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
+
+  schemas:
+    Schedule:
+      $ref: "./schedule.yaml"
+
+    SchedulePayload:
+      type: object
+      description: |
+        Payload for creating or updating a schedule. Contains only
+        client-settable fields; the owning `organizationId`, the claim,
+        `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError` and the
+        timestamps are server-managed. The server ignores them on input. Pausing
+        is a field, not an operation: `paused` pauses or resumes the schedule.
+        `status` accepts only `pending`,
+        `scheduled` and `cancelled` here; the other values are set by the
+        claim and release operations.
+      required:
+        - name
+        - action
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Existing schedule ID for updates; omit on create.
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        workspaceId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Workspace to link the schedule to.
+          x-oapi-codegen-extra-tags:
+            json: "workspaceId,omitempty"
+        name:
+          type: string
+          description: Human-readable name for the schedule.
+          minLength: 1
+          maxLength: 255
+        action:
+          type: string
+          description: The action the worker runs, for example a command name.
+          minLength: 1
+          maxLength: 255
+        params:
+          type: object
+          description: Action parameters, stored as a JSON blob.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+        enabled:
+          type: boolean
+          description: Whether the schedule is eligible to run. Defaults to true.
+        runAt:
+          type: string
+          format: date-time
+          description: Time the schedule first becomes due.
+          nullable: true
+          x-go-type: core.NullTime
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+        recurrence:
+          type: string
+          description: Recurrence rule for repeating schedules. Empty for a run-once schedule.
+          maxLength: 255
+        status:
+          type: string
+          description: Client-settable status. Omit to let the server choose `scheduled` for a due-timed schedule and `pending` otherwise.
+          enum:
+            - pending
+            - scheduled
+            - cancelled
+        maxRetries:
+          type: integer
+          description: Maximum retries before the run is marked failed.
+          minimum: 0
+        retryDelayMinutes:
+          type: integer
+          description: Minutes to wait before a retry becomes due.
+          minimum: 0
+        paused:
+          type: boolean
+          description: |
+            `true` pauses the schedule so it is never claimed (unless a claim
+            carries `ignorePause`); `false` resumes it. Omit to leave the pause
+            unchanged. The server records `pausedAt` and `pausedBy`.
+        pauseReason:
+          type: string
+          description: Reason for pausing; stored only while `paused` is true and cleared on resume.
+          maxLength: 1000
+
+    ScheduleClaimRequest:
+      type: object
+      description: Request to claim the next due schedule.
+      required:
+        - claimant
+      properties:
+        claimant:
+          type: string
+          description: Identity of the worker taking the claim.
+          minLength: 1
+          maxLength: 255
+        durationMinutes:
+          type: integer
+          description: Requested claim duration in minutes; the server applies its default when omitted and may cap it.
+          minimum: 1
+          maximum: 1440
+        workspaceId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Only claim a schedule linked to this workspace.
+          x-oapi-codegen-extra-tags:
+            json: "workspaceId,omitempty"
+        ignorePause:
+          type: boolean
+          description: Operator override that claims through the organization-wide and per-schedule pauses.
+
+    ScheduleTargetedClaimRequest:
+      type: object
+      description: Request to claim one named schedule.
+      required:
+        - claimant
+      properties:
+        claimant:
+          type: string
+          description: Identity of the worker taking the claim.
+          minLength: 1
+          maxLength: 255
+        durationMinutes:
+          type: integer
+          description: Requested claim duration in minutes; the server applies its default when omitted and may cap it.
+          minimum: 1
+          maximum: 1440
+        force:
+          type: boolean
+          description: Claim even though the schedule is not yet due (trigger now). A live claim held by another claimant still refuses.
+        ignorePause:
+          type: boolean
+          description: Operator override that claims through the organization-wide and per-schedule pauses.
+
+    ScheduleClaimReleaseRequest:
+      type: object
+      description: Request to release a schedule's claim and record the run's outcome.
+      required:
+        - claimant
+      properties:
+        claimant:
+          type: string
+          description: Identity of the holder releasing the claim.
+          minLength: 1
+          maxLength: 255
+        status:
+          type: string
+          description: Outcome status to record with the release.
+          enum:
+            - scheduled
+            - retrying
+            - completed
+            - failed
+            - cancelled
+        lastRunAt:
+          type: string
+          format: date-time
+          description: Time of the attempt being reported.
+          nullable: true
+          x-go-type: core.NullTime
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+        lastError:
+          type: string
+          description: Error reported by the attempt; empty on success.
+        nextRunAt:
+          type: string
+          format: date-time
+          description: Next due time for a recurring or retrying schedule.
+          nullable: true
+          x-go-type: core.NullTime
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+        retryCount:
+          type: integer
+          description: Retries used so far for the current run.
+          minimum: 0
+
+    SchedulePage:
+      type: object
+      description: Paginated collection of schedules.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - schedules
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        schedules:
+          type: array
+          items:
+            $ref: "#/components/schemas/Schedule"
+            x-go-type: Schedule
+          description: Schedules included on this page of results.

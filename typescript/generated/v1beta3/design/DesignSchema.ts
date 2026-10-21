@@ -28,6 +28,10 @@ const DesignSchema: Record<string, unknown> = {
     {
       "name": "designs",
       "description": "Operations related to designs and infrastructure patterns"
+    },
+    {
+      "name": "github",
+      "description": "GitHub repository reads that back design import and remap"
     }
   ],
   "paths": {
@@ -1047,7 +1051,7 @@ const DesignSchema: Record<string, unknown> = {
                             "additionalProperties": false
                           },
                           "location": {
-                            "description": "Optional structured location metadata (branch, host, path, ...).",
+                            "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
                             "type": "object",
                             "additionalProperties": {
                               "type": "string"
@@ -2303,7 +2307,7 @@ const DesignSchema: Record<string, unknown> = {
                       "additionalProperties": false
                     },
                     "location": {
-                      "description": "Optional structured location metadata (branch, host, path, ...).",
+                      "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
                       "type": "object",
                       "additionalProperties": {
                         "type": "string"
@@ -3470,7 +3474,7 @@ const DesignSchema: Record<string, unknown> = {
                       "additionalProperties": false
                     },
                     "location": {
-                      "description": "Optional structured location metadata (branch, host, path, ...).",
+                      "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
                       "type": "object",
                       "additionalProperties": {
                         "type": "string"
@@ -4604,7 +4608,7 @@ const DesignSchema: Record<string, unknown> = {
                       "additionalProperties": false
                     },
                     "location": {
-                      "description": "Optional structured location metadata (branch, host, path, ...).",
+                      "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
                       "type": "object",
                       "additionalProperties": {
                         "type": "string"
@@ -4927,6 +4931,2438 @@ const DesignSchema: Record<string, unknown> = {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/patterns/refresh/{designId}": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "designs"
+        ],
+        "summary": "Refresh design from its source",
+        "operationId": "refreshPatternFromSource",
+        "description": "Re-fetches the source file recorded in the design's `location` (`type: github`, `host: github.com/<owner>/<repo>`, `path`, optional `branch`; an empty branch means the repository's default branch), re-identifies it, and rewrites the design's content in place under the same design ID. A Meshery Design source replaces `patternFile`; any other source type (Helm Chart, Kubernetes Manifest, Docker Compose) replaces `sourceContent` and clears `patternFile`, so Meshery reconverts it the next time the design is opened - exactly the state a first import leaves. Only the design's owner may refresh it. No request body. Denials: `404` answers both \"no such design\" and \"not the caller's design\" with the same body by design, so the route is not an existence oracle; `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A distinct `403` whose MeshKit error asks for re-authorization means the caller's GitHub connection predates verification; re-authorize it (see `startGithubAuthorization`) before use; `409` means the design has no refreshable source (`location.type` is not `github`, or `host`/`path` is missing) or its source path no longer resolves to an importable file; `502` means GitHub could not be reached or rejected the request. The server resolves the tracked ref to a commit, reads the file at that commit, and records it in `location.commitSha`.\n",
+        "parameters": [
+          {
+            "name": "designId",
+            "in": "path",
+            "description": "Design (Pattern) ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Design refreshed. `sourceContent` and `patternFile` are omitted from the response body (they can be megabytes), as on import.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                  "properties": {
+                    "id": {
+                      "description": "Server-generated design ID.",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "name": {
+                      "description": "Human-readable design name.",
+                      "type": "string",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "catalogData": {
+                      "description": "Catalog metadata attached to the design when published.",
+                      "x-go-type": "catalogv1alpha2.CatalogData",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+                        "name": "catalogv1alpha2"
+                      },
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "publishedVersion": {
+                          "description": "Tracks the specific content version that has been made available in the Catalog.",
+                          "type": "string",
+                          "maxLength": 500
+                        },
+                        "class": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                          "type": "string",
+                          "oneOf": [
+                            {
+                              "const": "official",
+                              "description": "Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable."
+                            },
+                            {
+                              "const": "verified",
+                              "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
+                            },
+                            {
+                              "const": "reference architecture",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                            }
+                          ],
+                          "maxLength": 500
+                        },
+                        "compatibility": {
+                          "type": "array",
+                          "title": "Model",
+                          "items": {
+                            "enum": [
+                              "kubernetes"
+                            ],
+                            "type": "string"
+                          },
+                          "uniqueItems": true,
+                          "minItems": 1,
+                          "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
+                        },
+                        "patternCaveats": {
+                          "type": "string",
+                          "title": "Caveats and Considerations",
+                          "description": "Specific stipulations to consider and known behaviors to be aware of when using this design.",
+                          "maxLength": 500
+                        },
+                        "patternInfo": {
+                          "type": "string",
+                          "title": "Description",
+                          "minLength": 1,
+                          "description": "Purpose of the design along with its intended and unintended uses."
+                        },
+                        "type": {
+                          "type": "string",
+                          "title": "Type",
+                          "x-enum-casing-exempt": true,
+                          "enum": [
+                            "Deployment",
+                            "Observability",
+                            "Resiliency",
+                            "Scaling",
+                            "Security",
+                            "Traffic-management",
+                            "Troubleshooting",
+                            "Workloads"
+                          ],
+                          "default": "Deployment",
+                          "description": "Categorization of the type of design or operational flow depicted in this design."
+                        },
+                        "snapshotURL": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "uri",
+                            "pattern": "^(https?|http?|oci)://"
+                          },
+                          "description": "Contains reference to the dark and light mode snapshots of the design."
+                        }
+                      },
+                      "required": [
+                        "compatibility",
+                        "patternCaveats",
+                        "patternInfo",
+                        "type"
+                      ]
+                    },
+                    "userId": {
+                      "description": "Owning user ID.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "user": {
+                      "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
+                      "nullable": true,
+                      "x-go-type": "*userV1beta.User",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta2/user",
+                        "name": "userV1beta"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "-"
+                      },
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "userId",
+                        "provider",
+                        "email",
+                        "firstName",
+                        "lastName",
+                        "status",
+                        "createdAt",
+                        "updatedAt",
+                        "lastLoginTime",
+                        "deletedAt"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "Unique identifier for the user",
+                          "x-go-name": "ID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "id",
+                            "json": "id"
+                          },
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "userId": {
+                          "type": "string",
+                          "maxLength": 200,
+                          "deprecated": true,
+                          "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "user_id",
+                            "json": "userId"
+                          },
+                          "x-id-format": "external"
+                        },
+                        "provider": {
+                          "type": "string",
+                          "maxLength": 100,
+                          "description": "Authentication provider (e.g., Google, Github)",
+                          "example": [
+                            "local",
+                            "github",
+                            "google",
+                            "twitter"
+                          ],
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "provider",
+                            "json": "provider"
+                          }
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "maxLength": 300,
+                          "description": "User's email address",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "email",
+                            "json": "email"
+                          }
+                        },
+                        "firstName": {
+                          "type": "string",
+                          "maxLength": 200,
+                          "description": "User's first name",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "first_name",
+                            "json": "firstName"
+                          }
+                        },
+                        "lastName": {
+                          "type": "string",
+                          "maxLength": 300,
+                          "description": "User's last name",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "last_name",
+                            "json": "lastName"
+                          }
+                        },
+                        "avatarUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "maxLength": 500,
+                          "description": "URL to user's avatar image",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "avatar_url",
+                            "json": "avatarUrl"
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "maxLength": 100,
+                          "enum": [
+                            "active",
+                            "inactive",
+                            "pending",
+                            "anonymous"
+                          ],
+                          "description": "User account status",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "status",
+                            "json": "status"
+                          }
+                        },
+                        "bio": {
+                          "type": "string",
+                          "maxLength": 1000,
+                          "default": "",
+                          "description": "User's biography or description",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "bio",
+                            "json": "bio"
+                          }
+                        },
+                        "country": {
+                          "type": "object",
+                          "description": "User's country information stored as JSONB",
+                          "additionalProperties": true,
+                          "x-go-type": "core.Map",
+                          "x-go-type-skip-optional-pointer": true,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "country",
+                            "json": "country"
+                          }
+                        },
+                        "region": {
+                          "type": "object",
+                          "description": "User's region information stored as JSONB",
+                          "additionalProperties": true,
+                          "x-go-type": "core.Map",
+                          "x-go-type-skip-optional-pointer": true,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "region",
+                            "json": "region"
+                          }
+                        },
+                        "preferences": {
+                          "x-go-type": "Preference",
+                          "description": "User preferences stored as JSONB",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "preferences",
+                            "json": "preferences"
+                          },
+                          "x-generate-db-helpers": true,
+                          "type": "object",
+                          "required": [
+                            "anonymousUsageStats",
+                            "anonymousPerfResults",
+                            "updatedAt",
+                            "dashboardPreferences",
+                            "selectedOrganizationId",
+                            "selectedWorkspaceForOrganizations",
+                            "usersExtensionPreferences",
+                            "remoteProviderPreferences"
+                          ],
+                          "properties": {
+                            "meshAdapters": {
+                              "type": "array",
+                              "items": {
+                                "x-go-type": "Adapter",
+                                "type": "object",
+                                "description": "Placeholder for Adapter struct definition."
+                              },
+                              "description": "The mesh adapters of the preference."
+                            },
+                            "grafana": {
+                              "x-go-type": "Grafana",
+                              "type": "object",
+                              "properties": {
+                                "grafanaUrl": {
+                                  "type": "string",
+                                  "description": "Grafana URL for the user configuration.",
+                                  "maxLength": 500
+                                },
+                                "grafanaApiKey": {
+                                  "type": "string",
+                                  "description": "Grafana API key for the user configuration.",
+                                  "maxLength": 500
+                                },
+                                "selectedBoardsConfigs": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "board": {
+                                        "type": "object",
+                                        "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                      },
+                                      "panels": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                        },
+                                        "description": "Panels selected for the Grafana board configuration."
+                                      },
+                                      "templateVars": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Template variables applied to the selected Grafana board configuration."
+                                      }
+                                    }
+                                  },
+                                  "description": "Selected Grafana board configurations for the user."
+                                }
+                              }
+                            },
+                            "prometheus": {
+                              "x-go-type": "Prometheus",
+                              "type": "object",
+                              "properties": {
+                                "prometheusUrl": {
+                                  "type": "string",
+                                  "description": "The prometheus URL of the prometheus.",
+                                  "maxLength": 500
+                                },
+                                "selectedPrometheusBoardsConfigs": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "board": {
+                                        "type": "object",
+                                        "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                      },
+                                      "panels": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                        },
+                                        "description": "Panels selected for the Grafana board configuration."
+                                      },
+                                      "templateVars": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Template variables applied to the selected Grafana board configuration."
+                                      }
+                                    }
+                                  },
+                                  "description": "The selected prometheus boards configs of the prometheus."
+                                }
+                              }
+                            },
+                            "loadTestPrefs": {
+                              "x-go-type": "LoadTestPreferences",
+                              "type": "object",
+                              "properties": {
+                                "c": {
+                                  "type": "integer",
+                                  "description": "Concurrent requests",
+                                  "minimum": 0
+                                },
+                                "qps": {
+                                  "type": "integer",
+                                  "description": "Queries per second",
+                                  "minimum": 0
+                                },
+                                "t": {
+                                  "type": "string",
+                                  "description": "Duration",
+                                  "maxLength": 500
+                                },
+                                "gen": {
+                                  "type": "string",
+                                  "description": "Load generator",
+                                  "maxLength": 500
+                                }
+                              }
+                            },
+                            "anonymousUsageStats": {
+                              "type": "boolean",
+                              "description": "The anonymous usage stats of the preference."
+                            },
+                            "anonymousPerfResults": {
+                              "type": "boolean",
+                              "description": "The anonymous perf results of the preference."
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Timestamp of when the resource was last updated."
+                            },
+                            "dashboardPreferences": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The dashboard preferences of the preference."
+                            },
+                            "selectedOrganizationId": {
+                              "type": "string",
+                              "description": "ID of the associated selectedOrganization.",
+                              "maxLength": 500,
+                              "format": "uuid"
+                            },
+                            "selectedWorkspaceForOrganizations": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "string"
+                              },
+                              "description": "The selected workspace for organizations of the preference."
+                            },
+                            "usersExtensionPreferences": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The users extension preferences of the preference."
+                            },
+                            "remoteProviderPreferences": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The remote provider preferences of the preference."
+                            }
+                          }
+                        },
+                        "acceptedTermsAt": {
+                          "description": "Timestamp when user accepted terms and conditions",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "accepted_terms_at",
+                            "json": "acceptedTermsAt"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "firstLoginTime": {
+                          "description": "Timestamp of user's first login",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "first_login_time",
+                            "json": "firstLoginTime"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "lastLoginTime": {
+                          "description": "Timestamp of user's most recent login",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "last_login_time",
+                            "json": "lastLoginTime"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "createdAt": {
+                          "description": "Timestamp when the user record was created",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "json": "createdAt"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "updatedAt": {
+                          "description": "Timestamp when the user record was last updated",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "json": "updatedAt"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "socials": {
+                          "type": "array",
+                          "description": "Various online profiles associated with the user account",
+                          "x-go-type": "UserSocials",
+                          "items": {
+                            "x-go-type": "Social",
+                            "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
+                            "type": "object",
+                            "properties": {
+                              "site": {
+                                "type": "string",
+                                "maxLength": 50,
+                                "description": "The site of the social."
+                              },
+                              "link": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "The link of the social."
+                              }
+                            },
+                            "required": [
+                              "site",
+                              "link"
+                            ]
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "socials",
+                            "json": "socials"
+                          }
+                        },
+                        "deletedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true,
+                          "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                          "x-go-type": "core.NullTime",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "deleted_at",
+                            "json": "deletedAt"
+                          }
+                        },
+                        "roleNames": {
+                          "type": "array",
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
+                          },
+                          "x-go-type-skip-optional-pointer": true,
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
+                          "example": [
+                            "organization admin",
+                            "user"
+                          ],
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "role_names",
+                            "json": "roleNames"
+                          }
+                        },
+                        "teams": {
+                          "type": "object",
+                          "description": "Teams the user belongs to with role information",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "teams",
+                            "json": "teams"
+                          },
+                          "properties": {
+                            "teamsWithRoles": {
+                              "type": "array",
+                              "nullable": true,
+                              "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
+                              "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the team.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the team.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the team.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the team owner.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "Free-form metadata associated with the team.",
+                                    "x-go-type": "core.Map",
+                                    "x-go-type-skip-optional-pointer": true,
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "metadata",
+                                      "json": "metadata,omitempty"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the team was created.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the team was last updated.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "teams_with_roles",
+                                "json": "teamsWithRoles"
+                              }
+                            },
+                            "totalCount": {
+                              "type": "integer",
+                              "nullable": true,
+                              "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
+                              "minimum": 0,
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "total_count",
+                                "json": "totalCount"
+                              }
+                            }
+                          }
+                        },
+                        "organizations": {
+                          "type": "object",
+                          "description": "Organizations the user belongs to with role information",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "organizations",
+                            "json": "organizations"
+                          },
+                          "properties": {
+                            "organizationsWithRoles": {
+                              "type": "array",
+                              "nullable": true,
+                              "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
+                              "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the organization.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the organization.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the organization.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "country": {
+                                    "type": "string",
+                                    "description": "Country associated with the organization.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "country",
+                                      "json": "country,omitempty"
+                                    }
+                                  },
+                                  "region": {
+                                    "type": "string",
+                                    "description": "Region associated with the organization.",
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "region",
+                                      "json": "region,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the organization owner.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the organization was created.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the organization was last updated.",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 10,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "organizations_with_roles",
+                                "json": "organizationsWithRoles"
+                              }
+                            },
+                            "totalCount": {
+                              "type": "integer",
+                              "nullable": true,
+                              "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
+                              "minimum": 0,
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "total_count",
+                                "json": "totalCount"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "location": {
+                      "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "patternFile": {
+                      "type": "string",
+                      "description": "Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.\n",
+                      "maxLength": 16777216,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "pattern_file"
+                      }
+                    },
+                    "visibility": {
+                      "type": "string",
+                      "description": "Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.\n",
+                      "enum": [
+                        "private",
+                        "public",
+                        "published"
+                      ],
+                      "x-enum-casing-exempt": true,
+                      "maxLength": 32,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "visibility"
+                      }
+                    },
+                    "designType": {
+                      "type": "string",
+                      "description": "Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                      "x-enum-casing-exempt": true,
+                      "nullable": true,
+                      "enum": [
+                        "Design",
+                        "Helm Chart",
+                        "Docker Compose",
+                        "Kubernetes Manifest"
+                      ],
+                      "maxLength": 64,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "source_type"
+                      }
+                    },
+                    "sourceContent": {
+                      "type": "string",
+                      "format": "byte",
+                      "nullable": true,
+                      "description": "Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.\n",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "source_content",
+                        "json": "sourceContent,omitempty"
+                      }
+                    },
+                    "viewCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "view_count",
+                        "json": "viewCount,omitempty"
+                      }
+                    },
+                    "downloadCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "download_count",
+                        "json": "downloadCount,omitempty"
+                      }
+                    },
+                    "cloneCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "clone_count",
+                        "json": "cloneCount,omitempty"
+                      }
+                    },
+                    "deploymentCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deployment_count",
+                        "json": "deploymentCount,omitempty"
+                      }
+                    },
+                    "shareCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "share_count",
+                        "json": "shareCount,omitempty"
+                      }
+                    },
+                    "createdAt": {
+                      "description": "Timestamp of design creation.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "Timestamp of last design modification.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Publish request already exists",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad gateway - an upstream service the operation depends on could not be reached or rejected the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/patterns/{designId}/source": {
+      "patch": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "designs"
+        ],
+        "summary": "Remap a design's GitHub source",
+        "operationId": "updatePatternSource",
+        "description": "Re-points the design's source binding - the GitHub file its `location` records and `refreshPatternFromSource` re-reads - at another repository, path or ref. The design's content is not changed: call `refreshPatternFromSource` afterwards to replace it from the new source. The server resolves `ref` to a commit and confirms that `path` names an importable file at that commit before it writes anything, so a binding that a refresh could not read is never stored. It writes `location` as `type: github`, `host`, `path` and `branch` (= `ref`). When the binding changes, `location.commitSha` is removed, because the stored content was not read from the new source; it is kept when the request names the binding the design already has. A design with no GitHub source (an upload or URL import) may be bound to one; it becomes refreshable. Only the design's owner may remap it. Denials: `404` answers \"no such design\", \"not the caller's design\" and \"connectionId is not the caller's own live GitHub connection\" with the same body, so the route is not an existence oracle; `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A distinct `403` whose MeshKit error asks for re-authorization means the caller's GitHub connection predates verification; re-authorize it (see `startGithubAuthorization`) before use; `409` means `ref` does not resolve to a commit, or `path` does not name an importable file at it (missing, a directory, or not a supported format); `502` means GitHub could not be reached or rejected the request.\n",
+        "parameters": [
+          {
+            "name": "designId",
+            "in": "path",
+            "description": "Design (Pattern) ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "The GitHub file a design is bound to - what `refreshPatternFromSource` re-reads.\n",
+                "required": [
+                  "connectionId",
+                  "host",
+                  "path"
+                ],
+                "properties": {
+                  "connectionId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  },
+                  "host": {
+                    "type": "string",
+                    "description": "Repository as `github.com/<owner>/<repo>` - the same form `location.host` stores.\n",
+                    "pattern": "^github\\.com/[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})/[A-Za-z0-9._-]{1,100}$",
+                    "maxLength": 512
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "Repository-relative path of a file (not a directory), with no leading slash.\n",
+                    "minLength": 1,
+                    "maxLength": 4096
+                  },
+                  "ref": {
+                    "type": "string",
+                    "description": "Branch or tag the binding tracks, stored as `location.branch`. Empty or omitted means the repository's default branch.\n",
+                    "maxLength": 255
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Source binding updated. `sourceContent` and `patternFile` are omitted from the response body, as on refresh and import.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                  "properties": {
+                    "id": {
+                      "description": "Server-generated design ID.",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "name": {
+                      "description": "Human-readable design name.",
+                      "type": "string",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "catalogData": {
+                      "description": "Catalog metadata attached to the design when published.",
+                      "x-go-type": "catalogv1alpha2.CatalogData",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+                        "name": "catalogv1alpha2"
+                      },
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "publishedVersion": {
+                          "description": "Tracks the specific content version that has been made available in the Catalog.",
+                          "type": "string",
+                          "maxLength": 500
+                        },
+                        "class": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                          "type": "string",
+                          "oneOf": [
+                            {
+                              "const": "official",
+                              "description": "Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable."
+                            },
+                            {
+                              "const": "verified",
+                              "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
+                            },
+                            {
+                              "const": "reference architecture",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                            }
+                          ],
+                          "maxLength": 500
+                        },
+                        "compatibility": {
+                          "type": "array",
+                          "title": "Model",
+                          "items": {
+                            "enum": [
+                              "kubernetes"
+                            ],
+                            "type": "string"
+                          },
+                          "uniqueItems": true,
+                          "minItems": 1,
+                          "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
+                        },
+                        "patternCaveats": {
+                          "type": "string",
+                          "title": "Caveats and Considerations",
+                          "description": "Specific stipulations to consider and known behaviors to be aware of when using this design.",
+                          "maxLength": 500
+                        },
+                        "patternInfo": {
+                          "type": "string",
+                          "title": "Description",
+                          "minLength": 1,
+                          "description": "Purpose of the design along with its intended and unintended uses."
+                        },
+                        "type": {
+                          "type": "string",
+                          "title": "Type",
+                          "x-enum-casing-exempt": true,
+                          "enum": [
+                            "Deployment",
+                            "Observability",
+                            "Resiliency",
+                            "Scaling",
+                            "Security",
+                            "Traffic-management",
+                            "Troubleshooting",
+                            "Workloads"
+                          ],
+                          "default": "Deployment",
+                          "description": "Categorization of the type of design or operational flow depicted in this design."
+                        },
+                        "snapshotURL": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "uri",
+                            "pattern": "^(https?|http?|oci)://"
+                          },
+                          "description": "Contains reference to the dark and light mode snapshots of the design."
+                        }
+                      },
+                      "required": [
+                        "compatibility",
+                        "patternCaveats",
+                        "patternInfo",
+                        "type"
+                      ]
+                    },
+                    "userId": {
+                      "description": "Owning user ID.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "user": {
+                      "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
+                      "nullable": true,
+                      "x-go-type": "*userV1beta.User",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta2/user",
+                        "name": "userV1beta"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "-"
+                      },
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "userId",
+                        "provider",
+                        "email",
+                        "firstName",
+                        "lastName",
+                        "status",
+                        "createdAt",
+                        "updatedAt",
+                        "lastLoginTime",
+                        "deletedAt"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "Unique identifier for the user",
+                          "x-go-name": "ID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "id",
+                            "json": "id"
+                          },
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "userId": {
+                          "type": "string",
+                          "maxLength": 200,
+                          "deprecated": true,
+                          "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "user_id",
+                            "json": "userId"
+                          },
+                          "x-id-format": "external"
+                        },
+                        "provider": {
+                          "type": "string",
+                          "maxLength": 100,
+                          "description": "Authentication provider (e.g., Google, Github)",
+                          "example": [
+                            "local",
+                            "github",
+                            "google",
+                            "twitter"
+                          ],
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "provider",
+                            "json": "provider"
+                          }
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "maxLength": 300,
+                          "description": "User's email address",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "email",
+                            "json": "email"
+                          }
+                        },
+                        "firstName": {
+                          "type": "string",
+                          "maxLength": 200,
+                          "description": "User's first name",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "first_name",
+                            "json": "firstName"
+                          }
+                        },
+                        "lastName": {
+                          "type": "string",
+                          "maxLength": 300,
+                          "description": "User's last name",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "last_name",
+                            "json": "lastName"
+                          }
+                        },
+                        "avatarUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "maxLength": 500,
+                          "description": "URL to user's avatar image",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "avatar_url",
+                            "json": "avatarUrl"
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "maxLength": 100,
+                          "enum": [
+                            "active",
+                            "inactive",
+                            "pending",
+                            "anonymous"
+                          ],
+                          "description": "User account status",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "status",
+                            "json": "status"
+                          }
+                        },
+                        "bio": {
+                          "type": "string",
+                          "maxLength": 1000,
+                          "default": "",
+                          "description": "User's biography or description",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "bio",
+                            "json": "bio"
+                          }
+                        },
+                        "country": {
+                          "type": "object",
+                          "description": "User's country information stored as JSONB",
+                          "additionalProperties": true,
+                          "x-go-type": "core.Map",
+                          "x-go-type-skip-optional-pointer": true,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "country",
+                            "json": "country"
+                          }
+                        },
+                        "region": {
+                          "type": "object",
+                          "description": "User's region information stored as JSONB",
+                          "additionalProperties": true,
+                          "x-go-type": "core.Map",
+                          "x-go-type-skip-optional-pointer": true,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "region",
+                            "json": "region"
+                          }
+                        },
+                        "preferences": {
+                          "x-go-type": "Preference",
+                          "description": "User preferences stored as JSONB",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "preferences",
+                            "json": "preferences"
+                          },
+                          "x-generate-db-helpers": true,
+                          "type": "object",
+                          "required": [
+                            "anonymousUsageStats",
+                            "anonymousPerfResults",
+                            "updatedAt",
+                            "dashboardPreferences",
+                            "selectedOrganizationId",
+                            "selectedWorkspaceForOrganizations",
+                            "usersExtensionPreferences",
+                            "remoteProviderPreferences"
+                          ],
+                          "properties": {
+                            "meshAdapters": {
+                              "type": "array",
+                              "items": {
+                                "x-go-type": "Adapter",
+                                "type": "object",
+                                "description": "Placeholder for Adapter struct definition."
+                              },
+                              "description": "The mesh adapters of the preference."
+                            },
+                            "grafana": {
+                              "x-go-type": "Grafana",
+                              "type": "object",
+                              "properties": {
+                                "grafanaUrl": {
+                                  "type": "string",
+                                  "description": "Grafana URL for the user configuration.",
+                                  "maxLength": 500
+                                },
+                                "grafanaApiKey": {
+                                  "type": "string",
+                                  "description": "Grafana API key for the user configuration.",
+                                  "maxLength": 500
+                                },
+                                "selectedBoardsConfigs": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "board": {
+                                        "type": "object",
+                                        "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                      },
+                                      "panels": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                        },
+                                        "description": "Panels selected for the Grafana board configuration."
+                                      },
+                                      "templateVars": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Template variables applied to the selected Grafana board configuration."
+                                      }
+                                    }
+                                  },
+                                  "description": "Selected Grafana board configurations for the user."
+                                }
+                              }
+                            },
+                            "prometheus": {
+                              "x-go-type": "Prometheus",
+                              "type": "object",
+                              "properties": {
+                                "prometheusUrl": {
+                                  "type": "string",
+                                  "description": "The prometheus URL of the prometheus.",
+                                  "maxLength": 500
+                                },
+                                "selectedPrometheusBoardsConfigs": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "board": {
+                                        "type": "object",
+                                        "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                      },
+                                      "panels": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                        },
+                                        "description": "Panels selected for the Grafana board configuration."
+                                      },
+                                      "templateVars": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Template variables applied to the selected Grafana board configuration."
+                                      }
+                                    }
+                                  },
+                                  "description": "The selected prometheus boards configs of the prometheus."
+                                }
+                              }
+                            },
+                            "loadTestPrefs": {
+                              "x-go-type": "LoadTestPreferences",
+                              "type": "object",
+                              "properties": {
+                                "c": {
+                                  "type": "integer",
+                                  "description": "Concurrent requests",
+                                  "minimum": 0
+                                },
+                                "qps": {
+                                  "type": "integer",
+                                  "description": "Queries per second",
+                                  "minimum": 0
+                                },
+                                "t": {
+                                  "type": "string",
+                                  "description": "Duration",
+                                  "maxLength": 500
+                                },
+                                "gen": {
+                                  "type": "string",
+                                  "description": "Load generator",
+                                  "maxLength": 500
+                                }
+                              }
+                            },
+                            "anonymousUsageStats": {
+                              "type": "boolean",
+                              "description": "The anonymous usage stats of the preference."
+                            },
+                            "anonymousPerfResults": {
+                              "type": "boolean",
+                              "description": "The anonymous perf results of the preference."
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Timestamp of when the resource was last updated."
+                            },
+                            "dashboardPreferences": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The dashboard preferences of the preference."
+                            },
+                            "selectedOrganizationId": {
+                              "type": "string",
+                              "description": "ID of the associated selectedOrganization.",
+                              "maxLength": 500,
+                              "format": "uuid"
+                            },
+                            "selectedWorkspaceForOrganizations": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "string"
+                              },
+                              "description": "The selected workspace for organizations of the preference."
+                            },
+                            "usersExtensionPreferences": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The users extension preferences of the preference."
+                            },
+                            "remoteProviderPreferences": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The remote provider preferences of the preference."
+                            }
+                          }
+                        },
+                        "acceptedTermsAt": {
+                          "description": "Timestamp when user accepted terms and conditions",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "accepted_terms_at",
+                            "json": "acceptedTermsAt"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "firstLoginTime": {
+                          "description": "Timestamp of user's first login",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "first_login_time",
+                            "json": "firstLoginTime"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "lastLoginTime": {
+                          "description": "Timestamp of user's most recent login",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "last_login_time",
+                            "json": "lastLoginTime"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "createdAt": {
+                          "description": "Timestamp when the user record was created",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "json": "createdAt"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "updatedAt": {
+                          "description": "Timestamp when the user record was last updated",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "json": "updatedAt"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "socials": {
+                          "type": "array",
+                          "description": "Various online profiles associated with the user account",
+                          "x-go-type": "UserSocials",
+                          "items": {
+                            "x-go-type": "Social",
+                            "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
+                            "type": "object",
+                            "properties": {
+                              "site": {
+                                "type": "string",
+                                "maxLength": 50,
+                                "description": "The site of the social."
+                              },
+                              "link": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "The link of the social."
+                              }
+                            },
+                            "required": [
+                              "site",
+                              "link"
+                            ]
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "socials",
+                            "json": "socials"
+                          }
+                        },
+                        "deletedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true,
+                          "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                          "x-go-type": "core.NullTime",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "deleted_at",
+                            "json": "deletedAt"
+                          }
+                        },
+                        "roleNames": {
+                          "type": "array",
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
+                          },
+                          "x-go-type-skip-optional-pointer": true,
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
+                          "example": [
+                            "organization admin",
+                            "user"
+                          ],
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "role_names",
+                            "json": "roleNames"
+                          }
+                        },
+                        "teams": {
+                          "type": "object",
+                          "description": "Teams the user belongs to with role information",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "teams",
+                            "json": "teams"
+                          },
+                          "properties": {
+                            "teamsWithRoles": {
+                              "type": "array",
+                              "nullable": true,
+                              "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
+                              "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the team.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the team.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the team.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the team owner.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "Free-form metadata associated with the team.",
+                                    "x-go-type": "core.Map",
+                                    "x-go-type-skip-optional-pointer": true,
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "metadata",
+                                      "json": "metadata,omitempty"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the team was created.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the team was last updated.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "teams_with_roles",
+                                "json": "teamsWithRoles"
+                              }
+                            },
+                            "totalCount": {
+                              "type": "integer",
+                              "nullable": true,
+                              "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
+                              "minimum": 0,
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "total_count",
+                                "json": "totalCount"
+                              }
+                            }
+                          }
+                        },
+                        "organizations": {
+                          "type": "object",
+                          "description": "Organizations the user belongs to with role information",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "organizations",
+                            "json": "organizations"
+                          },
+                          "properties": {
+                            "organizationsWithRoles": {
+                              "type": "array",
+                              "nullable": true,
+                              "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
+                              "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the organization.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the organization.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the organization.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "country": {
+                                    "type": "string",
+                                    "description": "Country associated with the organization.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "country",
+                                      "json": "country,omitempty"
+                                    }
+                                  },
+                                  "region": {
+                                    "type": "string",
+                                    "description": "Region associated with the organization.",
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "region",
+                                      "json": "region,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the organization owner.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the organization was created.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the organization was last updated.",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 10,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "organizations_with_roles",
+                                "json": "organizationsWithRoles"
+                              }
+                            },
+                            "totalCount": {
+                              "type": "integer",
+                              "nullable": true,
+                              "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
+                              "minimum": 0,
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "total_count",
+                                "json": "totalCount"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "location": {
+                      "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "patternFile": {
+                      "type": "string",
+                      "description": "Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.\n",
+                      "maxLength": 16777216,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "pattern_file"
+                      }
+                    },
+                    "visibility": {
+                      "type": "string",
+                      "description": "Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.\n",
+                      "enum": [
+                        "private",
+                        "public",
+                        "published"
+                      ],
+                      "x-enum-casing-exempt": true,
+                      "maxLength": 32,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "visibility"
+                      }
+                    },
+                    "designType": {
+                      "type": "string",
+                      "description": "Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                      "x-enum-casing-exempt": true,
+                      "nullable": true,
+                      "enum": [
+                        "Design",
+                        "Helm Chart",
+                        "Docker Compose",
+                        "Kubernetes Manifest"
+                      ],
+                      "maxLength": 64,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "source_type"
+                      }
+                    },
+                    "sourceContent": {
+                      "type": "string",
+                      "format": "byte",
+                      "nullable": true,
+                      "description": "Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.\n",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "source_content",
+                        "json": "sourceContent,omitempty"
+                      }
+                    },
+                    "viewCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "view_count",
+                        "json": "viewCount,omitempty"
+                      }
+                    },
+                    "downloadCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "download_count",
+                        "json": "downloadCount,omitempty"
+                      }
+                    },
+                    "cloneCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "clone_count",
+                        "json": "cloneCount,omitempty"
+                      }
+                    },
+                    "deploymentCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deployment_count",
+                        "json": "deploymentCount,omitempty"
+                      }
+                    },
+                    "shareCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "share_count",
+                        "json": "shareCount,omitempty"
+                      }
+                    },
+                    "createdAt": {
+                      "description": "Timestamp of design creation.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "Timestamp of last design modification.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Publish request already exists",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad gateway - an upstream service the operation depends on could not be reached or rejected the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -5894,7 +8330,7 @@ const DesignSchema: Record<string, unknown> = {
                         "additionalProperties": false
                       },
                       "location": {
-                        "description": "Optional structured location metadata (branch, host, path, ...).",
+                        "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
                         "type": "object",
                         "additionalProperties": {
                           "type": "string"
@@ -6038,6 +8474,2892 @@ const DesignSchema: Record<string, unknown> = {
           },
           "500": {
             "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/integrations/github/designs/{connectionId}": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "designs"
+        ],
+        "summary": "List designs imported from GitHub",
+        "operationId": "getGithubImportedDesigns",
+        "description": "Returns the designs owned by the GitHub connection's owner whose `location.type` is `github` - every design imported (or refreshed) from GitHub - newest first. The inventory is owner-wide, not scoped to the connection: Meshery Cloud keeps one GitHub App connection per user, and the connection only authorizes the read. Use `repository` to narrow it. `location` carries `host` (github.com/<owner>/<repo>), `path` and `branch` (empty = the repository's default branch). `patternFile` and `sourceContent` are not projected. Only the connection's owner may list it, as only a design's owner may refresh it: a caller who does not own the connection gets 404 regardless of any all-organizations scope, with the same body as \"no such connection\", so private designs are never listed to another user.\n",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "description": "ID of a GitHub App connection.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          },
+          {
+            "name": "repository",
+            "in": "query",
+            "required": false,
+            "description": "Restrict to one repository, as `<owner>/<repo>` (case-insensitive).",
+            "schema": {
+              "type": "string",
+              "maxLength": 512
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items per page (canonical camelCase form).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Imported designs page.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated collection of designs.",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
+                    },
+                    "patterns": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "MesheryPattern",
+                        "type": "object",
+                        "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                        "properties": {
+                          "id": {
+                            "description": "Server-generated design ID.",
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "name": {
+                            "description": "Human-readable design name.",
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "catalogData": {
+                            "description": "Catalog metadata attached to the design when published.",
+                            "x-go-type": "catalogv1alpha2.CatalogData",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+                              "name": "catalogv1alpha2"
+                            },
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "publishedVersion": {
+                                "description": "Tracks the specific content version that has been made available in the Catalog.",
+                                "type": "string",
+                                "maxLength": 500
+                              },
+                              "class": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                                "type": "string",
+                                "oneOf": [
+                                  {
+                                    "const": "official",
+                                    "description": "Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable."
+                                  },
+                                  {
+                                    "const": "verified",
+                                    "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
+                                  },
+                                  {
+                                    "const": "reference architecture",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                  }
+                                ],
+                                "maxLength": 500
+                              },
+                              "compatibility": {
+                                "type": "array",
+                                "title": "Model",
+                                "items": {
+                                  "enum": [
+                                    "kubernetes"
+                                  ],
+                                  "type": "string"
+                                },
+                                "uniqueItems": true,
+                                "minItems": 1,
+                                "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
+                              },
+                              "patternCaveats": {
+                                "type": "string",
+                                "title": "Caveats and Considerations",
+                                "description": "Specific stipulations to consider and known behaviors to be aware of when using this design.",
+                                "maxLength": 500
+                              },
+                              "patternInfo": {
+                                "type": "string",
+                                "title": "Description",
+                                "minLength": 1,
+                                "description": "Purpose of the design along with its intended and unintended uses."
+                              },
+                              "type": {
+                                "type": "string",
+                                "title": "Type",
+                                "x-enum-casing-exempt": true,
+                                "enum": [
+                                  "Deployment",
+                                  "Observability",
+                                  "Resiliency",
+                                  "Scaling",
+                                  "Security",
+                                  "Traffic-management",
+                                  "Troubleshooting",
+                                  "Workloads"
+                                ],
+                                "default": "Deployment",
+                                "description": "Categorization of the type of design or operational flow depicted in this design."
+                              },
+                              "snapshotURL": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "pattern": "^(https?|http?|oci)://"
+                                },
+                                "description": "Contains reference to the dark and light mode snapshots of the design."
+                              }
+                            },
+                            "required": [
+                              "compatibility",
+                              "patternCaveats",
+                              "patternInfo",
+                              "type"
+                            ]
+                          },
+                          "userId": {
+                            "description": "Owning user ID.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "user": {
+                            "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
+                            "nullable": true,
+                            "x-go-type": "*userV1beta.User",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1beta2/user",
+                              "name": "userV1beta"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "-"
+                            },
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "userId",
+                              "provider",
+                              "email",
+                              "firstName",
+                              "lastName",
+                              "status",
+                              "createdAt",
+                              "updatedAt",
+                              "lastLoginTime",
+                              "deletedAt"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier for the user",
+                                "x-go-name": "ID",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "userId": {
+                                "type": "string",
+                                "maxLength": 200,
+                                "deprecated": true,
+                                "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "user_id",
+                                  "json": "userId"
+                                },
+                                "x-id-format": "external"
+                              },
+                              "provider": {
+                                "type": "string",
+                                "maxLength": 100,
+                                "description": "Authentication provider (e.g., Google, Github)",
+                                "example": [
+                                  "local",
+                                  "github",
+                                  "google",
+                                  "twitter"
+                                ],
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "provider",
+                                  "json": "provider"
+                                }
+                              },
+                              "email": {
+                                "type": "string",
+                                "format": "email",
+                                "maxLength": 300,
+                                "description": "User's email address",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "email",
+                                  "json": "email"
+                                }
+                              },
+                              "firstName": {
+                                "type": "string",
+                                "maxLength": 200,
+                                "description": "User's first name",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "first_name",
+                                  "json": "firstName"
+                                }
+                              },
+                              "lastName": {
+                                "type": "string",
+                                "maxLength": 300,
+                                "description": "User's last name",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "last_name",
+                                  "json": "lastName"
+                                }
+                              },
+                              "avatarUrl": {
+                                "type": "string",
+                                "format": "uri",
+                                "maxLength": 500,
+                                "description": "URL to user's avatar image",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "avatar_url",
+                                  "json": "avatarUrl"
+                                }
+                              },
+                              "status": {
+                                "type": "string",
+                                "maxLength": 100,
+                                "enum": [
+                                  "active",
+                                  "inactive",
+                                  "pending",
+                                  "anonymous"
+                                ],
+                                "description": "User account status",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "status",
+                                  "json": "status"
+                                }
+                              },
+                              "bio": {
+                                "type": "string",
+                                "maxLength": 1000,
+                                "default": "",
+                                "description": "User's biography or description",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "bio",
+                                  "json": "bio"
+                                }
+                              },
+                              "country": {
+                                "type": "object",
+                                "description": "User's country information stored as JSONB",
+                                "additionalProperties": true,
+                                "x-go-type": "core.Map",
+                                "x-go-type-skip-optional-pointer": true,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "country",
+                                  "json": "country"
+                                }
+                              },
+                              "region": {
+                                "type": "object",
+                                "description": "User's region information stored as JSONB",
+                                "additionalProperties": true,
+                                "x-go-type": "core.Map",
+                                "x-go-type-skip-optional-pointer": true,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "region",
+                                  "json": "region"
+                                }
+                              },
+                              "preferences": {
+                                "x-go-type": "Preference",
+                                "description": "User preferences stored as JSONB",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "preferences",
+                                  "json": "preferences"
+                                },
+                                "x-generate-db-helpers": true,
+                                "type": "object",
+                                "required": [
+                                  "anonymousUsageStats",
+                                  "anonymousPerfResults",
+                                  "updatedAt",
+                                  "dashboardPreferences",
+                                  "selectedOrganizationId",
+                                  "selectedWorkspaceForOrganizations",
+                                  "usersExtensionPreferences",
+                                  "remoteProviderPreferences"
+                                ],
+                                "properties": {
+                                  "meshAdapters": {
+                                    "type": "array",
+                                    "items": {
+                                      "x-go-type": "Adapter",
+                                      "type": "object",
+                                      "description": "Placeholder for Adapter struct definition."
+                                    },
+                                    "description": "The mesh adapters of the preference."
+                                  },
+                                  "grafana": {
+                                    "x-go-type": "Grafana",
+                                    "type": "object",
+                                    "properties": {
+                                      "grafanaUrl": {
+                                        "type": "string",
+                                        "description": "Grafana URL for the user configuration.",
+                                        "maxLength": 500
+                                      },
+                                      "grafanaApiKey": {
+                                        "type": "string",
+                                        "description": "Grafana API key for the user configuration.",
+                                        "maxLength": 500
+                                      },
+                                      "selectedBoardsConfigs": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "board": {
+                                              "type": "object",
+                                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                            },
+                                            "panels": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                              },
+                                              "description": "Panels selected for the Grafana board configuration."
+                                            },
+                                            "templateVars": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "Template variables applied to the selected Grafana board configuration."
+                                            }
+                                          }
+                                        },
+                                        "description": "Selected Grafana board configurations for the user."
+                                      }
+                                    }
+                                  },
+                                  "prometheus": {
+                                    "x-go-type": "Prometheus",
+                                    "type": "object",
+                                    "properties": {
+                                      "prometheusUrl": {
+                                        "type": "string",
+                                        "description": "The prometheus URL of the prometheus.",
+                                        "maxLength": 500
+                                      },
+                                      "selectedPrometheusBoardsConfigs": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "board": {
+                                              "type": "object",
+                                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                            },
+                                            "panels": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                              },
+                                              "description": "Panels selected for the Grafana board configuration."
+                                            },
+                                            "templateVars": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "Template variables applied to the selected Grafana board configuration."
+                                            }
+                                          }
+                                        },
+                                        "description": "The selected prometheus boards configs of the prometheus."
+                                      }
+                                    }
+                                  },
+                                  "loadTestPrefs": {
+                                    "x-go-type": "LoadTestPreferences",
+                                    "type": "object",
+                                    "properties": {
+                                      "c": {
+                                        "type": "integer",
+                                        "description": "Concurrent requests",
+                                        "minimum": 0
+                                      },
+                                      "qps": {
+                                        "type": "integer",
+                                        "description": "Queries per second",
+                                        "minimum": 0
+                                      },
+                                      "t": {
+                                        "type": "string",
+                                        "description": "Duration",
+                                        "maxLength": 500
+                                      },
+                                      "gen": {
+                                        "type": "string",
+                                        "description": "Load generator",
+                                        "maxLength": 500
+                                      }
+                                    }
+                                  },
+                                  "anonymousUsageStats": {
+                                    "type": "boolean",
+                                    "description": "The anonymous usage stats of the preference."
+                                  },
+                                  "anonymousPerfResults": {
+                                    "type": "boolean",
+                                    "description": "The anonymous perf results of the preference."
+                                  },
+                                  "updatedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Timestamp of when the resource was last updated."
+                                  },
+                                  "dashboardPreferences": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "The dashboard preferences of the preference."
+                                  },
+                                  "selectedOrganizationId": {
+                                    "type": "string",
+                                    "description": "ID of the associated selectedOrganization.",
+                                    "maxLength": 500,
+                                    "format": "uuid"
+                                  },
+                                  "selectedWorkspaceForOrganizations": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "string"
+                                    },
+                                    "description": "The selected workspace for organizations of the preference."
+                                  },
+                                  "usersExtensionPreferences": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "The users extension preferences of the preference."
+                                  },
+                                  "remoteProviderPreferences": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "The remote provider preferences of the preference."
+                                  }
+                                }
+                              },
+                              "acceptedTermsAt": {
+                                "description": "Timestamp when user accepted terms and conditions",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "accepted_terms_at",
+                                  "json": "acceptedTermsAt"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "firstLoginTime": {
+                                "description": "Timestamp of user's first login",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "first_login_time",
+                                  "json": "firstLoginTime"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "lastLoginTime": {
+                                "description": "Timestamp of user's most recent login",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "last_login_time",
+                                  "json": "lastLoginTime"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "createdAt": {
+                                "description": "Timestamp when the user record was created",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "createdAt"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updatedAt": {
+                                "description": "Timestamp when the user record was last updated",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updatedAt"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "socials": {
+                                "type": "array",
+                                "description": "Various online profiles associated with the user account",
+                                "x-go-type": "UserSocials",
+                                "items": {
+                                  "x-go-type": "Social",
+                                  "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
+                                  "type": "object",
+                                  "properties": {
+                                    "site": {
+                                      "type": "string",
+                                      "maxLength": 50,
+                                      "description": "The site of the social."
+                                    },
+                                    "link": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "description": "The link of the social."
+                                    }
+                                  },
+                                  "required": [
+                                    "site",
+                                    "link"
+                                  ]
+                                },
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "socials",
+                                  "json": "socials"
+                                }
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true,
+                                "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                                "x-go-type": "core.NullTime",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "deleted_at",
+                                  "json": "deletedAt"
+                                }
+                              },
+                              "roleNames": {
+                                "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
+                                "x-go-type-skip-optional-pointer": true,
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
+                                "example": [
+                                  "organization admin",
+                                  "user"
+                                ],
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "roleNames"
+                                }
+                              },
+                              "teams": {
+                                "type": "object",
+                                "description": "Teams the user belongs to with role information",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "teams",
+                                  "json": "teams"
+                                },
+                                "properties": {
+                                  "teamsWithRoles": {
+                                    "type": "array",
+                                    "nullable": true,
+                                    "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
+                                    "items": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "roleNames"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "description": "Unique identifier of the team.",
+                                          "x-go-name": "ID",
+                                          "x-order": 1,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "id",
+                                            "json": "id,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Name of the team.",
+                                          "x-order": 2,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "name",
+                                            "json": "name,omitempty"
+                                          }
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Human readable description of the team.",
+                                          "x-order": 3,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "description",
+                                            "json": "description,omitempty"
+                                          }
+                                        },
+                                        "owner": {
+                                          "description": "Identifier of the team owner.",
+                                          "x-order": 4,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "owner",
+                                            "json": "owner,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "metadata": {
+                                          "type": "object",
+                                          "additionalProperties": true,
+                                          "description": "Free-form metadata associated with the team.",
+                                          "x-go-type": "core.Map",
+                                          "x-go-type-skip-optional-pointer": true,
+                                          "x-order": 5,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "metadata",
+                                            "json": "metadata,omitempty"
+                                          }
+                                        },
+                                        "createdAt": {
+                                          "description": "Timestamp when the team was created.",
+                                          "x-order": 6,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "json": "createdAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "updatedAt": {
+                                          "description": "Timestamp when the team was last updated.",
+                                          "x-order": 7,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "json": "updatedAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "deletedAt": {
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "nullable": true,
+                                          "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                          "x-go-type": "core.NullTime",
+                                          "x-order": 8,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "deleted_at",
+                                            "json": "deletedAt,omitempty"
+                                          }
+                                        },
+                                        "roleNames": {
+                                          "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
+                                          "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                          "items": {
+                                            "type": "string"
+                                          },
+                                          "x-order": 9,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "role_names",
+                                            "json": "roleNames"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "teams_with_roles",
+                                      "json": "teamsWithRoles"
+                                    }
+                                  },
+                                  "totalCount": {
+                                    "type": "integer",
+                                    "nullable": true,
+                                    "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
+                                    "minimum": 0,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "total_count",
+                                      "json": "totalCount"
+                                    }
+                                  }
+                                }
+                              },
+                              "organizations": {
+                                "type": "object",
+                                "description": "Organizations the user belongs to with role information",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "organizations",
+                                  "json": "organizations"
+                                },
+                                "properties": {
+                                  "organizationsWithRoles": {
+                                    "type": "array",
+                                    "nullable": true,
+                                    "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
+                                    "items": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "roleNames"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "description": "Unique identifier of the organization.",
+                                          "x-go-name": "ID",
+                                          "x-order": 1,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "id",
+                                            "json": "id,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Name of the organization.",
+                                          "x-order": 2,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "name",
+                                            "json": "name,omitempty"
+                                          }
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Human readable description of the organization.",
+                                          "x-order": 3,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "description",
+                                            "json": "description,omitempty"
+                                          }
+                                        },
+                                        "country": {
+                                          "type": "string",
+                                          "description": "Country associated with the organization.",
+                                          "x-order": 4,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "country",
+                                            "json": "country,omitempty"
+                                          }
+                                        },
+                                        "region": {
+                                          "type": "string",
+                                          "description": "Region associated with the organization.",
+                                          "x-order": 5,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "region",
+                                            "json": "region,omitempty"
+                                          }
+                                        },
+                                        "owner": {
+                                          "description": "Identifier of the organization owner.",
+                                          "x-order": 6,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "owner",
+                                            "json": "owner,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "createdAt": {
+                                          "description": "Timestamp when the organization was created.",
+                                          "x-order": 7,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "json": "createdAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "updatedAt": {
+                                          "description": "Timestamp when the organization was last updated.",
+                                          "x-order": 8,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "json": "updatedAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "deletedAt": {
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "nullable": true,
+                                          "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                          "x-go-type": "core.NullTime",
+                                          "x-order": 9,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "deleted_at",
+                                            "json": "deletedAt,omitempty"
+                                          }
+                                        },
+                                        "roleNames": {
+                                          "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
+                                          "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                          "items": {
+                                            "type": "string"
+                                          },
+                                          "x-order": 10,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "role_names",
+                                            "json": "roleNames"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "organizations_with_roles",
+                                      "json": "organizationsWithRoles"
+                                    }
+                                  },
+                                  "totalCount": {
+                                    "type": "integer",
+                                    "nullable": true,
+                                    "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
+                                    "minimum": 0,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "total_count",
+                                      "json": "totalCount"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "location": {
+                            "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "string"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "patternFile": {
+                            "type": "string",
+                            "description": "Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.\n",
+                            "maxLength": 16777216,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "pattern_file"
+                            }
+                          },
+                          "visibility": {
+                            "type": "string",
+                            "description": "Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.\n",
+                            "enum": [
+                              "private",
+                              "public",
+                              "published"
+                            ],
+                            "x-enum-casing-exempt": true,
+                            "maxLength": 32,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "visibility"
+                            }
+                          },
+                          "designType": {
+                            "type": "string",
+                            "description": "Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                            "x-enum-casing-exempt": true,
+                            "nullable": true,
+                            "enum": [
+                              "Design",
+                              "Helm Chart",
+                              "Docker Compose",
+                              "Kubernetes Manifest"
+                            ],
+                            "maxLength": 64,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "source_type"
+                            }
+                          },
+                          "sourceContent": {
+                            "type": "string",
+                            "format": "byte",
+                            "nullable": true,
+                            "description": "Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.\n",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "source_content",
+                              "json": "sourceContent,omitempty"
+                            }
+                          },
+                          "viewCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "view_count",
+                              "json": "viewCount,omitempty"
+                            }
+                          },
+                          "downloadCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "download_count",
+                              "json": "downloadCount,omitempty"
+                            }
+                          },
+                          "cloneCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "clone_count",
+                              "json": "cloneCount,omitempty"
+                            }
+                          },
+                          "deploymentCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deployment_count",
+                              "json": "deploymentCount,omitempty"
+                            }
+                          },
+                          "shareCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "share_count",
+                              "json": "shareCount,omitempty"
+                            }
+                          },
+                          "createdAt": {
+                            "description": "Timestamp of design creation.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp of last design modification.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      },
+                      "description": "Designs included on this page of results."
+                    },
+                    "resultType": {
+                      "type": "string",
+                      "description": "Optional discriminator describing which collection the page represents.",
+                      "maxLength": 500
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/github/import/{connectionId}": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "designs"
+        ],
+        "summary": "Import files from a GitHub repository as designs",
+        "operationId": "importGithubRepository",
+        "description": "Imports the selected files (a selected directory is walked recursively) from one repository reachable through the caller's GitHub App connection. Matching is idempotent: a file whose (owner, location.type, location.host, location.path, location.branch) already identifies one of the caller's designs is handled per `onExisting`. `connectionId` must name the caller's own live GitHub connection (404 otherwise). `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A distinct `403` whose MeshKit error asks for re-authorization means the caller's GitHub connection predates verification; re-authorize it (see `startGithubAuthorization`) before use; `502` means GitHub could not be reached or rejected the request. Each imported or updated design records the commit its file was read at in `location.commitSha`.\n",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "description": "ID of a GitHub App connection.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Files to import from one repository and how to treat files that were imported before.",
+                "required": [
+                  "name",
+                  "paths"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Repository as `<owner>/<repo>`.",
+                    "maxLength": 512
+                  },
+                  "paths": {
+                    "type": "array",
+                    "minItems": 1,
+                    "description": "Selected tree items, as served by `GET /api/integrations/github/scan`. The server reads only `type` and `entry.path`; the remaining scan fields are accepted and ignored.\n",
+                    "items": {
+                      "x-go-type": "GithubImportPath",
+                      "type": "object",
+                      "description": "One selected file or directory in the repository tree.",
+                      "required": [
+                        "type",
+                        "entry"
+                      ],
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "description": "Tree item kind; a directory is imported recursively.",
+                          "enum": [
+                            "file",
+                            "dir"
+                          ],
+                          "x-enum-varnames": [
+                            "GithubImportPathTypeFile",
+                            "GithubImportPathTypeDir"
+                          ]
+                        },
+                        "entry": {
+                          "type": "object",
+                          "description": "The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored.\n",
+                          "required": [
+                            "path"
+                          ],
+                          "properties": {
+                            "path": {
+                              "type": "string",
+                              "description": "Repository-relative path of the file or directory.",
+                              "maxLength": 4096
+                            }
+                          }
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  },
+                  "onExisting": {
+                    "type": "string",
+                    "description": "What to do with a selected file that already identifies one of the caller's designs. `skip` (the default, \"import new only\") leaves it untouched and reports it in `skippedPaths`, so a request that omits `onExisting` never overwrites an existing design; `update` refreshes that design in place under the same ID (idempotent import); `new` imports it again as an additional design.\n",
+                    "enum": [
+                      "update",
+                      "skip",
+                      "new"
+                    ],
+                    "default": "skip",
+                    "x-enum-varnames": [
+                      "GithubImportPayloadOnExistingUpdate",
+                      "GithubImportPayloadOnExistingSkip",
+                      "GithubImportPayloadOnExistingNew"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Import outcome. Per-file failures are reported in `errors`, not as a non-2xx status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Outcome of a GitHub repository import.",
+                  "properties": {
+                    "patterns": {
+                      "type": "array",
+                      "description": "Designs created or updated by this import, with `sourceContent`, `patternFile` and `catalogData` omitted.\n",
+                      "items": {
+                        "type": "object",
+                        "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                        "properties": {
+                          "id": {
+                            "description": "Server-generated design ID.",
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "name": {
+                            "description": "Human-readable design name.",
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "catalogData": {
+                            "description": "Catalog metadata attached to the design when published.",
+                            "x-go-type": "catalogv1alpha2.CatalogData",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+                              "name": "catalogv1alpha2"
+                            },
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "publishedVersion": {
+                                "description": "Tracks the specific content version that has been made available in the Catalog.",
+                                "type": "string",
+                                "maxLength": 500
+                              },
+                              "class": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                                "type": "string",
+                                "oneOf": [
+                                  {
+                                    "const": "official",
+                                    "description": "Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable."
+                                  },
+                                  {
+                                    "const": "verified",
+                                    "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
+                                  },
+                                  {
+                                    "const": "reference architecture",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                  }
+                                ],
+                                "maxLength": 500
+                              },
+                              "compatibility": {
+                                "type": "array",
+                                "title": "Model",
+                                "items": {
+                                  "enum": [
+                                    "kubernetes"
+                                  ],
+                                  "type": "string"
+                                },
+                                "uniqueItems": true,
+                                "minItems": 1,
+                                "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
+                              },
+                              "patternCaveats": {
+                                "type": "string",
+                                "title": "Caveats and Considerations",
+                                "description": "Specific stipulations to consider and known behaviors to be aware of when using this design.",
+                                "maxLength": 500
+                              },
+                              "patternInfo": {
+                                "type": "string",
+                                "title": "Description",
+                                "minLength": 1,
+                                "description": "Purpose of the design along with its intended and unintended uses."
+                              },
+                              "type": {
+                                "type": "string",
+                                "title": "Type",
+                                "x-enum-casing-exempt": true,
+                                "enum": [
+                                  "Deployment",
+                                  "Observability",
+                                  "Resiliency",
+                                  "Scaling",
+                                  "Security",
+                                  "Traffic-management",
+                                  "Troubleshooting",
+                                  "Workloads"
+                                ],
+                                "default": "Deployment",
+                                "description": "Categorization of the type of design or operational flow depicted in this design."
+                              },
+                              "snapshotURL": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "pattern": "^(https?|http?|oci)://"
+                                },
+                                "description": "Contains reference to the dark and light mode snapshots of the design."
+                              }
+                            },
+                            "required": [
+                              "compatibility",
+                              "patternCaveats",
+                              "patternInfo",
+                              "type"
+                            ]
+                          },
+                          "userId": {
+                            "description": "Owning user ID.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "user": {
+                            "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
+                            "nullable": true,
+                            "x-go-type": "*userV1beta.User",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1beta2/user",
+                              "name": "userV1beta"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "-"
+                            },
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "userId",
+                              "provider",
+                              "email",
+                              "firstName",
+                              "lastName",
+                              "status",
+                              "createdAt",
+                              "updatedAt",
+                              "lastLoginTime",
+                              "deletedAt"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier for the user",
+                                "x-go-name": "ID",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "userId": {
+                                "type": "string",
+                                "maxLength": 200,
+                                "deprecated": true,
+                                "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "user_id",
+                                  "json": "userId"
+                                },
+                                "x-id-format": "external"
+                              },
+                              "provider": {
+                                "type": "string",
+                                "maxLength": 100,
+                                "description": "Authentication provider (e.g., Google, Github)",
+                                "example": [
+                                  "local",
+                                  "github",
+                                  "google",
+                                  "twitter"
+                                ],
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "provider",
+                                  "json": "provider"
+                                }
+                              },
+                              "email": {
+                                "type": "string",
+                                "format": "email",
+                                "maxLength": 300,
+                                "description": "User's email address",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "email",
+                                  "json": "email"
+                                }
+                              },
+                              "firstName": {
+                                "type": "string",
+                                "maxLength": 200,
+                                "description": "User's first name",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "first_name",
+                                  "json": "firstName"
+                                }
+                              },
+                              "lastName": {
+                                "type": "string",
+                                "maxLength": 300,
+                                "description": "User's last name",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "last_name",
+                                  "json": "lastName"
+                                }
+                              },
+                              "avatarUrl": {
+                                "type": "string",
+                                "format": "uri",
+                                "maxLength": 500,
+                                "description": "URL to user's avatar image",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "avatar_url",
+                                  "json": "avatarUrl"
+                                }
+                              },
+                              "status": {
+                                "type": "string",
+                                "maxLength": 100,
+                                "enum": [
+                                  "active",
+                                  "inactive",
+                                  "pending",
+                                  "anonymous"
+                                ],
+                                "description": "User account status",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "status",
+                                  "json": "status"
+                                }
+                              },
+                              "bio": {
+                                "type": "string",
+                                "maxLength": 1000,
+                                "default": "",
+                                "description": "User's biography or description",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "bio",
+                                  "json": "bio"
+                                }
+                              },
+                              "country": {
+                                "type": "object",
+                                "description": "User's country information stored as JSONB",
+                                "additionalProperties": true,
+                                "x-go-type": "core.Map",
+                                "x-go-type-skip-optional-pointer": true,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "country",
+                                  "json": "country"
+                                }
+                              },
+                              "region": {
+                                "type": "object",
+                                "description": "User's region information stored as JSONB",
+                                "additionalProperties": true,
+                                "x-go-type": "core.Map",
+                                "x-go-type-skip-optional-pointer": true,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "region",
+                                  "json": "region"
+                                }
+                              },
+                              "preferences": {
+                                "x-go-type": "Preference",
+                                "description": "User preferences stored as JSONB",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "preferences",
+                                  "json": "preferences"
+                                },
+                                "x-generate-db-helpers": true,
+                                "type": "object",
+                                "required": [
+                                  "anonymousUsageStats",
+                                  "anonymousPerfResults",
+                                  "updatedAt",
+                                  "dashboardPreferences",
+                                  "selectedOrganizationId",
+                                  "selectedWorkspaceForOrganizations",
+                                  "usersExtensionPreferences",
+                                  "remoteProviderPreferences"
+                                ],
+                                "properties": {
+                                  "meshAdapters": {
+                                    "type": "array",
+                                    "items": {
+                                      "x-go-type": "Adapter",
+                                      "type": "object",
+                                      "description": "Placeholder for Adapter struct definition."
+                                    },
+                                    "description": "The mesh adapters of the preference."
+                                  },
+                                  "grafana": {
+                                    "x-go-type": "Grafana",
+                                    "type": "object",
+                                    "properties": {
+                                      "grafanaUrl": {
+                                        "type": "string",
+                                        "description": "Grafana URL for the user configuration.",
+                                        "maxLength": 500
+                                      },
+                                      "grafanaApiKey": {
+                                        "type": "string",
+                                        "description": "Grafana API key for the user configuration.",
+                                        "maxLength": 500
+                                      },
+                                      "selectedBoardsConfigs": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "board": {
+                                              "type": "object",
+                                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                            },
+                                            "panels": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                              },
+                                              "description": "Panels selected for the Grafana board configuration."
+                                            },
+                                            "templateVars": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "Template variables applied to the selected Grafana board configuration."
+                                            }
+                                          }
+                                        },
+                                        "description": "Selected Grafana board configurations for the user."
+                                      }
+                                    }
+                                  },
+                                  "prometheus": {
+                                    "x-go-type": "Prometheus",
+                                    "type": "object",
+                                    "properties": {
+                                      "prometheusUrl": {
+                                        "type": "string",
+                                        "description": "The prometheus URL of the prometheus.",
+                                        "maxLength": 500
+                                      },
+                                      "selectedPrometheusBoardsConfigs": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "board": {
+                                              "type": "object",
+                                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                            },
+                                            "panels": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                              },
+                                              "description": "Panels selected for the Grafana board configuration."
+                                            },
+                                            "templateVars": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "Template variables applied to the selected Grafana board configuration."
+                                            }
+                                          }
+                                        },
+                                        "description": "The selected prometheus boards configs of the prometheus."
+                                      }
+                                    }
+                                  },
+                                  "loadTestPrefs": {
+                                    "x-go-type": "LoadTestPreferences",
+                                    "type": "object",
+                                    "properties": {
+                                      "c": {
+                                        "type": "integer",
+                                        "description": "Concurrent requests",
+                                        "minimum": 0
+                                      },
+                                      "qps": {
+                                        "type": "integer",
+                                        "description": "Queries per second",
+                                        "minimum": 0
+                                      },
+                                      "t": {
+                                        "type": "string",
+                                        "description": "Duration",
+                                        "maxLength": 500
+                                      },
+                                      "gen": {
+                                        "type": "string",
+                                        "description": "Load generator",
+                                        "maxLength": 500
+                                      }
+                                    }
+                                  },
+                                  "anonymousUsageStats": {
+                                    "type": "boolean",
+                                    "description": "The anonymous usage stats of the preference."
+                                  },
+                                  "anonymousPerfResults": {
+                                    "type": "boolean",
+                                    "description": "The anonymous perf results of the preference."
+                                  },
+                                  "updatedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Timestamp of when the resource was last updated."
+                                  },
+                                  "dashboardPreferences": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "The dashboard preferences of the preference."
+                                  },
+                                  "selectedOrganizationId": {
+                                    "type": "string",
+                                    "description": "ID of the associated selectedOrganization.",
+                                    "maxLength": 500,
+                                    "format": "uuid"
+                                  },
+                                  "selectedWorkspaceForOrganizations": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "string"
+                                    },
+                                    "description": "The selected workspace for organizations of the preference."
+                                  },
+                                  "usersExtensionPreferences": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "The users extension preferences of the preference."
+                                  },
+                                  "remoteProviderPreferences": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "The remote provider preferences of the preference."
+                                  }
+                                }
+                              },
+                              "acceptedTermsAt": {
+                                "description": "Timestamp when user accepted terms and conditions",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "accepted_terms_at",
+                                  "json": "acceptedTermsAt"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "firstLoginTime": {
+                                "description": "Timestamp of user's first login",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "first_login_time",
+                                  "json": "firstLoginTime"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "lastLoginTime": {
+                                "description": "Timestamp of user's most recent login",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "last_login_time",
+                                  "json": "lastLoginTime"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "createdAt": {
+                                "description": "Timestamp when the user record was created",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "createdAt"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updatedAt": {
+                                "description": "Timestamp when the user record was last updated",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updatedAt"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "socials": {
+                                "type": "array",
+                                "description": "Various online profiles associated with the user account",
+                                "x-go-type": "UserSocials",
+                                "items": {
+                                  "x-go-type": "Social",
+                                  "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
+                                  "type": "object",
+                                  "properties": {
+                                    "site": {
+                                      "type": "string",
+                                      "maxLength": 50,
+                                      "description": "The site of the social."
+                                    },
+                                    "link": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "description": "The link of the social."
+                                    }
+                                  },
+                                  "required": [
+                                    "site",
+                                    "link"
+                                  ]
+                                },
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "socials",
+                                  "json": "socials"
+                                }
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true,
+                                "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                                "x-go-type": "core.NullTime",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "deleted_at",
+                                  "json": "deletedAt"
+                                }
+                              },
+                              "roleNames": {
+                                "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
+                                "x-go-type-skip-optional-pointer": true,
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
+                                "example": [
+                                  "organization admin",
+                                  "user"
+                                ],
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "roleNames"
+                                }
+                              },
+                              "teams": {
+                                "type": "object",
+                                "description": "Teams the user belongs to with role information",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "teams",
+                                  "json": "teams"
+                                },
+                                "properties": {
+                                  "teamsWithRoles": {
+                                    "type": "array",
+                                    "nullable": true,
+                                    "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
+                                    "items": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "roleNames"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "description": "Unique identifier of the team.",
+                                          "x-go-name": "ID",
+                                          "x-order": 1,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "id",
+                                            "json": "id,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Name of the team.",
+                                          "x-order": 2,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "name",
+                                            "json": "name,omitempty"
+                                          }
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Human readable description of the team.",
+                                          "x-order": 3,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "description",
+                                            "json": "description,omitempty"
+                                          }
+                                        },
+                                        "owner": {
+                                          "description": "Identifier of the team owner.",
+                                          "x-order": 4,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "owner",
+                                            "json": "owner,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "metadata": {
+                                          "type": "object",
+                                          "additionalProperties": true,
+                                          "description": "Free-form metadata associated with the team.",
+                                          "x-go-type": "core.Map",
+                                          "x-go-type-skip-optional-pointer": true,
+                                          "x-order": 5,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "metadata",
+                                            "json": "metadata,omitempty"
+                                          }
+                                        },
+                                        "createdAt": {
+                                          "description": "Timestamp when the team was created.",
+                                          "x-order": 6,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "json": "createdAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "updatedAt": {
+                                          "description": "Timestamp when the team was last updated.",
+                                          "x-order": 7,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "json": "updatedAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "deletedAt": {
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "nullable": true,
+                                          "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                          "x-go-type": "core.NullTime",
+                                          "x-order": 8,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "deleted_at",
+                                            "json": "deletedAt,omitempty"
+                                          }
+                                        },
+                                        "roleNames": {
+                                          "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
+                                          "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                          "items": {
+                                            "type": "string"
+                                          },
+                                          "x-order": 9,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "role_names",
+                                            "json": "roleNames"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "teams_with_roles",
+                                      "json": "teamsWithRoles"
+                                    }
+                                  },
+                                  "totalCount": {
+                                    "type": "integer",
+                                    "nullable": true,
+                                    "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
+                                    "minimum": 0,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "total_count",
+                                      "json": "totalCount"
+                                    }
+                                  }
+                                }
+                              },
+                              "organizations": {
+                                "type": "object",
+                                "description": "Organizations the user belongs to with role information",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "organizations",
+                                  "json": "organizations"
+                                },
+                                "properties": {
+                                  "organizationsWithRoles": {
+                                    "type": "array",
+                                    "nullable": true,
+                                    "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
+                                    "items": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "roleNames"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "description": "Unique identifier of the organization.",
+                                          "x-go-name": "ID",
+                                          "x-order": 1,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "id",
+                                            "json": "id,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Name of the organization.",
+                                          "x-order": 2,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "name",
+                                            "json": "name,omitempty"
+                                          }
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Human readable description of the organization.",
+                                          "x-order": 3,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "description",
+                                            "json": "description,omitempty"
+                                          }
+                                        },
+                                        "country": {
+                                          "type": "string",
+                                          "description": "Country associated with the organization.",
+                                          "x-order": 4,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "country",
+                                            "json": "country,omitempty"
+                                          }
+                                        },
+                                        "region": {
+                                          "type": "string",
+                                          "description": "Region associated with the organization.",
+                                          "x-order": 5,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "region",
+                                            "json": "region,omitempty"
+                                          }
+                                        },
+                                        "owner": {
+                                          "description": "Identifier of the organization owner.",
+                                          "x-order": 6,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "owner",
+                                            "json": "owner,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "createdAt": {
+                                          "description": "Timestamp when the organization was created.",
+                                          "x-order": 7,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "json": "createdAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "updatedAt": {
+                                          "description": "Timestamp when the organization was last updated.",
+                                          "x-order": 8,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "json": "updatedAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "deletedAt": {
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "nullable": true,
+                                          "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                          "x-go-type": "core.NullTime",
+                                          "x-order": 9,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "deleted_at",
+                                            "json": "deletedAt,omitempty"
+                                          }
+                                        },
+                                        "roleNames": {
+                                          "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
+                                          "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                          "items": {
+                                            "type": "string"
+                                          },
+                                          "x-order": 10,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "role_names",
+                                            "json": "roleNames"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "organizations_with_roles",
+                                      "json": "organizationsWithRoles"
+                                    }
+                                  },
+                                  "totalCount": {
+                                    "type": "integer",
+                                    "nullable": true,
+                                    "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
+                                    "minimum": 0,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "total_count",
+                                      "json": "totalCount"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "location": {
+                            "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "string"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "patternFile": {
+                            "type": "string",
+                            "description": "Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.\n",
+                            "maxLength": 16777216,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "pattern_file"
+                            }
+                          },
+                          "visibility": {
+                            "type": "string",
+                            "description": "Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.\n",
+                            "enum": [
+                              "private",
+                              "public",
+                              "published"
+                            ],
+                            "x-enum-casing-exempt": true,
+                            "maxLength": 32,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "visibility"
+                            }
+                          },
+                          "designType": {
+                            "type": "string",
+                            "description": "Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                            "x-enum-casing-exempt": true,
+                            "nullable": true,
+                            "enum": [
+                              "Design",
+                              "Helm Chart",
+                              "Docker Compose",
+                              "Kubernetes Manifest"
+                            ],
+                            "maxLength": 64,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "source_type"
+                            }
+                          },
+                          "sourceContent": {
+                            "type": "string",
+                            "format": "byte",
+                            "nullable": true,
+                            "description": "Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.\n",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "source_content",
+                              "json": "sourceContent,omitempty"
+                            }
+                          },
+                          "viewCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "view_count",
+                              "json": "viewCount,omitempty"
+                            }
+                          },
+                          "downloadCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "download_count",
+                              "json": "downloadCount,omitempty"
+                            }
+                          },
+                          "cloneCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "clone_count",
+                              "json": "cloneCount,omitempty"
+                            }
+                          },
+                          "deploymentCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deployment_count",
+                              "json": "deploymentCount,omitempty"
+                            }
+                          },
+                          "shareCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "share_count",
+                              "json": "shareCount,omitempty"
+                            }
+                          },
+                          "createdAt": {
+                            "description": "Timestamp of design creation.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp of last design modification.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        },
+                        "x-go-type": "MesheryPattern"
+                      }
+                    },
+                    "updatedIds": {
+                      "type": "array",
+                      "description": "IDs (all also present in `patterns`) of designs updated in place rather than created.",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      }
+                    },
+                    "skippedPaths": {
+                      "type": "array",
+                      "description": "Repository-relative paths left untouched because `onExisting` was `skip` and a design already imports them.",
+                      "items": {
+                        "type": "string",
+                        "description": "Repository-relative path of a skipped file.",
+                        "maxLength": 4096
+                      }
+                    },
+                    "errors": {
+                      "type": "array",
+                      "description": "One Error-severity import event per selected path that failed.",
+                      "items": {
+                        "x-go-type": "eventv1beta3.Event",
+                        "x-go-type-import": {
+                          "path": "github.com/meshery/schemas/models/v1beta3/event",
+                          "name": "eventv1beta3"
+                        },
+                        "type": "object",
+                        "description": "One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields.\n",
+                        "required": [
+                          "id",
+                          "actedUpon",
+                          "action",
+                          "category",
+                          "description",
+                          "metadata",
+                          "operationId",
+                          "severity",
+                          "status",
+                          "systemId",
+                          "createdAt",
+                          "updatedAt"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "Event ID.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "actedUpon": {
+                            "description": "ID of the entity on which the event was performed.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "acted_upon"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "action": {
+                            "type": "string",
+                            "description": "Action taken on the resource, for example `import`.",
+                            "maxLength": 500,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "action"
+                            }
+                          },
+                          "category": {
+                            "type": "string",
+                            "description": "Resource kind the operation was invoked on, for example `pattern`.",
+                            "maxLength": 500,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "category"
+                            }
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Human-readable summary of what happened.",
+                            "maxLength": 5000,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "description"
+                            }
+                          },
+                          "metadata": {
+                            "type": "object",
+                            "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none.\n",
+                            "additionalProperties": true,
+                            "nullable": true,
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "metadata"
+                            }
+                          },
+                          "operationId": {
+                            "description": "ID correlating the events one operation emitted.",
+                            "x-go-name": "OperationID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "operation_id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "severity": {
+                            "type": "string",
+                            "description": "Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.\n",
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "severity"
+                            }
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.\n",
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "status"
+                            }
+                          },
+                          "systemId": {
+                            "description": "ID of the system instance that emitted the event.",
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "system_id"
+                            },
+                            "x-go-name": "SystemID",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "owner": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner"
+                            }
+                          },
+                          "createdAt": {
+                            "description": "Timestamp when the event was recorded.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp when the event was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deletedAt": {
+                            "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at"
+                            },
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad gateway - an upstream service the operation depends on could not be reached or rejected the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/github/branches/{connectionId}": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "github"
+        ],
+        "summary": "List a repository's branches",
+        "operationId": "getGithubRepositoryBranches",
+        "description": "Lists the branches of one repository reachable through the caller's GitHub App connection, with the repository's default branch, so a client can offer the refs a design's source can track. Branch order is GitHub's. `connectionId` must name the caller's own live GitHub connection (404 otherwise, with the same body as \"no such connection\"). `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A distinct `403` whose MeshKit error asks for re-authorization means the caller's GitHub connection predates verification; re-authorize it (see `startGithubAuthorization`) before use; `502` means GitHub could not be reached or rejected the request.\n",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "description": "ID of a GitHub App connection.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          },
+          {
+            "name": "repository",
+            "in": "query",
+            "required": true,
+            "description": "Repository as `<owner>/<repo>` (case-insensitive).",
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 512
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items per page (canonical camelCase form).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Repository branches page.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A page of a repository's branches. GitHub does not report a total, so the page says whether another follows instead of carrying a count.\n",
+                  "required": [
+                    "defaultBranch",
+                    "branches",
+                    "page",
+                    "pageSize",
+                    "hasMore"
+                  ],
+                  "properties": {
+                    "defaultBranch": {
+                      "type": "string",
+                      "description": "The repository's default branch.",
+                      "maxLength": 255
+                    },
+                    "branches": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "GithubBranch",
+                        "type": "object",
+                        "description": "One branch of a GitHub repository.",
+                        "required": [
+                          "name",
+                          "commitSha"
+                        ],
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Branch name.",
+                            "maxLength": 255
+                          },
+                          "commitSha": {
+                            "type": "string",
+                            "description": "Commit at the head of the branch.",
+                            "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+                          }
+                        }
+                      }
+                    },
+                    "page": {
+                      "type": "integer",
+                      "description": "Zero-based page index served.",
+                      "minimum": 0
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Page size served.",
+                      "minimum": 1
+                    },
+                    "hasMore": {
+                      "type": "boolean",
+                      "description": "True when another page of branches follows."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad gateway - an upstream service the operation depends on could not be reached or rejected the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -7073,7 +12395,7 @@ const DesignSchema: Record<string, unknown> = {
                             "additionalProperties": false
                           },
                           "location": {
-                            "description": "Optional structured location metadata (branch, host, path, ...).",
+                            "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
                             "type": "object",
                             "additionalProperties": {
                               "type": "string"
@@ -10967,12 +16289,124 @@ const DesignSchema: Record<string, unknown> = {
           }
         }
       },
+      "409": {
+        "description": "Publish request already exists",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "500": {
         "description": "Internal server error",
         "content": {
           "text/plain": {
             "schema": {
               "type": "string"
+            }
+          }
+        }
+      },
+      "MeshkitError403": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "required": [
+                "error"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                  "enum": [
+                    "emergency",
+                    "alert",
+                    "critical",
+                    "fatal"
+                  ]
+                },
+                "probableCause": {
+                  "type": "array",
+                  "description": "MeshKit's probable causes of the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "description": "MeshKit's suggested remediations for the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "MeshkitError502": {
+        "description": "Bad gateway - an upstream service the operation depends on could not be reached or rejected the request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "required": [
+                "error"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                  "enum": [
+                    "emergency",
+                    "alert",
+                    "critical",
+                    "fatal"
+                  ]
+                },
+                "probableCause": {
+                  "type": "array",
+                  "description": "MeshKit's probable causes of the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "description": "MeshKit's suggested remediations for the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         }
@@ -10983,6 +16417,21 @@ const DesignSchema: Record<string, unknown> = {
         "name": "designId",
         "in": "path",
         "description": "Design (Pattern) ID",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+          "x-go-type": "uuid.UUID",
+          "x-go-type-import": {
+            "path": "github.com/gofrs/uuid"
+          }
+        }
+      },
+      "connectionId": {
+        "name": "connectionId",
+        "in": "path",
+        "description": "ID of a GitHub App connection.",
         "required": true,
         "schema": {
           "type": "string",
@@ -16602,7 +22051,7 @@ const DesignSchema: Record<string, unknown> = {
             "additionalProperties": false
           },
           "location": {
-            "description": "Optional structured location metadata (branch, host, path, ...).",
+            "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
             "type": "object",
             "additionalProperties": {
               "type": "string"
@@ -17627,7 +23076,7 @@ const DesignSchema: Record<string, unknown> = {
                   "additionalProperties": false
                 },
                 "location": {
-                  "description": "Optional structured location metadata (branch, host, path, ...).",
+                  "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
                   "type": "object",
                   "additionalProperties": {
                     "type": "string"
@@ -18293,6 +23742,1493 @@ const DesignSchema: Record<string, unknown> = {
             "type": "string",
             "format": "uri",
             "description": "A direct URL to a single file. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design."
+          }
+        }
+      },
+      "GithubImportPayload": {
+        "type": "object",
+        "description": "Files to import from one repository and how to treat files that were imported before.",
+        "required": [
+          "name",
+          "paths"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Repository as `<owner>/<repo>`.",
+            "maxLength": 512
+          },
+          "paths": {
+            "type": "array",
+            "minItems": 1,
+            "description": "Selected tree items, as served by `GET /api/integrations/github/scan`. The server reads only `type` and `entry.path`; the remaining scan fields are accepted and ignored.\n",
+            "items": {
+              "x-go-type": "GithubImportPath",
+              "type": "object",
+              "description": "One selected file or directory in the repository tree.",
+              "required": [
+                "type",
+                "entry"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Tree item kind; a directory is imported recursively.",
+                  "enum": [
+                    "file",
+                    "dir"
+                  ],
+                  "x-enum-varnames": [
+                    "GithubImportPathTypeFile",
+                    "GithubImportPathTypeDir"
+                  ]
+                },
+                "entry": {
+                  "type": "object",
+                  "description": "The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored.\n",
+                  "required": [
+                    "path"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "description": "Repository-relative path of the file or directory.",
+                      "maxLength": 4096
+                    }
+                  }
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "onExisting": {
+            "type": "string",
+            "description": "What to do with a selected file that already identifies one of the caller's designs. `skip` (the default, \"import new only\") leaves it untouched and reports it in `skippedPaths`, so a request that omits `onExisting` never overwrites an existing design; `update` refreshes that design in place under the same ID (idempotent import); `new` imports it again as an additional design.\n",
+            "enum": [
+              "update",
+              "skip",
+              "new"
+            ],
+            "default": "skip",
+            "x-enum-varnames": [
+              "GithubImportPayloadOnExistingUpdate",
+              "GithubImportPayloadOnExistingSkip",
+              "GithubImportPayloadOnExistingNew"
+            ]
+          }
+        }
+      },
+      "GithubImportPath": {
+        "type": "object",
+        "description": "One selected file or directory in the repository tree.",
+        "required": [
+          "type",
+          "entry"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Tree item kind; a directory is imported recursively.",
+            "enum": [
+              "file",
+              "dir"
+            ],
+            "x-enum-varnames": [
+              "GithubImportPathTypeFile",
+              "GithubImportPathTypeDir"
+            ]
+          },
+          "entry": {
+            "type": "object",
+            "description": "The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored.\n",
+            "required": [
+              "path"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Repository-relative path of the file or directory.",
+                "maxLength": 4096
+              }
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "GithubImportPathEntry": {
+        "type": "object",
+        "description": "The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored.\n",
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Repository-relative path of the file or directory.",
+            "maxLength": 4096
+          }
+        }
+      },
+      "GithubImportResponse": {
+        "type": "object",
+        "description": "Outcome of a GitHub repository import.",
+        "properties": {
+          "patterns": {
+            "type": "array",
+            "description": "Designs created or updated by this import, with `sourceContent`, `patternFile` and `catalogData` omitted.\n",
+            "items": {
+              "type": "object",
+              "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+              "properties": {
+                "id": {
+                  "description": "Server-generated design ID.",
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "name": {
+                  "description": "Human-readable design name.",
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "catalogData": {
+                  "description": "Catalog metadata attached to the design when published.",
+                  "x-go-type": "catalogv1alpha2.CatalogData",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+                    "name": "catalogv1alpha2"
+                  },
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "publishedVersion": {
+                      "description": "Tracks the specific content version that has been made available in the Catalog.",
+                      "type": "string",
+                      "maxLength": 500
+                    },
+                    "class": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                      "type": "string",
+                      "oneOf": [
+                        {
+                          "const": "official",
+                          "description": "Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable."
+                        },
+                        {
+                          "const": "verified",
+                          "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
+                        },
+                        {
+                          "const": "reference architecture",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                        }
+                      ],
+                      "maxLength": 500
+                    },
+                    "compatibility": {
+                      "type": "array",
+                      "title": "Model",
+                      "items": {
+                        "enum": [
+                          "kubernetes"
+                        ],
+                        "type": "string"
+                      },
+                      "uniqueItems": true,
+                      "minItems": 1,
+                      "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
+                    },
+                    "patternCaveats": {
+                      "type": "string",
+                      "title": "Caveats and Considerations",
+                      "description": "Specific stipulations to consider and known behaviors to be aware of when using this design.",
+                      "maxLength": 500
+                    },
+                    "patternInfo": {
+                      "type": "string",
+                      "title": "Description",
+                      "minLength": 1,
+                      "description": "Purpose of the design along with its intended and unintended uses."
+                    },
+                    "type": {
+                      "type": "string",
+                      "title": "Type",
+                      "x-enum-casing-exempt": true,
+                      "enum": [
+                        "Deployment",
+                        "Observability",
+                        "Resiliency",
+                        "Scaling",
+                        "Security",
+                        "Traffic-management",
+                        "Troubleshooting",
+                        "Workloads"
+                      ],
+                      "default": "Deployment",
+                      "description": "Categorization of the type of design or operational flow depicted in this design."
+                    },
+                    "snapshotURL": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "uri",
+                        "pattern": "^(https?|http?|oci)://"
+                      },
+                      "description": "Contains reference to the dark and light mode snapshots of the design."
+                    }
+                  },
+                  "required": [
+                    "compatibility",
+                    "patternCaveats",
+                    "patternInfo",
+                    "type"
+                  ]
+                },
+                "userId": {
+                  "description": "Owning user ID.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "owner"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "user": {
+                  "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
+                  "nullable": true,
+                  "x-go-type": "*userV1beta.User",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/v1beta2/user",
+                    "name": "userV1beta"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "-"
+                  },
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "userId",
+                    "provider",
+                    "email",
+                    "firstName",
+                    "lastName",
+                    "status",
+                    "createdAt",
+                    "updatedAt",
+                    "lastLoginTime",
+                    "deletedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "Unique identifier for the user",
+                      "x-go-name": "ID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id",
+                        "json": "id"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "userId": {
+                      "type": "string",
+                      "maxLength": 200,
+                      "deprecated": true,
+                      "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "user_id",
+                        "json": "userId"
+                      },
+                      "x-id-format": "external"
+                    },
+                    "provider": {
+                      "type": "string",
+                      "maxLength": 100,
+                      "description": "Authentication provider (e.g., Google, Github)",
+                      "example": [
+                        "local",
+                        "github",
+                        "google",
+                        "twitter"
+                      ],
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "provider",
+                        "json": "provider"
+                      }
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "maxLength": 300,
+                      "description": "User's email address",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "email",
+                        "json": "email"
+                      }
+                    },
+                    "firstName": {
+                      "type": "string",
+                      "maxLength": 200,
+                      "description": "User's first name",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "first_name",
+                        "json": "firstName"
+                      }
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "maxLength": 300,
+                      "description": "User's last name",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "last_name",
+                        "json": "lastName"
+                      }
+                    },
+                    "avatarUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "maxLength": 500,
+                      "description": "URL to user's avatar image",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "avatar_url",
+                        "json": "avatarUrl"
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "maxLength": 100,
+                      "enum": [
+                        "active",
+                        "inactive",
+                        "pending",
+                        "anonymous"
+                      ],
+                      "description": "User account status",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "status",
+                        "json": "status"
+                      }
+                    },
+                    "bio": {
+                      "type": "string",
+                      "maxLength": 1000,
+                      "default": "",
+                      "description": "User's biography or description",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "bio",
+                        "json": "bio"
+                      }
+                    },
+                    "country": {
+                      "type": "object",
+                      "description": "User's country information stored as JSONB",
+                      "additionalProperties": true,
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "country",
+                        "json": "country"
+                      }
+                    },
+                    "region": {
+                      "type": "object",
+                      "description": "User's region information stored as JSONB",
+                      "additionalProperties": true,
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "region",
+                        "json": "region"
+                      }
+                    },
+                    "preferences": {
+                      "x-go-type": "Preference",
+                      "description": "User preferences stored as JSONB",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "preferences",
+                        "json": "preferences"
+                      },
+                      "x-generate-db-helpers": true,
+                      "type": "object",
+                      "required": [
+                        "anonymousUsageStats",
+                        "anonymousPerfResults",
+                        "updatedAt",
+                        "dashboardPreferences",
+                        "selectedOrganizationId",
+                        "selectedWorkspaceForOrganizations",
+                        "usersExtensionPreferences",
+                        "remoteProviderPreferences"
+                      ],
+                      "properties": {
+                        "meshAdapters": {
+                          "type": "array",
+                          "items": {
+                            "x-go-type": "Adapter",
+                            "type": "object",
+                            "description": "Placeholder for Adapter struct definition."
+                          },
+                          "description": "The mesh adapters of the preference."
+                        },
+                        "grafana": {
+                          "x-go-type": "Grafana",
+                          "type": "object",
+                          "properties": {
+                            "grafanaUrl": {
+                              "type": "string",
+                              "description": "Grafana URL for the user configuration.",
+                              "maxLength": 500
+                            },
+                            "grafanaApiKey": {
+                              "type": "string",
+                              "description": "Grafana API key for the user configuration.",
+                              "maxLength": 500
+                            },
+                            "selectedBoardsConfigs": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "board": {
+                                    "type": "object",
+                                    "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                  },
+                                  "panels": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                    },
+                                    "description": "Panels selected for the Grafana board configuration."
+                                  },
+                                  "templateVars": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "Template variables applied to the selected Grafana board configuration."
+                                  }
+                                }
+                              },
+                              "description": "Selected Grafana board configurations for the user."
+                            }
+                          }
+                        },
+                        "prometheus": {
+                          "x-go-type": "Prometheus",
+                          "type": "object",
+                          "properties": {
+                            "prometheusUrl": {
+                              "type": "string",
+                              "description": "The prometheus URL of the prometheus.",
+                              "maxLength": 500
+                            },
+                            "selectedPrometheusBoardsConfigs": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "board": {
+                                    "type": "object",
+                                    "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                  },
+                                  "panels": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                    },
+                                    "description": "Panels selected for the Grafana board configuration."
+                                  },
+                                  "templateVars": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "Template variables applied to the selected Grafana board configuration."
+                                  }
+                                }
+                              },
+                              "description": "The selected prometheus boards configs of the prometheus."
+                            }
+                          }
+                        },
+                        "loadTestPrefs": {
+                          "x-go-type": "LoadTestPreferences",
+                          "type": "object",
+                          "properties": {
+                            "c": {
+                              "type": "integer",
+                              "description": "Concurrent requests",
+                              "minimum": 0
+                            },
+                            "qps": {
+                              "type": "integer",
+                              "description": "Queries per second",
+                              "minimum": 0
+                            },
+                            "t": {
+                              "type": "string",
+                              "description": "Duration",
+                              "maxLength": 500
+                            },
+                            "gen": {
+                              "type": "string",
+                              "description": "Load generator",
+                              "maxLength": 500
+                            }
+                          }
+                        },
+                        "anonymousUsageStats": {
+                          "type": "boolean",
+                          "description": "The anonymous usage stats of the preference."
+                        },
+                        "anonymousPerfResults": {
+                          "type": "boolean",
+                          "description": "The anonymous perf results of the preference."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Timestamp of when the resource was last updated."
+                        },
+                        "dashboardPreferences": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "The dashboard preferences of the preference."
+                        },
+                        "selectedOrganizationId": {
+                          "type": "string",
+                          "description": "ID of the associated selectedOrganization.",
+                          "maxLength": 500,
+                          "format": "uuid"
+                        },
+                        "selectedWorkspaceForOrganizations": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "description": "The selected workspace for organizations of the preference."
+                        },
+                        "usersExtensionPreferences": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "The users extension preferences of the preference."
+                        },
+                        "remoteProviderPreferences": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "The remote provider preferences of the preference."
+                        }
+                      }
+                    },
+                    "acceptedTermsAt": {
+                      "description": "Timestamp when user accepted terms and conditions",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "accepted_terms_at",
+                        "json": "acceptedTermsAt"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "firstLoginTime": {
+                      "description": "Timestamp of user's first login",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "first_login_time",
+                        "json": "firstLoginTime"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "lastLoginTime": {
+                      "description": "Timestamp of user's most recent login",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "last_login_time",
+                        "json": "lastLoginTime"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "createdAt": {
+                      "description": "Timestamp when the user record was created",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "createdAt"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "Timestamp when the user record was last updated",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updatedAt"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "socials": {
+                      "type": "array",
+                      "description": "Various online profiles associated with the user account",
+                      "x-go-type": "UserSocials",
+                      "items": {
+                        "x-go-type": "Social",
+                        "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
+                        "type": "object",
+                        "properties": {
+                          "site": {
+                            "type": "string",
+                            "maxLength": 50,
+                            "description": "The site of the social."
+                          },
+                          "link": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The link of the social."
+                          }
+                        },
+                        "required": [
+                          "site",
+                          "link"
+                        ]
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "socials",
+                        "json": "socials"
+                      }
+                    },
+                    "deletedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true,
+                      "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                      "x-go-type": "core.NullTime",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "json": "deletedAt"
+                      }
+                    },
+                    "roleNames": {
+                      "type": "array",
+                      "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
+                      "example": [
+                        "organization admin",
+                        "user"
+                      ],
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "role_names",
+                        "json": "roleNames"
+                      }
+                    },
+                    "teams": {
+                      "type": "object",
+                      "description": "Teams the user belongs to with role information",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "teams",
+                        "json": "teams"
+                      },
+                      "properties": {
+                        "teamsWithRoles": {
+                          "type": "array",
+                          "nullable": true,
+                          "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                            "required": [
+                              "id",
+                              "name",
+                              "roleNames"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier of the team.",
+                                "x-go-name": "ID",
+                                "x-order": 1,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the team.",
+                                "x-order": 2,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name,omitempty"
+                                }
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Human readable description of the team.",
+                                "x-order": 3,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "description",
+                                  "json": "description,omitempty"
+                                }
+                              },
+                              "owner": {
+                                "description": "Identifier of the team owner.",
+                                "x-order": 4,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "owner",
+                                  "json": "owner,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "metadata": {
+                                "type": "object",
+                                "additionalProperties": true,
+                                "description": "Free-form metadata associated with the team.",
+                                "x-go-type": "core.Map",
+                                "x-go-type-skip-optional-pointer": true,
+                                "x-order": 5,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "metadata",
+                                  "json": "metadata,omitempty"
+                                }
+                              },
+                              "createdAt": {
+                                "description": "Timestamp when the team was created.",
+                                "x-order": 6,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "createdAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updatedAt": {
+                                "description": "Timestamp when the team was last updated.",
+                                "x-order": 7,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updatedAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true,
+                                "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                "x-go-type": "core.NullTime",
+                                "x-order": 8,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "deleted_at",
+                                  "json": "deletedAt,omitempty"
+                                }
+                              },
+                              "roleNames": {
+                                "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
+                                "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "x-order": 9,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "roleNames"
+                                }
+                              }
+                            }
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "teams_with_roles",
+                            "json": "teamsWithRoles"
+                          }
+                        },
+                        "totalCount": {
+                          "type": "integer",
+                          "nullable": true,
+                          "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
+                          "minimum": 0,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "total_count",
+                            "json": "totalCount"
+                          }
+                        }
+                      }
+                    },
+                    "organizations": {
+                      "type": "object",
+                      "description": "Organizations the user belongs to with role information",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organizations",
+                        "json": "organizations"
+                      },
+                      "properties": {
+                        "organizationsWithRoles": {
+                          "type": "array",
+                          "nullable": true,
+                          "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                            "required": [
+                              "id",
+                              "name",
+                              "roleNames"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier of the organization.",
+                                "x-go-name": "ID",
+                                "x-order": 1,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the organization.",
+                                "x-order": 2,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name,omitempty"
+                                }
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Human readable description of the organization.",
+                                "x-order": 3,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "description",
+                                  "json": "description,omitempty"
+                                }
+                              },
+                              "country": {
+                                "type": "string",
+                                "description": "Country associated with the organization.",
+                                "x-order": 4,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "country",
+                                  "json": "country,omitempty"
+                                }
+                              },
+                              "region": {
+                                "type": "string",
+                                "description": "Region associated with the organization.",
+                                "x-order": 5,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "region",
+                                  "json": "region,omitempty"
+                                }
+                              },
+                              "owner": {
+                                "description": "Identifier of the organization owner.",
+                                "x-order": 6,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "owner",
+                                  "json": "owner,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "createdAt": {
+                                "description": "Timestamp when the organization was created.",
+                                "x-order": 7,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "createdAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updatedAt": {
+                                "description": "Timestamp when the organization was last updated.",
+                                "x-order": 8,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updatedAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true,
+                                "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                "x-go-type": "core.NullTime",
+                                "x-order": 9,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "deleted_at",
+                                  "json": "deletedAt,omitempty"
+                                }
+                              },
+                              "roleNames": {
+                                "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
+                                "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "x-order": 10,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "roleNames"
+                                }
+                              }
+                            }
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "organizations_with_roles",
+                            "json": "organizationsWithRoles"
+                          }
+                        },
+                        "totalCount": {
+                          "type": "integer",
+                          "nullable": true,
+                          "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
+                          "minimum": 0,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "total_count",
+                            "json": "totalCount"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "location": {
+                  "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "patternFile": {
+                  "type": "string",
+                  "description": "Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.\n",
+                  "maxLength": 16777216,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "pattern_file"
+                  }
+                },
+                "visibility": {
+                  "type": "string",
+                  "description": "Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.\n",
+                  "enum": [
+                    "private",
+                    "public",
+                    "published"
+                  ],
+                  "x-enum-casing-exempt": true,
+                  "maxLength": 32,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "visibility"
+                  }
+                },
+                "designType": {
+                  "type": "string",
+                  "description": "Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                  "x-enum-casing-exempt": true,
+                  "nullable": true,
+                  "enum": [
+                    "Design",
+                    "Helm Chart",
+                    "Docker Compose",
+                    "Kubernetes Manifest"
+                  ],
+                  "maxLength": 64,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "source_type"
+                  }
+                },
+                "sourceContent": {
+                  "type": "string",
+                  "format": "byte",
+                  "nullable": true,
+                  "description": "Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.\n",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "source_content",
+                    "json": "sourceContent,omitempty"
+                  }
+                },
+                "viewCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "view_count",
+                    "json": "viewCount,omitempty"
+                  }
+                },
+                "downloadCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "download_count",
+                    "json": "downloadCount,omitempty"
+                  }
+                },
+                "cloneCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "clone_count",
+                    "json": "cloneCount,omitempty"
+                  }
+                },
+                "deploymentCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deployment_count",
+                    "json": "deploymentCount,omitempty"
+                  }
+                },
+                "shareCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "share_count",
+                    "json": "shareCount,omitempty"
+                  }
+                },
+                "createdAt": {
+                  "description": "Timestamp of design creation.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updatedAt": {
+                  "description": "Timestamp of last design modification.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                }
+              },
+              "x-go-type": "MesheryPattern"
+            }
+          },
+          "updatedIds": {
+            "type": "array",
+            "description": "IDs (all also present in `patterns`) of designs updated in place rather than created.",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          },
+          "skippedPaths": {
+            "type": "array",
+            "description": "Repository-relative paths left untouched because `onExisting` was `skip` and a design already imports them.",
+            "items": {
+              "type": "string",
+              "description": "Repository-relative path of a skipped file.",
+              "maxLength": 4096
+            }
+          },
+          "errors": {
+            "type": "array",
+            "description": "One Error-severity import event per selected path that failed.",
+            "items": {
+              "x-go-type": "eventv1beta3.Event",
+              "x-go-type-import": {
+                "path": "github.com/meshery/schemas/models/v1beta3/event",
+                "name": "eventv1beta3"
+              },
+              "type": "object",
+              "description": "One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields.\n",
+              "required": [
+                "id",
+                "actedUpon",
+                "action",
+                "category",
+                "description",
+                "metadata",
+                "operationId",
+                "severity",
+                "status",
+                "systemId",
+                "createdAt",
+                "updatedAt"
+              ],
+              "properties": {
+                "id": {
+                  "description": "Event ID.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "actedUpon": {
+                  "description": "ID of the entity on which the event was performed.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "acted_upon"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "action": {
+                  "type": "string",
+                  "description": "Action taken on the resource, for example `import`.",
+                  "maxLength": 500,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "action"
+                  }
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Resource kind the operation was invoked on, for example `pattern`.",
+                  "maxLength": 500,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "category"
+                  }
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Human-readable summary of what happened.",
+                  "maxLength": 5000,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "description"
+                  }
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none.\n",
+                  "additionalProperties": true,
+                  "nullable": true,
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "metadata"
+                  }
+                },
+                "operationId": {
+                  "description": "ID correlating the events one operation emitted.",
+                  "x-go-name": "OperationID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "operation_id"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.\n",
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "severity"
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.\n",
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "status"
+                  }
+                },
+                "systemId": {
+                  "description": "ID of the system instance that emitted the event.",
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "system_id"
+                  },
+                  "x-go-name": "SystemID",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "owner": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "owner"
+                  }
+                },
+                "createdAt": {
+                  "description": "Timestamp when the event was recorded.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updatedAt": {
+                  "description": "Timestamp when the event was last updated.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "deletedAt": {
+                  "description": "Timestamp when the event was soft-deleted; omitted when it was not.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at"
+                  },
+                  "x-go-type": "meshcore.NullTime",
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true,
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "DesignSourceBindingPayload": {
+        "type": "object",
+        "description": "The GitHub file a design is bound to - what `refreshPatternFromSource` re-reads.\n",
+        "required": [
+          "connectionId",
+          "host",
+          "path"
+        ],
+        "properties": {
+          "connectionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "host": {
+            "type": "string",
+            "description": "Repository as `github.com/<owner>/<repo>` - the same form `location.host` stores.\n",
+            "pattern": "^github\\.com/[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})/[A-Za-z0-9._-]{1,100}$",
+            "maxLength": 512
+          },
+          "path": {
+            "type": "string",
+            "description": "Repository-relative path of a file (not a directory), with no leading slash.\n",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "ref": {
+            "type": "string",
+            "description": "Branch or tag the binding tracks, stored as `location.branch`. Empty or omitted means the repository's default branch.\n",
+            "maxLength": 255
+          }
+        }
+      },
+      "DesignSourceLocation": {
+        "type": "object",
+        "description": "The keys of a design's `location` (a MapObject on MesheryPattern) when the design is bound to a GitHub source. Written by `importGithubRepository`, `refreshPatternFromSource` and `updatePatternSource`. A design created by an upload or a URL import retains no source - it carries no `github` location and cannot be refreshed until it is bound to one.\n",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Source kind; `github` for a design bound to a GitHub file.",
+            "maxLength": 64
+          },
+          "host": {
+            "type": "string",
+            "description": "Repository as `github.com/<owner>/<repo>`.",
+            "maxLength": 512
+          },
+          "path": {
+            "type": "string",
+            "description": "Repository-relative path of the source file.",
+            "maxLength": 4096
+          },
+          "branch": {
+            "type": "string",
+            "description": "Ref the binding tracks (a branch or tag name). Empty means the repository's default branch.\n",
+            "maxLength": 255
+          },
+          "commitSha": {
+            "type": "string",
+            "description": "The commit the design's stored content was last read from, by an import or a refresh. Absent when the content was not read from the current binding - after a remap without a refresh, or for a design imported before commits were recorded. Compare it with the head of `branch` to tell whether the source has drifted.\n",
+            "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+          }
+        },
+        "additionalProperties": true
+      },
+      "GithubBranch": {
+        "type": "object",
+        "description": "One branch of a GitHub repository.",
+        "required": [
+          "name",
+          "commitSha"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Branch name.",
+            "maxLength": 255
+          },
+          "commitSha": {
+            "type": "string",
+            "description": "Commit at the head of the branch.",
+            "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+          }
+        }
+      },
+      "GithubBranchPage": {
+        "type": "object",
+        "description": "A page of a repository's branches. GitHub does not report a total, so the page says whether another follows instead of carrying a count.\n",
+        "required": [
+          "defaultBranch",
+          "branches",
+          "page",
+          "pageSize",
+          "hasMore"
+        ],
+        "properties": {
+          "defaultBranch": {
+            "type": "string",
+            "description": "The repository's default branch.",
+            "maxLength": 255
+          },
+          "branches": {
+            "type": "array",
+            "items": {
+              "x-go-type": "GithubBranch",
+              "type": "object",
+              "description": "One branch of a GitHub repository.",
+              "required": [
+                "name",
+                "commitSha"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Branch name.",
+                  "maxLength": 255
+                },
+                "commitSha": {
+                  "type": "string",
+                  "description": "Commit at the head of the branch.",
+                  "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+                }
+              }
+            }
+          },
+          "page": {
+            "type": "integer",
+            "description": "Zero-based page index served.",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Page size served.",
+            "minimum": 1
+          },
+          "hasMore": {
+            "type": "boolean",
+            "description": "True when another page of branches follows."
           }
         }
       },
@@ -19213,7 +26149,7 @@ const DesignSchema: Record<string, unknown> = {
                   "additionalProperties": false
                 },
                 "location": {
-                  "description": "Optional structured location metadata (branch, host, path, ...).",
+                  "description": "Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.\n",
                   "type": "object",
                   "additionalProperties": {
                     "type": "string"

@@ -100,24 +100,27 @@ post:
 A *server-generated* field (`id`, `createdAt`) is one the server fills in. A
 *server-owned* field is stronger: one the client must not be able to influence at
 all, because the value carries authority. `Environment.purpose` is the worked
-example - it designates an environment administrative, and resolvers of
-organization-level configuration trust that designation.
+example - its privileged values designate an environment administrative, and
+resolvers of organization-level configuration trust that designation. Its
+non-privileged value, `user`, is client-settable.
 
 Express it two ways, because each covers a different surface:
 
-1. **Leave it out of the `*Payload` schema.** This is the load-bearing one. The
-   payload is what every `POST`/`PUT` `requestBody` references, so the generated
-   Go, TypeScript and RTK clients get no field at all and a supplied value
-   decodes to nothing.
-2. **Leave it out of the construct's RJSF form schema**, so no UI control offers
-   it.
+1. **Limit the `*Payload` schema to non-privileged values.** This is the
+   load-bearing one. The payload is what every `POST`/`PUT` `requestBody`
+   references, so the generated Go, TypeScript and RTK clients can only spell
+   the non-privileged values, and a privileged value is refused. The
+   environment payload does this with a separate `EnvironmentPayloadPurpose`
+   enum; see `schemas/constructs/v1beta3/environment/api.yml`.
+2. **Leave privileged values out of the construct's RJSF form schema**, so no UI
+   control offers them.
 
 Then say so in the property `description`, which is the only part that travels
 into every generated artifact and into the published OpenAPI docs - and write a
-test that fails if either exclusion is undone (see
-`validation/environment_purpose_test.go`). Without one, restoring the property to
-the payload out of symmetry with the entity is a one-line edit that reviews
-cleanly.
+test that fails if either restriction is undone (see
+`validation/environment_purpose_test.go`). Without one, widening the payload
+enum to a privileged value out of symmetry with the entity is a one-line edit
+that reviews cleanly.
 
 **Do not reach for `readOnly: true`.** It is the natural annotation and it
 corrupts the generated RTK client: `oazapfts` propagates `readOnly` up through

@@ -1,0 +1,81 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Blowhorn Profile Schema
+description: |
+  Server-returned Blowhorn profile settings as persisted by meshery-cloud.
+  A profile holds only the Blowhorn-specific slug and free-form attributes
+  for an existing Layer5 user, scoped by organization and keyed by userId.
+  User identity and organization membership are reused from the existing
+  identity constructs and are not re-modelled here. Profiles soft-delete, and renames are guarded
+  server-side.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - userId
+  - slug
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated Blowhorn profile ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  userId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: ID of the existing Layer5 user the profile settings belong to.
+    x-go-name: UserID
+    x-oapi-codegen-extra-tags:
+      db: user_id
+    x-order: 3
+  slug:
+    type: string
+    description: Unique slug for the profile within the organization. Renames are guarded server-side.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: slug
+    x-order: 4
+  attributes:
+    type: object
+    description: Free-form profile attributes, stored as a JSON blob.
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: attributes
+    x-order: 5
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of Blowhorn profile creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 6
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last Blowhorn profile modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 7
+  deletedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the Blowhorn profile was soft-deleted.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
+    x-order: 8

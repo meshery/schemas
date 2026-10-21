@@ -1,0 +1,106 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Claim Schema
+description: |
+  Server-returned claim: a time-bound hold that one claimant takes on one
+  resource so that competing workers never act on it twice. A claim is
+  generic: it names the resource it holds by type and ID, and any construct
+  can be claimed (a schedule is the first). A claim is live while its
+  status is `active` and `expiresAt` is in the future; a live claim held by
+  another claimant refuses a new claim on the same resource. A claim whose
+  `expiresAt` has passed is stale and the resource may be claimed again,
+  so a claimant that disappears never strands the resource. Only the
+  holder renews or releases a claim. The race between claimants is decided
+  server-side in a single statement.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - resourceType
+  - resourceId
+  - claimant
+  - status
+  - claimedAt
+  - expiresAt
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated claim ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  resourceType:
+    type: string
+    description: Type of the claimed resource, for example `schedule`.
+    minLength: 1
+    maxLength: 64
+    x-oapi-codegen-extra-tags:
+      db: resource_type
+    x-order: 3
+  resourceId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: ID of the claimed resource.
+    x-oapi-codegen-extra-tags:
+      db: resource_id
+    x-order: 4
+  claimant:
+    type: string
+    description: Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: claimant
+    x-order: 5
+  status:
+    type: string
+    description: Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.
+    enum:
+      - active
+      - released
+      - expired
+    x-oapi-codegen-extra-tags:
+      db: status
+    x-order: 6
+  claimedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Time the claim was taken.
+    x-oapi-codegen-extra-tags:
+      db: claimed_at
+    x-order: 7
+  expiresAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale.
+    x-oapi-codegen-extra-tags:
+      db: expires_at
+    x-order: 8
+  releasedAt:
+    type: string
+    format: date-time
+    description: Time the holder released the claim. Null while the claim is active or after it expired.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: released_at
+    x-order: 9
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of claim creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 10
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last claim modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 11

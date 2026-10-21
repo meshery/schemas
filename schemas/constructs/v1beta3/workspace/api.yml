@@ -26,6 +26,8 @@ tags:
     description: APIs for Meshery Cloud views associated with workspaces.
   - name: designs
     description: APIs for Meshery Cloud designs associated with workspaces.
+  - name: profiles
+    description: APIs for Meshery Cloud profiles associated with workspaces.
 
 paths:
   /api/workspaces:
@@ -395,6 +397,92 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/workspaces/{workspaceId}/profiles:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - workspaces
+        - profiles
+      operationId: getProfilesOfWorkspace
+      summary: Get profiles assigned to a workspace
+      description: >-
+        Gets profiles assigned to or available for a workspace depending on
+        the filter. A profile can be assigned to many workspaces; members of
+        each one can read it, as can its owner and organization admins.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/filter"
+      responses:
+        "200":
+          description: Profiles
+          content:
+            application/json:
+              schema:
+                $ref: "../profile/api.yml#/components/schemas/ProfilePage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/workspaces/{workspaceId}/profiles/{profileId}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - workspaces
+        - profiles
+      operationId: assignProfileToWorkspace
+      summary: Assign a profile to a workspace
+      description: Assigns a profile to a workspace, granting the workspace's members read access to it (not to its linked connections). The profile and the workspace must belong to the same organization, and a profile can be assigned to many workspaces.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/profileId"
+      responses:
+        "200":
+          description: Workspace profile mappings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkspacesProfilesMappingPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - workspaces
+        - profiles
+      operationId: unassignProfileFromWorkspace
+      summary: Unassign a profile from a workspace
+      description: Removes a profile from a workspace. The profile itself is left intact.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/profileId"
+      responses:
+        "204":
+          description: Workspace profile mapping removed
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/workspaces/{workspaceId}/views:
     get:
       x-internal: ["cloud", "meshery"]
@@ -519,6 +607,13 @@ components:
       description: Design ID
       schema:
         $ref: "../../v1beta1/core/api.yml#/components/schemas/design_id"
+      required: true
+    profileId:
+      name: profileId
+      in: path
+      description: Profile ID
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
       required: true
     viewId:
       name: viewId
@@ -991,6 +1086,85 @@ components:
           items:
             x-go-type: WorkspacesDesignsMapping
             $ref: "#/components/schemas/WorkspacesDesignsMapping"
+
+    WorkspacesProfilesMapping:
+      type: object
+      description: Junction record linking a workspace to a profile.
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - profileId
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Mapping record ID.
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: id
+        workspaceId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Workspace ID for this mapping.
+          x-go-name: WorkspaceID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: workspace_id
+            json: workspaceId
+        profileId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Profile ID for this mapping.
+          x-go-name: ProfileID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: profile_id
+            json: profileId
+        createdAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the mapping was created.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the mapping was last updated.
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: "updatedAt,omitempty"
+        deletedAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/NullTime"
+          description: Timestamp when the mapping was soft-deleted.
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: "deletedAt,omitempty"
+
+    WorkspacesProfilesMappingPage:
+      type: object
+      description: Paginated list of workspace-profile mappings.
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
+          type: integer
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
+        workspacesProfilesMapping:
+          type: array
+          description: Workspace-profile mapping entries.
+          x-go-type-skip-optional-pointer: true
+          items:
+            x-go-type: WorkspacesProfilesMapping
+            $ref: "#/components/schemas/WorkspacesProfilesMapping"
 
     WorkspacesViewsMapping:
       type: object

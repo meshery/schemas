@@ -33,16 +33,17 @@ const (
 
 // Defines values for OrganizationSmtpConfigurationLastFailureReason.
 const (
-	OrganizationSmtpConfigurationLastFailureReasonAuthRejected           OrganizationSmtpConfigurationLastFailureReason = "auth_rejected"
-	OrganizationSmtpConfigurationLastFailureReasonBlockedTarget          OrganizationSmtpConfigurationLastFailureReason = "blocked_target"
-	OrganizationSmtpConfigurationLastFailureReasonConnectRefused         OrganizationSmtpConfigurationLastFailureReason = "connect_refused"
-	OrganizationSmtpConfigurationLastFailureReasonConnectTimeout         OrganizationSmtpConfigurationLastFailureReason = "connect_timeout"
-	OrganizationSmtpConfigurationLastFailureReasonCredentialUnreadable   OrganizationSmtpConfigurationLastFailureReason = "credential_unreadable"
-	OrganizationSmtpConfigurationLastFailureReasonDeliveryFailed         OrganizationSmtpConfigurationLastFailureReason = "delivery_failed"
-	OrganizationSmtpConfigurationLastFailureReasonRelayRejectedRecipient OrganizationSmtpConfigurationLastFailureReason = "relay_rejected_recipient"
-	OrganizationSmtpConfigurationLastFailureReasonRelayRejectedSender    OrganizationSmtpConfigurationLastFailureReason = "relay_rejected_sender"
-	OrganizationSmtpConfigurationLastFailureReasonStarttlsUnsupported    OrganizationSmtpConfigurationLastFailureReason = "starttls_unsupported"
-	OrganizationSmtpConfigurationLastFailureReasonTlsFailed              OrganizationSmtpConfigurationLastFailureReason = "tls_failed"
+	OrganizationSmtpConfigurationLastFailureReasonAuthMechanismUnsupported OrganizationSmtpConfigurationLastFailureReason = "auth_mechanism_unsupported"
+	OrganizationSmtpConfigurationLastFailureReasonAuthRejected             OrganizationSmtpConfigurationLastFailureReason = "auth_rejected"
+	OrganizationSmtpConfigurationLastFailureReasonBlockedTarget            OrganizationSmtpConfigurationLastFailureReason = "blocked_target"
+	OrganizationSmtpConfigurationLastFailureReasonConnectRefused           OrganizationSmtpConfigurationLastFailureReason = "connect_refused"
+	OrganizationSmtpConfigurationLastFailureReasonConnectTimeout           OrganizationSmtpConfigurationLastFailureReason = "connect_timeout"
+	OrganizationSmtpConfigurationLastFailureReasonCredentialUnreadable     OrganizationSmtpConfigurationLastFailureReason = "credential_unreadable"
+	OrganizationSmtpConfigurationLastFailureReasonDeliveryFailed           OrganizationSmtpConfigurationLastFailureReason = "delivery_failed"
+	OrganizationSmtpConfigurationLastFailureReasonRelayRejectedRecipient   OrganizationSmtpConfigurationLastFailureReason = "relay_rejected_recipient"
+	OrganizationSmtpConfigurationLastFailureReasonRelayRejectedSender      OrganizationSmtpConfigurationLastFailureReason = "relay_rejected_sender"
+	OrganizationSmtpConfigurationLastFailureReasonStarttlsUnsupported      OrganizationSmtpConfigurationLastFailureReason = "starttls_unsupported"
+	OrganizationSmtpConfigurationLastFailureReasonTlsFailed                OrganizationSmtpConfigurationLastFailureReason = "tls_failed"
 )
 
 // Defines values for OrganizationSmtpConfigurationPayloadEncryption.
@@ -89,17 +90,18 @@ const (
 
 // Defines values for OrganizationSmtpTestResultOutcome.
 const (
-	OrganizationSmtpTestResultOutcomeAuthRejected           OrganizationSmtpTestResultOutcome = "auth_rejected"
-	OrganizationSmtpTestResultOutcomeBlockedTarget          OrganizationSmtpTestResultOutcome = "blocked_target"
-	OrganizationSmtpTestResultOutcomeConnectRefused         OrganizationSmtpTestResultOutcome = "connect_refused"
-	OrganizationSmtpTestResultOutcomeConnectTimeout         OrganizationSmtpTestResultOutcome = "connect_timeout"
-	OrganizationSmtpTestResultOutcomeCredentialUnreadable   OrganizationSmtpTestResultOutcome = "credential_unreadable"
-	OrganizationSmtpTestResultOutcomeDelivered              OrganizationSmtpTestResultOutcome = "delivered"
-	OrganizationSmtpTestResultOutcomeDeliveryFailed         OrganizationSmtpTestResultOutcome = "delivery_failed"
-	OrganizationSmtpTestResultOutcomeRelayRejectedRecipient OrganizationSmtpTestResultOutcome = "relay_rejected_recipient"
-	OrganizationSmtpTestResultOutcomeRelayRejectedSender    OrganizationSmtpTestResultOutcome = "relay_rejected_sender"
-	OrganizationSmtpTestResultOutcomeStarttlsUnsupported    OrganizationSmtpTestResultOutcome = "starttls_unsupported"
-	OrganizationSmtpTestResultOutcomeTlsFailed              OrganizationSmtpTestResultOutcome = "tls_failed"
+	OrganizationSmtpTestResultOutcomeAuthMechanismUnsupported OrganizationSmtpTestResultOutcome = "auth_mechanism_unsupported"
+	OrganizationSmtpTestResultOutcomeAuthRejected             OrganizationSmtpTestResultOutcome = "auth_rejected"
+	OrganizationSmtpTestResultOutcomeBlockedTarget            OrganizationSmtpTestResultOutcome = "blocked_target"
+	OrganizationSmtpTestResultOutcomeConnectRefused           OrganizationSmtpTestResultOutcome = "connect_refused"
+	OrganizationSmtpTestResultOutcomeConnectTimeout           OrganizationSmtpTestResultOutcome = "connect_timeout"
+	OrganizationSmtpTestResultOutcomeCredentialUnreadable     OrganizationSmtpTestResultOutcome = "credential_unreadable"
+	OrganizationSmtpTestResultOutcomeDelivered                OrganizationSmtpTestResultOutcome = "delivered"
+	OrganizationSmtpTestResultOutcomeDeliveryFailed           OrganizationSmtpTestResultOutcome = "delivery_failed"
+	OrganizationSmtpTestResultOutcomeRelayRejectedRecipient   OrganizationSmtpTestResultOutcome = "relay_rejected_recipient"
+	OrganizationSmtpTestResultOutcomeRelayRejectedSender      OrganizationSmtpTestResultOutcome = "relay_rejected_sender"
+	OrganizationSmtpTestResultOutcomeStarttlsUnsupported      OrganizationSmtpTestResultOutcome = "starttls_unsupported"
+	OrganizationSmtpTestResultOutcomeTlsFailed                OrganizationSmtpTestResultOutcome = "tls_failed"
 )
 
 // OrganizationSmtpConfiguration An organization's own outbound mail server. When present and healthy, every transactional email whose reader belongs to this organization - application notifications and identity-flow mail (account verification, password recovery) alike - is delivered through this server rather than through the provider's shared relay, so the message leaves from the organization's own domain. At most one live configuration exists per organization. The SMTP password is encrypted at rest and is never returned; reads always carry the redaction sentinel instead.

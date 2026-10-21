@@ -1,0 +1,89 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Provider Capability Schema
+description: |
+  The remote provider's capabilities document. Existing fields describe the
+  provider and its extensions; `contractVersion` and `membership` let a
+  native client gate on the provider's contract and on its organization
+  membership after authenticating; `compatibility` tells a client that
+  named itself whether its version is still accepted, and `session`
+  describes the authenticated caller's roles, plan and entitlements. New
+  fields arrive only with a new `contractVersion` (1.1 added
+  `compatibility` and `session`).
+type: object
+additionalProperties: false
+required:
+  - providerType
+properties:
+  providerType:
+    type: string
+    description: Provider type, for example `remote`.
+    maxLength: 64
+  packageVersion:
+    type: string
+    description: Version of the extension package the provider offers this client.
+    maxLength: 64
+  packageUrl:
+    type: string
+    description: Download URL of that package.
+    maxLength: 2048
+  providerName:
+    type: string
+    description: Display name of the provider.
+    maxLength: 255
+  providerDescription:
+    type: array
+    description: Lines describing the provider.
+    items:
+      type: string
+  providerUrl:
+    type: string
+    description: Home page URL of the provider.
+    maxLength: 2048
+  redirects:
+    type: object
+    description: Redirect targets the provider serves to this client, keyed by name.
+    additionalProperties:
+      type: string
+  contractVersion:
+    type: string
+    description: |
+      Version of the provider's REST contract for native clients, as
+      `MAJOR.MINOR`. A client refuses a provider whose major differs from the
+      one it was built against. A provider that predates this field omits
+      it, which a client treats as not serving the contract.
+    pattern: '^[0-9]+\.[0-9]+$'
+    maxLength: 32
+  membership:
+    $ref: "./api.yml#/components/schemas/ProviderMembership"
+  compatibility:
+    $ref: "./api.yml#/components/schemas/ClientCompatibility"
+  session:
+    $ref: "./api.yml#/components/schemas/ProviderSession"
+  extensions:
+    type: object
+    description: Extension points; shape owned by the provider.
+    additionalProperties: true
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true
+  capabilities:
+    type: array
+    description: >
+      Features the provider serves and their endpoints. Clients read paths
+      from here instead of hard-coding them. A provider serving desktop
+      connections lists `register-connection`, `connection-heartbeat` and
+      `deregister-desktop-connection`; an endpoint may hold `{connectionId}`
+      or `{machineId}` placeholders.
+    items:
+      $ref: "./api.yml#/components/schemas/ProviderFeature"
+  restrictedAccess:
+    type: object
+    description: Access restrictions applied to this client; shape owned by the provider.
+    additionalProperties: true
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-go-type-skip-optional-pointer: true

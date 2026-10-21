@@ -122,14 +122,14 @@ components:
         Payload for creating or updating an environment. Carries only the
         client-settable fields. Server-owned fields are deliberately absent:
         `id`, `owner`, `createdAt`, `updatedAt` and `deletedAt` because the
-        server assigns them, and `purpose` because permission to create an
-        environment must not confer the ability to designate it
-        administrative. Excluding it here is a codegen guarantee rather than
-        access control: the registrant connection inlines the full environment
+        server assigns them. `purpose` is present but limited to the
+        non-privileged values, because permission to create an environment
+        must not confer the ability to designate it administrative. Limiting
+        it here is a codegen guarantee rather than access control: the registrant connection inlines the full environment
         entity, so `purpose` still reaches the `registerRegistryComponent` and
         `registerRegistryRelationship` request types, and every consumer must
-        refuse it on input whatever surface it arrives on. Do not add
-        `purpose` here - see
+        refuse a privileged value on input whatever surface it arrives on. Do
+        not widen `EnvironmentPayloadPurpose` to a privileged value - see
         https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
       required:
         - name
@@ -150,6 +150,31 @@ components:
             json: organizationId
           maxLength: 500
           format: uuid
+        metadata:
+          type: object
+          description: Free-form settings stored with the environment.
+          additionalProperties: true
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+        purpose:
+          $ref: "#/components/schemas/EnvironmentPayloadPurpose"
+    EnvironmentPayloadPurpose:
+      type: string
+      description: >-
+        The purpose a client may give an environment on create or update:
+        `user` (an ordinary environment). Profiles are not environments; they
+        are their own construct at `/api/profiles`, assigned to workspaces.
+        Omitted means `user` on
+        create and unchanged on update. A server refuses any other value with
+        400, and never lets this field change an environment that already
+        carries a privileged purpose.
+      enum:
+        - user
+      x-enum-varnames:
+        - EnvironmentPayloadPurposeUser
     EnvironmentPage:
       type: object
       description: Paginated list of environments.
@@ -289,6 +314,12 @@ paths:
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/orgIdQuery"
+        - name: purpose
+          in: query
+          required: false
+          description: Return only environments with this purpose; absent returns every purpose the caller may see. The filter only narrows the environments the caller can already list and grants no visibility - a caller who cannot see administrative environments receives an empty page for purpose=administrative.
+          schema:
+            $ref: "./environment.yaml#/properties/purpose"
       responses:
         "200":
           description: Environments

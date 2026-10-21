@@ -1,0 +1,83 @@
+openapi: 3.0.0
+info:
+  title: BlowhornHealth
+  description: |
+    OpenAPI schema for the Blowhorn health probe - the frozen contract
+    version plus the organization binding check. Read-only; carries no
+    payload and no template.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: blowhornHealth
+    description: Operations related to Blowhorn health.
+
+paths:
+  /api/blowhorn/health:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - blowhornHealth
+      summary: Get Blowhorn health
+      operationId: getBlowhornHealth
+      description: |
+        Returns the frozen Blowhorn contract version and whether the
+        organization of the authenticated session is bound. Migrations move
+        server-side; this endpoint reports the contract the server speaks.
+      responses:
+        "200":
+          description: Blowhorn health response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlowhornHealth"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer [REDACTED]
+      bearerFormat: JWT
+
+  responses:
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  schemas:
+    BlowhornHealth:
+      type: object
+      description: Blowhorn contract version and organization binding status.
+      additionalProperties: false
+      required:
+        - contractVersion
+        - bound
+      properties:
+        contractVersion:
+          type: string
+          description: Frozen Blowhorn contract version the server speaks.
+          minLength: 1
+          maxLength: 255
+        bound:
+          type: boolean
+          description: Whether the organization is bound for Blowhorn operations.
+        organizationId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Organization whose binding was checked.
+          x-go-name: OrganizationID
+        checkedAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Time the binding was checked.

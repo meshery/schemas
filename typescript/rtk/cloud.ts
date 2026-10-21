@@ -17,21 +17,32 @@ export const addTagTypes = [
   "User_users",
   "View_views",
   "Academy_API_Academy",
+  "BlowhornHealth_blowhornHealth",
+  "BlowhornProfile_blowhornProfiles",
+  "Claim_claims",
   "Connection_API_Connections",
   "Connection_API_ConnectionDefinitions",
+  "ContentItem_contentItems",
   "Design_designs",
+  "Design_github",
   "Environment_environments",
   "Events_events",
   "Filter_filters",
+  "GitHub_github",
   "Invitation_Invitation",
+  "Ledger_ledgers",
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
+  "Profile_profiles",
+  "ProviderCapability_capabilities",
+  "Schedule_schedules",
   "Subscription_Subscriptions",
   "Subscription_Payment Processors",
   "token_tokens",
   "Workspace_workspaces",
   "Workspace_designs",
+  "Workspace_profiles",
   "Workspace_views",
 ] as const;
 const injectedRtkApi = api
@@ -362,9 +373,38 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Organization_Organizations"],
       }),
+      getChildOrgs: build.query<GetChildOrgsApiResponse, GetChildOrgsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Organization_Organizations"],
+      }),
+      createChildOrg: build.mutation<CreateChildOrgApiResponse, CreateChildOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
       getOrgPreferences: build.query<GetOrgPreferencesApiResponse, GetOrgPreferencesApiArg>({
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/preferences` }),
         providesTags: ["Organization_Organizations"],
+      }),
+      patchOrgPreferences: build.mutation<PatchOrgPreferencesApiResponse, PatchOrgPreferencesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/preferences`,
+          method: "PATCH",
+          body: queryArg.body,
+          headers: {
+            "If-Match": queryArg["If-Match"],
+          },
+        }),
+        invalidatesTags: ["Organization_Organizations"],
       }),
       addTeamToOrg: build.mutation<AddTeamToOrgApiResponse, AddTeamToOrgApiArg>({
         query: (queryArg) => ({
@@ -831,6 +871,74 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
         providesTags: ["Academy_API_Academy"],
       }),
+      getBlowhornHealth: build.query<GetBlowhornHealthApiResponse, GetBlowhornHealthApiArg>({
+        query: () => ({ url: `/api/blowhorn/health` }),
+        providesTags: ["BlowhornHealth_blowhornHealth"],
+      }),
+      listBlowhornProfiles: build.query<ListBlowhornProfilesApiResponse, ListBlowhornProfilesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/profiles`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      upsertBlowhornProfile: build.mutation<UpsertBlowhornProfileApiResponse, UpsertBlowhornProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/profiles`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      getBlowhornProfile: build.query<GetBlowhornProfileApiResponse, GetBlowhornProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}` }),
+        providesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      updateBlowhornProfile: build.mutation<UpdateBlowhornProfileApiResponse, UpdateBlowhornProfileApiArg>({
+        query: (queryArg) => ({
+          url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      deleteBlowhornProfile: build.mutation<DeleteBlowhornProfileApiResponse, DeleteBlowhornProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}`, method: "DELETE" }),
+        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
+      }),
+      listClaims: build.query<ListClaimsApiResponse, ListClaimsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/claims`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            order: queryArg?.order,
+            resourceType: queryArg?.resourceType,
+            resourceId: queryArg?.resourceId,
+            claimant: queryArg?.claimant,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["Claim_claims"],
+      }),
+      createClaim: build.mutation<CreateClaimApiResponse, CreateClaimApiArg>({
+        query: (queryArg) => ({ url: `/api/claims`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Claim_claims"],
+      }),
+      getClaim: build.query<GetClaimApiResponse, GetClaimApiArg>({
+        query: (queryArg) => ({ url: `/api/claims/${queryArg.claimId}` }),
+        providesTags: ["Claim_claims"],
+      }),
+      renewClaim: build.mutation<RenewClaimApiResponse, RenewClaimApiArg>({
+        query: (queryArg) => ({ url: `/api/claims/${queryArg.claimId}/renew`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Claim_claims"],
+      }),
+      releaseClaim: build.mutation<ReleaseClaimApiResponse, ReleaseClaimApiArg>({
+        query: (queryArg) => ({ url: `/api/claims/${queryArg.claimId}/release`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Claim_claims"],
+      }),
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
         query: (queryArg) => ({
           url: `/api/integrations/connections`,
@@ -850,7 +958,14 @@ const injectedRtkApi = api
         providesTags: ["Connection_API_Connections"],
       }),
       registerConnection: build.mutation<RegisterConnectionApiResponse, RegisterConnectionApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/connections`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/integrations/connections`,
+          method: "POST",
+          body: queryArg.body,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
       getConnectionById: build.query<GetConnectionByIdApiResponse, GetConnectionByIdApiArg>({
@@ -873,6 +988,20 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/integrations/connections/meshery/${queryArg.mesheryServerId}`,
           method: "DELETE",
+        }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      deregisterDesktopConnection: build.mutation<
+        DeregisterDesktopConnectionApiResponse,
+        DeregisterDesktopConnectionApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/integrations/connections/desktop/${queryArg.machineId}`, method: "DELETE" }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      recordConnectionHeartbeat: build.mutation<RecordConnectionHeartbeatApiResponse, RecordConnectionHeartbeatApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/heartbeat`,
+          method: "POST",
         }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
@@ -946,6 +1075,46 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Connection_API_ConnectionDefinitions"],
       }),
+      listContentItems: build.query<ListContentItemsApiResponse, ListContentItemsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content-items`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            profile: queryArg?.profile,
+          },
+        }),
+        providesTags: ["ContentItem_contentItems"],
+      }),
+      insertContentItem: build.mutation<InsertContentItemApiResponse, InsertContentItemApiArg>({
+        query: (queryArg) => ({ url: `/api/content-items`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["ContentItem_contentItems"],
+      }),
+      getContentItem: build.query<GetContentItemApiResponse, GetContentItemApiArg>({
+        query: (queryArg) => ({ url: `/api/content-items/${queryArg.contentItemId}` }),
+        providesTags: ["ContentItem_contentItems"],
+      }),
+      updateContentItem: build.mutation<UpdateContentItemApiResponse, UpdateContentItemApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content-items/${queryArg.contentItemId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["ContentItem_contentItems"],
+      }),
+      deleteContentItem: build.mutation<DeleteContentItemApiResponse, DeleteContentItemApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content-items/${queryArg.contentItemId}`,
+          method: "DELETE",
+          params: {
+            expectedFingerprint: queryArg?.expectedFingerprint,
+          },
+        }),
+        invalidatesTags: ["ContentItem_contentItems"],
+      }),
       getPatterns: build.query<GetPatternsApiResponse, GetPatternsApiArg>({
         query: (queryArg) => ({
           url: `/api/content/patterns`,
@@ -1005,9 +1174,54 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Design_designs"],
       }),
+      refreshPatternFromSource: build.mutation<RefreshPatternFromSourceApiResponse, RefreshPatternFromSourceApiArg>({
+        query: (queryArg) => ({ url: `/api/content/patterns/refresh/${queryArg.designId}`, method: "POST" }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      updatePatternSource: build.mutation<UpdatePatternSourceApiResponse, UpdatePatternSourceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content/patterns/${queryArg.designId}/source`,
+          method: "PATCH",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Design_designs"],
+      }),
       importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
         query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Design_designs"],
+      }),
+      getGithubImportedDesigns: build.query<GetGithubImportedDesignsApiResponse, GetGithubImportedDesignsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/designs/${queryArg.connectionId}`,
+          params: {
+            repository: queryArg?.repository,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Design_designs"],
+      }),
+      importGithubRepository: build.mutation<ImportGithubRepositoryApiResponse, ImportGithubRepositoryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/import/${queryArg.connectionId}`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      getGithubRepositoryBranches: build.query<
+        GetGithubRepositoryBranchesApiResponse,
+        GetGithubRepositoryBranchesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/branches/${queryArg.connectionId}`,
+          params: {
+            repository: queryArg?.repository,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Design_github"],
       }),
       getCatalogContent: build.query<GetCatalogContentApiResponse, GetCatalogContentApiArg>({
         query: (queryArg) => ({
@@ -1108,6 +1322,7 @@ const injectedRtkApi = api
             pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             orgId: queryArg?.orgId,
+            purpose: queryArg?.purpose,
           },
         }),
         providesTags: ["Environment_environments"],
@@ -1273,6 +1488,80 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/content/filters/download/${queryArg.filterId}` }),
         providesTags: ["Filter_filters"],
       }),
+      getGithubAppStatus: build.query<GetGithubAppStatusApiResponse, GetGithubAppStatusApiArg>({
+        query: () => ({ url: `/api/integrations/github/status` }),
+        providesTags: ["GitHub_github"],
+      }),
+      getGithubInstallationRepositories: build.query<
+        GetGithubInstallationRepositoriesApiResponse,
+        GetGithubInstallationRepositoriesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/github`,
+          params: {
+            id: queryArg?.id,
+            page: queryArg?.page,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
+      scanGithubRepository: build.query<ScanGithubRepositoryApiResponse, ScanGithubRepositoryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/scan`,
+          params: {
+            name: queryArg?.name,
+            ref: queryArg?.ref,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
+      verifyGithubRepositoryWorkflow: build.mutation<
+        VerifyGithubRepositoryWorkflowApiResponse,
+        VerifyGithubRepositoryWorkflowApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/verify/${queryArg.owner}/${queryArg.repo}`,
+          method: "POST",
+          params: {
+            id: queryArg?.id,
+          },
+        }),
+        invalidatesTags: ["GitHub_github"],
+      }),
+      installGithubWorkflow: build.mutation<InstallGithubWorkflowApiResponse, InstallGithubWorkflowApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/install`,
+          method: "POST",
+          body: queryArg.body,
+          params: {
+            id: queryArg?.id,
+          },
+        }),
+        invalidatesTags: ["GitHub_github"],
+      }),
+      startGithubAuthorization: build.query<StartGithubAuthorizationApiResponse, StartGithubAuthorizationApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/authorize`,
+          params: {
+            flow: queryArg?.flow,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
+      githubAppCallback: build.query<GithubAppCallbackApiResponse, GithubAppCallbackApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/callback`,
+          params: {
+            state: queryArg?.state,
+            code: queryArg?.code,
+            installation_id: queryArg?.installationId,
+            setup_action: queryArg?.setupAction,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
       getInvitation: build.query<GetInvitationApiResponse, GetInvitationApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}` }),
         providesTags: ["Invitation_Invitation"],
@@ -1384,6 +1673,37 @@ const injectedRtkApi = api
       >({
         query: () => ({ url: `/api/identity/users/request/notification` }),
         providesTags: ["Invitation_Invitation"],
+      }),
+      listLedgerEntries: build.query<ListLedgerEntriesApiResponse, ListLedgerEntriesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["Ledger_ledgers"],
+      }),
+      recordLedgerEntry: build.mutation<RecordLedgerEntryApiResponse, RecordLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Ledger_ledgers"],
+      }),
+      claimLedgerEntry: build.mutation<ClaimLedgerEntryApiResponse, ClaimLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/claims`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Ledger_ledgers"],
+      }),
+      getLedgerEntry: build.query<GetLedgerEntryApiResponse, GetLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}` }),
+        providesTags: ["Ledger_ledgers"],
+      }),
+      deleteLedgerEntry: build.mutation<DeleteLedgerEntryApiResponse, DeleteLedgerEntryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Ledger_ledgers"],
       }),
       getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
         query: (queryArg) => ({
@@ -1499,6 +1819,168 @@ const injectedRtkApi = api
         }),
         providesTags: ["Plan_Plans"],
       }),
+      createProfile: build.mutation<CreateProfileApiResponse, CreateProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/profiles`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      getProfiles: build.query<GetProfilesApiResponse, GetProfilesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/profiles`,
+          params: {
+            search: queryArg?.search,
+            order: queryArg?.order,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            orgId: queryArg?.orgId,
+            userId: queryArg?.userId,
+          },
+        }),
+        providesTags: ["Profile_profiles"],
+      }),
+      getProfileById: build.query<GetProfileByIdApiResponse, GetProfileByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/profiles/${queryArg.profileId}` }),
+        providesTags: ["Profile_profiles"],
+      }),
+      updateProfile: build.mutation<UpdateProfileApiResponse, UpdateProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/profiles/${queryArg.profileId}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      deleteProfile: build.mutation<DeleteProfileApiResponse, DeleteProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/profiles/${queryArg.profileId}`, method: "DELETE" }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      getProfileConnections: build.query<GetProfileConnectionsApiResponse, GetProfileConnectionsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/profiles/${queryArg.profileId}/connections`,
+          params: {
+            search: queryArg?.search,
+            order: queryArg?.order,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+          },
+        }),
+        providesTags: ["Profile_profiles"],
+      }),
+      addConnectionToProfile: build.mutation<AddConnectionToProfileApiResponse, AddConnectionToProfileApiArg>({
+        query: (queryArg) => ({
+          url: `/api/profiles/${queryArg.profileId}/connections/${queryArg.connectionId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      removeConnectionFromProfile: build.mutation<
+        RemoveConnectionFromProfileApiResponse,
+        RemoveConnectionFromProfileApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/profiles/${queryArg.profileId}/connections/${queryArg.connectionId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      getProviderCapabilities: build.query<GetProviderCapabilitiesApiResponse, GetProviderCapabilitiesApiArg>({
+        query: (queryArg) => ({
+          url: `/${queryArg.version}/capabilities`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+          params: {
+            client: queryArg?.client,
+            os: queryArg?.os,
+          },
+        }),
+        providesTags: ["ProviderCapability_capabilities"],
+      }),
+      listSchedules: build.query<ListSchedulesApiResponse, ListSchedulesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/schedules`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            workspaceId: queryArg?.workspaceId,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["Schedule_schedules"],
+      }),
+      createSchedule: build.mutation<CreateScheduleApiResponse, CreateScheduleApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      claimNextSchedule: build.mutation<ClaimNextScheduleApiResponse, ClaimNextScheduleApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules/claim`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      getScheduleById: build.query<GetScheduleByIdApiResponse, GetScheduleByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}` }),
+        providesTags: ["Schedule_schedules"],
+      }),
+      updateSchedule: build.mutation<UpdateScheduleApiResponse, UpdateScheduleApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      deleteScheduleById: build.mutation<DeleteScheduleByIdApiResponse, DeleteScheduleByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}`, method: "DELETE" }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      claimSchedule: build.mutation<ClaimScheduleApiResponse, ClaimScheduleApiArg>({
+        query: (queryArg) => ({
+          url: `/api/schedules/${queryArg.scheduleId}/claim`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      renewScheduleClaim: build.mutation<RenewScheduleClaimApiResponse, RenewScheduleClaimApiArg>({
+        query: (queryArg) => ({
+          url: `/api/schedules/${queryArg.scheduleId}/claim/renew`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      releaseScheduleClaim: build.mutation<ReleaseScheduleClaimApiResponse, ReleaseScheduleClaimApiArg>({
+        query: (queryArg) => ({
+          url: `/api/schedules/${queryArg.scheduleId}/claim/release`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      getSchedulesOfWorkspace: build.query<GetSchedulesOfWorkspaceApiResponse, GetSchedulesOfWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/schedules`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["Schedule_schedules"],
+      }),
+      assignScheduleToWorkspace: build.mutation<AssignScheduleToWorkspaceApiResponse, AssignScheduleToWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/schedules/${queryArg.scheduleId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      unassignScheduleFromWorkspace: build.mutation<
+        UnassignScheduleFromWorkspaceApiResponse,
+        UnassignScheduleFromWorkspaceApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/schedules/${queryArg.scheduleId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
       getSubscriptions: build.query<GetSubscriptionsApiResponse, GetSubscriptionsApiArg>({
         query: (queryArg) => ({
           url: `/api/entitlement/subscriptions`,
@@ -1559,6 +2041,7 @@ const injectedRtkApi = api
           url: `/api/identity/tokens`,
           params: {
             isOauth: queryArg?.isOauth,
+            purpose: queryArg?.purpose,
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
@@ -1605,6 +2088,38 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["token_tokens"],
+      }),
+      getNativeClientAuthorization: build.query<
+        GetNativeClientAuthorizationApiResponse,
+        GetNativeClientAuthorizationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/identity/native/authorize`,
+          params: {
+            clientName: queryArg?.clientName,
+            client: queryArg?.client,
+            clientVersion: queryArg?.clientVersion,
+            port: queryArg?.port,
+            codeChallenge: queryArg?.codeChallenge,
+            codeChallengeMethod: queryArg?.codeChallengeMethod,
+            state: queryArg?.state,
+          },
+        }),
+        providesTags: ["token_tokens"],
+      }),
+      approveNativeClientAuthorization: build.mutation<
+        ApproveNativeClientAuthorizationApiResponse,
+        ApproveNativeClientAuthorizationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/identity/native/authorize`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
+      }),
+      exchangeNativeAuthorizationCode: build.mutation<
+        ExchangeNativeAuthorizationCodeApiResponse,
+        ExchangeNativeAuthorizationCodeApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/identity/native/token`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
       }),
       getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
         query: (queryArg) => ({
@@ -1769,6 +2284,37 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Workspace_workspaces", "Workspace_designs"],
       }),
+      getProfilesOfWorkspace: build.query<GetProfilesOfWorkspaceApiResponse, GetProfilesOfWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/profiles`,
+          params: {
+            search: queryArg?.search,
+            order: queryArg?.order,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["Workspace_workspaces", "Workspace_profiles"],
+      }),
+      assignProfileToWorkspace: build.mutation<AssignProfileToWorkspaceApiResponse, AssignProfileToWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/profiles/${queryArg.profileId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Workspace_workspaces", "Workspace_profiles"],
+      }),
+      unassignProfileFromWorkspace: build.mutation<
+        UnassignProfileFromWorkspaceApiResponse,
+        UnassignProfileFromWorkspaceApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/profiles/${queryArg.profileId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Workspace_workspaces", "Workspace_profiles"],
+      }),
       getViewsOfWorkspace: build.query<GetViewsOfWorkspaceApiResponse, GetViewsOfWorkspaceApiArg>({
         query: (queryArg) => ({
           url: `/api/workspaces/${queryArg.workspaceId}/views`,
@@ -1830,8 +2376,20 @@ export type GetFeaturesApiResponse = /** status 200 Features response */ {
     | "DesignsInWorkspace"
     | "WorkspacesInOrganization"
     | "ImageSizeInDesign"
-    | "SizePerDesign";
-  /** Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited. */
+    | "SizePerDesign"
+    | "BlowhornProfiles"
+    | "BlowhornBrowserAutomation"
+    | "BlowhornScheduler"
+    | "BlowhornDevicesPerSeat"
+    | "BlowhornPlatformLinkedIn"
+    | "BlowhornPlatformX"
+    | "BlowhornPlatformReddit"
+    | "BlowhornPlatformHackerNews"
+    | "BlowhornPlatformSlack"
+    | "BlowhornPlatformBluesky"
+    | "BlowhornPlatformGitHub"
+    | "BlowhornPlatformBlog";
+  /** Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability. */
   quantity: number;
   /** Timestamp when the resource was created. */
   created_at: string;
@@ -1873,8 +2431,20 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features respo
     | "DesignsInWorkspace"
     | "WorkspacesInOrganization"
     | "ImageSizeInDesign"
-    | "SizePerDesign";
-  /** Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited. */
+    | "SizePerDesign"
+    | "BlowhornProfiles"
+    | "BlowhornBrowserAutomation"
+    | "BlowhornScheduler"
+    | "BlowhornDevicesPerSeat"
+    | "BlowhornPlatformLinkedIn"
+    | "BlowhornPlatformX"
+    | "BlowhornPlatformReddit"
+    | "BlowhornPlatformHackerNews"
+    | "BlowhornPlatformSlack"
+    | "BlowhornPlatformBluesky"
+    | "BlowhornPlatformGitHub"
+    | "BlowhornPlatformBlog";
+  /** Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability. */
   quantity: number;
   /** Timestamp when the resource was created. */
   created_at: string;
@@ -1907,13 +2477,13 @@ export type GetOrganizationSmtpEnvironmentApiResponse =
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
     
     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
     
     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
     
-    Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+    Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
     
     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -1975,6 +2545,7 @@ export type GetOrganizationSmtpConfigurationApiResponse = /** status 200 The org
     | "tls_failed"
     | "starttls_unsupported"
     | "auth_rejected"
+    | "auth_mechanism_unsupported"
     | "relay_rejected_sender"
     | "relay_rejected_recipient"
     | "delivery_failed"
@@ -2042,6 +2613,7 @@ export type CreateOrganizationSmtpConfigurationApiResponse = /** status 201 The 
     | "tls_failed"
     | "starttls_unsupported"
     | "auth_rejected"
+    | "auth_mechanism_unsupported"
     | "relay_rejected_sender"
     | "relay_rejected_recipient"
     | "delivery_failed"
@@ -2134,6 +2706,7 @@ export type UpdateOrganizationSmtpConfigurationApiResponse = /** status 200 The 
     | "tls_failed"
     | "starttls_unsupported"
     | "auth_rejected"
+    | "auth_mechanism_unsupported"
     | "relay_rejected_sender"
     | "relay_rejected_recipient"
     | "delivery_failed"
@@ -2222,6 +2795,7 @@ export type RotateOrganizationSmtpCredentialApiResponse =
       | "tls_failed"
       | "starttls_unsupported"
       | "auth_rejected"
+      | "auth_mechanism_unsupported"
       | "relay_rejected_sender"
       | "relay_rejected_recipient"
       | "delivery_failed"
@@ -2293,6 +2867,7 @@ export type SetOrganizationSmtpEnablementApiResponse = /** status 200 The stored
     | "tls_failed"
     | "starttls_unsupported"
     | "auth_rejected"
+    | "auth_mechanism_unsupported"
     | "relay_rejected_sender"
     | "relay_rejected_recipient"
     | "delivery_failed"
@@ -2327,6 +2902,7 @@ export type TestOrganizationSmtpConfigurationApiResponse =
       | "tls_failed"
       | "starttls_unsupported"
       | "auth_rejected"
+      | "auth_mechanism_unsupported"
       | "relay_rejected_sender"
       | "relay_rejected_recipient"
       | "delivery_failed"
@@ -3359,6 +3935,17 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -3493,6 +4080,17 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -3603,6 +4201,13 @@ export type CreateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
     };
   };
 };
@@ -3746,6 +4351,17 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -3877,6 +4493,17 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -3989,6 +4616,292 @@ export type UpdateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
+    };
+  };
+};
+export type GetChildOrgsApiResponse = /** status 200 Direct child organizations of the parent organization */ {
+  /** Direct child organizations in this page. */
+  organizations: {
+    /** Organization ID of the child. */
+    id: string;
+    /** Name of the child organization. */
+    name: string;
+    /** Description of the child organization. */
+    description?: string;
+    /** Country of the child organization. */
+    country?: string;
+    /** Region of the child organization. */
+    region?: string;
+    /** Custom domain assigned to the child organization, when configured. */
+    domain?: string;
+    /** ID of the parent organization. Stamped at creation and never changed; absent only on a top-level organization, which this listing never returns. */
+    parentId?: string;
+    /** Timestamp when the child organization was created. */
+    createdAt: string;
+    /** Timestamp when the child organization was last updated. */
+    updatedAt: string;
+  }[];
+  /** Total number of live direct children across all pages. */
+  totalCount: number;
+};
+export type GetChildOrgsApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Zero-based index of the result page to return. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+};
+export type CreateChildOrgApiResponse =
+  /** status 201 Single-organization page response for the created child organization */ {
+    /** Zero-based page index returned in this response. */
+    page?: number;
+    /** Maximum number of items returned on each page. */
+    pageSize?: number;
+    /** Total number of items across all pages. */
+    totalCount?: number;
+    /** Organizations returned in this single-item page wrapper. */
+    organizations?: {
+      /** Organization ID. */
+      id?: string;
+      /** Name of the organization. */
+      name?: string;
+      /** Description of the organization. */
+      description?: string;
+      /** Country of the organization. */
+      country?: string;
+      /** Region of the organization. */
+      region?: string;
+      /** Custom domain assigned to the organization, when configured. */
+      domain?: string;
+      /** Display name of the organization owner. */
+      owner?: string;
+      /** Free-form metadata associated with an organization, including preferences. */
+      metadata?: {
+        /** Organization-level user experience preferences. */
+        preferences: {
+          /** UI theme configured for an organization. */
+          theme: {
+            /** Theme identifier. */
+            id: string;
+            /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+            logo: {
+              /** Image asset anchored to a named location within an organization theme. */
+              desktopView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              mobileView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              darkDesktopView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              darkMobileView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+            };
+            /** Arbitrary theme variables keyed by name. */
+            vars?: {
+              [key: string]: any;
+            };
+          };
+          /** Preferences specific to dashboard behavior. */
+          dashboard: {
+            [key: string]: any;
+          };
+          /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+          authBranding?: {
+            /** Ordered slides rendered in the auth-page feature carousel. */
+            carousel?: {
+              /** URL of the slide image asset. */
+              imageUrl: string;
+              /** Slide title. */
+              title: string;
+              /** Slide description text. */
+              description: string;
+            }[];
+            /** FAQ entries rendered on the auth pages. */
+            faqs?: {
+              /** The question text. */
+              question: string;
+              /** The answer text. */
+              answer: string;
+            }[];
+          };
+          /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+          links?: {
+            /** URL of the organization's Terms of Service page. */
+            termsOfService?: string;
+            /** URL of the organization's Privacy Policy page. */
+            privacy?: string;
+            /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+            support?: {
+              [key: string]: string;
+            };
+            /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+            social?: {
+              /** URL of the organization's LinkedIn profile. */
+              linkedin?: string;
+              /** URL of the organization's X (formerly Twitter) profile. */
+              x?: string;
+              /** URL of the organization's YouTube channel. */
+              youtube?: string;
+            };
+          };
+          /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+          showAuthCarousel?: boolean;
+          /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+          schedulePause?: {
+            /** Whether every schedule in the organization is paused. */
+            paused?: boolean;
+            /** Reason given for the pause. Cleared when the pause is lifted. */
+            reason?: string;
+            /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+            pausedAt?: string;
+            /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+            pausedBy?: string;
+          };
+        };
+      };
+      /** Timestamp when the organization was created. */
+      createdAt?: string;
+      /** Timestamp when the organization was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the organization was soft-deleted. */
+      deletedAt?: string;
+    }[];
+  };
+export type CreateChildOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Body for creating or updating an organization */
+  body: {
+    /** Name of the organization. */
+    name?: string;
+    /** Country of the organization. */
+    country?: string;
+    /** Region of the organization. */
+    region?: string;
+    /** Description of the organization. */
+    description?: string;
+    /** Indicates whether organization members should be notified of this update. */
+    notifyOrgUpdate?: boolean;
+    /** Organization-level user experience preferences. */
+    preferences?: {
+      /** UI theme configured for an organization. */
+      theme: {
+        /** Theme identifier. */
+        id: string;
+        /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+        logo: {
+          /** Image asset anchored to a named location within an organization theme. */
+          desktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          mobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkDesktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkMobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+        };
+        /** Arbitrary theme variables keyed by name. */
+        vars?: {
+          [key: string]: any;
+        };
+      };
+      /** Preferences specific to dashboard behavior. */
+      dashboard: {
+        [key: string]: any;
+      };
+      /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+      authBranding?: {
+        /** Ordered slides rendered in the auth-page feature carousel. */
+        carousel?: {
+          /** URL of the slide image asset. */
+          imageUrl: string;
+          /** Slide title. */
+          title: string;
+          /** Slide description text. */
+          description: string;
+        }[];
+        /** FAQ entries rendered on the auth pages. */
+        faqs?: {
+          /** The question text. */
+          question: string;
+          /** The answer text. */
+          answer: string;
+        }[];
+      };
+      /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+      links?: {
+        /** URL of the organization's Terms of Service page. */
+        termsOfService?: string;
+        /** URL of the organization's Privacy Policy page. */
+        privacy?: string;
+        /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+        support?: {
+          [key: string]: string;
+        };
+        /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        social?: {
+          /** URL of the organization's LinkedIn profile. */
+          linkedin?: string;
+          /** URL of the organization's X (formerly Twitter) profile. */
+          x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
+        };
+      };
+      /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+      showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
     };
   };
 };
@@ -4080,11 +4993,223 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
     showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused?: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+      /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedAt?: string;
+      /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedBy?: string;
+    };
   };
 };
 export type GetOrgPreferencesApiArg = {
   /** Organization ID. */
   orgId: string;
+};
+export type PatchOrgPreferencesApiResponse = /** status 200 Organization metadata with the merged preferences */ {
+  /** Organization-level user experience preferences. */
+  preferences: {
+    /** UI theme configured for an organization. */
+    theme: {
+      /** Theme identifier. */
+      id: string;
+      /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+      logo: {
+        /** Image asset anchored to a named location within an organization theme. */
+        desktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        mobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkDesktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkMobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+      };
+      /** Arbitrary theme variables keyed by name. */
+      vars?: {
+        [key: string]: any;
+      };
+    };
+    /** Preferences specific to dashboard behavior. */
+    dashboard: {
+      [key: string]: any;
+    };
+    /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+    authBranding?: {
+      /** Ordered slides rendered in the auth-page feature carousel. */
+      carousel?: {
+        /** URL of the slide image asset. */
+        imageUrl: string;
+        /** Slide title. */
+        title: string;
+        /** Slide description text. */
+        description: string;
+      }[];
+      /** FAQ entries rendered on the auth pages. */
+      faqs?: {
+        /** The question text. */
+        question: string;
+        /** The answer text. */
+        answer: string;
+      }[];
+    };
+    /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+    links?: {
+      /** URL of the organization's Terms of Service page. */
+      termsOfService?: string;
+      /** URL of the organization's Privacy Policy page. */
+      privacy?: string;
+      /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+      support?: {
+        [key: string]: string;
+      };
+      /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+      social?: {
+        /** URL of the organization's LinkedIn profile. */
+        linkedin?: string;
+        /** URL of the organization's X (formerly Twitter) profile. */
+        x?: string;
+        /** URL of the organization's YouTube channel. */
+        youtube?: string;
+      };
+    };
+    /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+    showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused?: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+      /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedAt?: string;
+      /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedBy?: string;
+    };
+  };
+};
+export type PatchOrgPreferencesApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Entity tag of the organization's preferences as last read, from the `ETag` header of getOrgPreferences or patchOrgPreferences. When present the write applies only if it still matches; otherwise 412. */
+  "If-Match"?: string;
+  body: {
+    /** UI theme configured for an organization. */
+    theme?: {
+      /** Theme identifier. */
+      id: string;
+      /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+      logo: {
+        /** Image asset anchored to a named location within an organization theme. */
+        desktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        mobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkDesktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkMobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+      };
+      /** Arbitrary theme variables keyed by name. */
+      vars?: {
+        [key: string]: any;
+      };
+    };
+    /** Preferences specific to dashboard behavior. */
+    dashboard?: {
+      [key: string]: any;
+    };
+    /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+    authBranding?: {
+      /** Ordered slides rendered in the auth-page feature carousel. */
+      carousel?: {
+        /** URL of the slide image asset. */
+        imageUrl: string;
+        /** Slide title. */
+        title: string;
+        /** Slide description text. */
+        description: string;
+      }[];
+      /** FAQ entries rendered on the auth pages. */
+      faqs?: {
+        /** The question text. */
+        question: string;
+        /** The answer text. */
+        answer: string;
+      }[];
+    };
+    /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+    links?: {
+      /** URL of the organization's Terms of Service page. */
+      termsOfService?: string;
+      /** URL of the organization's Privacy Policy page. */
+      privacy?: string;
+      /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+      support?: {
+        [key: string]: string;
+      };
+      /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+      social?: {
+        /** URL of the organization's LinkedIn profile. */
+        linkedin?: string;
+        /** URL of the organization's X (formerly Twitter) profile. */
+        x?: string;
+        /** URL of the organization's YouTube channel. */
+        youtube?: string;
+      };
+    };
+    /** Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value. */
+    showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitted keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+    };
+  };
 };
 export type AddTeamToOrgApiResponse = /** status 201 Team added to organization or team tombstoned */
   | {
@@ -6478,6 +7603,10 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
     roles: string[];
     /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
     teams: string[];
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+    childOrganizationBranding?: "parent" | "provider" | "none";
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created. */
@@ -6693,6 +7822,10 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
     roles: string[];
     /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
     teams: string[];
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+    childOrganizationBranding?: "parent" | "provider" | "none";
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created. */
@@ -7755,6 +8888,326 @@ export type GetCertificateByIdApiArg = {
   /** The ID of the certificate to retrieve */
   certificateId: string;
 };
+export type GetBlowhornHealthApiResponse = /** status 200 Blowhorn health response */ {
+  /** Frozen Blowhorn contract version the server speaks. */
+  contractVersion: string;
+  /** Whether the organization is bound for Blowhorn operations. */
+  bound: boolean;
+  /** Organization whose binding was checked. */
+  organizationId?: string;
+  /** Time the binding was checked. */
+  checkedAt?: string;
+};
+export type GetBlowhornHealthApiArg = void;
+export type ListBlowhornProfilesApiResponse = /** status 200 Blowhorn profiles page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Blowhorn profiles included on this page of results. */
+  blowhornProfiles?: {
+    /** Server-generated Blowhorn profile ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** ID of the existing Layer5 user the profile settings belong to. */
+    userId: string;
+    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+    slug: string;
+    /** Free-form profile attributes, stored as a JSON blob. */
+    attributes?: object;
+    /** Timestamp of Blowhorn profile creation. */
+    createdAt: string;
+    /** Timestamp of last Blowhorn profile modification. */
+    updatedAt: string;
+    /** Timestamp when the Blowhorn profile was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListBlowhornProfilesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type UpsertBlowhornProfileApiResponse = /** status 200 Blowhorn profile saved */ {
+  /** Server-generated Blowhorn profile ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** ID of the existing Layer5 user the profile settings belong to. */
+  userId: string;
+  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+  slug: string;
+  /** Free-form profile attributes, stored as a JSON blob. */
+  attributes?: object;
+  /** Timestamp of Blowhorn profile creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn profile modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn profile was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpsertBlowhornProfileApiArg = {
+  body: {
+    /** Existing Blowhorn profile ID for updates; omit on create. */
+    id?: string;
+    /** ID of the existing Layer5 user the profile settings belong to. */
+    userId: string;
+    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+    slug: string;
+    /** Free-form profile attributes, stored as a JSON blob. */
+    attributes?: object;
+  };
+};
+export type GetBlowhornProfileApiResponse = /** status 200 Blowhorn profile response */ {
+  /** Server-generated Blowhorn profile ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** ID of the existing Layer5 user the profile settings belong to. */
+  userId: string;
+  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+  slug: string;
+  /** Free-form profile attributes, stored as a JSON blob. */
+  attributes?: object;
+  /** Timestamp of Blowhorn profile creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn profile modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn profile was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetBlowhornProfileApiArg = {
+  /** Blowhorn profile ID */
+  blowhornProfileId: string;
+};
+export type UpdateBlowhornProfileApiResponse = /** status 200 Blowhorn profile updated */ {
+  /** Server-generated Blowhorn profile ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** ID of the existing Layer5 user the profile settings belong to. */
+  userId: string;
+  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+  slug: string;
+  /** Free-form profile attributes, stored as a JSON blob. */
+  attributes?: object;
+  /** Timestamp of Blowhorn profile creation. */
+  createdAt: string;
+  /** Timestamp of last Blowhorn profile modification. */
+  updatedAt: string;
+  /** Timestamp when the Blowhorn profile was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpdateBlowhornProfileApiArg = {
+  /** Blowhorn profile ID */
+  blowhornProfileId: string;
+  body: {
+    /** Existing Blowhorn profile ID for updates; omit on create. */
+    id?: string;
+    /** ID of the existing Layer5 user the profile settings belong to. */
+    userId: string;
+    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
+    slug: string;
+    /** Free-form profile attributes, stored as a JSON blob. */
+    attributes?: object;
+  };
+};
+export type DeleteBlowhornProfileApiResponse = unknown;
+export type DeleteBlowhornProfileApiArg = {
+  /** Blowhorn profile ID */
+  blowhornProfileId: string;
+};
+export type ListClaimsApiResponse = /** status 200 Claims page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Claims included on this page of results. */
+  claims: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListClaimsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by claimed resource type. */
+  resourceType?: string;
+  /** Filter by claimed resource ID. */
+  resourceId?: string;
+  /** Filter by holder identity. */
+  claimant?: string;
+  /** Filter by claim status. */
+  status?: "active" | "released" | "expired";
+};
+export type CreateClaimApiResponse = /** status 201 Claim taken */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Type of the claimed resource, for example `schedule`. */
+  resourceType: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  resourceId: string;
+  /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+  claimant: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+  status: "active" | "released" | "expired";
+  /** Time the claim was taken. */
+  claimedAt: string;
+  /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+  expiresAt: string;
+  /** Time the holder released the claim. Null while the claim is active or after it expired. */
+  releasedAt?: string | null;
+  /** Timestamp of claim creation. */
+  createdAt: string;
+  /** Timestamp of last claim modification. */
+  updatedAt: string;
+};
+export type CreateClaimApiArg = {
+  body: {
+    /** Type of the resource to claim, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the worker taking the claim. */
+    claimant: string;
+    /** Requested claim duration in minutes; the server applies its default when omitted and may cap it. */
+    durationMinutes?: number;
+  };
+};
+export type GetClaimApiResponse = /** status 200 Claim response */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Type of the claimed resource, for example `schedule`. */
+  resourceType: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  resourceId: string;
+  /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+  claimant: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+  status: "active" | "released" | "expired";
+  /** Time the claim was taken. */
+  claimedAt: string;
+  /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+  expiresAt: string;
+  /** Time the holder released the claim. Null while the claim is active or after it expired. */
+  releasedAt?: string | null;
+  /** Timestamp of claim creation. */
+  createdAt: string;
+  /** Timestamp of last claim modification. */
+  updatedAt: string;
+};
+export type GetClaimApiArg = {
+  /** Claim ID */
+  claimId: string;
+};
+export type RenewClaimApiResponse = /** status 200 Claim renewed */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Type of the claimed resource, for example `schedule`. */
+  resourceType: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  resourceId: string;
+  /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+  claimant: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+  status: "active" | "released" | "expired";
+  /** Time the claim was taken. */
+  claimedAt: string;
+  /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+  expiresAt: string;
+  /** Time the holder released the claim. Null while the claim is active or after it expired. */
+  releasedAt?: string | null;
+  /** Timestamp of claim creation. */
+  createdAt: string;
+  /** Timestamp of last claim modification. */
+  updatedAt: string;
+};
+export type RenewClaimApiArg = {
+  /** Claim ID */
+  claimId: string;
+  body: {
+    /** Identity of the holder renewing the claim. */
+    claimant: string;
+    /** Requested extension in minutes from now; the server applies its default when omitted and may cap it. */
+    durationMinutes?: number;
+  };
+};
+export type ReleaseClaimApiResponse = /** status 200 Claim released */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Type of the claimed resource, for example `schedule`. */
+  resourceType: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  resourceId: string;
+  /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+  claimant: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+  status: "active" | "released" | "expired";
+  /** Time the claim was taken. */
+  claimedAt: string;
+  /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+  expiresAt: string;
+  /** Time the holder released the claim. Null while the claim is active or after it expired. */
+  releasedAt?: string | null;
+  /** Timestamp of claim creation. */
+  createdAt: string;
+  /** Timestamp of last claim modification. */
+  updatedAt: string;
+};
+export type ReleaseClaimApiArg = {
+  /** Claim ID */
+  claimId: string;
+  body: {
+    /** Identity of the holder releasing the claim. */
+    claimant: string;
+  };
+};
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
   /** List of connections on this page */
   connections: {
@@ -7772,7 +9225,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     type: string;
     /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
     subType: string;
-    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
     kind: string;
     /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
     modelReference?: {
@@ -7996,6 +9449,9 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
+    /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+     */
+    organizationId?: string;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -8018,13 +9474,13 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
-      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
             
             Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
             
             At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
             
-            Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
             
             The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
       purpose?: "user" | "administrative";
@@ -8074,225 +9530,213 @@ export type GetConnectionsApiArg = {
   /** Filter by connection name (partial match supported) */
   name?: string;
 };
-export type RegisterConnectionApiResponse = /** status 201 Connection registered */ {
-  /** Connection ID */
-  id: string;
-  /** Connection Name */
-  name: string;
-  /** Human-readable description of the connection and its purpose. */
-  description?: string;
-  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
-  url?: string;
-  /** Associated Credential ID */
-  credentialId?: string;
-  /** Connection Type (platform, telemetry, collaboration) */
-  type: string;
-  /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-  subType: string;
-  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
-  kind: string;
-  /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-  modelReference?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** The unique name for the model within the scope of a registrant. */
-    name: string;
-    /** Version of the model definition. */
-    version: string;
-    /** Human-readable name for the model. */
-    displayName: string;
-    /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-    model: {
-      /** Version of the model as defined by the registrant. */
-      version: string;
-    };
-    registrant: {
-      /** Kind of the registrant. */
+export type RegisterConnectionApiResponse = /** status 200 Existing desktop connection for this machine updated */
+  | {
+      /** Connection ID */
+      id: string;
+      /** Connection Name */
+      name: string;
+      /** Human-readable description of the connection and its purpose. */
+      description?: string;
+      /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+      url?: string;
+      /** Associated Credential ID */
+      credentialId?: string;
+      /** Connection Type (platform, telemetry, collaboration) */
+      type: string;
+      /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+      subType: string;
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
       kind: string;
-    };
-  };
-  /** Additional connection metadata */
-  metadata?: object;
-  /** Schema for the credential Associated with the connection */
-  credentialSchema?: object;
-  /** Schema for the connection */
-  connectionSchema?: object;
-  /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
-  styles?: {
-    /** Primary color of the component used for UI representation. */
-    primaryColor: string;
-    /** Secondary color of the entity used for UI representation. */
-    secondaryColor?: string;
-    /** White SVG of the entity used for UI representation on dark background. */
-    svgWhite: string;
-    /** Colored SVG of the entity used for UI representation on light background. */
-    svgColor: string;
-    /** Complete SVG of the entity used for UI representation, often inclusive of background. */
-    svgComplete: string;
-    /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-    color?: string;
-    /** The opacity of the label text, including its outline. */
-    textOpacity?: number;
-    /** A comma-separated list of font names to use on the label text. */
-    fontFamily?: string;
-    /** The size of the label text. */
-    fontSize?: string;
-    /** A CSS font style to be applied to the label text. */
-    fontStyle?: string;
-    /** A CSS font weight to be applied to the label text. */
-    fontWeight?: string;
-    /** A transformation to apply to the label text */
-    textTransform?: "none" | "uppercase" | "lowercase";
-    /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
-    opacity?: number;
-    /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-    zIndex?: number;
-    /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-    label?: string;
-    /** The animation to apply to the element. example ripple,bounce,etc */
-    animation?: object;
-    [key: string]: any;
-  } & {
-    /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
-    shape:
-      | "ellipse"
-      | "triangle"
-      | "round-triangle"
-      | "rectangle"
-      | "round-rectangle"
-      | "bottom-round-rectangle"
-      | "cut-rectangle"
-      | "barrel"
-      | "rhomboid"
-      | "diamond"
-      | "round-diamond"
-      | "pentagon"
-      | "round-pentagon"
-      | "hexagon"
-      | "round-hexagon"
-      | "concave-hexagon"
-      | "heptagon"
-      | "round-heptagon"
-      | "octagon"
-      | "round-octagon"
-      | "star"
-      | "tag"
-      | "round-tag"
-      | "vee"
-      | "polygon";
-    /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
-    position?: {
-      /** The x-coordinate of the node. */
-      x: number;
-      /** The y-coordinate of the node. */
-      y: number;
-    };
-    /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
-    bodyText?: string;
-    /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
-    bodyTextWrap?: "none" | "wrap" | "ellipsis";
-    /** The maximum width for wrapping text in the node. */
-    bodyTextMaxWidth?: string;
-    /** The opacity of the node's body text, including its outline. */
-    bodyTextOpacity?: number;
-    /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
-    bodyTextBackgroundColor?: string;
-    /** The size of the node's body text. */
-    bodyTextFontSize?: number;
-    /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
-    bodyTextColor?: string;
-    /** A CSS font weight to be applied to the node's body text. */
-    bodyTextFontWeight?: string;
-    /** A CSS horizontal alignment to be applied to the node's body text. */
-    bodyTextHorizontalAlign?: string;
-    /** A CSS text decoration to be applied to the node's body text. */
-    bodyTextDecoration?: string;
-    /** A CSS vertical alignment to be applied to the node's body text. */
-    bodyTextVerticalAlign?: string;
-    /** The width of the node's body or the width of an edge's line. */
-    width?: number;
-    /** The height of the node's body */
-    height?: number;
-    /** The URL that points to the image to show in the node. */
-    backgroundImage?: string;
-    /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
-    backgroundColor?: string;
-    /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
-    backgroundBlacken?: number;
-    /** The opacity level of the node's background colour */
-    backgroundOpacity?: number;
-    /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-    backgroundPositionX?: string;
-    /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-    backgroundPositionY?: string;
-    /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-    backgroundOffsetX?: string;
-    /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-    backgroundOffsetY?: string;
-    /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
-    backgroundFit?: "none" | "contain" | "cover";
-    /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
-    backgroundClip?: "none" | "node" | "node-border";
-    /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
-    backgroundWidthRelativeTo?: "none" | "inner" | "outer";
-    /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
-    backgroundHeightRelativeTo?: "none" | "inner" | "outer";
-    /** The size of the node's border. */
-    borderWidth?: number;
-    /** The style of the node's border */
-    borderStyle?: "solid" | "dotted" | "dashed" | "double";
-    /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
-    borderColor?: string;
-    /** The opacity of the node's border */
-    borderOpacity?: number;
-    /** The amount of padding around all sides of the node. */
-    padding?: number;
-    /** The horizontal alignment of a node's label */
-    textHalign?: "left" | "center" | "right";
-    /** The vertical alignment of a node's label */
-    textValign?: "top" | "center" | "bottom";
-    /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
-    ghost?: "yes" | "no";
-    /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-    activeBgColor?: string;
-    /** The opacity of the active background indicator. Selector needs to be *core*. */
-    activeBgOpacity?: string;
-    /** The opacity of the active background indicator. Selector needs to be *core*. */
-    activeBgSize?: string;
-    /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-    selectionBoxColor?: string;
-    /** The size of the border on the selection box. Selector needs to be *core* */
-    selectionBoxBorderWidth?: number;
-    /** The opacity of the selection box. Selector needs to be *core* */
-    selectionBoxOpacity?: number;
-    /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-    outsideTextureBgColor?: string;
-    /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
-    outsideTextureBgOpacity?: number;
-    /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
-    shapePolygonPoints?: string;
-    /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
-    menuBackgroundColor?: string;
-    /** The opacity of the background of the component menu. */
-    menuBackgroundOpacity?: number;
-    /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
-    menuForgroundColor?: string;
-  };
-  /** Connection Status */
-  status:
-    | "discovered"
-    | "registered"
-    | "connected"
-    | "ignored"
-    | "maintenance"
-    | "disconnected"
-    | "deleted"
-    | "not found";
-  /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
-  transitionMap?: {
-    [key: string]: {
-      /** Connection Status Value */
-      nextState:
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference?: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Additional connection metadata */
+      metadata?: object;
+      /** Schema for the credential Associated with the connection */
+      credentialSchema?: object;
+      /** Schema for the connection */
+      connectionSchema?: object;
+      /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Connection Status */
+      status:
         | "discovered"
         | "registered"
         | "connected"
@@ -8301,55 +9745,352 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
         | "disconnected"
         | "deleted"
         | "not found";
-      /** Human-readable explanation of when or why this transition occurs. */
-      description?: string;
-    }[];
-  };
-  /** User ID who owns this connection */
-  owner?: string;
-  /** Timestamp when the connection was created. */
-  createdAt?: string;
-  /** Timestamp when the connection was last updated. */
-  updatedAt?: string;
-  /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string | null;
-  /** Associated environments for this connection */
-  environments?: {
-    /** ID */
-    id: string;
-    /** Specifies the version of the schema to which the environment conforms. */
-    schemaVersion: string;
-    /** Environment name */
-    name: string;
-    /** Environment description */
-    description: string;
-    /** Environment organization ID */
-    organizationId: string;
-    /** Environment owner */
-    owner?: string;
-    /** Timestamp when the environment was created. */
-    createdAt?: string;
-    /** Additional metadata associated with the environment. */
-    metadata?: object;
-    /** Timestamp when the environment was last updated. */
-    updatedAt?: string;
-    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
-    deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+      /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+      transitionMap?: {
+        [key: string]: {
+          /** Connection Status Value */
+          nextState:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** Human-readable explanation of when or why this transition occurs. */
+          description?: string;
+        }[];
+      };
+      /** User ID who owns this connection */
+      owner?: string;
+      /** Timestamp when the connection was created. */
+      createdAt?: string;
+      /** Timestamp when the connection was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the connection was soft-deleted, if applicable. */
+      deletedAt?: string | null;
+      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+       */
+      organizationId?: string;
+      /** Associated environments for this connection */
+      environments?: {
+        /** ID */
+        id: string;
+        /** Specifies the version of the schema to which the environment conforms. */
+        schemaVersion: string;
+        /** Environment name */
+        name: string;
+        /** Environment description */
+        description: string;
+        /** Environment organization ID */
+        organizationId: string;
+        /** Environment owner */
+        owner?: string;
+        /** Timestamp when the environment was created. */
+        createdAt?: string;
+        /** Additional metadata associated with the environment. */
+        metadata?: object;
+        /** Timestamp when the environment was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+        deletedAt?: string | null;
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
-  }[];
-  /** Specifies the version of the schema used for the definition. */
-  schemaVersion: string;
-};
+        purpose?: "user" | "administrative";
+      }[];
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+    }
+  | /** status 201 Connection registered */ {
+      /** Connection ID */
+      id: string;
+      /** Connection Name */
+      name: string;
+      /** Human-readable description of the connection and its purpose. */
+      description?: string;
+      /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+      url?: string;
+      /** Associated Credential ID */
+      credentialId?: string;
+      /** Connection Type (platform, telemetry, collaboration) */
+      type: string;
+      /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+      subType: string;
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+      kind: string;
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference?: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Additional connection metadata */
+      metadata?: object;
+      /** Schema for the credential Associated with the connection */
+      credentialSchema?: object;
+      /** Schema for the connection */
+      connectionSchema?: object;
+      /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Connection Status */
+      status:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+      transitionMap?: {
+        [key: string]: {
+          /** Connection Status Value */
+          nextState:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** Human-readable explanation of when or why this transition occurs. */
+          description?: string;
+        }[];
+      };
+      /** User ID who owns this connection */
+      owner?: string;
+      /** Timestamp when the connection was created. */
+      createdAt?: string;
+      /** Timestamp when the connection was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the connection was soft-deleted, if applicable. */
+      deletedAt?: string | null;
+      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+       */
+      organizationId?: string;
+      /** Associated environments for this connection */
+      environments?: {
+        /** ID */
+        id: string;
+        /** Specifies the version of the schema to which the environment conforms. */
+        schemaVersion: string;
+        /** Environment name */
+        name: string;
+        /** Environment description */
+        description: string;
+        /** Environment organization ID */
+        organizationId: string;
+        /** Environment owner */
+        owner?: string;
+        /** Timestamp when the environment was created. */
+        createdAt?: string;
+        /** Additional metadata associated with the environment. */
+        metadata?: object;
+        /** Timestamp when the environment was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+        deletedAt?: string | null;
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+        purpose?: "user" | "administrative";
+      }[];
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+    };
 export type RegisterConnectionApiArg = {
+  /** Organization the connection is registered in. Required for kind `desktop`; ignored for other kinds.
+   */
+  "X-Current-Orgid"?: string;
   body: {
     /** Connection ID */
     id?: string;
@@ -8547,7 +10288,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   type: string;
   /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
   subType: string;
-  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
   kind: string;
   /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
   modelReference?: {
@@ -8771,6 +10512,9 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
+  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+   */
+  organizationId?: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -8793,13 +10537,13 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -8826,7 +10570,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   type: string;
   /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
   subType: string;
-  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
   kind: string;
   /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
   modelReference?: {
@@ -9050,6 +10794,9 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
+  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+   */
+  organizationId?: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -9072,13 +10819,13 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -9280,6 +11027,293 @@ export type DeleteMesheryConnectionApiResponse = unknown;
 export type DeleteMesheryConnectionApiArg = {
   /** Meshery server ID */
   mesheryServerId: string;
+};
+export type DeregisterDesktopConnectionApiResponse = unknown;
+export type DeregisterDesktopConnectionApiArg = {
+  /** Stable per-install machine identifier from `metadata.machineId`. */
+  machineId: string;
+};
+export type RecordConnectionHeartbeatApiResponse = /** status 200 Connection after the heartbeat */ {
+  /** Connection ID */
+  id: string;
+  /** Connection Name */
+  name: string;
+  /** Human-readable description of the connection and its purpose. */
+  description?: string;
+  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+  url?: string;
+  /** Associated Credential ID */
+  credentialId?: string;
+  /** Connection Type (platform, telemetry, collaboration) */
+  type: string;
+  /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+  subType: string;
+  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+  kind: string;
+  /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+  modelReference?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** The unique name for the model within the scope of a registrant. */
+    name: string;
+    /** Version of the model definition. */
+    version: string;
+    /** Human-readable name for the model. */
+    displayName: string;
+    /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+    model: {
+      /** Version of the model as defined by the registrant. */
+      version: string;
+    };
+    registrant: {
+      /** Kind of the registrant. */
+      kind: string;
+    };
+  };
+  /** Additional connection metadata */
+  metadata?: object;
+  /** Schema for the credential Associated with the connection */
+  credentialSchema?: object;
+  /** Schema for the connection */
+  connectionSchema?: object;
+  /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+  styles?: {
+    /** Primary color of the component used for UI representation. */
+    primaryColor: string;
+    /** Secondary color of the entity used for UI representation. */
+    secondaryColor?: string;
+    /** White SVG of the entity used for UI representation on dark background. */
+    svgWhite: string;
+    /** Colored SVG of the entity used for UI representation on light background. */
+    svgColor: string;
+    /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+    svgComplete: string;
+    /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+    color?: string;
+    /** The opacity of the label text, including its outline. */
+    textOpacity?: number;
+    /** A comma-separated list of font names to use on the label text. */
+    fontFamily?: string;
+    /** The size of the label text. */
+    fontSize?: string;
+    /** A CSS font style to be applied to the label text. */
+    fontStyle?: string;
+    /** A CSS font weight to be applied to the label text. */
+    fontWeight?: string;
+    /** A transformation to apply to the label text */
+    textTransform?: "none" | "uppercase" | "lowercase";
+    /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+    opacity?: number;
+    /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+    zIndex?: number;
+    /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+    label?: string;
+    /** The animation to apply to the element. example ripple,bounce,etc */
+    animation?: object;
+    [key: string]: any;
+  } & {
+    /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+    shape:
+      | "ellipse"
+      | "triangle"
+      | "round-triangle"
+      | "rectangle"
+      | "round-rectangle"
+      | "bottom-round-rectangle"
+      | "cut-rectangle"
+      | "barrel"
+      | "rhomboid"
+      | "diamond"
+      | "round-diamond"
+      | "pentagon"
+      | "round-pentagon"
+      | "hexagon"
+      | "round-hexagon"
+      | "concave-hexagon"
+      | "heptagon"
+      | "round-heptagon"
+      | "octagon"
+      | "round-octagon"
+      | "star"
+      | "tag"
+      | "round-tag"
+      | "vee"
+      | "polygon";
+    /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+    position?: {
+      /** The x-coordinate of the node. */
+      x: number;
+      /** The y-coordinate of the node. */
+      y: number;
+    };
+    /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+    bodyText?: string;
+    /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+    bodyTextWrap?: "none" | "wrap" | "ellipsis";
+    /** The maximum width for wrapping text in the node. */
+    bodyTextMaxWidth?: string;
+    /** The opacity of the node's body text, including its outline. */
+    bodyTextOpacity?: number;
+    /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+    bodyTextBackgroundColor?: string;
+    /** The size of the node's body text. */
+    bodyTextFontSize?: number;
+    /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+    bodyTextColor?: string;
+    /** A CSS font weight to be applied to the node's body text. */
+    bodyTextFontWeight?: string;
+    /** A CSS horizontal alignment to be applied to the node's body text. */
+    bodyTextHorizontalAlign?: string;
+    /** A CSS text decoration to be applied to the node's body text. */
+    bodyTextDecoration?: string;
+    /** A CSS vertical alignment to be applied to the node's body text. */
+    bodyTextVerticalAlign?: string;
+    /** The width of the node's body or the width of an edge's line. */
+    width?: number;
+    /** The height of the node's body */
+    height?: number;
+    /** The URL that points to the image to show in the node. */
+    backgroundImage?: string;
+    /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+    backgroundColor?: string;
+    /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+    backgroundBlacken?: number;
+    /** The opacity level of the node's background colour */
+    backgroundOpacity?: number;
+    /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+    backgroundPositionX?: string;
+    /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+    backgroundPositionY?: string;
+    /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+    backgroundOffsetX?: string;
+    /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+    backgroundOffsetY?: string;
+    /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+    backgroundFit?: "none" | "contain" | "cover";
+    /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+    backgroundClip?: "none" | "node" | "node-border";
+    /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+    backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+    /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+    backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+    /** The size of the node's border. */
+    borderWidth?: number;
+    /** The style of the node's border */
+    borderStyle?: "solid" | "dotted" | "dashed" | "double";
+    /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+    borderColor?: string;
+    /** The opacity of the node's border */
+    borderOpacity?: number;
+    /** The amount of padding around all sides of the node. */
+    padding?: number;
+    /** The horizontal alignment of a node's label */
+    textHalign?: "left" | "center" | "right";
+    /** The vertical alignment of a node's label */
+    textValign?: "top" | "center" | "bottom";
+    /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+    ghost?: "yes" | "no";
+    /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+    activeBgColor?: string;
+    /** The opacity of the active background indicator. Selector needs to be *core*. */
+    activeBgOpacity?: string;
+    /** The opacity of the active background indicator. Selector needs to be *core*. */
+    activeBgSize?: string;
+    /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+    selectionBoxColor?: string;
+    /** The size of the border on the selection box. Selector needs to be *core* */
+    selectionBoxBorderWidth?: number;
+    /** The opacity of the selection box. Selector needs to be *core* */
+    selectionBoxOpacity?: number;
+    /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+    outsideTextureBgColor?: string;
+    /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+    outsideTextureBgOpacity?: number;
+    /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+    shapePolygonPoints?: string;
+    /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+    menuBackgroundColor?: string;
+    /** The opacity of the background of the component menu. */
+    menuBackgroundOpacity?: number;
+    /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+    menuForgroundColor?: string;
+  };
+  /** Connection Status */
+  status:
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found";
+  /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+  transitionMap?: {
+    [key: string]: {
+      /** Connection Status Value */
+      nextState:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      /** Human-readable explanation of when or why this transition occurs. */
+      description?: string;
+    }[];
+  };
+  /** User ID who owns this connection */
+  owner?: string;
+  /** Timestamp when the connection was created. */
+  createdAt?: string;
+  /** Timestamp when the connection was last updated. */
+  updatedAt?: string;
+  /** Timestamp when the connection was soft-deleted, if applicable. */
+  deletedAt?: string | null;
+  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+   */
+  organizationId?: string;
+  /** Associated environments for this connection */
+  environments?: {
+    /** ID */
+    id: string;
+    /** Specifies the version of the schema to which the environment conforms. */
+    schemaVersion: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organizationId: string;
+    /** Environment owner */
+    owner?: string;
+    /** Timestamp when the environment was created. */
+    createdAt?: string;
+    /** Additional metadata associated with the environment. */
+    metadata?: object;
+    /** Timestamp when the environment was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+    deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
+  }[];
+  /** Specifies the version of the schema used for the definition. */
+  schemaVersion: string;
+};
+export type RecordConnectionHeartbeatApiArg = {
+  /** Connection ID */
+  connectionId: string;
 };
 export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context */ {
   /** Zero-based page index returned in this response. */
@@ -9846,6 +11880,170 @@ export type DeleteConnectionDefinitionApiArg = {
   /** Connection definition ID */
   connectionDefinitionId: string;
 };
+export type ListContentItemsApiResponse = /** status 200 Content item page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Content items included on this page of results. */
+  contentItems?: {
+    /** Server-generated content item ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Subject of the owning profile. */
+    profile: string;
+    /** Row number of the content item, unique across the live content items of the organization. */
+    rowNumber: number;
+    /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+    fingerprint: string;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Timestamp of content item creation. */
+    createdAt: string;
+    /** Timestamp of last content item modification. */
+    updatedAt: string;
+    /** Timestamp when the content item was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListContentItemsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by owning profile subject (exact match). */
+  profile?: string;
+};
+export type InsertContentItemApiResponse = /** status 201 Content item created */ {
+  /** Server-generated content item ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the owning profile. */
+  profile: string;
+  /** Row number of the content item, unique across the live content items of the organization. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of content item creation. */
+  createdAt: string;
+  /** Timestamp of last content item modification. */
+  updatedAt: string;
+  /** Timestamp when the content item was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type InsertContentItemApiArg = {
+  body: {
+    /** Existing content item ID for updates; ignored on insert. */
+    id?: string;
+    /** Subject of the owning profile. */
+    profile: string;
+    /** Row number of the content item, unique across the live content
+        items of the organization. Optional: omitted on insert, the
+        server assigns the next row number of the organization; omitted
+        on update, the stored row number is kept.
+         */
+    rowNumber?: number;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        insert.
+         */
+    expectedFingerprint?: string;
+  };
+};
+export type GetContentItemApiResponse = /** status 200 Content item response */ {
+  /** Server-generated content item ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the owning profile. */
+  profile: string;
+  /** Row number of the content item, unique across the live content items of the organization. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of content item creation. */
+  createdAt: string;
+  /** Timestamp of last content item modification. */
+  updatedAt: string;
+  /** Timestamp when the content item was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type GetContentItemApiArg = {
+  /** Content item ID */
+  contentItemId: string;
+};
+export type UpdateContentItemApiResponse = /** status 200 Content item updated */ {
+  /** Server-generated content item ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Subject of the owning profile. */
+  profile: string;
+  /** Row number of the content item, unique across the live content items of the organization. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of content item creation. */
+  createdAt: string;
+  /** Timestamp of last content item modification. */
+  updatedAt: string;
+  /** Timestamp when the content item was soft-deleted. */
+  deletedAt?: string | null;
+};
+export type UpdateContentItemApiArg = {
+  /** Content item ID */
+  contentItemId: string;
+  body: {
+    /** Existing content item ID for updates; ignored on insert. */
+    id?: string;
+    /** Subject of the owning profile. */
+    profile: string;
+    /** Row number of the content item, unique across the live content
+        items of the organization. Optional: omitted on insert, the
+        server assigns the next row number of the organization; omitted
+        on update, the stored row number is kept.
+         */
+    rowNumber?: number;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        insert.
+         */
+    expectedFingerprint?: string;
+  };
+};
+export type DeleteContentItemApiResponse = unknown;
+export type DeleteContentItemApiArg = {
+  /** Content item ID */
+  contentItemId: string;
+  /** Optional optimistic-concurrency precondition for delete: the
+    delete applies only when the stored fingerprint still matches.
+     */
+  expectedFingerprint?: string;
+};
 export type GetPatternsApiResponse = /** status 200 Designs response */ {
   /** Current page number of the result set. */
   page?: number;
@@ -10064,7 +12262,8 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
         totalCount?: number | null;
       };
     } | null;
-    /** Optional structured location metadata (branch, host, path, ...). */
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
     location?: {
       [key: string]: string;
     };
@@ -10337,7 +12536,8 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
       totalCount?: number | null;
     };
   } | null;
-  /** Optional structured location metadata (branch, host, path, ...). */
+  /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+   */
   location?: {
     [key: string]: string;
   };
@@ -10653,7 +12853,8 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
       totalCount?: number | null;
     };
   } | null;
-  /** Optional structured location metadata (branch, host, path, ...). */
+  /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+   */
   location?: {
     [key: string]: string;
   };
@@ -10910,7 +13111,8 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
       totalCount?: number | null;
     };
   } | null;
-  /** Optional structured location metadata (branch, host, path, ...). */
+  /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+   */
   location?: {
     [key: string]: string;
   };
@@ -10960,6 +13162,525 @@ export type UpsertPatternSourceContentApiArg = {
   /** Design (Pattern) ID */
   designId: string;
   body: Blob;
+};
+export type RefreshPatternFromSourceApiResponse =
+  /** status 200 Design refreshed. `sourceContent` and `patternFile` are omitted from the response body (they can be megabytes), as on import.
+   */ {
+    /** Server-generated design ID. */
+    id?: string;
+    /** Human-readable design name. */
+    name?: string;
+    /** Catalog metadata attached to the design when published. */
+    catalogData?: {
+      /** Tracks the specific content version that has been made available in the Catalog. */
+      publishedVersion?: string;
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+      class?: "official" | "verified" | "reference architecture";
+      /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
+      compatibility: "kubernetes"[];
+      /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
+      patternCaveats: string;
+      /** Purpose of the design along with its intended and unintended uses. */
+      patternInfo: string;
+      /** Categorization of the type of design or operational flow depicted in this design. */
+      type:
+        | "Deployment"
+        | "Observability"
+        | "Resiliency"
+        | "Scaling"
+        | "Security"
+        | "Traffic-management"
+        | "Troubleshooting"
+        | "Workloads";
+      /** Contains reference to the dark and light mode snapshots of the design. */
+      snapshotURL?: string[];
+    };
+    /** Owning user ID. */
+    userId?: string;
+    /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
+     */
+    user?: {
+      /** Unique identifier for the user */
+      id: string;
+      /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
+      userId: string;
+      /** Authentication provider (e.g., Google, Github) */
+      provider: string;
+      /** User's email address */
+      email: string;
+      /** User's first name */
+      firstName: string;
+      /** User's last name */
+      lastName: string;
+      /** URL to user's avatar image */
+      avatarUrl?: string;
+      /** User account status */
+      status: "active" | "inactive" | "pending" | "anonymous";
+      /** User's biography or description */
+      bio?: string;
+      /** User's country information stored as JSONB */
+      country?: {
+        [key: string]: any;
+      };
+      /** User's region information stored as JSONB */
+      region?: {
+        [key: string]: any;
+      };
+      /** User preferences stored as JSONB */
+      preferences?: {
+        /** The mesh adapters of the preference. */
+        meshAdapters?: object[];
+        grafana?: {
+          /** Grafana URL for the user configuration. */
+          grafanaUrl?: string;
+          /** Grafana API key for the user configuration. */
+          grafanaApiKey?: string;
+          /** Selected Grafana board configurations for the user. */
+          selectedBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        prometheus?: {
+          /** The prometheus URL of the prometheus. */
+          prometheusUrl?: string;
+          /** The selected prometheus boards configs of the prometheus. */
+          selectedPrometheusBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        loadTestPrefs?: {
+          /** Concurrent requests */
+          c?: number;
+          /** Queries per second */
+          qps?: number;
+          /** Duration */
+          t?: string;
+          /** Load generator */
+          gen?: string;
+        };
+        /** The anonymous usage stats of the preference. */
+        anonymousUsageStats: boolean;
+        /** The anonymous perf results of the preference. */
+        anonymousPerfResults: boolean;
+        /** Timestamp of when the resource was last updated. */
+        updatedAt: string;
+        /** The dashboard preferences of the preference. */
+        dashboardPreferences: {
+          [key: string]: any;
+        };
+        /** ID of the associated selectedOrganization. */
+        selectedOrganizationId: string;
+        /** The selected workspace for organizations of the preference. */
+        selectedWorkspaceForOrganizations: {
+          [key: string]: string;
+        };
+        /** The users extension preferences of the preference. */
+        usersExtensionPreferences: {
+          [key: string]: any;
+        };
+        /** The remote provider preferences of the preference. */
+        remoteProviderPreferences: {
+          [key: string]: any;
+        };
+      };
+      /** Timestamp when user accepted terms and conditions */
+      acceptedTermsAt?: string;
+      /** Timestamp of user's first login */
+      firstLoginTime?: string;
+      /** Timestamp of user's most recent login */
+      lastLoginTime: string;
+      /** Timestamp when the user record was created */
+      createdAt: string;
+      /** Timestamp when the user record was last updated */
+      updatedAt: string;
+      /** Various online profiles associated with the user account */
+      socials?: {
+        /** The site of the social. */
+        site: string;
+        /** The link of the social. */
+        link: string;
+      }[];
+      /** Timestamp when the user record was soft-deleted (null if not deleted) */
+      deletedAt: string | null;
+      /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+      roleNames?: string[];
+      /** Teams the user belongs to with role information */
+      teams?: {
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
+      };
+      /** Organizations the user belongs to with role information */
+      organizations?: {
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
+      };
+    } | null;
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
+    location?: {
+      [key: string]: string;
+    };
+    /** Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
+     */
+    patternFile?: string;
+    /** Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+     */
+    visibility?: "private" | "public" | "published";
+    /** Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+     */
+    designType?: ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest") | null;
+    /** Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+     */
+    sourceContent?: string | null;
+    /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+     */
+    viewCount?: number;
+    /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+     */
+    downloadCount?: number;
+    /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+     */
+    cloneCount?: number;
+    /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+     */
+    deploymentCount?: number;
+    /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+     */
+    shareCount?: number;
+    /** Timestamp of design creation. */
+    createdAt?: string;
+    /** Timestamp of last design modification. */
+    updatedAt?: string;
+  };
+export type RefreshPatternFromSourceApiArg = {
+  /** Design (Pattern) ID */
+  designId: string;
+};
+export type UpdatePatternSourceApiResponse =
+  /** status 200 Source binding updated. `sourceContent` and `patternFile` are omitted from the response body, as on refresh and import.
+   */ {
+    /** Server-generated design ID. */
+    id?: string;
+    /** Human-readable design name. */
+    name?: string;
+    /** Catalog metadata attached to the design when published. */
+    catalogData?: {
+      /** Tracks the specific content version that has been made available in the Catalog. */
+      publishedVersion?: string;
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+      class?: "official" | "verified" | "reference architecture";
+      /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
+      compatibility: "kubernetes"[];
+      /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
+      patternCaveats: string;
+      /** Purpose of the design along with its intended and unintended uses. */
+      patternInfo: string;
+      /** Categorization of the type of design or operational flow depicted in this design. */
+      type:
+        | "Deployment"
+        | "Observability"
+        | "Resiliency"
+        | "Scaling"
+        | "Security"
+        | "Traffic-management"
+        | "Troubleshooting"
+        | "Workloads";
+      /** Contains reference to the dark and light mode snapshots of the design. */
+      snapshotURL?: string[];
+    };
+    /** Owning user ID. */
+    userId?: string;
+    /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
+     */
+    user?: {
+      /** Unique identifier for the user */
+      id: string;
+      /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
+      userId: string;
+      /** Authentication provider (e.g., Google, Github) */
+      provider: string;
+      /** User's email address */
+      email: string;
+      /** User's first name */
+      firstName: string;
+      /** User's last name */
+      lastName: string;
+      /** URL to user's avatar image */
+      avatarUrl?: string;
+      /** User account status */
+      status: "active" | "inactive" | "pending" | "anonymous";
+      /** User's biography or description */
+      bio?: string;
+      /** User's country information stored as JSONB */
+      country?: {
+        [key: string]: any;
+      };
+      /** User's region information stored as JSONB */
+      region?: {
+        [key: string]: any;
+      };
+      /** User preferences stored as JSONB */
+      preferences?: {
+        /** The mesh adapters of the preference. */
+        meshAdapters?: object[];
+        grafana?: {
+          /** Grafana URL for the user configuration. */
+          grafanaUrl?: string;
+          /** Grafana API key for the user configuration. */
+          grafanaApiKey?: string;
+          /** Selected Grafana board configurations for the user. */
+          selectedBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        prometheus?: {
+          /** The prometheus URL of the prometheus. */
+          prometheusUrl?: string;
+          /** The selected prometheus boards configs of the prometheus. */
+          selectedPrometheusBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        loadTestPrefs?: {
+          /** Concurrent requests */
+          c?: number;
+          /** Queries per second */
+          qps?: number;
+          /** Duration */
+          t?: string;
+          /** Load generator */
+          gen?: string;
+        };
+        /** The anonymous usage stats of the preference. */
+        anonymousUsageStats: boolean;
+        /** The anonymous perf results of the preference. */
+        anonymousPerfResults: boolean;
+        /** Timestamp of when the resource was last updated. */
+        updatedAt: string;
+        /** The dashboard preferences of the preference. */
+        dashboardPreferences: {
+          [key: string]: any;
+        };
+        /** ID of the associated selectedOrganization. */
+        selectedOrganizationId: string;
+        /** The selected workspace for organizations of the preference. */
+        selectedWorkspaceForOrganizations: {
+          [key: string]: string;
+        };
+        /** The users extension preferences of the preference. */
+        usersExtensionPreferences: {
+          [key: string]: any;
+        };
+        /** The remote provider preferences of the preference. */
+        remoteProviderPreferences: {
+          [key: string]: any;
+        };
+      };
+      /** Timestamp when user accepted terms and conditions */
+      acceptedTermsAt?: string;
+      /** Timestamp of user's first login */
+      firstLoginTime?: string;
+      /** Timestamp of user's most recent login */
+      lastLoginTime: string;
+      /** Timestamp when the user record was created */
+      createdAt: string;
+      /** Timestamp when the user record was last updated */
+      updatedAt: string;
+      /** Various online profiles associated with the user account */
+      socials?: {
+        /** The site of the social. */
+        site: string;
+        /** The link of the social. */
+        link: string;
+      }[];
+      /** Timestamp when the user record was soft-deleted (null if not deleted) */
+      deletedAt: string | null;
+      /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+      roleNames?: string[];
+      /** Teams the user belongs to with role information */
+      teams?: {
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
+      };
+      /** Organizations the user belongs to with role information */
+      organizations?: {
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
+      };
+    } | null;
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
+    location?: {
+      [key: string]: string;
+    };
+    /** Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
+     */
+    patternFile?: string;
+    /** Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+     */
+    visibility?: "private" | "public" | "published";
+    /** Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+     */
+    designType?: ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest") | null;
+    /** Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+     */
+    sourceContent?: string | null;
+    /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+     */
+    viewCount?: number;
+    /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+     */
+    downloadCount?: number;
+    /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+     */
+    cloneCount?: number;
+    /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+     */
+    deploymentCount?: number;
+    /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+     */
+    shareCount?: number;
+    /** Timestamp of design creation. */
+    createdAt?: string;
+    /** Timestamp of last design modification. */
+    updatedAt?: string;
+  };
+export type UpdatePatternSourceApiArg = {
+  /** Design (Pattern) ID */
+  designId: string;
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    connectionId: string;
+    /** Repository as `github.com/<owner>/<repo>` - the same form `location.host` stores.
+     */
+    host: string;
+    /** Repository-relative path of a file (not a directory), with no leading slash.
+     */
+    path: string;
+    /** Branch or tag the binding tracks, stored as `location.branch`. Empty or omitted means the repository's default branch.
+     */
+    ref?: string;
+  };
 };
 export type ImportDesignApiResponse =
   /** status 200 Successful import. The response body is a JSON array of the saved designs, not a message envelope. The import path saves exactly one design, so the array carries a single element and consumers read the imported design as the first element. */ {
@@ -11172,7 +13893,8 @@ export type ImportDesignApiResponse =
         totalCount?: number | null;
       };
     } | null;
-    /** Optional structured location metadata (branch, host, path, ...). */
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
     location?: {
       [key: string]: string;
     };
@@ -11224,6 +13946,616 @@ export type ImportDesignApiArg = {
         /** Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it. */
         name?: string;
       };
+};
+export type GetGithubImportedDesignsApiResponse = /** status 200 Imported designs page. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Designs included on this page of results. */
+  patterns?: {
+    /** Server-generated design ID. */
+    id?: string;
+    /** Human-readable design name. */
+    name?: string;
+    /** Catalog metadata attached to the design when published. */
+    catalogData?: {
+      /** Tracks the specific content version that has been made available in the Catalog. */
+      publishedVersion?: string;
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+      class?: "official" | "verified" | "reference architecture";
+      /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
+      compatibility: "kubernetes"[];
+      /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
+      patternCaveats: string;
+      /** Purpose of the design along with its intended and unintended uses. */
+      patternInfo: string;
+      /** Categorization of the type of design or operational flow depicted in this design. */
+      type:
+        | "Deployment"
+        | "Observability"
+        | "Resiliency"
+        | "Scaling"
+        | "Security"
+        | "Traffic-management"
+        | "Troubleshooting"
+        | "Workloads";
+      /** Contains reference to the dark and light mode snapshots of the design. */
+      snapshotURL?: string[];
+    };
+    /** Owning user ID. */
+    userId?: string;
+    /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
+     */
+    user?: {
+      /** Unique identifier for the user */
+      id: string;
+      /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
+      userId: string;
+      /** Authentication provider (e.g., Google, Github) */
+      provider: string;
+      /** User's email address */
+      email: string;
+      /** User's first name */
+      firstName: string;
+      /** User's last name */
+      lastName: string;
+      /** URL to user's avatar image */
+      avatarUrl?: string;
+      /** User account status */
+      status: "active" | "inactive" | "pending" | "anonymous";
+      /** User's biography or description */
+      bio?: string;
+      /** User's country information stored as JSONB */
+      country?: {
+        [key: string]: any;
+      };
+      /** User's region information stored as JSONB */
+      region?: {
+        [key: string]: any;
+      };
+      /** User preferences stored as JSONB */
+      preferences?: {
+        /** The mesh adapters of the preference. */
+        meshAdapters?: object[];
+        grafana?: {
+          /** Grafana URL for the user configuration. */
+          grafanaUrl?: string;
+          /** Grafana API key for the user configuration. */
+          grafanaApiKey?: string;
+          /** Selected Grafana board configurations for the user. */
+          selectedBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        prometheus?: {
+          /** The prometheus URL of the prometheus. */
+          prometheusUrl?: string;
+          /** The selected prometheus boards configs of the prometheus. */
+          selectedPrometheusBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        loadTestPrefs?: {
+          /** Concurrent requests */
+          c?: number;
+          /** Queries per second */
+          qps?: number;
+          /** Duration */
+          t?: string;
+          /** Load generator */
+          gen?: string;
+        };
+        /** The anonymous usage stats of the preference. */
+        anonymousUsageStats: boolean;
+        /** The anonymous perf results of the preference. */
+        anonymousPerfResults: boolean;
+        /** Timestamp of when the resource was last updated. */
+        updatedAt: string;
+        /** The dashboard preferences of the preference. */
+        dashboardPreferences: {
+          [key: string]: any;
+        };
+        /** ID of the associated selectedOrganization. */
+        selectedOrganizationId: string;
+        /** The selected workspace for organizations of the preference. */
+        selectedWorkspaceForOrganizations: {
+          [key: string]: string;
+        };
+        /** The users extension preferences of the preference. */
+        usersExtensionPreferences: {
+          [key: string]: any;
+        };
+        /** The remote provider preferences of the preference. */
+        remoteProviderPreferences: {
+          [key: string]: any;
+        };
+      };
+      /** Timestamp when user accepted terms and conditions */
+      acceptedTermsAt?: string;
+      /** Timestamp of user's first login */
+      firstLoginTime?: string;
+      /** Timestamp of user's most recent login */
+      lastLoginTime: string;
+      /** Timestamp when the user record was created */
+      createdAt: string;
+      /** Timestamp when the user record was last updated */
+      updatedAt: string;
+      /** Various online profiles associated with the user account */
+      socials?: {
+        /** The site of the social. */
+        site: string;
+        /** The link of the social. */
+        link: string;
+      }[];
+      /** Timestamp when the user record was soft-deleted (null if not deleted) */
+      deletedAt: string | null;
+      /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+      roleNames?: string[];
+      /** Teams the user belongs to with role information */
+      teams?: {
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
+      };
+      /** Organizations the user belongs to with role information */
+      organizations?: {
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
+      };
+    } | null;
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
+    location?: {
+      [key: string]: string;
+    };
+    /** Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
+     */
+    patternFile?: string;
+    /** Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+     */
+    visibility?: "private" | "public" | "published";
+    /** Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+     */
+    designType?: ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest") | null;
+    /** Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+     */
+    sourceContent?: string | null;
+    /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+     */
+    viewCount?: number;
+    /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+     */
+    downloadCount?: number;
+    /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+     */
+    cloneCount?: number;
+    /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+     */
+    deploymentCount?: number;
+    /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+     */
+    shareCount?: number;
+    /** Timestamp of design creation. */
+    createdAt?: string;
+    /** Timestamp of last design modification. */
+    updatedAt?: string;
+  }[];
+  /** Optional discriminator describing which collection the page represents. */
+  resultType?: string;
+};
+export type GetGithubImportedDesignsApiArg = {
+  /** ID of a GitHub App connection. */
+  connectionId: string;
+  /** Restrict to one repository, as `<owner>/<repo>` (case-insensitive). */
+  repository?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+};
+export type ImportGithubRepositoryApiResponse =
+  /** status 200 Import outcome. Per-file failures are reported in `errors`, not as a non-2xx status. */ {
+    /** Designs created or updated by this import, with `sourceContent`, `patternFile` and `catalogData` omitted.
+     */
+    patterns?: {
+      /** Server-generated design ID. */
+      id?: string;
+      /** Human-readable design name. */
+      name?: string;
+      /** Catalog metadata attached to the design when published. */
+      catalogData?: {
+        /** Tracks the specific content version that has been made available in the Catalog. */
+        publishedVersion?: string;
+        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+        class?: "official" | "verified" | "reference architecture";
+        /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
+        compatibility: "kubernetes"[];
+        /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
+        patternCaveats: string;
+        /** Purpose of the design along with its intended and unintended uses. */
+        patternInfo: string;
+        /** Categorization of the type of design or operational flow depicted in this design. */
+        type:
+          | "Deployment"
+          | "Observability"
+          | "Resiliency"
+          | "Scaling"
+          | "Security"
+          | "Traffic-management"
+          | "Troubleshooting"
+          | "Workloads";
+        /** Contains reference to the dark and light mode snapshots of the design. */
+        snapshotURL?: string[];
+      };
+      /** Owning user ID. */
+      userId?: string;
+      /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
+       */
+      user?: {
+        /** Unique identifier for the user */
+        id: string;
+        /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
+        userId: string;
+        /** Authentication provider (e.g., Google, Github) */
+        provider: string;
+        /** User's email address */
+        email: string;
+        /** User's first name */
+        firstName: string;
+        /** User's last name */
+        lastName: string;
+        /** URL to user's avatar image */
+        avatarUrl?: string;
+        /** User account status */
+        status: "active" | "inactive" | "pending" | "anonymous";
+        /** User's biography or description */
+        bio?: string;
+        /** User's country information stored as JSONB */
+        country?: {
+          [key: string]: any;
+        };
+        /** User's region information stored as JSONB */
+        region?: {
+          [key: string]: any;
+        };
+        /** User preferences stored as JSONB */
+        preferences?: {
+          /** The mesh adapters of the preference. */
+          meshAdapters?: object[];
+          grafana?: {
+            /** Grafana URL for the user configuration. */
+            grafanaUrl?: string;
+            /** Grafana API key for the user configuration. */
+            grafanaApiKey?: string;
+            /** Selected Grafana board configurations for the user. */
+            selectedBoardsConfigs?: {
+              /** Placeholder for GrafanaBoard definition (define fields as needed) */
+              board?: object;
+              /** Panels selected for the Grafana board configuration. */
+              panels?: object[];
+              /** Template variables applied to the selected Grafana board configuration. */
+              templateVars?: string[];
+            }[];
+          };
+          prometheus?: {
+            /** The prometheus URL of the prometheus. */
+            prometheusUrl?: string;
+            /** The selected prometheus boards configs of the prometheus. */
+            selectedPrometheusBoardsConfigs?: {
+              /** Placeholder for GrafanaBoard definition (define fields as needed) */
+              board?: object;
+              /** Panels selected for the Grafana board configuration. */
+              panels?: object[];
+              /** Template variables applied to the selected Grafana board configuration. */
+              templateVars?: string[];
+            }[];
+          };
+          loadTestPrefs?: {
+            /** Concurrent requests */
+            c?: number;
+            /** Queries per second */
+            qps?: number;
+            /** Duration */
+            t?: string;
+            /** Load generator */
+            gen?: string;
+          };
+          /** The anonymous usage stats of the preference. */
+          anonymousUsageStats: boolean;
+          /** The anonymous perf results of the preference. */
+          anonymousPerfResults: boolean;
+          /** Timestamp of when the resource was last updated. */
+          updatedAt: string;
+          /** The dashboard preferences of the preference. */
+          dashboardPreferences: {
+            [key: string]: any;
+          };
+          /** ID of the associated selectedOrganization. */
+          selectedOrganizationId: string;
+          /** The selected workspace for organizations of the preference. */
+          selectedWorkspaceForOrganizations: {
+            [key: string]: string;
+          };
+          /** The users extension preferences of the preference. */
+          usersExtensionPreferences: {
+            [key: string]: any;
+          };
+          /** The remote provider preferences of the preference. */
+          remoteProviderPreferences: {
+            [key: string]: any;
+          };
+        };
+        /** Timestamp when user accepted terms and conditions */
+        acceptedTermsAt?: string;
+        /** Timestamp of user's first login */
+        firstLoginTime?: string;
+        /** Timestamp of user's most recent login */
+        lastLoginTime: string;
+        /** Timestamp when the user record was created */
+        createdAt: string;
+        /** Timestamp when the user record was last updated */
+        updatedAt: string;
+        /** Various online profiles associated with the user account */
+        socials?: {
+          /** The site of the social. */
+          site: string;
+          /** The link of the social. */
+          link: string;
+        }[];
+        /** Timestamp when the user record was soft-deleted (null if not deleted) */
+        deletedAt: string | null;
+        /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+        roleNames?: string[];
+        /** Teams the user belongs to with role information */
+        teams?: {
+          /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+          teamsWithRoles?:
+            | {
+                /** Unique identifier of the team. */
+                id: string;
+                /** Name of the team. */
+                name: string;
+                /** Human readable description of the team. */
+                description?: string;
+                /** Identifier of the team owner. */
+                owner?: string;
+                /** Free-form metadata associated with the team. */
+                metadata?: {
+                  [key: string]: any;
+                };
+                /** Timestamp when the team was created. */
+                createdAt?: string;
+                /** Timestamp when the team was last updated. */
+                updatedAt?: string;
+                /** Timestamp when the team was soft-deleted (null if not deleted). */
+                deletedAt?: string | null;
+                /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                roleNames: string[];
+              }[]
+            | null;
+          /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+          totalCount?: number | null;
+        };
+        /** Organizations the user belongs to with role information */
+        organizations?: {
+          /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+          organizationsWithRoles?:
+            | {
+                /** Unique identifier of the organization. */
+                id: string;
+                /** Name of the organization. */
+                name: string;
+                /** Human readable description of the organization. */
+                description?: string;
+                /** Country associated with the organization. */
+                country?: string;
+                /** Region associated with the organization. */
+                region?: string;
+                /** Identifier of the organization owner. */
+                owner?: string;
+                /** Timestamp when the organization was created. */
+                createdAt?: string;
+                /** Timestamp when the organization was last updated. */
+                updatedAt?: string;
+                /** Timestamp when the organization was soft-deleted (null if not deleted). */
+                deletedAt?: string | null;
+                /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                roleNames: string[];
+              }[]
+            | null;
+          /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+          totalCount?: number | null;
+        };
+      } | null;
+      /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+       */
+      location?: {
+        [key: string]: string;
+      };
+      /** Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
+       */
+      patternFile?: string;
+      /** Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+       */
+      visibility?: "private" | "public" | "published";
+      /** Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+       */
+      designType?: ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest") | null;
+      /** Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+       */
+      sourceContent?: string | null;
+      /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+       */
+      viewCount?: number;
+      /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+       */
+      downloadCount?: number;
+      /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+       */
+      cloneCount?: number;
+      /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+       */
+      deploymentCount?: number;
+      /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+       */
+      shareCount?: number;
+      /** Timestamp of design creation. */
+      createdAt?: string;
+      /** Timestamp of last design modification. */
+      updatedAt?: string;
+    }[];
+    /** IDs (all also present in `patterns`) of designs updated in place rather than created. */
+    updatedIds?: string[];
+    /** Repository-relative paths left untouched because `onExisting` was `skip` and a design already imports them. */
+    skippedPaths?: string[];
+    /** One Error-severity import event per selected path that failed. */
+    errors?: {
+      /** Event ID. */
+      id: string;
+      /** ID of the entity on which the event was performed. */
+      actedUpon: string;
+      /** Action taken on the resource, for example `import`. */
+      action: string;
+      /** Resource kind the operation was invoked on, for example `pattern`. */
+      category: string;
+      /** Human-readable summary of what happened. */
+      description: string;
+      /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+       */
+      metadata: {
+        [key: string]: any;
+      } | null;
+      /** ID correlating the events one operation emitted. */
+      operationId: string;
+      /** Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+       */
+      severity: string;
+      /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
+       */
+      status: string;
+      /** ID of the system instance that emitted the event. */
+      systemId: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      owner?: string;
+      /** Timestamp when the event was recorded. */
+      createdAt: string;
+      /** Timestamp when the event was last updated. */
+      updatedAt: string;
+      /** Timestamp when the event was soft-deleted; omitted when it was not. */
+      deletedAt?: string | null;
+    }[];
+  };
+export type ImportGithubRepositoryApiArg = {
+  /** ID of a GitHub App connection. */
+  connectionId: string;
+  body: {
+    /** Repository as `<owner>/<repo>`. */
+    name: string;
+    /** Selected tree items, as served by `GET /api/integrations/github/scan`. The server reads only `type` and `entry.path`; the remaining scan fields are accepted and ignored.
+     */
+    paths: {
+      /** Tree item kind; a directory is imported recursively. */
+      type: "file" | "dir";
+      /** The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored.
+       */
+      entry: {
+        /** Repository-relative path of the file or directory. */
+        path: string;
+      };
+      [key: string]: any;
+    }[];
+    /** What to do with a selected file that already identifies one of the caller's designs. `skip` (the default, "import new only") leaves it untouched and reports it in `skippedPaths`, so a request that omits `onExisting` never overwrites an existing design; `update` refreshes that design in place under the same ID (idempotent import); `new` imports it again as an additional design.
+     */
+    onExisting?: "update" | "skip" | "new";
+  };
+};
+export type GetGithubRepositoryBranchesApiResponse = /** status 200 Repository branches page. */ {
+  /** The repository's default branch. */
+  defaultBranch: string;
+  branches: {
+    /** Branch name. */
+    name: string;
+    /** Commit at the head of the branch. */
+    commitSha: string;
+  }[];
+  /** Zero-based page index served. */
+  page: number;
+  /** Page size served. */
+  pageSize: number;
+  /** True when another page of branches follows. */
+  hasMore: boolean;
+};
+export type GetGithubRepositoryBranchesApiArg = {
+  /** ID of a GitHub App connection. */
+  connectionId: string;
+  /** Repository as `<owner>/<repo>` (case-insensitive). */
+  repository: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
 };
 export type GetCatalogContentApiResponse = /** status 200 Catalog content page */ {
   /** Current page number of the result set. */
@@ -11443,7 +14775,8 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
         totalCount?: number | null;
       };
     } | null;
-    /** Optional structured location metadata (branch, host, path, ...). */
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
     location?: {
       [key: string]: string;
     };
@@ -12298,13 +15631,13 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   updatedAt?: string;
   /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
   deletedAt?: string | null;
-  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
     
     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
     
     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
     
-    Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+    Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
     
     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
   purpose?: "user" | "administrative";
@@ -12318,6 +15651,12 @@ export type CreateEnvironmentApiArg = {
     description?: string;
     /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
     organizationId: string;
+    /** Free-form settings stored with the environment. */
+    metadata?: {
+      [key: string]: any;
+    };
+    /** The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
+    purpose?: "user";
   };
 };
 export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
@@ -12349,13 +15688,13 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -12374,6 +15713,8 @@ export type GetEnvironmentsApiArg = {
   pagesize?: number;
   /** User's organization ID */
   orgId: string;
+  /** Return only environments with this purpose; absent returns every purpose the caller may see. The filter only narrows the environments the caller can already list and grants no visibility - a caller who cannot see administrative environments receives an empty page for purpose=administrative. */
+  purpose?: "user" | "administrative";
 };
 export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
   /** Zero-based page index returned in this response. */
@@ -12404,13 +15745,13 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -12451,13 +15792,13 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -12474,6 +15815,12 @@ export type UpdateEnvironmentApiArg = {
     description?: string;
     /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
     organizationId: string;
+    /** Free-form settings stored with the environment. */
+    metadata?: {
+      [key: string]: any;
+    };
+    /** The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
+    purpose?: "user";
   };
 };
 export type DeleteEnvironmentApiResponse = unknown;
@@ -12606,7 +15953,79 @@ export type GetEventsAggregateApiArg = {
   /** When true, return cumulative aggregate counts across all time. */
   cumulative?: boolean;
 };
-export type CreateEventApiResponse = unknown;
+export type CreateEventApiResponse =
+  /** status 200 An event with this `idempotencyKey` was already recorded by the same caller; it is returned unchanged and no new event is recorded.
+     */
+    | {
+        /** Event ID. */
+        id: string;
+        /** ID of the entity on which the event was performed. */
+        actedUpon: string;
+        /** Action taken on the resource, for example `import`. */
+        action: string;
+        /** Resource kind the operation was invoked on, for example `pattern`. */
+        category: string;
+        /** Human-readable summary of what happened. */
+        description: string;
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+         */
+        metadata: {
+          [key: string]: any;
+        } | null;
+        /** ID correlating the events one operation emitted. */
+        operationId: string;
+        /** Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+         */
+        severity: string;
+        /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
+         */
+        status: string;
+        /** ID of the system instance that emitted the event. */
+        systemId: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        owner?: string;
+        /** Timestamp when the event was recorded. */
+        createdAt: string;
+        /** Timestamp when the event was last updated. */
+        updatedAt: string;
+        /** Timestamp when the event was soft-deleted; omitted when it was not. */
+        deletedAt?: string | null;
+      }
+    | /** status 201 Event created */ {
+        /** Event ID. */
+        id: string;
+        /** ID of the entity on which the event was performed. */
+        actedUpon: string;
+        /** Action taken on the resource, for example `import`. */
+        action: string;
+        /** Resource kind the operation was invoked on, for example `pattern`. */
+        category: string;
+        /** Human-readable summary of what happened. */
+        description: string;
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+         */
+        metadata: {
+          [key: string]: any;
+        } | null;
+        /** ID correlating the events one operation emitted. */
+        operationId: string;
+        /** Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+         */
+        severity: string;
+        /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
+         */
+        status: string;
+        /** ID of the system instance that emitted the event. */
+        systemId: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        owner?: string;
+        /** Timestamp when the event was recorded. */
+        createdAt: string;
+        /** Timestamp when the event was last updated. */
+        updatedAt: string;
+        /** Timestamp when the event was soft-deleted; omitted when it was not. */
+        deletedAt?: string | null;
+      };
 export type CreateEventApiArg = {
   body: {
     /** UUID of the user associated with the event. */
@@ -12617,6 +16036,9 @@ export type CreateEventApiArg = {
     action?: string;
     /** Description of the event. */
     description?: string;
+    /** Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
+     */
+    idempotencyKey?: string;
     [key: string]: any;
   };
 };
@@ -13159,6 +16581,109 @@ export type GetFilterFileApiArg = {
   /** Filter ID */
   filterId: string;
 };
+export type GetGithubAppStatusApiResponse = unknown;
+export type GetGithubAppStatusApiArg = void;
+export type GetGithubInstallationRepositoriesApiResponse =
+  /** status 200 One page of the installation's repositories. */ {
+    [key: string]: any;
+  };
+export type GetGithubInstallationRepositoriesApiArg = {
+  /** GitHub App installation id; must be one of the caller's verified installations. */
+  id: string;
+  /** Get responses by page */
+  page?: number;
+};
+export type ScanGithubRepositoryApiResponse = /** status 200 Tree page. */
+  | {
+      /** Identifier of the tree item, for the UI's tree view. */
+      id?: string;
+      /** Display name of the file or directory. */
+      label?: string;
+      /** Kind of the tree item, such as a file or a directory. */
+      type?: string;
+      /** GitHub's tree entry for the item, passed through as GitHub returns it. */
+      entry?: {
+        [key: string]: any;
+      };
+      /** The items under a directory, each shaped as a `GithubRepositoryTreeItem`. */
+      children?: {
+        [key: string]: any;
+      }[];
+    }[]
+  | /** status 206 Tree page of a tree that has further pages. */ {
+      /** Identifier of the tree item, for the UI's tree view. */
+      id?: string;
+      /** Display name of the file or directory. */
+      label?: string;
+      /** Kind of the tree item, such as a file or a directory. */
+      type?: string;
+      /** GitHub's tree entry for the item, passed through as GitHub returns it. */
+      entry?: {
+        [key: string]: any;
+      };
+      /** The items under a directory, each shaped as a `GithubRepositoryTreeItem`. */
+      children?: {
+        [key: string]: any;
+      }[];
+    }[];
+export type ScanGithubRepositoryApiArg = {
+  /** Repository as `<owner>/<repo>`. */
+  name: string;
+  /** Branch or tag to scan. Empty or omitted scans the repository's default branch. A ref that names no commit answers 409. */
+  ref?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+};
+export type VerifyGithubRepositoryWorkflowApiResponse = /** status 200 Workflow presence. */ {
+  /** `ok` when no workflow is present; `error` when one is (`fileUrl` names it) or the check failed (`error` says why). */
+  status: "ok" | "error";
+  /** URL of the workflow file already present. */
+  fileUrl?: string;
+  /** Why the repository cannot take the workflow. */
+  error?: string;
+};
+export type VerifyGithubRepositoryWorkflowApiArg = {
+  /** Login of the account that owns the repository. */
+  owner: string;
+  /** Repository name, without its owner. */
+  repo: string;
+  /** Ignored. Accepted for compatibility; the server resolves the installation itself. */
+  id?: string;
+};
+export type InstallGithubWorkflowApiResponse = /** status 200 One entry per requested repository. */ {
+  [key: string]: {
+    /** HTTP-style status of the repository's outcome; `400` for a malformed repository identifier. */
+    code?: number;
+    /** The outcome, in words. */
+    description?: string;
+  };
+}[];
+export type InstallGithubWorkflowApiArg = {
+  /** Ignored. Accepted for compatibility; the server resolves the installation itself. */
+  id?: string;
+  body: {
+    /** Repositories as `<owner>/<repo>`. */
+    repositories: string[];
+  };
+};
+export type StartGithubAuthorizationApiResponse = unknown;
+export type StartGithubAuthorizationApiArg = {
+  /** `install` sends the browser to the GitHub App's installation page; `authorize` sends it to GitHub's user-authorization page for the App. */
+  flow: "install" | "authorize";
+};
+export type GithubAppCallbackApiResponse = unknown;
+export type GithubAppCallbackApiArg = {
+  /** The single-use state `startGithubAuthorization` issued. */
+  state: string;
+  /** GitHub's one-time authorization code. */
+  code?: string;
+  /** The installation GitHub names on return (GitHub's parameter name). It is stored only when it is one of the installations GitHub lists for the authorizing account. */
+  installationId?: string;
+  /** GitHub's setup action (GitHub's parameter name). */
+  setupAction?: "install" | "update" | "request";
+};
 export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   /** Unique identifier for the invitation, also used as the invitation code. */
   id: string;
@@ -13184,6 +16709,10 @@ export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   roles: string[];
   /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
   teams: string[];
+  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+  acceptanceOutcome?: "direct_membership" | "child_organization";
+  /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+  childOrganizationBranding?: "parent" | "provider" | "none";
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -13227,6 +16756,10 @@ export type UpdateInvitationApiResponse = /** status 200 Invitation updated */ {
   roles: string[];
   /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
   teams: string[];
+  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+  acceptanceOutcome?: "direct_membership" | "child_organization";
+  /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+  childOrganizationBranding?: "parent" | "provider" | "none";
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -13248,20 +16781,24 @@ export type UpdateInvitationApiArg = {
     isDefault?: boolean;
     /** Name of the invitation. */
     name: string;
-    /** Description of the invitation. */
-    description: string;
-    /** Email addresses or patterns this invitation is valid for. */
-    emails: string[];
+    /** Description of the invitation. Optional; omitting it stores an empty description. */
+    description?: string;
+    /** Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation. */
+    emails?: string[];
     /** ID of the organization to which the user is invited. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. */
     expiresAt?: string;
     /** Quota for the invitation; limits the number of users that can accept it. */
     quota?: number;
-    /** Roles that the user will have when accepting the invitation. */
-    roles: string[];
-    /** Teams that the user will be added to when accepting the invitation. */
-    teams: string[];
+    /** Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles. */
+    roles?: string[];
+    /** Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
+    teams?: string[];
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+    childOrganizationBranding?: "parent" | "provider" | "none";
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
   };
@@ -13299,6 +16836,10 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
     roles: string[];
     /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
     teams: string[];
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+    childOrganizationBranding?: "parent" | "provider" | "none";
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created. */
@@ -13346,6 +16887,10 @@ export type CreateInvitationApiResponse = /** status 201 Invitation created */ {
   roles: string[];
   /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
   teams: string[];
+  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+  acceptanceOutcome?: "direct_membership" | "child_organization";
+  /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+  childOrganizationBranding?: "parent" | "provider" | "none";
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -13365,20 +16910,24 @@ export type CreateInvitationApiArg = {
     isDefault?: boolean;
     /** Name of the invitation. */
     name: string;
-    /** Description of the invitation. */
-    description: string;
-    /** Email addresses or patterns this invitation is valid for. */
-    emails: string[];
+    /** Description of the invitation. Optional; omitting it stores an empty description. */
+    description?: string;
+    /** Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation. */
+    emails?: string[];
     /** ID of the organization to which the user is invited. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. */
     expiresAt?: string;
     /** Quota for the invitation; limits the number of users that can accept it. */
     quota?: number;
-    /** Roles that the user will have when accepting the invitation. */
-    roles: string[];
-    /** Teams that the user will be added to when accepting the invitation. */
-    teams: string[];
+    /** Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles. */
+    roles?: string[];
+    /** Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
+    teams?: string[];
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+    childOrganizationBranding?: "parent" | "provider" | "none";
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
   };
@@ -13408,6 +16957,10 @@ export type AcceptInvitationApiResponse = /** status 200 Invitation accepted */ 
   roles: string[];
   /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
   teams: string[];
+  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child is named "My Organization" and follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+  acceptanceOutcome?: "direct_membership" | "child_organization";
+  /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+  childOrganizationBranding?: "parent" | "provider" | "none";
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -13551,6 +17104,191 @@ export type GetSignupRequestNotificationApiResponse = /** status 200 Signup requ
   preProcessed: boolean;
 };
 export type GetSignupRequestNotificationApiArg = void;
+export type ListLedgerEntriesApiResponse = /** status 200 Ledger entries page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Ledger entries included on this page of results. */
+  ledgerEntries: {
+    /** Server-generated ledger entry ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Name of the ledger (the idempotent set) the entry belongs to. */
+    ledger: string;
+    /** Key within the ledger. Unique per (organization, ledger). */
+    entryKey: string;
+    /** Entry value, stored as a JSON blob. */
+    value?: object;
+    /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+     */
+    claimedByConnectionId?: string;
+    /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+    claimedAt?: string | null;
+    /** Timestamp of ledger entry creation. */
+    createdAt: string;
+    /** Timestamp of last ledger entry modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListLedgerEntriesApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type RecordLedgerEntryApiResponse = /** status 200 The key was already recorded; the stored entry, unchanged */
+  | {
+      /** Server-generated ledger entry ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Name of the ledger (the idempotent set) the entry belongs to. */
+      ledger: string;
+      /** Key within the ledger. Unique per (organization, ledger). */
+      entryKey: string;
+      /** Entry value, stored as a JSON blob. */
+      value?: object;
+      /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+       */
+      claimedByConnectionId?: string;
+      /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+      claimedAt?: string | null;
+      /** Timestamp of ledger entry creation. */
+      createdAt: string;
+      /** Timestamp of last ledger entry modification. */
+      updatedAt: string;
+    }
+  | /** status 201 The key was recorded */ {
+      /** Server-generated ledger entry ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Name of the ledger (the idempotent set) the entry belongs to. */
+      ledger: string;
+      /** Key within the ledger. Unique per (organization, ledger). */
+      entryKey: string;
+      /** Entry value, stored as a JSON blob. */
+      value?: object;
+      /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+       */
+      claimedByConnectionId?: string;
+      /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+      claimedAt?: string | null;
+      /** Timestamp of ledger entry creation. */
+      createdAt: string;
+      /** Timestamp of last ledger entry modification. */
+      updatedAt: string;
+    };
+export type RecordLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  body: {
+    /** Key within the ledger. */
+    entryKey: string;
+    /** Entry value, stored as a JSON object. */
+    value?: object;
+  };
+};
+export type ClaimLedgerEntryApiResponse = /** status 200 The caller's connection now holds the existing entry */
+  | {
+      /** Server-generated ledger entry ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Name of the ledger (the idempotent set) the entry belongs to. */
+      ledger: string;
+      /** Key within the ledger. Unique per (organization, ledger). */
+      entryKey: string;
+      /** Entry value, stored as a JSON blob. */
+      value?: object;
+      /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+       */
+      claimedByConnectionId?: string;
+      /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+      claimedAt?: string | null;
+      /** Timestamp of ledger entry creation. */
+      createdAt: string;
+      /** Timestamp of last ledger entry modification. */
+      updatedAt: string;
+    }
+  | /** status 201 The key was absent; it was recorded and claimed */ {
+      /** Server-generated ledger entry ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Name of the ledger (the idempotent set) the entry belongs to. */
+      ledger: string;
+      /** Key within the ledger. Unique per (organization, ledger). */
+      entryKey: string;
+      /** Entry value, stored as a JSON blob. */
+      value?: object;
+      /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+       */
+      claimedByConnectionId?: string;
+      /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+      claimedAt?: string | null;
+      /** Timestamp of ledger entry creation. */
+      createdAt: string;
+      /** Timestamp of last ledger entry modification. */
+      updatedAt: string;
+    };
+export type ClaimLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  body: {
+    /** Key to claim. */
+    entryKey: string;
+    /** ID of the connection taking the key: the caller's own live connection in the session organization (for example the connection a desktop client registered for its machine).
+     */
+    connectionId: string;
+    /** Value stored when the claim creates the entry; ignored when the entry already exists. */
+    value?: object;
+  };
+};
+export type GetLedgerEntryApiResponse = /** status 200 Ledger entry */ {
+  /** Server-generated ledger entry ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Name of the ledger (the idempotent set) the entry belongs to. */
+  ledger: string;
+  /** Key within the ledger. Unique per (organization, ledger). */
+  entryKey: string;
+  /** Entry value, stored as a JSON blob. */
+  value?: object;
+  /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+   */
+  claimedByConnectionId?: string;
+  /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+  claimedAt?: string | null;
+  /** Timestamp of ledger entry creation. */
+  createdAt: string;
+  /** Timestamp of last ledger entry modification. */
+  updatedAt: string;
+};
+export type GetLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
+  entryKey: string;
+};
+export type DeleteLedgerEntryApiResponse = unknown;
+export type DeleteLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
+  entryKey: string;
+};
 export type GetPatternResourcesApiResponse = /** status 200 Pattern resources page */ {
   /** Current page number of the result set. */
   page?: number;
@@ -14173,6 +17911,1834 @@ export type GetPlansApiArg = {
   /** Get responses by pagesize */
   pagesize?: number;
 };
+export type CreateProfileApiResponse = /** status 201 Created profile */ {
+  /** Server-generated profile ID. */
+  id: string;
+  /** Specifies the version of the schema to which the profile conforms. */
+  schemaVersion: string;
+  /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+  name: string;
+  /** Description of the profile. */
+  description?: string;
+  /** Owning organization ID. Fixed at creation. */
+  organizationId: string;
+  /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+  owner: string;
+  /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+  userId?: string;
+  /** Free-form settings of the profile, stored as a JSON blob. */
+  metadata?: object;
+  /** Timestamp when the profile was created. */
+  createdAt: string;
+  /** Timestamp when the profile was last updated. */
+  updatedAt: string;
+  /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+  deletedAt?: string | null;
+};
+export type CreateProfileApiArg = {
+  /** Body for creating or updating a profile */
+  body: {
+    /** Name of the profile, typically its short handle. Not unique. */
+    name: string;
+    /** Description of the profile. */
+    description?: string;
+    /** Organization in which to create the profile. Cannot change after creation. */
+    organizationId: string;
+    /** ID of the user who owns the profile. Only the owner or a holder of Edit Profile in a workspace the profile is assigned to may change it. */
+    owner?: string;
+    /** ID of the user this profile represents, when it represents a user. The user must be a member of the organization. */
+    userId?: string;
+    /** Free-form settings of the profile. */
+    metadata?: {
+      [key: string]: any;
+    };
+  };
+};
+export type GetProfilesApiResponse = /** status 200 Profiles */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of items across all pages. */
+  totalCount: number;
+  /** Profiles in this page. */
+  profiles: {
+    /** Server-generated profile ID. */
+    id: string;
+    /** Specifies the version of the schema to which the profile conforms. */
+    schemaVersion: string;
+    /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+    name: string;
+    /** Description of the profile. */
+    description?: string;
+    /** Owning organization ID. Fixed at creation. */
+    organizationId: string;
+    /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+    owner: string;
+    /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+    userId?: string;
+    /** Free-form settings of the profile, stored as a JSON blob. */
+    metadata?: object;
+    /** Timestamp when the profile was created. */
+    createdAt: string;
+    /** Timestamp when the profile was last updated. */
+    updatedAt: string;
+    /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetProfilesApiArg = {
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
+  pagesize?: number;
+  /** Organization ID used to scope the listing. Defaults to the organization the session resolved to. */
+  orgId?: string;
+  /** Return only the profile that represents this user. */
+  userId?: string;
+};
+export type GetProfileByIdApiResponse = /** status 200 Profile */ {
+  /** Server-generated profile ID. */
+  id: string;
+  /** Specifies the version of the schema to which the profile conforms. */
+  schemaVersion: string;
+  /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+  name: string;
+  /** Description of the profile. */
+  description?: string;
+  /** Owning organization ID. Fixed at creation. */
+  organizationId: string;
+  /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+  owner: string;
+  /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+  userId?: string;
+  /** Free-form settings of the profile, stored as a JSON blob. */
+  metadata?: object;
+  /** Timestamp when the profile was created. */
+  createdAt: string;
+  /** Timestamp when the profile was last updated. */
+  updatedAt: string;
+  /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+  deletedAt?: string | null;
+};
+export type GetProfileByIdApiArg = {
+  /** Profile ID */
+  profileId: string;
+};
+export type UpdateProfileApiResponse = /** status 200 Updated profile */ {
+  /** Server-generated profile ID. */
+  id: string;
+  /** Specifies the version of the schema to which the profile conforms. */
+  schemaVersion: string;
+  /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+  name: string;
+  /** Description of the profile. */
+  description?: string;
+  /** Owning organization ID. Fixed at creation. */
+  organizationId: string;
+  /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+  owner: string;
+  /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+  userId?: string;
+  /** Free-form settings of the profile, stored as a JSON blob. */
+  metadata?: object;
+  /** Timestamp when the profile was created. */
+  createdAt: string;
+  /** Timestamp when the profile was last updated. */
+  updatedAt: string;
+  /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+  deletedAt?: string | null;
+};
+export type UpdateProfileApiArg = {
+  /** Profile ID */
+  profileId: string;
+  /** Body for creating or updating a profile */
+  body: {
+    /** Name of the profile, typically its short handle. Not unique. */
+    name: string;
+    /** Description of the profile. */
+    description?: string;
+    /** Organization in which to create the profile. Cannot change after creation. */
+    organizationId: string;
+    /** ID of the user who owns the profile. Only the owner or a holder of Edit Profile in a workspace the profile is assigned to may change it. */
+    owner?: string;
+    /** ID of the user this profile represents, when it represents a user. The user must be a member of the organization. */
+    userId?: string;
+    /** Free-form settings of the profile. */
+    metadata?: {
+      [key: string]: any;
+    };
+  };
+};
+export type DeleteProfileApiResponse = unknown;
+export type DeleteProfileApiArg = {
+  /** Profile ID */
+  profileId: string;
+};
+export type GetProfileConnectionsApiResponse = /** status 200 Profile connections */ {
+  /** List of connections on this page */
+  connections: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** Connection Name */
+    name: string;
+    /** Human-readable description of the connection and its purpose. */
+    description?: string;
+    /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+    url?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    credentialId?: string;
+    /** Connection Type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+    subType: string;
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+    kind: string;
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Additional connection metadata */
+    metadata?: object;
+    /** Schema for the credential Associated with the connection */
+    credentialSchema?: object;
+    /** Schema for the connection */
+    connectionSchema?: object;
+    /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Connection Status */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+    transitionMap?: {
+      [key: string]: {
+        /** The connection state reachable from the current state. */
+        nextState:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** Human-readable explanation of when or why this transition occurs. */
+        description?: string;
+      }[];
+    };
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    owner?: string;
+    /** Timestamp when the connection was created. */
+    createdAt?: string;
+    /** Timestamp when the connection was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the connection was soft-deleted, if applicable. */
+    deletedAt?: string | null;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId?: string;
+    /** Associated environments for this connection */
+    environments?: {
+      /** ID */
+      id: string;
+      /** Specifies the version of the schema to which the environment conforms. */
+      schemaVersion: string;
+      /** Environment name */
+      name: string;
+      /** Environment description */
+      description: string;
+      /** Environment organization ID */
+      organizationId: string;
+      /** Environment owner */
+      owner?: string;
+      /** Timestamp when the environment was created. */
+      createdAt?: string;
+      /** Additional metadata associated with the environment. */
+      metadata?: object;
+      /** Timestamp when the environment was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+      deletedAt?: string | null;
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+            
+            Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+            
+            At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+            
+            Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            
+            The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+      purpose?: "user" | "administrative";
+    }[];
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
+  }[];
+  /** Total number of connections on all pages */
+  totalCount: number;
+  /** Current page number */
+  page: number;
+  /** Number of elements per page */
+  pageSize: number;
+  /** Aggregate count of connections grouped by status */
+  statusSummary?: {
+    [key: string]: number;
+  };
+};
+export type GetProfileConnectionsApiArg = {
+  /** Profile ID */
+  profileId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
+  pagesize?: number;
+};
+export type AddConnectionToProfileApiResponse = /** status 201 Connection linked to profile */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  profileId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  connectionId: string;
+  /** Timestamp when the mapping was created. */
+  createdAt?: string;
+  /** Timestamp when the mapping was last updated. */
+  updatedAt?: string;
+  /** Timestamp when the mapping was soft-deleted. Null while the mapping remains active. */
+  deletedAt?: string | null;
+};
+export type AddConnectionToProfileApiArg = {
+  /** Profile ID */
+  profileId: string;
+  /** Connection ID */
+  connectionId: string;
+};
+export type RemoveConnectionFromProfileApiResponse = unknown;
+export type RemoveConnectionFromProfileApiArg = {
+  /** Profile ID */
+  profileId: string;
+  /** Connection ID */
+  connectionId: string;
+};
+export type GetProviderCapabilitiesApiResponse = /** status 200 The capabilities document */ {
+  /** Provider type, for example `remote`. */
+  providerType: string;
+  /** Version of the extension package the provider offers this client. */
+  packageVersion?: string;
+  /** Download URL of that package. */
+  packageUrl?: string;
+  /** Display name of the provider. */
+  providerName?: string;
+  /** Lines describing the provider. */
+  providerDescription?: string[];
+  /** Home page URL of the provider. */
+  providerUrl?: string;
+  /** Redirect targets the provider serves to this client, keyed by name. */
+  redirects?: {
+    [key: string]: string;
+  };
+  /** Version of the provider's REST contract for native clients, as
+    `MAJOR.MINOR`. A client refuses a provider whose major differs from the
+    one it was built against. A provider that predates this field omits
+    it, which a client treats as not serving the contract.
+     */
+  contractVersion?: string;
+  /** Whether the authenticated caller is a live member of the organization
+    named by `X-Current-Orgid`. Present only on an authenticated request
+    that carried that header.
+     */
+  membership?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** True when the caller is a live member of the organization. */
+    bound: boolean;
+  };
+  /** Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`.
+   */
+  compatibility?: {
+    /** Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.
+     */
+    clientName: string;
+    /** The client's version as it reported it, as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Versions are ordered by their numeric parts, so `v1.9.0` is older than `v1.25.0`. */
+    clientVersion: string;
+    /** Oldest client version the provider accepts for this client. Absent when the provider sets no minimum. */
+    minimumVersion?: string;
+    /** True when `clientVersion` is at or above `minimumVersion`, or when there is no minimum. */
+    compatible: boolean;
+    /** Where the client can get an update, when the provider knows one. */
+    upgradeUrl?: string;
+  };
+  /** The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request.
+   */
+  session?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId: string;
+    /** The caller's provider-wide role names. */
+    providerRoles: string[];
+    /** The caller's role names in the organization. */
+    organizationRoles?: string[];
+    /** The plan of the organization's active subscription, when it has one. */
+    plan?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Display name of the plan. */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      /** Billing cadence for the plan (monthly, annually, or none). */
+      cadence: "none" | "monthly" | "annually";
+      /** Unit of consumption this plan charges against (e.g. user). */
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan. */
+      minimumUnits: number;
+      /** Price per unit of the plan. */
+      pricePerUnit: number;
+      /** Currency in which the plan is priced. */
+      currency: "usd";
+    };
+    /** The features the organization's active subscriptions entitle it to. */
+    entitlements?: {
+      /** Unique identifier for the feature. */
+      id: string;
+      /** Identifier of the plan granting this feature. */
+      plan_id: string;
+      /** The plan granting this feature. Populated only when the association is explicitly loaded. */
+      plan?: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** Display name of the plan. */
+        name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+        /** Billing cadence for the plan (monthly, annually, or none). */
+        cadence: "none" | "monthly" | "annually";
+        /** Unit of consumption this plan charges against (e.g. user). */
+        unit: "user" | "free";
+        /** Minimum number of units required for the plan. */
+        minimumUnits: number;
+        /** Price per unit of the plan. */
+        pricePerUnit: number;
+        /** Currency in which the plan is priced. */
+        currency: "usd";
+      };
+      /** Name of the entitled feature. */
+      name:
+        | "ComponentsInDesign"
+        | "RelationshipsInDesign"
+        | "DesignsInWorkspace"
+        | "WorkspacesInOrganization"
+        | "ImageSizeInDesign"
+        | "SizePerDesign"
+        | "BlowhornProfiles"
+        | "BlowhornBrowserAutomation"
+        | "BlowhornScheduler"
+        | "BlowhornDevicesPerSeat"
+        | "BlowhornPlatformLinkedIn"
+        | "BlowhornPlatformX"
+        | "BlowhornPlatformReddit"
+        | "BlowhornPlatformHackerNews"
+        | "BlowhornPlatformSlack"
+        | "BlowhornPlatformBluesky"
+        | "BlowhornPlatformGitHub"
+        | "BlowhornPlatformBlog";
+      /** Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability. */
+      quantity: number;
+      /** Timestamp when the resource was created. */
+      created_at: string;
+      /** Timestamp when the resource was updated. */
+      updated_at: string;
+    }[];
+    /** Registered devices (live `desktop` connections) in the organization against the organization's device limit. Registrations over the limit are accepted; `overLimit` flags the organization instead.
+     */
+    deviceUsage?: {
+      /** Live `desktop` connections registered in the organization. */
+      registered: number;
+      /** Devices the organization's subscriptions allow. Absent when unlimited or when no subscription sets a device limit. */
+      limit?: number;
+      /** True when `limit` is present and `registered` exceeds it. */
+      overLimit: boolean;
+    };
+  };
+  /** Extension points; shape owned by the provider. */
+  extensions?: {
+    [key: string]: any;
+  };
+  /** Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{machineId}` placeholders.
+   */
+  capabilities?: {
+    /** Feature name, for example `persist-connection`. */
+    feature: string;
+    /** Path that serves the feature, relative to the provider's base URL. */
+    endpoint?: string;
+  }[];
+  /** Access restrictions applied to this client; shape owned by the provider. */
+  restrictedAccess?: {
+    [key: string]: any;
+  };
+};
+export type GetProviderCapabilitiesApiArg = {
+  /** Version of the requesting client, for example `v0.8.0`. */
+  version: string;
+  /** Organization whose membership the caller wants reported. */
+  "X-Current-Orgid"?: string;
+  /** Identifier of the requesting client application, for example the product name of a desktop app. When present, the document carries `compatibility` for this client at the `{version}` path parameter.
+   */
+  client?: string;
+  /** Operating system of the client, used to select packages. */
+  os?: string;
+};
+export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Schedules included on this page of results. */
+  schedules: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** Human-readable name for the schedule. */
+    name: string;
+    /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+    action: string;
+    /** Action parameters, stored as a JSON blob. */
+    params?: object;
+    /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+    enabled: boolean;
+    /** Time the schedule first becomes due. */
+    runAt?: string | null;
+    /** Next time a recurring or retrying schedule becomes due. */
+    nextRunAt?: string | null;
+    /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+    recurrence?: string;
+    /** Lifecycle status. `pending`: created, not yet due-scheduled.
+        `scheduled`: waiting for its due time. `assigned`: designated for a
+        particular worker but not yet claimed. `claimed`: a worker holds the
+        claim and has not started. `running`: the claim holder is executing
+        it. `retrying`: the last attempt failed and another is due.
+        `completed`, `failed` and `cancelled` are terminal for a run-once
+        schedule; a recurring schedule returns to `scheduled`.
+         */
+    status:
+      | "pending"
+      | "scheduled"
+      | "assigned"
+      | "claimed"
+      | "running"
+      | "retrying"
+      | "completed"
+      | "failed"
+      | "cancelled";
+    /** Attempts already retried for the current run. */
+    retryCount: number;
+    /** Maximum retries before the run is marked failed. */
+    maxRetries: number;
+    /** Minutes to wait before a retry becomes due. */
+    retryDelayMinutes?: number;
+    /** Time of the most recent attempt. */
+    lastRunAt?: string | null;
+    /** Error reported by the most recent attempt. */
+    lastError?: string;
+    /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+    claim?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
+      /** Type of the claimed resource, for example `schedule`. */
+      resourceType: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      resourceId: string;
+      /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+      claimant: string;
+      /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+      status: "active" | "released" | "expired";
+      /** Time the claim was taken. */
+      claimedAt: string;
+      /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+      expiresAt: string;
+      /** Time the holder released the claim. Null while the claim is active or after it expired. */
+      releasedAt?: string | null;
+      /** Timestamp of claim creation. */
+      createdAt: string;
+      /** Timestamp of last claim modification. */
+      updatedAt: string;
+    };
+    /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+    pausedAt?: string | null;
+    /** Identity that paused the schedule. Server-managed. */
+    pausedBy?: string;
+    /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+    pauseReason?: string;
+    /** Timestamp of schedule creation. */
+    createdAt: string;
+    /** Timestamp of last schedule modification. */
+    updatedAt: string;
+    /** Timestamp when the schedule was soft-deleted. Null while live. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListSchedulesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Only schedules linked to this workspace. */
+  workspaceId?: string;
+  /** Only schedules in this status. */
+  status?:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+};
+export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type CreateScheduleApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** Human-readable name for the schedule. */
+    name: string;
+    /** The action the worker runs, for example a command name. */
+    action: string;
+    /** Action parameters, stored as a JSON blob. */
+    params?: object;
+    /** Whether the schedule is eligible to run. Defaults to true. */
+    enabled?: boolean;
+    /** Time the schedule first becomes due. */
+    runAt?: string | null;
+    /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+    recurrence?: string;
+    /** Client-settable status. Omit to let the server choose `scheduled` for a due-timed schedule and `pending` otherwise. */
+    status?: "pending" | "scheduled" | "cancelled";
+    /** Maximum retries before the run is marked failed. */
+    maxRetries?: number;
+    /** Minutes to wait before a retry becomes due. */
+    retryDelayMinutes?: number;
+    /** `true` pauses the schedule so it is never claimed (unless a claim
+        carries `ignorePause`); `false` resumes it. Omit to leave the pause
+        unchanged. The server records `pausedAt` and `pausedBy`.
+         */
+    paused?: boolean;
+    /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
+    pauseReason?: string;
+  };
+};
+export type ClaimNextScheduleApiResponse = /** status 200 The claimed schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type ClaimNextScheduleApiArg = {
+  body: {
+    /** Identity of the worker taking the claim. */
+    claimant: string;
+    /** Requested claim duration in minutes; the server applies its default when omitted and may cap it. */
+    durationMinutes?: number;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** Operator override that claims through the organization-wide and per-schedule pauses. */
+    ignorePause?: boolean;
+  };
+};
+export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type GetScheduleByIdApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+};
+export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type UpdateScheduleApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** Human-readable name for the schedule. */
+    name: string;
+    /** The action the worker runs, for example a command name. */
+    action: string;
+    /** Action parameters, stored as a JSON blob. */
+    params?: object;
+    /** Whether the schedule is eligible to run. Defaults to true. */
+    enabled?: boolean;
+    /** Time the schedule first becomes due. */
+    runAt?: string | null;
+    /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+    recurrence?: string;
+    /** Client-settable status. Omit to let the server choose `scheduled` for a due-timed schedule and `pending` otherwise. */
+    status?: "pending" | "scheduled" | "cancelled";
+    /** Maximum retries before the run is marked failed. */
+    maxRetries?: number;
+    /** Minutes to wait before a retry becomes due. */
+    retryDelayMinutes?: number;
+    /** `true` pauses the schedule so it is never claimed (unless a claim
+        carries `ignorePause`); `false` resumes it. Omit to leave the pause
+        unchanged. The server records `pausedAt` and `pausedBy`.
+         */
+    paused?: boolean;
+    /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
+    pauseReason?: string;
+  };
+};
+export type DeleteScheduleByIdApiResponse = unknown;
+export type DeleteScheduleByIdApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+};
+export type ClaimScheduleApiResponse = /** status 200 The claimed schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type ClaimScheduleApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+  body: {
+    /** Identity of the worker taking the claim. */
+    claimant: string;
+    /** Requested claim duration in minutes; the server applies its default when omitted and may cap it. */
+    durationMinutes?: number;
+    /** Claim even though the schedule is not yet due (trigger now). A live claim held by another claimant still refuses. */
+    force?: boolean;
+    /** Operator override that claims through the organization-wide and per-schedule pauses. */
+    ignorePause?: boolean;
+  };
+};
+export type RenewScheduleClaimApiResponse = /** status 200 The schedule with its renewed claim */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type RenewScheduleClaimApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+  body: {
+    /** Identity of the holder renewing the claim. */
+    claimant: string;
+    /** Requested extension in minutes from now; the server applies its default when omitted and may cap it. */
+    durationMinutes?: number;
+  };
+};
+export type ReleaseScheduleClaimApiResponse = /** status 200 The released schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type ReleaseScheduleClaimApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+  body: {
+    /** Identity of the holder releasing the claim. */
+    claimant: string;
+    /** Outcome status to record with the release. */
+    status?: "scheduled" | "retrying" | "completed" | "failed" | "cancelled";
+    /** Time of the attempt being reported. */
+    lastRunAt?: string | null;
+    /** Error reported by the attempt; empty on success. */
+    lastError?: string;
+    /** Next due time for a recurring or retrying schedule. */
+    nextRunAt?: string | null;
+    /** Retries used so far for the current run. */
+    retryCount?: number;
+  };
+};
+export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Schedules included on this page of results. */
+  schedules: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** Human-readable name for the schedule. */
+    name: string;
+    /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+    action: string;
+    /** Action parameters, stored as a JSON blob. */
+    params?: object;
+    /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+    enabled: boolean;
+    /** Time the schedule first becomes due. */
+    runAt?: string | null;
+    /** Next time a recurring or retrying schedule becomes due. */
+    nextRunAt?: string | null;
+    /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+    recurrence?: string;
+    /** Lifecycle status. `pending`: created, not yet due-scheduled.
+        `scheduled`: waiting for its due time. `assigned`: designated for a
+        particular worker but not yet claimed. `claimed`: a worker holds the
+        claim and has not started. `running`: the claim holder is executing
+        it. `retrying`: the last attempt failed and another is due.
+        `completed`, `failed` and `cancelled` are terminal for a run-once
+        schedule; a recurring schedule returns to `scheduled`.
+         */
+    status:
+      | "pending"
+      | "scheduled"
+      | "assigned"
+      | "claimed"
+      | "running"
+      | "retrying"
+      | "completed"
+      | "failed"
+      | "cancelled";
+    /** Attempts already retried for the current run. */
+    retryCount: number;
+    /** Maximum retries before the run is marked failed. */
+    maxRetries: number;
+    /** Minutes to wait before a retry becomes due. */
+    retryDelayMinutes?: number;
+    /** Time of the most recent attempt. */
+    lastRunAt?: string | null;
+    /** Error reported by the most recent attempt. */
+    lastError?: string;
+    /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+    claim?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
+      /** Type of the claimed resource, for example `schedule`. */
+      resourceType: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      resourceId: string;
+      /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+      claimant: string;
+      /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+      status: "active" | "released" | "expired";
+      /** Time the claim was taken. */
+      claimedAt: string;
+      /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+      expiresAt: string;
+      /** Time the holder released the claim. Null while the claim is active or after it expired. */
+      releasedAt?: string | null;
+      /** Timestamp of claim creation. */
+      createdAt: string;
+      /** Timestamp of last claim modification. */
+      updatedAt: string;
+    };
+    /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+    pausedAt?: string | null;
+    /** Identity that paused the schedule. Server-managed. */
+    pausedBy?: string;
+    /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+    pauseReason?: string;
+    /** Timestamp of schedule creation. */
+    createdAt: string;
+    /** Timestamp of last schedule modification. */
+    updatedAt: string;
+    /** Timestamp when the schedule was soft-deleted. Null while live. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetSchedulesOfWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Only schedules in this status. */
+  status?:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+};
+export type AssignScheduleToWorkspaceApiResponse = /** status 200 The linked schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type AssignScheduleToWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Schedule ID */
+  scheduleId: string;
+};
+export type UnassignScheduleFromWorkspaceApiResponse = /** status 200 The unlinked schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Action parameters, stored as a JSON blob. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time a recurring or retrying schedule becomes due. */
+  nextRunAt?: string | null;
+  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  recurrence?: string;
+  /** Lifecycle status. `pending`: created, not yet due-scheduled.
+    `scheduled`: waiting for its due time. `assigned`: designated for a
+    particular worker but not yet claimed. `claimed`: a worker holds the
+    claim and has not started. `running`: the claim holder is executing
+    it. `retrying`: the last attempt failed and another is due.
+    `completed`, `failed` and `cancelled` are terminal for a run-once
+    schedule; a recurring schedule returns to `scheduled`.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time of the most recent attempt. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, for example `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
+    claimant: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** Identity that paused the schedule. Server-managed. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+};
+export type UnassignScheduleFromWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Schedule ID */
+  scheduleId: string;
+};
 export type GetSubscriptionsApiResponse = /** status 200 Subscriptions response */ {
   /** Current page number of the result set. */
   page: number;
@@ -14526,6 +20092,8 @@ export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
 export type GetUserTokensApiArg = {
   /** Whether to retrieve OAuth-backed sessions instead of API tokens. */
   isOauth?: boolean;
+  /** Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
+  purpose?: string;
   /** Get responses by page */
   page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
@@ -14571,7 +20139,7 @@ export type GenerateTokenApiResponse = /** status 201 Token generated */ {
 export type GenerateTokenApiArg = {
   /** Name of the token. */
   name: string;
-  /** Purpose for which the token is generated. */
+  /** Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
   purpose?: string;
 };
 export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
@@ -14671,6 +20239,68 @@ export type IssueIndefiniteLifetimeTokenApiArg = {
   userId: string;
   /** Authentication provider to associate with the indefinite token. */
   provider: string;
+};
+export type GetNativeClientAuthorizationApiResponse = unknown;
+export type GetNativeClientAuthorizationApiArg = {
+  /** Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token. */
+  clientName: string;
+  /** Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`. */
+  client?: string;
+  /** Version of the client application, for example `v1.25.0`. */
+  clientVersion?: string;
+  /** Port on 127.0.0.1 where the native client listens for the callback. */
+  port: number;
+  /** PKCE code challenge, BASE64URL(SHA256(codeVerifier)) without padding. */
+  codeChallenge: string;
+  /** PKCE challenge method. Only S256 is accepted. */
+  codeChallengeMethod: "S256";
+  /** Opaque value from the native client, returned unchanged on the callback. */
+  state: string;
+};
+export type ApproveNativeClientAuthorizationApiResponse = unknown;
+export type ApproveNativeClientAuthorizationApiArg = {
+  body: {
+    /** Display name of the native client. */
+    clientName: string;
+    /** Port on 127.0.0.1 for the callback. */
+    port: number;
+    /** PKCE S256 code challenge. */
+    codeChallenge: string;
+    /** PKCE challenge method. */
+    codeChallengeMethod: "S256";
+    /** Opaque client state returned on the callback. */
+    state: string;
+  };
+};
+export type ExchangeNativeAuthorizationCodeApiResponse = /** status 201 API token minted for the native client */ {
+  /** Unique identifier for the token. */
+  id: string;
+  /** UUID of the user who owns the token. */
+  owner: string;
+  /** Authentication provider associated with the token. */
+  provider: string;
+  /** Access token value. */
+  accessToken: string;
+  /** Refresh token value when applicable. */
+  refreshToken?: string;
+  /** Human-readable token name. */
+  name: string;
+  /** Purpose for which the token was created. */
+  purpose: string;
+  /** Whether this entry represents an OAuth session. */
+  isOauth: boolean;
+  /** Timestamp when the token was created. */
+  createdAt: string;
+  /** Timestamp when the token was last updated. */
+  updatedAt: string;
+};
+export type ExchangeNativeAuthorizationCodeApiArg = {
+  body: {
+    /** Single-use authorization code from the loopback callback. */
+    code: string;
+    /** PKCE code verifier (RFC 7636, 43 to 128 unreserved characters). */
+    codeVerifier: string;
+  };
 };
 export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
   /** Current page number of the result set. */
@@ -15037,13 +20667,13 @@ export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -16170,6 +21800,91 @@ export type UnassignDesignFromWorkspaceApiArg = {
   /** Design ID */
   designId: string;
 };
+export type GetProfilesOfWorkspaceApiResponse = /** status 200 Profiles */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of items across all pages. */
+  totalCount: number;
+  /** Profiles in this page. */
+  profiles: {
+    /** Server-generated profile ID. */
+    id: string;
+    /** Specifies the version of the schema to which the profile conforms. */
+    schemaVersion: string;
+    /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+    name: string;
+    /** Description of the profile. */
+    description?: string;
+    /** Owning organization ID. Fixed at creation. */
+    organizationId: string;
+    /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+    owner: string;
+    /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+    userId?: string;
+    /** Free-form settings of the profile, stored as a JSON blob. */
+    metadata?: object;
+    /** Timestamp when the profile was created. */
+    createdAt: string;
+    /** Timestamp when the profile was last updated. */
+    updatedAt: string;
+    /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetProfilesOfWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
+  pagesize?: number;
+  /** JSON-encoded filter string used for assignment and soft-delete filters. */
+  filter?: string;
+};
+export type AssignProfileToWorkspaceApiResponse = /** status 200 Workspace profile mappings */ {
+  /** Zero-based page index returned in this response. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+  /** Total number of items across all pages. */
+  totalCount?: number;
+  /** Workspace-profile mapping entries. */
+  workspacesProfilesMapping?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    profileId: string;
+    /** Timestamp when the mapping was created. */
+    createdAt?: string;
+    /** Timestamp when the mapping was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the mapping was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type AssignProfileToWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Profile ID */
+  profileId: string;
+};
+export type UnassignProfileFromWorkspaceApiResponse = unknown;
+export type UnassignProfileFromWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Profile ID */
+  profileId: string;
+};
 export type GetViewsOfWorkspaceApiResponse = /** status 200 Views */ {
   page?: number;
   page_size?: number;
@@ -16320,8 +22035,12 @@ export const {
   useLazyGetOrgQuery,
   useDeleteOrgMutation,
   useUpdateOrgMutation,
+  useGetChildOrgsQuery,
+  useLazyGetChildOrgsQuery,
+  useCreateChildOrgMutation,
   useGetOrgPreferencesQuery,
   useLazyGetOrgPreferencesQuery,
+  usePatchOrgPreferencesMutation,
   useAddTeamToOrgMutation,
   useGetTeamByIdQuery,
   useLazyGetTeamByIdQuery,
@@ -16408,6 +22127,22 @@ export const {
   useLazyGetAcademyAdminRegistrationsQuery,
   useGetCertificateByIdQuery,
   useLazyGetCertificateByIdQuery,
+  useGetBlowhornHealthQuery,
+  useLazyGetBlowhornHealthQuery,
+  useListBlowhornProfilesQuery,
+  useLazyListBlowhornProfilesQuery,
+  useUpsertBlowhornProfileMutation,
+  useGetBlowhornProfileQuery,
+  useLazyGetBlowhornProfileQuery,
+  useUpdateBlowhornProfileMutation,
+  useDeleteBlowhornProfileMutation,
+  useListClaimsQuery,
+  useLazyListClaimsQuery,
+  useCreateClaimMutation,
+  useGetClaimQuery,
+  useLazyGetClaimQuery,
+  useRenewClaimMutation,
+  useReleaseClaimMutation,
   useGetConnectionsQuery,
   useLazyGetConnectionsQuery,
   useRegisterConnectionMutation,
@@ -16416,6 +22151,8 @@ export const {
   useUpdateConnectionMutation,
   useDeleteConnectionMutation,
   useDeleteMesheryConnectionMutation,
+  useDeregisterDesktopConnectionMutation,
+  useRecordConnectionHeartbeatMutation,
   useGetKubernetesContextQuery,
   useLazyGetKubernetesContextQuery,
   useAddConnectionToEnvironmentMutation,
@@ -16427,6 +22164,13 @@ export const {
   useLazyGetConnectionDefinitionQuery,
   useUpdateConnectionDefinitionMutation,
   useDeleteConnectionDefinitionMutation,
+  useListContentItemsQuery,
+  useLazyListContentItemsQuery,
+  useInsertContentItemMutation,
+  useGetContentItemQuery,
+  useLazyGetContentItemQuery,
+  useUpdateContentItemMutation,
+  useDeleteContentItemMutation,
   useGetPatternsQuery,
   useLazyGetPatternsQuery,
   useUpsertPatternMutation,
@@ -16438,7 +22182,14 @@ export const {
   useGetDesignPatternFileQuery,
   useLazyGetDesignPatternFileQuery,
   useUpsertPatternSourceContentMutation,
+  useRefreshPatternFromSourceMutation,
+  useUpdatePatternSourceMutation,
   useImportDesignMutation,
+  useGetGithubImportedDesignsQuery,
+  useLazyGetGithubImportedDesignsQuery,
+  useImportGithubRepositoryMutation,
+  useGetGithubRepositoryBranchesQuery,
+  useLazyGetGithubRepositoryBranchesQuery,
   useGetCatalogContentQuery,
   useLazyGetCatalogContentQuery,
   usePublishCatalogContentMutation,
@@ -16488,6 +22239,18 @@ export const {
   useCloneFilterMutation,
   useGetFilterFileQuery,
   useLazyGetFilterFileQuery,
+  useGetGithubAppStatusQuery,
+  useLazyGetGithubAppStatusQuery,
+  useGetGithubInstallationRepositoriesQuery,
+  useLazyGetGithubInstallationRepositoriesQuery,
+  useScanGithubRepositoryQuery,
+  useLazyScanGithubRepositoryQuery,
+  useVerifyGithubRepositoryWorkflowMutation,
+  useInstallGithubWorkflowMutation,
+  useStartGithubAuthorizationQuery,
+  useLazyStartGithubAuthorizationQuery,
+  useGithubAppCallbackQuery,
+  useLazyGithubAppCallbackQuery,
   useGetInvitationQuery,
   useLazyGetInvitationQuery,
   useDeleteInvitationMutation,
@@ -16504,6 +22267,13 @@ export const {
   useDenySignupRequestMutation,
   useGetSignupRequestNotificationQuery,
   useLazyGetSignupRequestNotificationQuery,
+  useListLedgerEntriesQuery,
+  useLazyListLedgerEntriesQuery,
+  useRecordLedgerEntryMutation,
+  useClaimLedgerEntryMutation,
+  useGetLedgerEntryQuery,
+  useLazyGetLedgerEntryQuery,
+  useDeleteLedgerEntryMutation,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,
@@ -16525,6 +22295,34 @@ export const {
   useLazyGetPerformanceResultsQuery,
   useGetPlansQuery,
   useLazyGetPlansQuery,
+  useCreateProfileMutation,
+  useGetProfilesQuery,
+  useLazyGetProfilesQuery,
+  useGetProfileByIdQuery,
+  useLazyGetProfileByIdQuery,
+  useUpdateProfileMutation,
+  useDeleteProfileMutation,
+  useGetProfileConnectionsQuery,
+  useLazyGetProfileConnectionsQuery,
+  useAddConnectionToProfileMutation,
+  useRemoveConnectionFromProfileMutation,
+  useGetProviderCapabilitiesQuery,
+  useLazyGetProviderCapabilitiesQuery,
+  useListSchedulesQuery,
+  useLazyListSchedulesQuery,
+  useCreateScheduleMutation,
+  useClaimNextScheduleMutation,
+  useGetScheduleByIdQuery,
+  useLazyGetScheduleByIdQuery,
+  useUpdateScheduleMutation,
+  useDeleteScheduleByIdMutation,
+  useClaimScheduleMutation,
+  useRenewScheduleClaimMutation,
+  useReleaseScheduleClaimMutation,
+  useGetSchedulesOfWorkspaceQuery,
+  useLazyGetSchedulesOfWorkspaceQuery,
+  useAssignScheduleToWorkspaceMutation,
+  useUnassignScheduleFromWorkspaceMutation,
   useGetSubscriptionsQuery,
   useLazyGetSubscriptionsQuery,
   useUpsertSubscriptionMutation,
@@ -16543,6 +22341,10 @@ export const {
   useLazyDownloadTokenQuery,
   useIssueIndefiniteLifetimeTokenQuery,
   useLazyIssueIndefiniteLifetimeTokenQuery,
+  useGetNativeClientAuthorizationQuery,
+  useLazyGetNativeClientAuthorizationQuery,
+  useApproveNativeClientAuthorizationMutation,
+  useExchangeNativeAuthorizationCodeMutation,
   useGetUsersQuery,
   useLazyGetUsersQuery,
   useSearchUsersQuery,
@@ -16568,6 +22370,10 @@ export const {
   useLazyGetDesignsOfWorkspaceQuery,
   useAssignDesignToWorkspaceMutation,
   useUnassignDesignFromWorkspaceMutation,
+  useGetProfilesOfWorkspaceQuery,
+  useLazyGetProfilesOfWorkspaceQuery,
+  useAssignProfileToWorkspaceMutation,
+  useUnassignProfileFromWorkspaceMutation,
   useGetViewsOfWorkspaceQuery,
   useLazyGetViewsOfWorkspaceQuery,
   useAssignViewToWorkspaceMutation,
