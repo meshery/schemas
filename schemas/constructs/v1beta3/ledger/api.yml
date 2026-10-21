@@ -6,15 +6,17 @@ info:
     entries that several workers share, so work done once (a record processed,
     a contact reached) is never done twice. Recording is idempotent on
     (ledger, entryKey), and claim-if-absent hands a key to exactly one
-    claimant atomically. Ledgers belong to the organization of the
+    claiming connection atomically. Ledgers belong to the organization of the
     authenticated session; any client-supplied organization is ignored.
 
     Authorization: ledgers are organization-shared bookkeeping. Any member of
     the organization may record, claim, list, read and delete entries in that
-    organization's ledgers. `claimant` is an advisory worker label, not an
-    authorization principal: it is not bound to the caller, and a claim or
-    delete never checks who holds the key. A key is scoped to (organization,
-    ledger), so an entry in another ledger is `404`.
+    organization's ledgers. A claim names the connection that takes the key
+    (`connectionId`), which must be the caller's own live connection in the
+    session organization; any other connection, including one that does not
+    exist, is `404`, the same answer as a missing ledger. A delete never
+    checks who holds the key. A key is scoped to (organization, ledger), so an
+    entry in another ledger is `404`.
   version: v1beta3
   contact:
     name: Meshery Maintainers
@@ -76,8 +78,8 @@ paths:
         Records `entryKey` in the ledger. A new key creates the entry and
         returns `201`. An existing key never creates a second entry and is not
         changed: the stored entry is returned unchanged with `200`, and the
-        supplied `value` is ignored. Recording never changes `claimedBy` or
-        `claimedAt`.
+        supplied `value` is ignored. Recording never changes
+        `claimedByConnectionId` or `claimedAt`.
       parameters:
         - $ref: "#/components/parameters/ledger"
       requestBody:
@@ -114,13 +116,16 @@ paths:
       summary: Claim a ledger key if absent
       operationId: claimLedgerEntry
       description: >
-        Atomically gives `entryKey` to `claimant`. When the key is not in the
-        ledger, the entry is created already claimed and returned with `201`.
-        When it is recorded but unclaimed, it is claimed and returned with
-        `200`. When `claimant` already holds it, the call is a replay and
-        returns the entry with `200`. When another claimant holds it, the
-        call is refused with `409` and nothing changes. A claim is permanent:
-        it ends only when the entry is deleted.
+        Atomically gives `entryKey` to the connection `connectionId`, which
+        must be the caller's own live connection in the session organization;
+        any other connection is `404`. When the key is not in the ledger, the
+        entry is created already claimed and returned with `201`. When it is
+        recorded but unclaimed, it is claimed and returned with `200`. When
+        `connectionId` already holds it, the call is a replay and returns the
+        entry with `200`. When another live connection holds it, the call is
+        refused with `409` and nothing changes. A claim ends when the entry is
+        deleted or when the holding connection is deleted; a key whose holder
+        was deleted can be claimed again.
       parameters:
         - $ref: "#/components/parameters/ledger"
       requestBody:
@@ -131,7 +136,7 @@ paths:
               $ref: "#/components/schemas/LedgerClaimPayload"
       responses:
         "200":
-          description: The caller's claimant now holds the existing entry
+          description: The caller's connection now holds the existing entry
           content:
             application/json:
               schema:
@@ -146,6 +151,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "409":
           $ref: "#/components/responses/409"
         "500":
@@ -210,7 +217,7 @@ components:
     404:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
     409:
-      description: Conflict - another claimant holds the ledger entry
+      description: Conflict - another connection holds the ledger entry
       content:
         text/plain:
           schema:
@@ -307,10 +314,10 @@ components:
 
     LedgerClaimPayload:
       type: object
-      description: Claim-if-absent payload giving a key to one claimant.
+      description: Claim-if-absent payload giving a key to one connection.
       required:
         - entryKey
-        - claimant
+        - connectionId
       properties:
         entryKey:
           type: string
@@ -318,11 +325,14 @@ components:
           minLength: 1
           maxLength: 1024
           x-go-name: EntryKey
-        claimant:
-          type: string
-          description: Advisory label naming the worker taking the key, for example a worker name. It is not bound to the caller.
-          minLength: 1
-          maxLength: 255
+        connectionId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: >
+            ID of the connection taking the key: the caller's own live
+            connection in the session organization (for example the
+            connection a desktop client registered for its machine).
+          x-go-name: ConnectionID
+          x-go-type-skip-optional-pointer: true
         value:
           type: object
           description: Value stored when the claim creates the entry; ignored when the entry already exists.

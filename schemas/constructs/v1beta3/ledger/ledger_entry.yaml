@@ -4,9 +4,10 @@ description: >
   Server-returned ledger entry. An organization keeps any number of named
   ledgers, each an idempotent set keyed by entryKey: recording an existing
   key never creates a second entry and returns the stored entry unchanged,
-  and claim-if-absent gives a key to exactly one claimant, so two workers
-  never both act on it. Any organization member may read, claim and delete
-  entries; claimedBy is an advisory label, not an authorization principal.
+  and claim-if-absent gives a key to exactly one claiming connection, so two
+  workers never both act on it. Any organization member may read and delete
+  entries; a claim names the connection that holds it, which must be the
+  caller's own live connection in the organization.
 type: object
 additionalProperties: false
 required:
@@ -56,17 +57,23 @@ properties:
     x-oapi-codegen-extra-tags:
       db: value
     x-order: 5
-  claimedBy:
-    type: string
-    description: Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards.
-    maxLength: 255
+  claimedByConnectionId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      ID of the connection that holds the entry, if any. Set only by
+      claim-if-absent and never changed afterwards. References a connection
+      (`connections.id`); a claim held by a connection that is later deleted
+      is released, so the key may be claimed again. Omitted when the entry is
+      unclaimed.
+    x-go-name: ClaimedByConnectionID
     x-oapi-codegen-extra-tags:
-      db: claimed_by
+      db: claimed_by_connection_id
+      json: "claimedByConnectionId,omitempty"
     x-order: 6
   claimedAt:
     type: string
     format: date-time
-    description: Time the entry was claimed, if any. Set only by claim-if-absent.
+    description: Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.
     nullable: true
     x-go-type: core.NullTime
     x-go-type-import:
