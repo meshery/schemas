@@ -1,0 +1,93 @@
+$id: https://schemas.meshery.io/component_override.yaml
+$schema: http://json-schema.org/draft-07/schema#
+title: ComponentOverride
+description: Curated overrides for auto-generated component fields committed under models/<model>/overrides/components/<Kind>.yaml.
+additionalProperties: false
+type: object
+required:
+  - status
+properties:
+  description:
+    type: string
+    description: Overridden description of the component.
+    minLength: 1
+    maxLength: 2000
+  displayName:
+    type: string
+    description: Overridden human-readable display name for the component.
+    minLength: 1
+    maxLength: 100
+  shape:
+    type: string
+    description: UI shape token for the component (e.g., circle, round-rectangle).
+    minLength: 1
+    maxLength: 100
+  primaryColor:
+    type: string
+    description: Primary hex color code for UI representation (e.g., #00B39F).
+    minLength: 1
+    maxLength: 30
+  secondaryColor:
+    type: string
+    description: Secondary hex color code for UI representation (e.g., #00D3A9).
+    minLength: 1
+    maxLength: 30
+  svgColor:
+    type: string
+    description: Relative file path to colored SVG file.
+    minLength: 1
+    maxLength: 500
+  svgWhite:
+    type: string
+    description: Relative file path to white SVG file.
+    minLength: 1
+    maxLength: 500
+  svgComplete:
+    type: string
+    description: Relative file path to complete SVG file.
+    minLength: 1
+    maxLength: 500
+  styleOverrides:
+    description: Style overrides as a JSON string or styling directive map.
+    oneOf:
+      - type: string
+        description: JSON string representation of style overrides.
+        minLength: 1
+        maxLength: 4096
+      - type: object
+        description: Map of style overrides.
+        additionalProperties: true
+  styles:
+    type: object
+    description: Visual styles object for the component.
+    additionalProperties: true
+    x-go-type-skip-optional-pointer: true
+  capabilities:
+    type: array
+    description: Capabilities supported by the component.
+    items:
+      oneOf:
+        - type: string
+          description: Capability name or key identifier.
+          minLength: 1
+          maxLength: 100
+        - type: object
+          description: Inline capability specification or configuration object.
+          additionalProperties: true
+    x-go-type-skip-optional-pointer: true
+  genealogy:
+    type: string
+    description: Component genealogy or parent component relationship.
+    minLength: 1
+    maxLength: 500
+  isAnnotation:
+    type: boolean
+    description: Whether this component represents an annotation.
+    default: false
+  status:
+    type: string
+    description: Status of the component (e.g., enabled, ignored).
+    default: enabled
+    enum:
+      - enabled
+      - ignored

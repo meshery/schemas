@@ -1,0 +1,70 @@
+$id: https://schemas.meshery.io/model_source.yaml
+$schema: http://json-schema.org/draft-07/schema#
+title: ModelSource
+description: Canonical model generation inputs and website marketing metadata committed under models/<model>/model-source.yaml.
+additionalProperties: false
+type: object
+required:
+  - schemaVersion
+  - name
+  - displayName
+  - registrant
+  - category
+  - subCategory
+  - description
+  - source
+properties:
+  schemaVersion:
+    type: string
+    description: Specifies the version of the schema to which the model source definition conforms.
+    default: modelsources.meshery.io/v1alpha1
+    minLength: 1
+    maxLength: 100
+  name:
+    type: string
+    description: The unique name for the model within the scope of a registrant.
+    pattern: ^[a-z0-9-]+$
+    minLength: 1
+    maxLength: 100
+  displayName:
+    type: string
+    description: Human-readable name for the model.
+    minLength: 1
+    maxLength: 100
+  registrant:
+    type: string
+    description: Identifier of the registrant (e.g., artifacthub, github, meshery).
+    minLength: 1
+    maxLength: 100
+  version:
+    type: string
+    description: Semantic version of the model definition or optional pinned upstream version.
+    minLength: 1
+    maxLength: 50
+  category:
+    type: string
+    description: Canonical category of the model that determines the main grouping.
+    minLength: 1
+    maxLength: 100
+  subCategory:
+    type: string
+    description: Canonical subcategory of the model that determines the secondary grouping.
+    minLength: 1
+    maxLength: 100
+  description:
+    type: string
+    description: Summary description of the model.
+    minLength: 1
+    maxLength: 2000
+  source:
+    $ref: "./api.yml#/components/schemas/ModelSourceSource"
+    description: Source location and upstream details for model generation.
+  metadata:
+    $ref: "./api.yml#/components/schemas/ModelSourceMetadata"
+    description: Model visual styling, capabilities, and UI representation metadata.
+  publish:
+    $ref: "./api.yml#/components/schemas/ModelSourcePublish"
+    description: Publishing configuration specifying destination registries and websites.
+  website:
+    $ref: "./api.yml#/components/schemas/ModelSourceWebsite"
+    description: Website marketing content and documentation metadata.
