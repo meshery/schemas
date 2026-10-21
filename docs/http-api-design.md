@@ -293,12 +293,17 @@ been done" sets shared by several workers. Record is `POST
 entryKey): `201` for a new key, `200` with the stored entry, unchanged, for an
 existing one.
 
-`POST /api/ledgers/{ledger}/claims` (body: `entryKey`, `claimant`, optional
-`value`) gives a key to exactly one claimant. `value` is stored only when the
-claim creates the entry and is ignored otherwise. The claim lives on its own
-collection so it cannot collide with the `{entryKey}` route. It returns `201`
-when it created the entry, `200` when the claimant now holds an existing entry
-or already held it, and `409` when another claimant holds it.
+`POST /api/ledgers/{ledger}/claims` (body: `entryKey`, `connectionId`,
+optional `value`) gives a key to exactly one connection. `connectionId` must be
+the caller's own live connection in the session organization (for example the
+connection a desktop client registered for its machine); any other connection
+is `404`. `value` is stored only when the claim creates the entry and is
+ignored otherwise. The claim lives on its own collection so it cannot collide
+with the `{entryKey}` route. It returns `201` when it created the entry, `200`
+when the connection now holds an existing entry or already held it, and `409`
+when another live connection holds it. The holder is returned as
+`claimedByConnectionId`, a reference to `connections.id`; a claim ends when the
+entry is deleted or the holding connection is deleted.
 
 `GET` and `DELETE /api/ledgers/{ledger}/entries/{entryKey}` read and release a
 key; a key outside that ledger is `404`. Product data such as contacts is a
@@ -313,6 +318,6 @@ case; `order` takes `entryKey`, `createdAt` or `updatedAt` and defaults to
 `entryKey asc`. An empty ledger is an empty page; a non-member gets `404`.
 
 Ledgers are organization-shared bookkeeping: any organization member may
-record, claim, list, read and delete. `claimant` is an advisory worker label,
-not an authorization principal, so a claim or delete is not checked against
-who sent it.
+record, claim, list, read and delete. A claim is bound to a connection the
+caller owns, so one member cannot claim on behalf of another member's machine;
+a delete is not checked against who holds the key.

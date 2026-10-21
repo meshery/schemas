@@ -95,6 +95,44 @@ func TestLedgerContract(t *testing.T) {
 		}
 	}
 
+	// A claim is held by a connection, not a free-text label: the request
+	// names the claiming connection and the entry returns it as a UUID
+	// reference to connections.id.
+	if _, ok := mappingValue(claimResponses, "404"); !ok {
+		t.Error("claimLedgerEntry must document 404 for a connection that is not the caller's own")
+	}
+	claimPayload := mustLookup(t, doc, "components", "schemas", "LedgerClaimPayload")
+	claimRequired, _ := mustLookup(t, claimPayload, "required").([]any)
+	hasConnection := false
+	for _, r := range claimRequired {
+		if r == "connectionId" {
+			hasConnection = true
+		}
+		if r == "claimant" {
+			t.Error("LedgerClaimPayload must not require the retired free-text claimant")
+		}
+	}
+	if !hasConnection {
+		t.Error("LedgerClaimPayload must require connectionId")
+	}
+	if ref, _ := mustLookup(t, claimPayload, "properties", "connectionId", "$ref").(string); ref != "../../v1beta2/core/api.yml#/components/schemas/Uuid" {
+		t.Errorf("LedgerClaimPayload.connectionId must be the core Uuid, got %q", ref)
+	}
+	if _, ok := mappingValue(mustLookup(t, claimPayload, "properties"), "claimant"); ok {
+		t.Error("LedgerClaimPayload must not carry the retired free-text claimant")
+	}
+	entry := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/ledger/ledger_entry.yaml"))
+	holder := mustLookup(t, entry, "properties", "claimedByConnectionId")
+	if ref, _ := mustLookup(t, holder, "$ref").(string); ref != "../../v1beta2/core/api.yml#/components/schemas/Uuid" {
+		t.Errorf("claimedByConnectionId must be the core Uuid, got %q", ref)
+	}
+	if db, _ := mustLookup(t, holder, "x-oapi-codegen-extra-tags", "db").(string); db != "claimed_by_connection_id" {
+		t.Errorf("claimedByConnectionId must map to claimed_by_connection_id, got %q", db)
+	}
+	if _, ok := mappingValue(mustLookup(t, entry, "properties"), "claimedBy"); ok {
+		t.Error("ledger entry must not carry the retired free-text claimedBy")
+	}
+
 	for _, gone := range []string{"blowhorn_ledger", "blowhorn_binding"} {
 		if _, err := os.Stat(filepath.Join(root, "schemas/constructs/v1beta3", gone)); err == nil {
 			t.Errorf("construct v1beta3/%s must be removed", gone)
