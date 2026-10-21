@@ -9,16 +9,18 @@ It is **not**:
 
 - the user account profile (`/api/identity/users/profile`, `getUserProfileById`),
 - a performance profile (`v1beta3/performance_profile`, `/api/performance/profiles`),
-- an environment (see [Moving off `purpose: profile`](#moving-off-purpose-profile)),
+- an environment,
 - a workspace.
 
 ## Why its own construct
 
 Profiles were first carried as environments with `purpose: profile`
-(meshery/schemas #1271). That mapping is deprecated. Access to a profile is
-controlled through workspaces, the same way access to designs and environments
-is, so a profile is modelled like an environment: an entity of its own,
-assigned to any number of workspaces through a junction record.
+(meshery/schemas #1271). That value is removed from the environment
+`purpose` enum, with no migration: environments that carried it are
+discarded. Access to a profile is controlled through workspaces, the same way
+access to designs and environments is, so a profile is modelled like an
+environment: an entity of its own, assigned to any number of workspaces
+through a junction record.
 
 ## Shape
 
@@ -77,18 +79,9 @@ profiles. Connection links reuse the existing Connection construct through
 `getProfilesOfWorkspace` is guarded the same way as the other workspace
 listings.
 
-## Moving off `purpose: profile`
-
-Each environment with `purpose: profile` maps to one profile: the environment's
-`name`, `owner` and `metadata` become the profile's `name`, `owner` and
-`metadata` (and `owner` also its `userId`), its environment-connection links
-become profile-connection links, and its workspace-environment mappings become
-workspace-profile mappings. Once no consumer stores the value, `profile` is
-removed from the environment `purpose` enum.
-
 ## Consumers
 
 | Repo | What it must do |
 | --- | --- |
-| `layer5io/meshery-cloud` | Add the profile, profile-connection and workspace-profile tables, serve the routes above with the keys above, migrate `purpose = 'profile'` environments, then stop accepting that purpose. |
-| Clients that read profiles | Move from environment purpose `profile` (or any project-specific profile route) to `/api/profiles`. |
+| `layer5io/meshery-cloud` | Add the profile, profile-connection and workspace-profile tables, serve the routes above with the keys above, and stop storing or accepting environment purpose `profile`. Environments that carried it are discarded, not migrated. |
+| Clients that read profiles | Read profiles from `/api/profiles`, never from environments or any project-specific profile route. |

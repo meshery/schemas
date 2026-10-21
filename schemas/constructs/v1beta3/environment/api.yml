@@ -164,21 +164,17 @@ components:
     EnvironmentPayloadPurpose:
       type: string
       description: >-
-        The purposes a client may give an environment on create or update:
-        `user` (an ordinary environment) or the deprecated `profile`. Profiles
-        are their own construct at `/api/profiles`, assigned to workspaces;
-        `profile` remains accepted only for environments created with it
-        before that construct existed, and new clients must not send it.
+        The purpose a client may give an environment on create or update:
+        `user` (an ordinary environment). Profiles are not environments; they
+        are their own construct at `/api/profiles`, assigned to workspaces.
         Omitted means `user` on
         create and unchanged on update. A server refuses any other value with
         400, and never lets this field change an environment that already
         carries a privileged purpose.
       enum:
         - user
-        - profile
       x-enum-varnames:
         - EnvironmentPayloadPurposeUser
-        - EnvironmentPayloadPurposeProfile
     EnvironmentPage:
       type: object
       description: Paginated list of environments.

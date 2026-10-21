@@ -111,15 +111,10 @@ properties:
       people create to logically group Connections and their Credentials.
       `administrative` designates an environment the platform itself
       provisions to hold organization-level configuration, and which resolvers
-      of that configuration therefore trust. `profile` is deprecated: profiles
-      are their own construct (`schemas/constructs/v1beta3/profile`, served at
-      `/api/profiles` and assigned to workspaces under
-      `/api/workspaces/{workspaceId}/profiles`), so new profiles must not be
-      stored as environments. The value stays in the enum only so environments
-      written with it before the profile construct existed still read back;
-      it is an ordinary, non-privileged environment, carries no authority, and
-      will be removed once no consumer stores it. Consumers should move those
-      environments to profiles.
+      of that configuration therefore trust. Profiles are not environments:
+      they are their own construct (`schemas/constructs/v1beta3/profile`,
+      served at `/api/profiles` and assigned to workspaces under
+      `/api/workspaces/{workspaceId}/profiles`).
 
 
       Absent means `user`. Nothing may read an unset or unrecognised value as
@@ -140,8 +135,8 @@ properties:
 
       Privileged values are server-owned and never client-settable.
       `EnvironmentPayload`, which every environment POST and PUT requestBody
-      references, accepts only the non-privileged values (`user` and
-      `profile`), and the create-or-edit form has no field for it, so the
+      references, accepts only the non-privileged value `user`, and the
+      create-or-edit form has no field for it, so the
       environment create and update endpoints cannot designate an
       environment administrative. That restriction is a codegen guarantee,
       never access control: the registrant connection inlines the
@@ -160,7 +155,6 @@ properties:
     enum:
       - user
       - administrative
-      - profile
     # No `readOnly: true` here, despite it being the natural annotation for a
     # server-owned property, because the RTK client generator mis-handles it.
     # oazapfts' checkSchemaOnlyMode propagates readOnly UP the containment tree
@@ -184,7 +178,6 @@ properties:
     x-enum-varnames:
       - EnvironmentPurposeUser
       - EnvironmentPurposeAdministrative
-      - EnvironmentPurposeProfile
     # No `default:` here on purpose. openapi-typescript reads a default on a
     # response property as a promise the server always sends the field, and
     # emits it non-optional - untrue for every row written before the column
