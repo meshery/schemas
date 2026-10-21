@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "ce365f0c712015aef44036dacc43dcfebe7acc8ae2824d9e506c1d50339f070f" as const;
+export const PERMISSIONS_INDEX_ID = "fb2f3275d706b0bbe7db5884ebf64f3de3a9bef2c81d3dc1deaeed1f8b6255bb" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -4781,47 +4781,102 @@ export const Keys = {
   },
 
   /**
-   * See the claims in your organization, active and past, and which connection and member holds each.
+   * View claims held in the organization and which connection holds each one
    */
   WorkflowManagementViewClaims: {
     id: "93696d4c-48db-415e-aac9-778390896093" as PermissionKey,
     category: "Workflow Management",
     subcategory: "Claims",
     function: "View Claims",
-    description: "See the claims in your organization, active and past, and which connection and member holds each."
+    description: "View claims held in the organization and which connection holds each one"
   },
 
   /**
-   * Take a claim on a resource of your organization with one of your own connections, and renew it.
+   * Take a claim on a resource, or renew a claim you hold, so no other computer acts on it at the same time
    */
   WorkflowManagementTakeAndRenewClaims: {
     id: "1450f30c-6664-4107-9818-eca7508182d5" as PermissionKey,
     category: "Workflow Management",
     subcategory: "Claims",
     function: "Take and renew claims",
-    description: "Take a claim on a resource of your organization with one of your own connections, and renew it."
+    description: "Take a claim on a resource, or renew a claim you hold, so no other computer acts on it at the same time"
   },
 
   /**
-   * Release a claim you hold and record its outcome.
+   * Release a claim you hold
    */
   WorkflowManagementReleaseClaim: {
     id: "6789de53-1b28-407f-90dc-bf290eb28cf6" as PermissionKey,
     category: "Workflow Management",
     subcategory: "Claims",
     function: "Release claim",
-    description: "Release a claim you hold and record its outcome."
+    description: "Release a claim you hold"
   },
 
   /**
-   * Release a claim another member of your organization holds, for example a hold left by a computer that went offline.
+   * Release a claim held by another member of the organization
    */
   WorkflowManagementReleaseClaimsOfOtherMembers: {
     id: "2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7" as PermissionKey,
     category: "Workflow Management",
     subcategory: "Claims",
     function: "Release claims of other members",
-    description: "Release a claim another member of your organization holds, for example a hold left by a computer that went offline."
+    description: "Release a claim held by another member of the organization"
+  },
+
+  /**
+   * View the schedules of the organization, when each runs next and which connection holds each one
+   */
+  WorkflowManagementViewSchedules: {
+    id: "9eba0b6a-08d1-42a2-a2fa-dd5fc5aeb542" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Schedules",
+    function: "View Schedules",
+    description: "View the schedules of the organization, when each runs next and which connection holds each one"
+  },
+
+  /**
+   * Create a schedule in the organization
+   */
+  WorkflowManagementCreateSchedule: {
+    id: "135c39f9-0a98-4db6-a7cd-42e903ab9d32" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Schedules",
+    function: "Create schedule",
+    description: "Create a schedule in the organization"
+  },
+
+  /**
+   * Change a schedule of the organization, including pausing and resuming it
+   */
+  WorkflowManagementEditSchedule: {
+    id: "6767b9a0-d138-4672-a8ba-26ce6e217c48" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Schedules",
+    function: "Edit schedule",
+    description: "Change a schedule of the organization, including pausing and resuming it"
+  },
+
+  /**
+   * Delete a schedule of the organization
+   */
+  WorkflowManagementDeleteSchedule: {
+    id: "d2ab90ab-7abb-4aa3-a38a-24ed4b6b1665" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Schedules",
+    function: "Delete schedule",
+    description: "Delete a schedule of the organization"
+  },
+
+  /**
+   * Link a schedule of the organization to a workspace, or remove the link
+   */
+  WorkflowManagementAssignSchedulesToWorkspaces: {
+    id: "264bda82-2676-41a2-bfff-2d90c7bf52f0" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Schedules",
+    function: "Assign schedules to workspaces",
+    description: "Link a schedule of the organization to a workspace, or remove the link"
   },
 
   /**
@@ -7250,24 +7305,49 @@ export const PermissionKeys = {
   WorkflowManagementSingleAndMultipleApprovers: "8b8b8eb2-00d5-4501-8c94-529f1b0b0f27" as PermissionKey,
 
   /**
-   * See the claims in your organization, active and past, and which connection and member holds each.
+   * View claims held in the organization and which connection holds each one
    */
   WorkflowManagementViewClaims: "93696d4c-48db-415e-aac9-778390896093" as PermissionKey,
 
   /**
-   * Take a claim on a resource of your organization with one of your own connections, and renew it.
+   * Take a claim on a resource, or renew a claim you hold, so no other computer acts on it at the same time
    */
   WorkflowManagementTakeAndRenewClaims: "1450f30c-6664-4107-9818-eca7508182d5" as PermissionKey,
 
   /**
-   * Release a claim you hold and record its outcome.
+   * Release a claim you hold
    */
   WorkflowManagementReleaseClaim: "6789de53-1b28-407f-90dc-bf290eb28cf6" as PermissionKey,
 
   /**
-   * Release a claim another member of your organization holds, for example a hold left by a computer that went offline.
+   * Release a claim held by another member of the organization
    */
   WorkflowManagementReleaseClaimsOfOtherMembers: "2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7" as PermissionKey,
+
+  /**
+   * View the schedules of the organization, when each runs next and which connection holds each one
+   */
+  WorkflowManagementViewSchedules: "9eba0b6a-08d1-42a2-a2fa-dd5fc5aeb542" as PermissionKey,
+
+  /**
+   * Create a schedule in the organization
+   */
+  WorkflowManagementCreateSchedule: "135c39f9-0a98-4db6-a7cd-42e903ab9d32" as PermissionKey,
+
+  /**
+   * Change a schedule of the organization, including pausing and resuming it
+   */
+  WorkflowManagementEditSchedule: "6767b9a0-d138-4672-a8ba-26ce6e217c48" as PermissionKey,
+
+  /**
+   * Delete a schedule of the organization
+   */
+  WorkflowManagementDeleteSchedule: "d2ab90ab-7abb-4aa3-a38a-24ed4b6b1665" as PermissionKey,
+
+  /**
+   * Link a schedule of the organization to a workspace, or remove the link
+   */
+  WorkflowManagementAssignSchedulesToWorkspaces: "264bda82-2676-41a2-bfff-2d90c7bf52f0" as PermissionKey,
 
   /**
    * No description available

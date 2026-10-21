@@ -6,7 +6,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "ce365f0c712015aef44036dacc43dcfebe7acc8ae2824d9e506c1d50339f070f"
+const IndexID = "fb2f3275d706b0bbe7db5884ebf64f3de3a9bef2c81d3dc1deaeed1f8b6255bb"
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -1320,17 +1320,32 @@ var (
 	// WorkflowManagementSingleAndMultipleApprovers - No description available
 	WorkflowManagementSingleAndMultipleApprovers = PermissionKey(uuid.Must(uuid.FromString("8b8b8eb2-00d5-4501-8c94-529f1b0b0f27")))
 
-	// WorkflowManagementViewClaims - See the claims in your organization, active and past, and which connection and member holds each.
+	// WorkflowManagementViewClaims - View claims held in the organization and which connection holds each one
 	WorkflowManagementViewClaims = PermissionKey(uuid.Must(uuid.FromString("93696d4c-48db-415e-aac9-778390896093")))
 
-	// WorkflowManagementTakeAndRenewClaims - Take a claim on a resource of your organization with one of your own connections, and renew it.
+	// WorkflowManagementTakeAndRenewClaims - Take a claim on a resource, or renew a claim you hold, so no other computer acts on it at the same time
 	WorkflowManagementTakeAndRenewClaims = PermissionKey(uuid.Must(uuid.FromString("1450f30c-6664-4107-9818-eca7508182d5")))
 
-	// WorkflowManagementReleaseClaim - Release a claim you hold and record its outcome.
+	// WorkflowManagementReleaseClaim - Release a claim you hold
 	WorkflowManagementReleaseClaim = PermissionKey(uuid.Must(uuid.FromString("6789de53-1b28-407f-90dc-bf290eb28cf6")))
 
-	// WorkflowManagementReleaseClaimsOfOtherMembers - Release a claim another member of your organization holds, for example a hold left by a computer that went offline.
+	// WorkflowManagementReleaseClaimsOfOtherMembers - Release a claim held by another member of the organization
 	WorkflowManagementReleaseClaimsOfOtherMembers = PermissionKey(uuid.Must(uuid.FromString("2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7")))
+
+	// WorkflowManagementViewSchedules - View the schedules of the organization, when each runs next and which connection holds each one
+	WorkflowManagementViewSchedules = PermissionKey(uuid.Must(uuid.FromString("9eba0b6a-08d1-42a2-a2fa-dd5fc5aeb542")))
+
+	// WorkflowManagementCreateSchedule - Create a schedule in the organization
+	WorkflowManagementCreateSchedule = PermissionKey(uuid.Must(uuid.FromString("135c39f9-0a98-4db6-a7cd-42e903ab9d32")))
+
+	// WorkflowManagementEditSchedule - Change a schedule of the organization, including pausing and resuming it
+	WorkflowManagementEditSchedule = PermissionKey(uuid.Must(uuid.FromString("6767b9a0-d138-4672-a8ba-26ce6e217c48")))
+
+	// WorkflowManagementDeleteSchedule - Delete a schedule of the organization
+	WorkflowManagementDeleteSchedule = PermissionKey(uuid.Must(uuid.FromString("d2ab90ab-7abb-4aa3-a38a-24ed4b6b1665")))
+
+	// WorkflowManagementAssignSchedulesToWorkspaces - Link a schedule of the organization to a workspace, or remove the link
+	WorkflowManagementAssignSchedulesToWorkspaces = PermissionKey(uuid.Must(uuid.FromString("264bda82-2676-41a2-bfff-2d90c7bf52f0")))
 
 	// BusinessPerformanceShoppingCartBasedRealTimeDiscount - No description available
 	BusinessPerformanceShoppingCartBasedRealTimeDiscount = PermissionKey(uuid.Must(uuid.FromString("b1e81301-0726-4d62-a920-c10ee5d563b0")))
