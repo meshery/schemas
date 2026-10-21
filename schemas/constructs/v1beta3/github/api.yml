@@ -457,6 +457,7 @@ components:
           description: The items under a directory, each shaped as a `GithubRepositoryTreeItem`.
           items:
             type: object
+            description: Free-form map entry representing a child tree item.
             additionalProperties: true
 
     GithubWorkflowVerification:
