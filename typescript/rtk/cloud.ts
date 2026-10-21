@@ -22,7 +22,7 @@ export const addTagTypes = [
   "Claim_claims",
   "Connection_API_Connections",
   "Connection_API_ConnectionDefinitions",
-  "ContentPiece_contentPieces",
+  "ContentItem_contentItems",
   "Design_designs",
   "Design_github",
   "Environment_environments",
@@ -1075,9 +1075,9 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Connection_API_ConnectionDefinitions"],
       }),
-      listContentPieces: build.query<ListContentPiecesApiResponse, ListContentPiecesApiArg>({
+      listContentItems: build.query<ListContentItemsApiResponse, ListContentItemsApiArg>({
         query: (queryArg) => ({
-          url: `/api/content/pieces`,
+          url: `/api/content-items`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -1087,33 +1087,33 @@ const injectedRtkApi = api
             profile: queryArg?.profile,
           },
         }),
-        providesTags: ["ContentPiece_contentPieces"],
+        providesTags: ["ContentItem_contentItems"],
       }),
-      insertContentPiece: build.mutation<InsertContentPieceApiResponse, InsertContentPieceApiArg>({
-        query: (queryArg) => ({ url: `/api/content/pieces`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["ContentPiece_contentPieces"],
+      insertContentItem: build.mutation<InsertContentItemApiResponse, InsertContentItemApiArg>({
+        query: (queryArg) => ({ url: `/api/content-items`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["ContentItem_contentItems"],
       }),
-      getContentPiece: build.query<GetContentPieceApiResponse, GetContentPieceApiArg>({
-        query: (queryArg) => ({ url: `/api/content/pieces/${queryArg.contentPieceId}` }),
-        providesTags: ["ContentPiece_contentPieces"],
+      getContentItem: build.query<GetContentItemApiResponse, GetContentItemApiArg>({
+        query: (queryArg) => ({ url: `/api/content-items/${queryArg.contentItemId}` }),
+        providesTags: ["ContentItem_contentItems"],
       }),
-      updateContentPiece: build.mutation<UpdateContentPieceApiResponse, UpdateContentPieceApiArg>({
+      updateContentItem: build.mutation<UpdateContentItemApiResponse, UpdateContentItemApiArg>({
         query: (queryArg) => ({
-          url: `/api/content/pieces/${queryArg.contentPieceId}`,
+          url: `/api/content-items/${queryArg.contentItemId}`,
           method: "PUT",
           body: queryArg.body,
         }),
-        invalidatesTags: ["ContentPiece_contentPieces"],
+        invalidatesTags: ["ContentItem_contentItems"],
       }),
-      deleteContentPiece: build.mutation<DeleteContentPieceApiResponse, DeleteContentPieceApiArg>({
+      deleteContentItem: build.mutation<DeleteContentItemApiResponse, DeleteContentItemApiArg>({
         query: (queryArg) => ({
-          url: `/api/content/pieces/${queryArg.contentPieceId}`,
+          url: `/api/content-items/${queryArg.contentItemId}`,
           method: "DELETE",
           params: {
             expectedFingerprint: queryArg?.expectedFingerprint,
           },
         }),
-        invalidatesTags: ["ContentPiece_contentPieces"],
+        invalidatesTags: ["ContentItem_contentItems"],
       }),
       getPatterns: build.query<GetPatternsApiResponse, GetPatternsApiArg>({
         query: (queryArg) => ({
@@ -11880,36 +11880,36 @@ export type DeleteConnectionDefinitionApiArg = {
   /** Connection definition ID */
   connectionDefinitionId: string;
 };
-export type ListContentPiecesApiResponse = /** status 200 Content piece page */ {
+export type ListContentItemsApiResponse = /** status 200 Content item page */ {
   /** Current page number of the result set. */
   page?: number;
   /** Number of items per page. */
   pageSize?: number;
   /** Total number of items available. */
   totalCount?: number;
-  /** Content pieces included on this page of results. */
-  contentPieces?: {
-    /** Server-generated content piece ID. */
+  /** Content items included on this page of results. */
+  contentItems?: {
+    /** Server-generated content item ID. */
     id: string;
     /** Owning organization ID. Derived from the authenticated session, never client-settable. */
     organizationId: string;
     /** Subject of the owning profile. */
     profile: string;
-    /** Row number of the content piece, unique across the live content pieces of the organization. */
+    /** Row number of the content item, unique across the live content items of the organization. */
     rowNumber: number;
     /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
     fingerprint: string;
     /** Content values, stored as a JSON blob. */
     data?: object;
-    /** Timestamp of content piece creation. */
+    /** Timestamp of content item creation. */
     createdAt: string;
-    /** Timestamp of last content piece modification. */
+    /** Timestamp of last content item modification. */
     updatedAt: string;
-    /** Timestamp when the content piece was soft-deleted. */
+    /** Timestamp when the content item was soft-deleted. */
     deletedAt?: string | null;
   }[];
 };
-export type ListContentPiecesApiArg = {
+export type ListContentItemsApiArg = {
   /** Get responses by page */
   page?: number;
   /** Number of items per page (canonical camelCase form). */
@@ -11925,34 +11925,34 @@ export type ListContentPiecesApiArg = {
   /** Filter by owning profile subject (exact match). */
   profile?: string;
 };
-export type InsertContentPieceApiResponse = /** status 201 Content piece created */ {
-  /** Server-generated content piece ID. */
+export type InsertContentItemApiResponse = /** status 201 Content item created */ {
+  /** Server-generated content item ID. */
   id: string;
   /** Owning organization ID. Derived from the authenticated session, never client-settable. */
   organizationId: string;
   /** Subject of the owning profile. */
   profile: string;
-  /** Row number of the content piece, unique across the live content pieces of the organization. */
+  /** Row number of the content item, unique across the live content items of the organization. */
   rowNumber: number;
   /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
   fingerprint: string;
   /** Content values, stored as a JSON blob. */
   data?: object;
-  /** Timestamp of content piece creation. */
+  /** Timestamp of content item creation. */
   createdAt: string;
-  /** Timestamp of last content piece modification. */
+  /** Timestamp of last content item modification. */
   updatedAt: string;
-  /** Timestamp when the content piece was soft-deleted. */
+  /** Timestamp when the content item was soft-deleted. */
   deletedAt?: string | null;
 };
-export type InsertContentPieceApiArg = {
+export type InsertContentItemApiArg = {
   body: {
-    /** Existing content piece ID for updates; ignored on insert. */
+    /** Existing content item ID for updates; ignored on insert. */
     id?: string;
     /** Subject of the owning profile. */
     profile: string;
-    /** Row number of the content piece, unique across the live content
-        pieces of the organization. Optional: omitted on insert, the
+    /** Row number of the content item, unique across the live content
+        items of the organization. Optional: omitted on insert, the
         server assigns the next row number of the organization; omitted
         on update, the stored row number is kept.
          */
@@ -11967,60 +11967,60 @@ export type InsertContentPieceApiArg = {
     expectedFingerprint?: string;
   };
 };
-export type GetContentPieceApiResponse = /** status 200 Content piece response */ {
-  /** Server-generated content piece ID. */
+export type GetContentItemApiResponse = /** status 200 Content item response */ {
+  /** Server-generated content item ID. */
   id: string;
   /** Owning organization ID. Derived from the authenticated session, never client-settable. */
   organizationId: string;
   /** Subject of the owning profile. */
   profile: string;
-  /** Row number of the content piece, unique across the live content pieces of the organization. */
+  /** Row number of the content item, unique across the live content items of the organization. */
   rowNumber: number;
   /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
   fingerprint: string;
   /** Content values, stored as a JSON blob. */
   data?: object;
-  /** Timestamp of content piece creation. */
+  /** Timestamp of content item creation. */
   createdAt: string;
-  /** Timestamp of last content piece modification. */
+  /** Timestamp of last content item modification. */
   updatedAt: string;
-  /** Timestamp when the content piece was soft-deleted. */
+  /** Timestamp when the content item was soft-deleted. */
   deletedAt?: string | null;
 };
-export type GetContentPieceApiArg = {
-  /** Content piece ID */
-  contentPieceId: string;
+export type GetContentItemApiArg = {
+  /** Content item ID */
+  contentItemId: string;
 };
-export type UpdateContentPieceApiResponse = /** status 200 Content piece updated */ {
-  /** Server-generated content piece ID. */
+export type UpdateContentItemApiResponse = /** status 200 Content item updated */ {
+  /** Server-generated content item ID. */
   id: string;
   /** Owning organization ID. Derived from the authenticated session, never client-settable. */
   organizationId: string;
   /** Subject of the owning profile. */
   profile: string;
-  /** Row number of the content piece, unique across the live content pieces of the organization. */
+  /** Row number of the content item, unique across the live content items of the organization. */
   rowNumber: number;
   /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
   fingerprint: string;
   /** Content values, stored as a JSON blob. */
   data?: object;
-  /** Timestamp of content piece creation. */
+  /** Timestamp of content item creation. */
   createdAt: string;
-  /** Timestamp of last content piece modification. */
+  /** Timestamp of last content item modification. */
   updatedAt: string;
-  /** Timestamp when the content piece was soft-deleted. */
+  /** Timestamp when the content item was soft-deleted. */
   deletedAt?: string | null;
 };
-export type UpdateContentPieceApiArg = {
-  /** Content piece ID */
-  contentPieceId: string;
+export type UpdateContentItemApiArg = {
+  /** Content item ID */
+  contentItemId: string;
   body: {
-    /** Existing content piece ID for updates; ignored on insert. */
+    /** Existing content item ID for updates; ignored on insert. */
     id?: string;
     /** Subject of the owning profile. */
     profile: string;
-    /** Row number of the content piece, unique across the live content
-        pieces of the organization. Optional: omitted on insert, the
+    /** Row number of the content item, unique across the live content
+        items of the organization. Optional: omitted on insert, the
         server assigns the next row number of the organization; omitted
         on update, the stored row number is kept.
          */
@@ -12035,10 +12035,10 @@ export type UpdateContentPieceApiArg = {
     expectedFingerprint?: string;
   };
 };
-export type DeleteContentPieceApiResponse = unknown;
-export type DeleteContentPieceApiArg = {
-  /** Content piece ID */
-  contentPieceId: string;
+export type DeleteContentItemApiResponse = unknown;
+export type DeleteContentItemApiArg = {
+  /** Content item ID */
+  contentItemId: string;
   /** Optional optimistic-concurrency precondition for delete: the
     delete applies only when the stored fingerprint still matches.
      */
@@ -22157,13 +22157,13 @@ export const {
   useLazyGetConnectionDefinitionQuery,
   useUpdateConnectionDefinitionMutation,
   useDeleteConnectionDefinitionMutation,
-  useListContentPiecesQuery,
-  useLazyListContentPiecesQuery,
-  useInsertContentPieceMutation,
-  useGetContentPieceQuery,
-  useLazyGetContentPieceQuery,
-  useUpdateContentPieceMutation,
-  useDeleteContentPieceMutation,
+  useListContentItemsQuery,
+  useLazyListContentItemsQuery,
+  useInsertContentItemMutation,
+  useGetContentItemQuery,
+  useLazyGetContentItemQuery,
+  useUpdateContentItemMutation,
+  useDeleteContentItemMutation,
   useGetPatternsQuery,
   useLazyGetPatternsQuery,
   useUpsertPatternMutation,

@@ -16,7 +16,7 @@ export interface components {
          *     anything not collected says so with a reason instead of a zero.
          */
         ActivityResult: {
-            /** @description Identifier of the activity the result describes (for a content piece, its row number as a string). */
+            /** @description Identifier of the activity the result describes (for a content item, its row number as a string). */
             activityId: string;
             /** @description What the activity does, such as post, repost, comment, like, connect or invite. */
             kind: string;

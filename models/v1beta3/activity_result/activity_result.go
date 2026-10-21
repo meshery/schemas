@@ -292,7 +292,7 @@ type ActivityReceptionReason string
 // platform. Every figure says whether it was measured or derived, and
 // anything not collected says so with a reason instead of a zero.
 type ActivityResult struct {
-	// ActivityId Identifier of the activity the result describes (for a content piece, its row number as a string).
+	// ActivityId Identifier of the activity the result describes (for a content item, its row number as a string).
 	ActivityId string `json:"activityId" yaml:"activityId"`
 
 	// Kind What the activity does, such as post, repost, comment, like, connect or invite.

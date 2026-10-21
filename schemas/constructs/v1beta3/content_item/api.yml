@@ -1,19 +1,19 @@
 openapi: 3.0.0
 info:
-  title: ContentPiece
+  title: ContentItem
   description: |
-    OpenAPI schema for content pieces - fingerprinted content
+    OpenAPI schema for content items - fingerprinted content
     values keyed by organization and row number, with conditional
     updates.
     Organization scope: every operation acts only in the organization the
     session resolved to (X-Current-Orgid, then the user's selected
     organization), and only when the caller is a live member of it.
     Authorization: each operation requires one permission key in that
-    organization (Catalog Management / Content Pieces: View Content
-    Pieces for the reads, Create Content Piece, Edit Content Piece and
-    Delete Content Piece for the writes); a caller without it receives a
+    organization (Catalog Management / Content Items: View Content
+    Items for the reads, Create Content Item, Edit Content Item and
+    Delete Content Item for the writes); a caller without it receives a
     403 before any row is read. Past that check, an id that does not name
-    a live content piece of the organization, and a caller who is not a
+    a live content item of the organization, and a caller who is not a
     live member of it, receive the same 404, so the existence of another
     organization's rows is never disclosed.
   version: v1beta3
@@ -28,19 +28,19 @@ info:
 security:
   - jwt: []
 tags:
-  - name: contentPieces
-    description: Operations related to content pieces.
+  - name: contentItems
+    description: Operations related to content items.
 
 paths:
-  /api/content/pieces:
+  /api/content-items:
     get:
       x-internal: ["cloud"]
       tags:
-        - contentPieces
-      summary: List content pieces
-      operationId: listContentPieces
+        - contentItems
+      summary: List content items
+      operationId: listContentItems
       description: |
-        Returns a paginated list of the live content pieces in the
+        Returns a paginated list of the live content items in the
         organization of the authenticated session, ordered by `rowNumber`
         unless `order` names another column (`rowNumber`, `createdAt`,
         `updatedAt`). `search` matches the profile or the content values,
@@ -59,11 +59,11 @@ paths:
             type: string
       responses:
         "200":
-          description: Content piece page
+          description: Content item page
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ContentPiecePage"
+                $ref: "#/components/schemas/ContentItemPage"
         "401":
           $ref: "#/components/responses/401"
         "403":
@@ -75,38 +75,38 @@ paths:
     post:
       x-internal: ["cloud"]
       tags:
-        - contentPieces
-      summary: Insert a content piece
-      operationId: insertContentPiece
+        - contentItems
+      summary: Insert a content item
+      operationId: insertContentItem
       description: |
-        Inserts a new content piece. Insert-only: any supplied
+        Inserts a new content item. Insert-only: any supplied
         `id` and `expectedFingerprint` are ignored; existing rows change
-        only through the conditional `updateContentPiece`. The
+        only through the conditional `updateContentItem`. The
         `fingerprint` is server-computed. Row numbers are unique across
-        the live content pieces of the organization, whatever their
+        the live content items of the organization, whatever their
         `profile`. When `rowNumber` is omitted the server assigns the next
         row number of the organization (one more than the highest row
         number the organization has used, counting soft-deleted content
-        pieces so a deleted piece's number is not handed out again by
+        items so a deleted item's number is not handed out again by
         assignment), atomically with the insert, so
         concurrent inserts never receive the same number. An organization
-        that has never had a content piece is assigned row number 1 first
+        that has never had a content item is assigned row number 1 first
         (an explicit `rowNumber` of 0 is still accepted). A supplied
-        `rowNumber` that another live content piece of the organization
+        `rowNumber` that another live content item of the organization
         already holds refuses the insert with a 409.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ContentPiecePayload"
+              $ref: "#/components/schemas/ContentItemPayload"
       responses:
         "201":
-          description: Content piece created
+          description: Content item created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ContentPiece"
+                $ref: "#/components/schemas/ContentItem"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -120,22 +120,22 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/content/pieces/{contentPieceId}:
+  /api/content-items/{contentItemId}:
     get:
       x-internal: ["cloud"]
       tags:
-        - contentPieces
-      summary: Get a content piece by ID
-      operationId: getContentPiece
+        - contentItems
+      summary: Get a content item by ID
+      operationId: getContentItem
       parameters:
-        - $ref: "#/components/parameters/contentPieceId"
+        - $ref: "#/components/parameters/contentItemId"
       responses:
         "200":
-          description: Content piece response
+          description: Content item response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ContentPiece"
+                $ref: "#/components/schemas/ContentItem"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -149,30 +149,30 @@ paths:
     put:
       x-internal: ["cloud"]
       tags:
-        - contentPieces
-      summary: Update a content piece
-      operationId: updateContentPiece
+        - contentItems
+      summary: Update a content item
+      operationId: updateContentItem
       description: |
-        Conditionally updates the content piece. When
+        Conditionally updates the content item. When
         `expectedFingerprint` is supplied and stale, the update is
-        refused with a 409, as is an update that would move the piece
-        onto a `rowNumber` another live content piece of the organization
+        refused with a 409, as is an update that would move the item
+        onto a `rowNumber` another live content item of the organization
         holds. An omitted `rowNumber` keeps the stored one.
       parameters:
-        - $ref: "#/components/parameters/contentPieceId"
+        - $ref: "#/components/parameters/contentItemId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ContentPiecePayload"
+              $ref: "#/components/schemas/ContentItemPayload"
       responses:
         "200":
-          description: Content piece updated
+          description: Content item updated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ContentPiece"
+                $ref: "#/components/schemas/ContentItem"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -188,20 +188,20 @@ paths:
     delete:
       x-internal: ["cloud"]
       tags:
-        - contentPieces
-      summary: Delete a content piece
-      operationId: deleteContentPiece
+        - contentItems
+      summary: Delete a content item
+      operationId: deleteContentItem
       description: |
-        Soft-deletes the content piece. When `expectedFingerprint` is
+        Soft-deletes the content item. When `expectedFingerprint` is
         supplied, the delete applies only when the stored fingerprint
         still matches and is refused with a 409 otherwise; without it the
         delete is unconditional.
       parameters:
-        - $ref: "#/components/parameters/contentPieceId"
+        - $ref: "#/components/parameters/contentItemId"
         - $ref: "#/components/parameters/expectedFingerprint"
       responses:
         "204":
-          description: Content piece deleted
+          description: Content item deleted
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -232,7 +232,7 @@ components:
     403:
       $ref: "../../v1beta2/core/api.yml#/components/responses/403"
     409:
-      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content piece of the organization already holds the same rowNumber
+      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber
       content:
         text/plain:
           schema:
@@ -251,10 +251,10 @@ components:
       schema:
         type: string
         maxLength: 255
-    contentPieceId:
-      name: contentPieceId
+    contentItemId:
+      name: contentItemId
       in: path
-      description: Content piece ID
+      description: Content item ID
       required: true
       schema:
         $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
@@ -283,13 +283,13 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
 
   schemas:
-    ContentPiece:
-      $ref: "./content_piece.yaml"
+    ContentItem:
+      $ref: "./content_item.yaml"
 
-    ContentPiecePayload:
+    ContentItemPayload:
       type: object
       description: |
-        Payload for inserting or updating a content piece.
+        Payload for inserting or updating a content item.
         Contains only client-settable fields; the owning
         `organizationId` (derived from the authenticated session), the
         server-computed `fingerprint` and the server-generated
@@ -299,7 +299,7 @@ components:
       properties:
         id:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
-          description: Existing content piece ID for updates; ignored on insert.
+          description: Existing content item ID for updates; ignored on insert.
           x-oapi-codegen-extra-tags:
             json: "id,omitempty"
         profile:
@@ -310,8 +310,8 @@ components:
         rowNumber:
           type: integer
           description: |
-            Row number of the content piece, unique across the live content
-            pieces of the organization. Optional: omitted on insert, the
+            Row number of the content item, unique across the live content
+            items of the organization. Optional: omitted on insert, the
             server assigns the next row number of the organization; omitted
             on update, the stored row number is kept.
           minimum: 0
@@ -332,9 +332,9 @@ components:
             insert.
           maxLength: 255
 
-    ContentPiecePage:
+    ContentItemPage:
       type: object
-      description: Paginated collection of content pieces.
+      description: Paginated collection of content items.
       properties:
         page:
           type: integer
@@ -348,9 +348,9 @@ components:
           type: integer
           description: Total number of items available.
           minimum: 0
-        contentPieces:
+        contentItems:
           type: array
           items:
-            $ref: "#/components/schemas/ContentPiece"
-            x-go-type: ContentPiece
-          description: Content pieces included on this page of results.
+            $ref: "#/components/schemas/ContentItem"
+            x-go-type: ContentItem
+          description: Content items included on this page of results.
