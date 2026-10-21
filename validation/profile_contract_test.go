@@ -125,3 +125,33 @@ func TestProfileConstructIsGeneric(t *testing.T) {
 		}
 	}
 }
+
+// TestProfileVisibilityWording keeps the read-access contract stated the same
+// way everywhere: the owner always sees their own profile (even when it is in
+// no workspace), seeing a profile does not reach its connections, and
+// provider admins are not granted visibility automatically.
+func TestProfileVisibilityWording(t *testing.T) {
+	root := repoRootDir(t)
+	raw, err := os.ReadFile(filepath.Join(root, profileAPISpec))
+	if err != nil {
+		t.Fatal(err)
+	}
+	api := string(raw)
+	if strings.Contains(api, "visible to its owner and to organization admins only") {
+		t.Error("profile API must not limit owner visibility to unassigned profiles")
+	}
+	for _, want := range []string{
+		"whether or not it is assigned to any workspace",
+		"does not grant access to its linked connections",
+		"Provider admins do not see profiles automatically",
+	} {
+		if !strings.Contains(api, want) {
+			t.Errorf("profile API description must state %q", want)
+		}
+	}
+	doc := loadOpenAPIDocument(t, filepath.Join(root, profileAPISpec))
+	desc, _ := mappingValue(mustLookup(t, doc, "paths", "/api/profiles/{profileId}", "get"), "description")
+	if s, _ := desc.(string); !strings.Contains(s, "its owner") {
+		t.Error("getProfileById description must name the owner as able to see the profile")
+	}
+}

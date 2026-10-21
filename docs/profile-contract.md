@@ -36,9 +36,12 @@ There is no uniqueness constraint on any client field.
 
 ## Access
 
-- **Read:** members of any workspace the profile is assigned to, plus
-  organization admins, holding View Profiles. A profile in no workspace is
-  visible to its owner and organization admins only.
+- **Read:** the owner, organization admins, and members of any workspace the
+  profile is assigned to. The owner sees their own profile whether or not it
+  is assigned to any workspace. Organization admins and workspace members
+  also need View Profiles. Provider admins do not see profiles
+  automatically. Seeing a profile does not grant access to its linked
+  connections, which keep their own access rules.
 - **Write:** Create Profile, Edit Profile, Delete Profile. Edit Profile also
   covers linking and unlinking connections and transferring the owner. The
   owner may always edit their own profile.

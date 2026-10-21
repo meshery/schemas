@@ -9,10 +9,13 @@ info:
     Workspaces: like an environment, a profile can be assigned to any number
     of workspaces through `/api/workspaces/{workspaceId}/profiles`, and that
     assignment is how access to it is granted.
-    Read access: a profile is visible to members of the workspaces it is
-    assigned to, and to organization admins, provided they also hold
-    Workspace Management / Profiles: View Profiles. A profile assigned to no
-    workspace is visible to its owner and to organization admins only.
+    Read access: a profile is visible to its owner, to organization admins,
+    and to members of the workspaces it is assigned to. The owner sees their
+    own profile whether or not it is assigned to any workspace. Organization
+    admins and workspace members also need Workspace Management / Profiles:
+    View Profiles. Provider admins do not see profiles automatically. Seeing
+    a profile does not grant access to its linked connections, which keep
+    their own access rules.
     Write access: Create Profile, Edit Profile and Delete Profile. Edit
     Profile also governs linking and unlinking the profile's connections and
     transferring its owner; the owner may always edit their own profile.
@@ -81,10 +84,12 @@ paths:
       operationId: getProfiles
       summary: Get all profiles
       description: >-
-        Gets the live profiles the caller can see: those assigned to a
-        workspace the caller is a member of, those the caller owns, and, for
-        organization admins, every profile of the organization. `search`
-        matches the name or description case-insensitively.
+        Gets the live profiles the caller can see: those the caller owns
+        (including profiles assigned to no workspace), those assigned to a
+        workspace the caller is a member of, and, for organization admins,
+        every profile of the organization. Provider admins are not granted
+        visibility automatically. `search` matches the name or description
+        case-insensitively.
       parameters:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
@@ -114,6 +119,13 @@ paths:
         - profiles
       operationId: getProfileById
       summary: Get profile by ID
+      description: >-
+        Gets a profile visible to the caller: its owner (whether or not the
+        profile is assigned to any workspace), an organization admin, or a
+        member of a workspace it is assigned to. Provider admins are not
+        granted visibility automatically. A profile the caller cannot see
+        returns 404. Seeing the profile does not grant access to its linked
+        connections.
       parameters:
         - $ref: "#/components/parameters/profileId"
       responses:
@@ -197,7 +209,7 @@ paths:
         - profiles
       operationId: getProfileConnections
       summary: Get profile connections
-      description: Gets the connections linked to the profile. Requires View Profiles and visibility of the profile.
+      description: Gets the connections linked to the profile. Requires View Profiles and visibility of the profile. Visibility of the profile alone does not grant access to the linked connections, which follow their own access rules.
       parameters:
         - $ref: "#/components/parameters/profileId"
         - $ref: "#/components/parameters/search"
