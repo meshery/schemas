@@ -19,7 +19,7 @@ export interface paths {
         put?: never;
         /**
          * Record a ledger entry
-         * @description Records `entryKey` in the ledger. A new key creates the entry and returns `201`. An existing key never creates a second entry and is not changed: the stored entry is returned unchanged with `200`, and the supplied `value` is ignored. Recording never changes `claimedBy` or `claimedAt`.
+         * @description Records `entryKey` in the ledger. A new key creates the entry and returns `201`. An existing key never creates a second entry and is not changed: the stored entry is returned unchanged with `200`, and the supplied `value` is ignored. Recording never changes `claimedByConnectionId` or `claimedAt`.
          */
         post: operations["recordLedgerEntry"];
         delete?: never;
@@ -39,7 +39,7 @@ export interface paths {
         put?: never;
         /**
          * Claim a ledger key if absent
-         * @description Atomically gives `entryKey` to `claimant`. When the key is not in the ledger, the entry is created already claimed and returned with `201`. When it is recorded but unclaimed, it is claimed and returned with `200`. When `claimant` already holds it, the call is a replay and returns the entry with `200`. When another claimant holds it, the call is refused with `409` and nothing changes. A claim is permanent: it ends only when the entry is deleted.
+         * @description Atomically gives `entryKey` to the connection `connectionId`, which must be the caller's own live connection in the session organization; any other connection is `404`. When the key is not in the ledger, the entry is created already claimed and returned with `201`. When it is recorded but unclaimed, it is claimed and returned with `200`. When `connectionId` already holds it, the call is a replay and returns the entry with `200`. When another live connection holds it, the call is refused with `409` and nothing changes. A claim ends when the entry is deleted or when the holding connection is deleted; a key whose holder was deleted can be claimed again.
          */
         post: operations["claimLedgerEntry"];
         delete?: never;
@@ -78,7 +78,7 @@ export interface components {
     schemas: {
         /**
          * Ledger Entry Schema
-         * @description Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claimant, so two workers never both act on it. Any organization member may read, claim and delete entries; claimedBy is an advisory label, not an authorization principal.
+         * @description Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Any organization member may read and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization.
          */
         LedgerEntry: {
             /**
@@ -97,11 +97,14 @@ export interface components {
             entryKey: string;
             /** @description Entry value, stored as a JSON blob. */
             value?: Record<string, never>;
-            /** @description Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-            claimedBy?: string;
+            /**
+             * Format: uuid
+             * @description ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+             */
+            claimedByConnectionId?: string;
             /**
              * Format: date-time
-             * @description Time the entry was claimed, if any. Set only by claim-if-absent.
+             * @description Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.
              */
             claimedAt?: string | null;
             /**
@@ -141,11 +144,14 @@ export interface components {
                 entryKey: string;
                 /** @description Entry value, stored as a JSON blob. */
                 value?: Record<string, never>;
-                /** @description Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-                claimedBy?: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+                 */
+                claimedByConnectionId?: string;
                 /**
                  * Format: date-time
-                 * @description Time the entry was claimed, if any. Set only by claim-if-absent.
+                 * @description Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.
                  */
                 claimedAt?: string | null;
                 /**
@@ -167,12 +173,15 @@ export interface components {
             /** @description Entry value, stored as a JSON object. */
             value?: Record<string, never>;
         };
-        /** @description Claim-if-absent payload giving a key to one claimant. */
+        /** @description Claim-if-absent payload giving a key to one connection. */
         LedgerClaimPayload: {
             /** @description Key to claim. */
             entryKey: string;
-            /** @description Advisory label naming the worker taking the key, for example a worker name. It is not bound to the caller. */
-            claimant: string;
+            /**
+             * Format: uuid
+             * @description ID of the connection taking the key: the caller's own live connection in the session organization (for example the connection a desktop client registered for its machine).
+             */
+            connectionId: string;
             /** @description Value stored when the claim creates the entry; ignored when the entry already exists. */
             value?: Record<string, never>;
         };
@@ -205,7 +214,7 @@ export interface components {
                 "text/plain": string;
             };
         };
-        /** @description Conflict - another claimant holds the ledger entry */
+        /** @description Conflict - another connection holds the ledger entry */
         409: {
             headers: {
                 [name: string]: unknown;
@@ -296,11 +305,14 @@ export interface operations {
                             entryKey: string;
                             /** @description Entry value, stored as a JSON blob. */
                             value?: Record<string, never>;
-                            /** @description Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-                            claimedBy?: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+                             */
+                            claimedByConnectionId?: string;
                             /**
                              * Format: date-time
-                             * @description Time the entry was claimed, if any. Set only by claim-if-absent.
+                             * @description Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.
                              */
                             claimedAt?: string | null;
                             /**
@@ -399,11 +411,14 @@ export interface operations {
                         entryKey: string;
                         /** @description Entry value, stored as a JSON blob. */
                         value?: Record<string, never>;
-                        /** @description Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-                        claimedBy?: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+                         */
+                        claimedByConnectionId?: string;
                         /**
                          * Format: date-time
-                         * @description Time the entry was claimed, if any. Set only by claim-if-absent.
+                         * @description Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.
                          */
                         claimedAt?: string | null;
                         /**
@@ -442,11 +457,14 @@ export interface operations {
                         entryKey: string;
                         /** @description Entry value, stored as a JSON blob. */
                         value?: Record<string, never>;
-                        /** @description Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-                        claimedBy?: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+                         */
+                        claimedByConnectionId?: string;
                         /**
                          * Format: date-time
-                         * @description Time the entry was claimed, if any. Set only by claim-if-absent.
+                         * @description Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.
                          */
                         claimedAt?: string | null;
                         /**
@@ -506,15 +524,18 @@ export interface operations {
                 "application/json": {
                     /** @description Key to claim. */
                     entryKey: string;
-                    /** @description Advisory label naming the worker taking the key, for example a worker name. It is not bound to the caller. */
-                    claimant: string;
+                    /**
+                     * Format: uuid
+                     * @description ID of the connection taking the key: the caller's own live connection in the session organization (for example the connection a desktop client registered for its machine).
+                     */
+                    connectionId: string;
                     /** @description Value stored when the claim creates the entry; ignored when the entry already exists. */
                     value?: Record<string, never>;
                 };
             };
         };
         responses: {
-            /** @description The caller's claimant now holds the existing entry */
+            /** @description The caller's connection now holds the existing entry */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -537,11 +558,14 @@ export interface operations {
                         entryKey: string;
                         /** @description Entry value, stored as a JSON blob. */
                         value?: Record<string, never>;
-                        /** @description Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-                        claimedBy?: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+                         */
+                        claimedByConnectionId?: string;
                         /**
                          * Format: date-time
-                         * @description Time the entry was claimed, if any. Set only by claim-if-absent.
+                         * @description Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.
                          */
                         claimedAt?: string | null;
                         /**
@@ -580,11 +604,14 @@ export interface operations {
                         entryKey: string;
                         /** @description Entry value, stored as a JSON blob. */
                         value?: Record<string, never>;
-                        /** @description Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-                        claimedBy?: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+                         */
+                        claimedByConnectionId?: string;
                         /**
                          * Format: date-time
-                         * @description Time the entry was claimed, if any. Set only by claim-if-absent.
+                         * @description Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.
                          */
                         claimedAt?: string | null;
                         /**
@@ -618,7 +645,16 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - another claimant holds the ledger entry */
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Conflict - another connection holds the ledger entry */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -675,11 +711,14 @@ export interface operations {
                         entryKey: string;
                         /** @description Entry value, stored as a JSON blob. */
                         value?: Record<string, never>;
-                        /** @description Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-                        claimedBy?: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+                         */
+                        claimedByConnectionId?: string;
                         /**
                          * Format: date-time
-                         * @description Time the entry was claimed, if any. Set only by claim-if-absent.
+                         * @description Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.
                          */
                         claimedAt?: string | null;
                         /**

@@ -17123,9 +17123,10 @@ export type ListLedgerEntriesApiResponse = /** status 200 Ledger entries page */
     entryKey: string;
     /** Entry value, stored as a JSON blob. */
     value?: object;
-    /** Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-    claimedBy?: string;
-    /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+    /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+     */
+    claimedByConnectionId?: string;
+    /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
     claimedAt?: string | null;
     /** Timestamp of ledger entry creation. */
     createdAt: string;
@@ -17157,9 +17158,10 @@ export type RecordLedgerEntryApiResponse = /** status 200 The key was already re
       entryKey: string;
       /** Entry value, stored as a JSON blob. */
       value?: object;
-      /** Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-      claimedBy?: string;
-      /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+      /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+       */
+      claimedByConnectionId?: string;
+      /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
       claimedAt?: string | null;
       /** Timestamp of ledger entry creation. */
       createdAt: string;
@@ -17177,9 +17179,10 @@ export type RecordLedgerEntryApiResponse = /** status 200 The key was already re
       entryKey: string;
       /** Entry value, stored as a JSON blob. */
       value?: object;
-      /** Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-      claimedBy?: string;
-      /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+      /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+       */
+      claimedByConnectionId?: string;
+      /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
       claimedAt?: string | null;
       /** Timestamp of ledger entry creation. */
       createdAt: string;
@@ -17196,7 +17199,7 @@ export type RecordLedgerEntryApiArg = {
     value?: object;
   };
 };
-export type ClaimLedgerEntryApiResponse = /** status 200 The caller's claimant now holds the existing entry */
+export type ClaimLedgerEntryApiResponse = /** status 200 The caller's connection now holds the existing entry */
   | {
       /** Server-generated ledger entry ID. */
       id: string;
@@ -17208,9 +17211,10 @@ export type ClaimLedgerEntryApiResponse = /** status 200 The caller's claimant n
       entryKey: string;
       /** Entry value, stored as a JSON blob. */
       value?: object;
-      /** Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-      claimedBy?: string;
-      /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+      /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+       */
+      claimedByConnectionId?: string;
+      /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
       claimedAt?: string | null;
       /** Timestamp of ledger entry creation. */
       createdAt: string;
@@ -17228,9 +17232,10 @@ export type ClaimLedgerEntryApiResponse = /** status 200 The caller's claimant n
       entryKey: string;
       /** Entry value, stored as a JSON blob. */
       value?: object;
-      /** Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-      claimedBy?: string;
-      /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+      /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+       */
+      claimedByConnectionId?: string;
+      /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
       claimedAt?: string | null;
       /** Timestamp of ledger entry creation. */
       createdAt: string;
@@ -17243,8 +17248,9 @@ export type ClaimLedgerEntryApiArg = {
   body: {
     /** Key to claim. */
     entryKey: string;
-    /** Advisory label naming the worker taking the key, for example a worker name. It is not bound to the caller. */
-    claimant: string;
+    /** ID of the connection taking the key: the caller's own live connection in the session organization (for example the connection a desktop client registered for its machine).
+     */
+    connectionId: string;
     /** Value stored when the claim creates the entry; ignored when the entry already exists. */
     value?: object;
   };
@@ -17260,9 +17266,10 @@ export type GetLedgerEntryApiResponse = /** status 200 Ledger entry */ {
   entryKey: string;
   /** Entry value, stored as a JSON blob. */
   value?: object;
-  /** Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. */
-  claimedBy?: string;
-  /** Time the entry was claimed, if any. Set only by claim-if-absent. */
+  /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+   */
+  claimedByConnectionId?: string;
+  /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
   claimedAt?: string | null;
   /** Timestamp of ledger entry creation. */
   createdAt: string;

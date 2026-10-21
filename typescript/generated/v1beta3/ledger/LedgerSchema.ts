@@ -7,7 +7,7 @@ const LedgerSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Ledger",
-    "description": "OpenAPI schema for organization ledgers: named idempotent sets of keyed\nentries that several workers share, so work done once (a record processed,\na contact reached) is never done twice. Recording is idempotent on\n(ledger, entryKey), and claim-if-absent hands a key to exactly one\nclaimant atomically. Ledgers belong to the organization of the\nauthenticated session; any client-supplied organization is ignored.\n\nAuthorization: ledgers are organization-shared bookkeeping. Any member of\nthe organization may record, claim, list, read and delete entries in that\norganization's ledgers. `claimant` is an advisory worker label, not an\nauthorization principal: it is not bound to the caller, and a claim or\ndelete never checks who holds the key. A key is scoped to (organization,\nledger), so an entry in another ledger is `404`.\n",
+    "description": "OpenAPI schema for organization ledgers: named idempotent sets of keyed\nentries that several workers share, so work done once (a record processed,\na contact reached) is never done twice. Recording is idempotent on\n(ledger, entryKey), and claim-if-absent hands a key to exactly one\nclaiming connection atomically. Ledgers belong to the organization of the\nauthenticated session; any client-supplied organization is ignored.\n\nAuthorization: ledgers are organization-shared bookkeeping. Any member of\nthe organization may record, claim, list, read and delete entries in that\norganization's ledgers. A claim names the connection that takes the key\n(`connectionId`), which must be the caller's own live connection in the\nsession organization; any other connection, including one that does not\nexist, is `404`, the same answer as a missing ledger. A delete never\nchecks who holds the key. A key is scoped to (organization, ledger), so an\nentry in another ledger is `404`.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -126,7 +126,7 @@ const LedgerSchema: Record<string, unknown> = {
                         "x-go-type": "LedgerEntry",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "title": "Ledger Entry Schema",
-                        "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claimant, so two workers never both act on it. Any organization member may read, claim and delete entries; claimedBy is an advisory label, not an authorization principal.\n",
+                        "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Any organization member may read and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization.\n",
                         "type": "object",
                         "additionalProperties": false,
                         "required": [
@@ -197,19 +197,25 @@ const LedgerSchema: Record<string, unknown> = {
                             },
                             "x-order": 5
                           },
-                          "claimedBy": {
-                            "type": "string",
-                            "description": "Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards.",
-                            "maxLength": 255,
+                          "claimedByConnectionId": {
+                            "description": "ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.\n",
+                            "x-go-name": "ClaimedByConnectionID",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "claimed_by"
+                              "db": "claimed_by_connection_id",
+                              "json": "claimedByConnectionId,omitempty"
                             },
-                            "x-order": 6
+                            "x-order": 6,
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
                           "claimedAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "Time the entry was claimed, if any. Set only by claim-if-absent.",
+                            "description": "Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.",
                             "nullable": true,
                             "x-go-type": "core.NullTime",
                             "x-go-type-import": {
@@ -301,7 +307,7 @@ const LedgerSchema: Record<string, unknown> = {
         ],
         "summary": "Record a ledger entry",
         "operationId": "recordLedgerEntry",
-        "description": "Records `entryKey` in the ledger. A new key creates the entry and returns `201`. An existing key never creates a second entry and is not changed: the stored entry is returned unchanged with `200`, and the supplied `value` is ignored. Recording never changes `claimedBy` or `claimedAt`.\n",
+        "description": "Records `entryKey` in the ledger. A new key creates the entry and returns `201`. An existing key never creates a second entry and is not changed: the stored entry is returned unchanged with `200`, and the supplied `value` is ignored. Recording never changes `claimedByConnectionId` or `claimedAt`.\n",
         "parameters": [
           {
             "name": "ledger",
@@ -357,7 +363,7 @@ const LedgerSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Ledger Entry Schema",
-                  "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claimant, so two workers never both act on it. Any organization member may read, claim and delete entries; claimedBy is an advisory label, not an authorization principal.\n",
+                  "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Any organization member may read and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -428,19 +434,25 @@ const LedgerSchema: Record<string, unknown> = {
                       },
                       "x-order": 5
                     },
-                    "claimedBy": {
-                      "type": "string",
-                      "description": "Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards.",
-                      "maxLength": 255,
+                    "claimedByConnectionId": {
+                      "description": "ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.\n",
+                      "x-go-name": "ClaimedByConnectionID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "claimed_by"
+                        "db": "claimed_by_connection_id",
+                        "json": "claimedByConnectionId,omitempty"
                       },
-                      "x-order": 6
+                      "x-order": 6,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "claimedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Time the entry was claimed, if any. Set only by claim-if-absent.",
+                      "description": "Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.",
                       "nullable": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
@@ -484,7 +496,7 @@ const LedgerSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Ledger Entry Schema",
-                  "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claimant, so two workers never both act on it. Any organization member may read, claim and delete entries; claimedBy is an advisory label, not an authorization principal.\n",
+                  "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Any organization member may read and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -555,19 +567,25 @@ const LedgerSchema: Record<string, unknown> = {
                       },
                       "x-order": 5
                     },
-                    "claimedBy": {
-                      "type": "string",
-                      "description": "Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards.",
-                      "maxLength": 255,
+                    "claimedByConnectionId": {
+                      "description": "ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.\n",
+                      "x-go-name": "ClaimedByConnectionID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "claimed_by"
+                        "db": "claimed_by_connection_id",
+                        "json": "claimedByConnectionId,omitempty"
                       },
-                      "x-order": 6
+                      "x-order": 6,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "claimedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Time the entry was claimed, if any. Set only by claim-if-absent.",
+                      "description": "Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.",
                       "nullable": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
@@ -647,7 +665,7 @@ const LedgerSchema: Record<string, unknown> = {
         ],
         "summary": "Claim a ledger key if absent",
         "operationId": "claimLedgerEntry",
-        "description": "Atomically gives `entryKey` to `claimant`. When the key is not in the ledger, the entry is created already claimed and returned with `201`. When it is recorded but unclaimed, it is claimed and returned with `200`. When `claimant` already holds it, the call is a replay and returns the entry with `200`. When another claimant holds it, the call is refused with `409` and nothing changes. A claim is permanent: it ends only when the entry is deleted.\n",
+        "description": "Atomically gives `entryKey` to the connection `connectionId`, which must be the caller's own live connection in the session organization; any other connection is `404`. When the key is not in the ledger, the entry is created already claimed and returned with `201`. When it is recorded but unclaimed, it is claimed and returned with `200`. When `connectionId` already holds it, the call is a replay and returns the entry with `200`. When another live connection holds it, the call is refused with `409` and nothing changes. A claim ends when the entry is deleted or when the holding connection is deleted; a key whose holder was deleted can be claimed again.\n",
         "parameters": [
           {
             "name": "ledger",
@@ -668,10 +686,10 @@ const LedgerSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Claim-if-absent payload giving a key to one claimant.",
+                "description": "Claim-if-absent payload giving a key to one connection.",
                 "required": [
                   "entryKey",
-                  "claimant"
+                  "connectionId"
                 ],
                 "properties": {
                   "entryKey": {
@@ -681,11 +699,16 @@ const LedgerSchema: Record<string, unknown> = {
                     "maxLength": 1024,
                     "x-go-name": "EntryKey"
                   },
-                  "claimant": {
+                  "connectionId": {
+                    "description": "ID of the connection taking the key: the caller's own live connection in the session organization (for example the connection a desktop client registered for its machine).\n",
+                    "x-go-name": "ConnectionID",
+                    "x-go-type-skip-optional-pointer": true,
                     "type": "string",
-                    "description": "Advisory label naming the worker taking the key, for example a worker name. It is not bound to the caller.",
-                    "minLength": 1,
-                    "maxLength": 255
+                    "format": "uuid",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
                   },
                   "value": {
                     "type": "object",
@@ -704,13 +727,13 @@ const LedgerSchema: Record<string, unknown> = {
         },
         "responses": {
           "200": {
-            "description": "The caller's claimant now holds the existing entry",
+            "description": "The caller's connection now holds the existing entry",
             "content": {
               "application/json": {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Ledger Entry Schema",
-                  "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claimant, so two workers never both act on it. Any organization member may read, claim and delete entries; claimedBy is an advisory label, not an authorization principal.\n",
+                  "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Any organization member may read and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -781,19 +804,25 @@ const LedgerSchema: Record<string, unknown> = {
                       },
                       "x-order": 5
                     },
-                    "claimedBy": {
-                      "type": "string",
-                      "description": "Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards.",
-                      "maxLength": 255,
+                    "claimedByConnectionId": {
+                      "description": "ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.\n",
+                      "x-go-name": "ClaimedByConnectionID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "claimed_by"
+                        "db": "claimed_by_connection_id",
+                        "json": "claimedByConnectionId,omitempty"
                       },
-                      "x-order": 6
+                      "x-order": 6,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "claimedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Time the entry was claimed, if any. Set only by claim-if-absent.",
+                      "description": "Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.",
                       "nullable": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
@@ -837,7 +866,7 @@ const LedgerSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Ledger Entry Schema",
-                  "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claimant, so two workers never both act on it. Any organization member may read, claim and delete entries; claimedBy is an advisory label, not an authorization principal.\n",
+                  "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Any organization member may read and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -908,19 +937,25 @@ const LedgerSchema: Record<string, unknown> = {
                       },
                       "x-order": 5
                     },
-                    "claimedBy": {
-                      "type": "string",
-                      "description": "Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards.",
-                      "maxLength": 255,
+                    "claimedByConnectionId": {
+                      "description": "ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.\n",
+                      "x-go-name": "ClaimedByConnectionID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "claimed_by"
+                        "db": "claimed_by_connection_id",
+                        "json": "claimedByConnectionId,omitempty"
                       },
-                      "x-order": 6
+                      "x-order": 6,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "claimedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Time the entry was claimed, if any. Set only by claim-if-absent.",
+                      "description": "Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.",
                       "nullable": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
@@ -977,8 +1012,18 @@ const LedgerSchema: Record<string, unknown> = {
               }
             }
           },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "409": {
-            "description": "Conflict - another claimant holds the ledger entry",
+            "description": "Conflict - another connection holds the ledger entry",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1050,7 +1095,7 @@ const LedgerSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Ledger Entry Schema",
-                  "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claimant, so two workers never both act on it. Any organization member may read, claim and delete entries; claimedBy is an advisory label, not an authorization principal.\n",
+                  "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Any organization member may read and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -1121,19 +1166,25 @@ const LedgerSchema: Record<string, unknown> = {
                       },
                       "x-order": 5
                     },
-                    "claimedBy": {
-                      "type": "string",
-                      "description": "Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards.",
-                      "maxLength": 255,
+                    "claimedByConnectionId": {
+                      "description": "ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.\n",
+                      "x-go-name": "ClaimedByConnectionID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "claimed_by"
+                        "db": "claimed_by_connection_id",
+                        "json": "claimedByConnectionId,omitempty"
                       },
-                      "x-order": 6
+                      "x-order": 6,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "claimedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Time the entry was claimed, if any. Set only by claim-if-absent.",
+                      "description": "Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.",
                       "nullable": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
@@ -1321,7 +1372,7 @@ const LedgerSchema: Record<string, unknown> = {
         }
       },
       "409": {
-        "description": "Conflict - another claimant holds the ledger entry",
+        "description": "Conflict - another connection holds the ledger entry",
         "content": {
           "text/plain": {
             "schema": {
@@ -1410,7 +1461,7 @@ const LedgerSchema: Record<string, unknown> = {
       "LedgerEntry": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Ledger Entry Schema",
-        "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claimant, so two workers never both act on it. Any organization member may read, claim and delete entries; claimedBy is an advisory label, not an authorization principal.\n",
+        "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Any organization member may read and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization.\n",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -1481,19 +1532,25 @@ const LedgerSchema: Record<string, unknown> = {
             },
             "x-order": 5
           },
-          "claimedBy": {
-            "type": "string",
-            "description": "Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards.",
-            "maxLength": 255,
+          "claimedByConnectionId": {
+            "description": "ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.\n",
+            "x-go-name": "ClaimedByConnectionID",
             "x-oapi-codegen-extra-tags": {
-              "db": "claimed_by"
+              "db": "claimed_by_connection_id",
+              "json": "claimedByConnectionId,omitempty"
             },
-            "x-order": 6
+            "x-order": 6,
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
           },
           "claimedAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Time the entry was claimed, if any. Set only by claim-if-absent.",
+            "description": "Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.",
             "nullable": true,
             "x-go-type": "core.NullTime",
             "x-go-type-import": {
@@ -1558,7 +1615,7 @@ const LedgerSchema: Record<string, unknown> = {
               "x-go-type": "LedgerEntry",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "title": "Ledger Entry Schema",
-              "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claimant, so two workers never both act on it. Any organization member may read, claim and delete entries; claimedBy is an advisory label, not an authorization principal.\n",
+              "description": "Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Any organization member may read and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization.\n",
               "type": "object",
               "additionalProperties": false,
               "required": [
@@ -1629,19 +1686,25 @@ const LedgerSchema: Record<string, unknown> = {
                   },
                   "x-order": 5
                 },
-                "claimedBy": {
-                  "type": "string",
-                  "description": "Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards.",
-                  "maxLength": 255,
+                "claimedByConnectionId": {
+                  "description": "ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.\n",
+                  "x-go-name": "ClaimedByConnectionID",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "claimed_by"
+                    "db": "claimed_by_connection_id",
+                    "json": "claimedByConnectionId,omitempty"
                   },
-                  "x-order": 6
+                  "x-order": 6,
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 },
                 "claimedAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "Time the entry was claimed, if any. Set only by claim-if-absent.",
+                  "description": "Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.",
                   "nullable": true,
                   "x-go-type": "core.NullTime",
                   "x-go-type-import": {
@@ -1707,10 +1770,10 @@ const LedgerSchema: Record<string, unknown> = {
       },
       "LedgerClaimPayload": {
         "type": "object",
-        "description": "Claim-if-absent payload giving a key to one claimant.",
+        "description": "Claim-if-absent payload giving a key to one connection.",
         "required": [
           "entryKey",
-          "claimant"
+          "connectionId"
         ],
         "properties": {
           "entryKey": {
@@ -1720,11 +1783,16 @@ const LedgerSchema: Record<string, unknown> = {
             "maxLength": 1024,
             "x-go-name": "EntryKey"
           },
-          "claimant": {
+          "connectionId": {
+            "description": "ID of the connection taking the key: the caller's own live connection in the session organization (for example the connection a desktop client registered for its machine).\n",
+            "x-go-name": "ConnectionID",
+            "x-go-type-skip-optional-pointer": true,
             "type": "string",
-            "description": "Advisory label naming the worker taking the key, for example a worker name. It is not bound to the caller.",
-            "minLength": 1,
-            "maxLength": 255
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
           },
           "value": {
             "type": "object",

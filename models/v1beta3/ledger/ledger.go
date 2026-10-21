@@ -7,10 +7,10 @@ import (
 	core "github.com/meshery/schemas/models/core"
 )
 
-// LedgerClaimPayload Claim-if-absent payload giving a key to one claimant.
+// LedgerClaimPayload Claim-if-absent payload giving a key to one connection.
 type LedgerClaimPayload struct {
-	// Claimant Advisory label naming the worker taking the key, for example a worker name. It is not bound to the caller.
-	Claimant string `json:"claimant" yaml:"claimant"`
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionID core.Uuid `json:"connectionId" yaml:"connectionId"`
 
 	// EntryKey Key to claim.
 	EntryKey string `json:"entryKey" yaml:"entryKey"`
@@ -19,7 +19,7 @@ type LedgerClaimPayload struct {
 	Value core.Map `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// LedgerEntry Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claimant, so two workers never both act on it. Any organization member may read, claim and delete entries; claimedBy is an advisory label, not an authorization principal.
+// LedgerEntry Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Any organization member may read and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization.
 type LedgerEntry struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID core.Uuid `json:"id" yaml:"id"`
@@ -36,10 +36,10 @@ type LedgerEntry struct {
 	// Value Entry value, stored as a JSON blob.
 	Value core.Map `db:"value" json:"value,omitempty" yaml:"value,omitempty"`
 
-	// ClaimedBy Claimant that holds the entry, if any. Set only by claim-if-absent and never changed afterwards.
-	ClaimedBy *string `db:"claimed_by" json:"claimedBy,omitempty" yaml:"claimedBy,omitempty"`
+	// ClaimedByConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ClaimedByConnectionID *core.Uuid `db:"claimed_by_connection_id" json:"claimedByConnectionId,omitempty" yaml:"claimedByConnectionId,omitempty"`
 
-	// ClaimedAt Time the entry was claimed, if any. Set only by claim-if-absent.
+	// ClaimedAt Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.
 	ClaimedAt *core.NullTime `db:"claimed_at" json:"claimedAt" yaml:"claimedAt"`
 	CreatedAt core.Time      `db:"created_at" json:"createdAt" yaml:"createdAt"`
 	UpdatedAt core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
