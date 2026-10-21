@@ -374,7 +374,7 @@ type ConnectionsStatusPage struct {
 // CoreKind A core connection kind that receives bespoke, kind-specific handling in Meshery. The `kind` field itself remains an open-ended string; this names only the kinds with special behavior.
 type CoreKind string
 
-// DesktopConnectionMetadata Metadata of a `desktop` connection: a desktop app install that registered itself on every connect to Cloud. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `machineId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins.
+// DesktopConnectionMetadata Metadata of a `desktop` connection: a desktop app install that registered itself on every connect to Cloud. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `installationId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins.
 type DesktopConnectionMetadata struct {
 	// AppVersion Version of the desktop app as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Compared with the server's minimum for `clientName`.
 	AppVersion *string `json:"appVersion,omitempty" yaml:"appVersion,omitempty"`
@@ -385,14 +385,17 @@ type DesktopConnectionMetadata struct {
 	// ClientName Identifier of the desktop app, for example its product name, lowercase. A value, never a kind: it selects the server's minimum version for this client.
 	ClientName *string `json:"clientName,omitempty" yaml:"clientName,omitempty"`
 
+	// ComputerId Stable identifier of the computer the install runs on, shared by every install on that computer whoever signs in: the lowercase hex SHA-256 digest of a fixed, client-defined salt followed by the operating system's hardware identifier (for example the platform UUID on macOS). Clients must send only this digest, never the raw hardware identifier or a serial number. Absent when the client cannot read a hardware identifier.
+	ComputerId *string `json:"computerId,omitempty" yaml:"computerId,omitempty"`
+
 	// Hostname Host name of the machine.
 	Hostname *string `json:"hostname,omitempty" yaml:"hostname,omitempty"`
 
+	// InstallationId Stable identifier of a desktop app install: generated once on the install's first launch (a UUID is recommended), kept with the app's local state, and never derived from the host name, a process id or a hardware identifier. A reinstall that discards local state is a new install. It is the install part of the deduplication key.
+	InstallationId string `json:"installationId" yaml:"installationId"`
+
 	// LastSeenAt Server time of the last registration or heartbeat.
 	LastSeenAt *time.Time `json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
-
-	// MachineId Stable identifier of a desktop app install: generated once on the install's first launch (a UUID is recommended), kept with the app's local state, and never derived from the host name, a process id or a hardware serial. A reinstall that discards local state is a new install. It is the machine part of the deduplication key.
-	MachineId string `json:"machineId" yaml:"machineId"`
 
 	// Os Operating system, for example `macos`.
 	Os *string `json:"os,omitempty" yaml:"os,omitempty"`
@@ -536,9 +539,9 @@ type ConnectionKind = string
 // EnvironmentId defines model for environmentId.
 type EnvironmentId = uuid.UUID
 
-// MachineId Stable identifier of a desktop app install, generated once per install. It is the machine part of the deduplication key and the `machineId` path parameter.
-// MachineId defines model for machineId.
-type MachineId = string
+// InstallationId Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.
+// InstallationId defines model for installationId.
+type InstallationId = string
 
 // MesheryServerId defines model for mesheryServerId.
 type MesheryServerId = uuid.UUID

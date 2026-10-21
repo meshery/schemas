@@ -222,7 +222,7 @@ export interface components {
             extensions?: {
                 [key: string]: unknown;
             };
-            /** @description Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{machineId}` placeholders. */
+            /** @description Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{installationId}` placeholders. */
             capabilities?: {
                 /** @description Feature name, for example `persist-connection`. */
                 feature: string;
@@ -669,7 +669,7 @@ export interface operations {
                         extensions?: {
                             [key: string]: unknown;
                         };
-                        /** @description Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{machineId}` placeholders. */
+                        /** @description Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{installationId}` placeholders. */
                         capabilities?: {
                             /** @description Feature name, for example `persist-connection`. */
                             feature: string;
