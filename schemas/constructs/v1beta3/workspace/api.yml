@@ -408,7 +408,7 @@ paths:
       description: >-
         Gets profiles assigned to or available for a workspace depending on
         the filter. A profile can be assigned to many workspaces; members of
-        each one can read it.
+        each one can read it, as can its owner and organization admins.
       parameters:
         - $ref: "#/components/parameters/workspaceId"
         - $ref: "#/components/parameters/search"
@@ -441,7 +441,7 @@ paths:
         - profiles
       operationId: assignProfileToWorkspace
       summary: Assign a profile to a workspace
-      description: Assigns a profile to a workspace, granting the workspace's members read access to it. The profile and the workspace must belong to the same organization, and a profile can be assigned to many workspaces.
+      description: Assigns a profile to a workspace, granting the workspace's members read access to it (not to its linked connections). The profile and the workspace must belong to the same organization, and a profile can be assigned to many workspaces.
       parameters:
         - $ref: "#/components/parameters/workspaceId"
         - $ref: "#/components/parameters/profileId"
