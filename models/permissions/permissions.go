@@ -6,7 +6,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "fb2f3275d706b0bbe7db5884ebf64f3de3a9bef2c81d3dc1deaeed1f8b6255bb"
+const IndexID = "e0e93dd7284f2834f1d2b5683e27025aa3747e63ff4d78d8624039dc9fa9232a"
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -1418,4 +1418,7 @@ var (
 
 	// ChaosManagementAsDaemonsets - No description available
 	ChaosManagementAsDaemonsets = PermissionKey(uuid.Must(uuid.FromString("b73d71ec-f5b2-4d0b-83de-6e2dccff5041")))
+
+	// BlowhornAccessDiagnostics - Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
+	BlowhornAccessDiagnostics = PermissionKey(uuid.Must(uuid.FromString("afb597fc-a027-4ade-b5f9-c5f82b67b053")))
 )
