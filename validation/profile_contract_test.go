@@ -16,8 +16,8 @@ const (
 
 // A profile is its own construct, assigned to workspaces the way designs and
 // environments are, so access to it is controlled through workspaces. It
-// replaces the environment `purpose: profile` mapping, which stays in the
-// enum only as a deprecated value.
+// replaced the environment `purpose: profile` value, which is removed from
+// the enum with no migration.
 
 // TestProfilePayloadIsClientSettableOnly pins the payload to the fields a
 // client may supply. owner, id and the timestamps are server-owned.
@@ -95,20 +95,27 @@ func TestProfileWorkspaceAssignmentMirrorsEnvironments(t *testing.T) {
 	mustLookup(t, doc, "components", "schemas", "WorkspacesProfilesMapping", "properties", "profileId")
 }
 
-// TestEnvironmentProfilePurposeIsDeprecated keeps the value readable for rows
-// written before the profile construct, while making the deprecation visible
-// wherever a client reads the enum.
-func TestEnvironmentProfilePurposeIsDeprecated(t *testing.T) {
+// TestEnvironmentPurposeHasNoProfileValue pins the removal of `profile` from
+// both environment purpose enums and their generated constant names. A
+// profile is never an environment, so neither the entity nor the payload may
+// admit the value again.
+func TestEnvironmentPurposeHasNoProfileValue(t *testing.T) {
 	root := repoRootDir(t)
 	entity := loadOpenAPIDocument(t, filepath.Join(root, environmentEntitySpec))
-	desc, _ := mappingValue(mustLookup(t, entity, "properties", "purpose"), "description")
-	if s, _ := desc.(string); !strings.Contains(s, "`profile` is deprecated") {
-		t.Error("Environment.purpose description must mark `profile` deprecated")
-	}
+	purpose := mustLookup(t, entity, "properties", "purpose")
 	api := loadOpenAPIDocument(t, filepath.Join(root, environmentAPISpec))
-	pdesc, _ := mappingValue(mustLookup(t, api, "components", "schemas", "EnvironmentPayloadPurpose"), "description")
-	if s, _ := pdesc.(string); !strings.Contains(s, "deprecated `profile`") {
-		t.Error("EnvironmentPayloadPurpose description must mark `profile` deprecated")
+	payload := mustLookup(t, api, "components", "schemas", "EnvironmentPayloadPurpose")
+	for name, schema := range map[string]any{"Environment.purpose": purpose, "EnvironmentPayloadPurpose": payload} {
+		for _, v := range stringSliceOf(mustLookup(t, schema, "enum")) {
+			if v == "profile" {
+				t.Errorf("%s enum must not admit `profile`: profiles are their own construct", name)
+			}
+		}
+		for _, v := range stringSliceOf(mustLookup(t, schema, "x-enum-varnames")) {
+			if strings.HasSuffix(v, "Profile") {
+				t.Errorf("%s x-enum-varnames must not carry %s", name, v)
+			}
+		}
 	}
 }
 

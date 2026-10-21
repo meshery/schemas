@@ -102,7 +102,7 @@ A *server-generated* field (`id`, `createdAt`) is one the server fills in. A
 all, because the value carries authority. `Environment.purpose` is the worked
 example - its privileged values designate an environment administrative, and
 resolvers of organization-level configuration trust that designation. Its
-non-privileged values (`user` and the deprecated `profile`) are client-settable.
+non-privileged value, `user`, is client-settable.
 
 Express it two ways, because each covers a different surface:
 
