@@ -152,10 +152,10 @@ paths:
         claim held by another connection answers `409`. A claim past
         `expiresAt`, or one whose holding connection was deleted, is marked
         `expired` and superseded. The resource must exist in the session
-        organization; Cloud verifies the resource types it serves
-        (`content_item`) and refuses any other type with `400`. Decided in a
-        single server-side statement, so of two racing claimants exactly one
-        wins.
+        organization; a server verifies the resource types it serves (for
+        example `content_item` and `schedule`) and refuses any other type with
+        `400`. Decided in a single server-side statement, so of two racing
+        claimants exactly one wins.
       requestBody:
         required: true
         content:

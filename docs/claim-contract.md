@@ -44,8 +44,11 @@ It is the "in progress" set. The ledger (`v1beta3/ledger`) stays the
 
 `resourceType` is the construct name in snake_case. A provider verifies the
 types it serves and refuses others with `400`. Layer5 Cloud serves
-`content_item` (the hold a desktop client takes on an activity) and verifies
-that the content item is live in the session organization.
+`content_item` (the hold a desktop client takes on an activity) and
+`schedule` (the hold a worker takes on a due schedule before it runs it), and
+verifies that the resource is live in the session organization. A schedule
+claim is taken, renewed and released through `/api/claims` like any other;
+the schedule reads it back as its nested `claim`.
 
 ## Permission keys (build/permissions.csv, "Workflow Management / Claims")
 
