@@ -623,6 +623,10 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/identity/users/profile` }),
         providesTags: ["User_users"],
       }),
+      updateUserPreferences: build.mutation<UpdateUserPreferencesApiResponse, UpdateUserPreferencesApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/users/preferences`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["User_users"],
+      }),
       getUserProfileOverview: build.query<GetUserProfileOverviewApiResponse, GetUserProfileOverviewApiArg>({
         query: () => ({ url: `/api/identity/users/profile/details` }),
         providesTags: ["User_users"],
@@ -6374,6 +6378,73 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   };
 };
 export type GetUserApiArg = void;
+export type UpdateUserPreferencesApiResponse = unknown;
+export type UpdateUserPreferencesApiArg = {
+  body: {
+    /** The mesh adapters of the preference. */
+    meshAdapters?: object[];
+    grafana?: {
+      /** Grafana URL for the user configuration. */
+      grafanaUrl?: string;
+      /** Grafana API key for the user configuration. */
+      grafanaApiKey?: string;
+      /** Selected Grafana board configurations for the user. */
+      selectedBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        /** Panels selected for the Grafana board configuration. */
+        panels?: object[];
+        /** Template variables applied to the selected Grafana board configuration. */
+        templateVars?: string[];
+      }[];
+    };
+    prometheus?: {
+      /** The prometheus URL of the prometheus. */
+      prometheusUrl?: string;
+      /** The selected prometheus boards configs of the prometheus. */
+      selectedPrometheusBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        /** Panels selected for the Grafana board configuration. */
+        panels?: object[];
+        /** Template variables applied to the selected Grafana board configuration. */
+        templateVars?: string[];
+      }[];
+    };
+    loadTestPrefs?: {
+      /** Concurrent requests */
+      c?: number;
+      /** Queries per second */
+      qps?: number;
+      /** Duration */
+      t?: string;
+      /** Load generator */
+      gen?: string;
+    };
+    /** The anonymous usage stats of the preference. */
+    anonymousUsageStats?: boolean;
+    /** The anonymous perf results of the preference. */
+    anonymousPerfResults?: boolean;
+    /** The dashboard preferences of the preference. */
+    dashboardPreferences?: {
+      [key: string]: any;
+    };
+    /** ID of the organization to make the session's selected organization. */
+    selectedOrganizationId?: string;
+    /** The selected workspace for organizations of the preference. */
+    selectedWorkspaceForOrganizations?: {
+      [key: string]: string;
+    };
+    /** The users extension preferences of the preference. */
+    usersExtensionPreferences?: {
+      [key: string]: any;
+    };
+    /** The remote provider preferences of the preference. */
+    remoteProviderPreferences?: {
+      [key: string]: any;
+    };
+  };
+};
 export type GetUserProfileOverviewApiResponse = /** status 200 Profile overview counts for the caller */ {
   /** Number of Kubernetes contexts owned by the user. */
   k8sCount: number;
@@ -22080,6 +22151,7 @@ export const {
   useLazyGetUserProfileByIdQuery,
   useGetUserQuery,
   useLazyGetUserQuery,
+  useUpdateUserPreferencesMutation,
   useGetUserProfileOverviewQuery,
   useLazyGetUserProfileOverviewQuery,
   useGetUserRecentActivitiesQuery,
