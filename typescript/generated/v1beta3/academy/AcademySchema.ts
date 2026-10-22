@@ -2661,7 +2661,6 @@ const AcademySchema: Record<string, unknown> = {
                     "createdAt",
                     "updatedAt",
                     "contentId",
-                    "certificate",
                     "metadata"
                   ],
                   "properties": {
@@ -2757,6 +2756,7 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "certificate": {
+                      "nullable": true,
                       "x-go-type": "core.Map",
                       "x-go-type-skip-optional-pointer": true,
                       "description": "Issued certificate for completing the curricula under registration",
@@ -2940,7 +2940,6 @@ const AcademySchema: Record<string, unknown> = {
                     "createdAt",
                     "updatedAt",
                     "contentId",
-                    "certificate",
                     "metadata"
                   ],
                   "properties": {
@@ -3036,6 +3035,7 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "certificate": {
+                      "nullable": true,
                       "x-go-type": "core.Map",
                       "x-go-type-skip-optional-pointer": true,
                       "description": "Issued certificate for completing the curricula under registration",
@@ -5170,7 +5170,6 @@ const AcademySchema: Record<string, unknown> = {
                     "createdAt",
                     "updatedAt",
                     "contentId",
-                    "certificate",
                     "metadata"
                   ],
                   "properties": {
@@ -5266,6 +5265,7 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "certificate": {
+                      "nullable": true,
                       "x-go-type": "core.Map",
                       "x-go-type-skip-optional-pointer": true,
                       "description": "Issued certificate for completing the curricula under registration",
@@ -5583,7 +5583,8 @@ const AcademySchema: Record<string, unknown> = {
                                 "type": "number",
                                 "format": "float",
                                 "description": "The percentage scored of the quizevaluationresult.",
-                                "minimum": 0
+                                "minimum": 0,
+                                "maximum": 100
                               },
                               "totalMarks": {
                                 "type": "integer",
@@ -7059,349 +7060,312 @@ const AcademySchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "array",
+                  "description": "Test submissions made by the user (array of QuizEvaluationResult)",
                   "items": {
-                    "type": "array",
-                    "description": "Test submissions made by the user (array of QuizEvaluationResult)",
-                    "items": {
-                      "type": "object",
-                      "required": [
-                        "score",
-                        "passed",
-                        "totalMarks",
-                        "passPercentage",
-                        "quiz",
-                        "attemptedAt",
-                        "attempts",
-                        "percentageScored",
-                        "correctSubmissions"
-                      ],
-                      "properties": {
-                        "score": {
-                          "type": "integer",
-                          "description": "The score of the quizevaluationresult.",
-                          "minimum": 0
+                    "type": "object",
+                    "required": [
+                      "score",
+                      "passed",
+                      "totalMarks",
+                      "passPercentage",
+                      "quiz",
+                      "attemptedAt",
+                      "attempts",
+                      "percentageScored",
+                      "correctSubmissions"
+                    ],
+                    "properties": {
+                      "score": {
+                        "type": "integer",
+                        "description": "The score of the quizevaluationresult.",
+                        "minimum": 0
+                      },
+                      "passed": {
+                        "type": "boolean",
+                        "description": "The passed of the quizevaluationresult."
+                      },
+                      "percentageScored": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The percentage scored of the quizevaluationresult.",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "totalMarks": {
+                        "type": "integer",
+                        "description": "The total marks of the quizevaluationresult.",
+                        "minimum": 0
+                      },
+                      "passPercentage": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The pass percentage of the quizevaluationresult.",
+                        "minimum": 0
+                      },
+                      "correctSubmissions": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "boolean"
                         },
-                        "passed": {
-                          "type": "boolean",
-                          "description": "The passed of the quizevaluationresult."
-                        },
-                        "percentageScored": {
-                          "type": "number",
-                          "format": "float",
-                          "description": "The percentage scored of the quizevaluationresult.",
-                          "minimum": 0
-                        },
-                        "totalMarks": {
-                          "type": "integer",
-                          "description": "The total marks of the quizevaluationresult.",
-                          "minimum": 0
-                        },
-                        "passPercentage": {
-                          "type": "number",
-                          "format": "float",
-                          "description": "The pass percentage of the quizevaluationresult.",
-                          "minimum": 0
-                        },
-                        "correctSubmissions": {
-                          "type": "object",
-                          "additionalProperties": {
-                            "type": "boolean"
+                        "description": "The correct submissions of the quizevaluationresult."
+                      },
+                      "quiz": {
+                        "x-go-type": "Quiz",
+                        "x-generate-db-helpers": true,
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "title",
+                          "orgId",
+                          "description",
+                          "slug",
+                          "relPermalink",
+                          "permalink",
+                          "type",
+                          "section",
+                          "layout",
+                          "date",
+                          "final",
+                          "lastmod",
+                          "draft",
+                          "filePath",
+                          "passPercentage",
+                          "timeLimit",
+                          "maxAttempts",
+                          "questions",
+                          "totalQuestions",
+                          "totalQuestionsInBank",
+                          "totalQuestionSets",
+                          "totalMarks",
+                          "prerequisites",
+                          "nextPage"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "id"
+                            },
+                            "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                            "example": "corporate-sustainability",
+                            "maxLength": 500,
+                            "x-id-format": "external"
                           },
-                          "description": "The correct submissions of the quizevaluationresult."
-                        },
-                        "quiz": {
-                          "x-go-type": "Quiz",
-                          "x-generate-db-helpers": true,
-                          "type": "object",
-                          "required": [
-                            "id",
-                            "title",
-                            "orgId",
-                            "description",
-                            "slug",
-                            "relPermalink",
-                            "permalink",
-                            "type",
-                            "section",
-                            "layout",
-                            "date",
-                            "final",
-                            "lastmod",
-                            "draft",
-                            "filePath",
-                            "passPercentage",
-                            "timeLimit",
-                            "maxAttempts",
-                            "questions",
-                            "totalQuestions",
-                            "totalQuestionsInBank",
-                            "totalQuestionSets",
-                            "totalMarks",
-                            "prerequisites",
-                            "nextPage"
-                          ],
-                          "properties": {
-                            "id": {
-                              "type": "string",
-                              "x-go-name": "ID",
-                              "x-oapi-codegen-extra-tags": {
-                                "json": "id"
+                          "orgId": {
+                            "type": "string",
+                            "description": "Organization ID that owns this quiz",
+                            "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "org_id",
+                              "json": "orgId"
+                            },
+                            "maxLength": 500,
+                            "format": "uuid"
+                          },
+                          "final": {
+                            "type": "boolean",
+                            "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+                            "example": true
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "The title of the quiz.",
+                            "maxLength": 500
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the quiz.",
+                            "maxLength": 5000
+                          },
+                          "slug": {
+                            "type": "string",
+                            "description": "The slug of the quiz.",
+                            "maxLength": 500
+                          },
+                          "relPermalink": {
+                            "type": "string",
+                            "description": "The rel permalink of the quiz.",
+                            "maxLength": 500
+                          },
+                          "permalink": {
+                            "type": "string",
+                            "description": "The permalink of the quiz.",
+                            "maxLength": 500
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "Type of the resource.",
+                            "maxLength": 255
+                          },
+                          "section": {
+                            "type": "string",
+                            "description": "The section of the quiz.",
+                            "maxLength": 500
+                          },
+                          "layout": {
+                            "type": "string",
+                            "description": "The layout of the quiz.",
+                            "maxLength": 500
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "The date of the quiz."
+                          },
+                          "lastmod": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "The lastmod of the quiz."
+                          },
+                          "draft": {
+                            "type": "boolean",
+                            "description": "The draft of the quiz."
+                          },
+                          "filePath": {
+                            "type": "string",
+                            "description": "The file path of the quiz.",
+                            "maxLength": 500
+                          },
+                          "passPercentage": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "The pass percentage of the quiz.",
+                            "minimum": 0
+                          },
+                          "timeLimit": {
+                            "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                            "oneOf": [
+                              {
+                                "type": "integer",
+                                "minimum": 0
                               },
-                              "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
-                              "example": "corporate-sustainability",
-                              "maxLength": 500,
-                              "x-id-format": "external"
-                            },
-                            "orgId": {
-                              "type": "string",
-                              "description": "Organization ID that owns this quiz",
-                              "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "org_id",
-                                "json": "orgId"
-                              },
-                              "maxLength": 500,
-                              "format": "uuid"
-                            },
-                            "final": {
-                              "type": "boolean",
-                              "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
-                              "example": true
-                            },
-                            "title": {
-                              "type": "string",
-                              "description": "The title of the quiz.",
-                              "maxLength": 500
-                            },
-                            "description": {
-                              "type": "string",
-                              "description": "Description of the quiz.",
-                              "maxLength": 5000
-                            },
-                            "slug": {
-                              "type": "string",
-                              "description": "The slug of the quiz.",
-                              "maxLength": 500
-                            },
-                            "relPermalink": {
-                              "type": "string",
-                              "description": "The rel permalink of the quiz.",
-                              "maxLength": 500
-                            },
-                            "permalink": {
-                              "type": "string",
-                              "description": "The permalink of the quiz.",
-                              "maxLength": 500
-                            },
-                            "type": {
-                              "type": "string",
-                              "description": "Type of the resource.",
-                              "maxLength": 255
-                            },
-                            "section": {
-                              "type": "string",
-                              "description": "The section of the quiz.",
-                              "maxLength": 500
-                            },
-                            "layout": {
-                              "type": "string",
-                              "description": "The layout of the quiz.",
-                              "maxLength": 500
-                            },
-                            "date": {
-                              "type": "string",
-                              "format": "date",
-                              "description": "The date of the quiz."
-                            },
-                            "lastmod": {
-                              "type": "string",
-                              "format": "date",
-                              "description": "The lastmod of the quiz."
-                            },
-                            "draft": {
-                              "type": "boolean",
-                              "description": "The draft of the quiz."
-                            },
-                            "filePath": {
-                              "type": "string",
-                              "description": "The file path of the quiz.",
-                              "maxLength": 500
-                            },
-                            "passPercentage": {
-                              "type": "number",
-                              "format": "float",
-                              "description": "The pass percentage of the quiz.",
-                              "minimum": 0
-                            },
-                            "timeLimit": {
-                              "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
-                              "oneOf": [
-                                {
+                              {
+                                "type": "string"
+                              }
+                            ],
+                            "x-go-type": "QuizTimeLimit",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "maxAttempts": {
+                            "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "questions": {
+                            "type": "array",
+                            "items": {
+                              "x-go-type": "Question",
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "text",
+                                "type",
+                                "marks",
+                                "options",
+                                "correctAnswer"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                  "example": "q1",
+                                  "maxLength": 500,
+                                  "x-id-format": "external"
+                                },
+                                "text": {
+                                  "type": "string",
+                                  "description": "The text of the question.",
+                                  "maxLength": 500
+                                },
+                                "type": {
+                                  "x-go-type": "QuestionType",
+                                  "type": "string",
+                                  "x-enum-varnames": [
+                                    "QuestionTypeMultipleAnswers",
+                                    "QuestionTypeSingleAnswer",
+                                    "QuestionTypeShortAnswer",
+                                    "QuestionTypeEssay"
+                                  ],
+                                  "enum": [
+                                    "multiple-answers",
+                                    "single-answer",
+                                    "short-answer",
+                                    "essay"
+                                  ]
+                                },
+                                "marks": {
                                   "type": "integer",
+                                  "description": "The marks of the question.",
                                   "minimum": 0
                                 },
-                                {
-                                  "type": "string"
-                                }
-                              ],
-                              "x-go-type": "QuizTimeLimit",
-                              "x-go-type-skip-optional-pointer": true
-                            },
-                            "maxAttempts": {
-                              "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                              "type": "integer",
-                              "minimum": 0
-                            },
-                            "questions": {
-                              "type": "array",
-                              "items": {
-                                "x-go-type": "Question",
-                                "type": "object",
-                                "required": [
-                                  "id",
-                                  "text",
-                                  "type",
-                                  "marks",
-                                  "options",
-                                  "correctAnswer"
-                                ],
-                                "properties": {
-                                  "id": {
-                                    "type": "string",
-                                    "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
-                                    "example": "q1",
-                                    "maxLength": 500,
-                                    "x-id-format": "external"
-                                  },
-                                  "text": {
-                                    "type": "string",
-                                    "description": "The text of the question.",
-                                    "maxLength": 500
-                                  },
-                                  "type": {
-                                    "x-go-type": "QuestionType",
-                                    "type": "string",
-                                    "x-enum-varnames": [
-                                      "QuestionTypeMultipleAnswers",
-                                      "QuestionTypeSingleAnswer",
-                                      "QuestionTypeShortAnswer",
-                                      "QuestionTypeEssay"
+                                "multipleAnswers": {
+                                  "type": "boolean",
+                                  "description": "The multiple answers of the question."
+                                },
+                                "options": {
+                                  "type": "array",
+                                  "items": {
+                                    "x-go-type": "QuestionOption",
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "text",
+                                      "isCorrect"
                                     ],
-                                    "enum": [
-                                      "multiple-answers",
-                                      "single-answer",
-                                      "short-answer",
-                                      "essay"
-                                    ]
-                                  },
-                                  "marks": {
-                                    "type": "integer",
-                                    "description": "The marks of the question.",
-                                    "minimum": 0
-                                  },
-                                  "multipleAnswers": {
-                                    "type": "boolean",
-                                    "description": "The multiple answers of the question."
-                                  },
-                                  "options": {
-                                    "type": "array",
-                                    "items": {
-                                      "x-go-type": "QuestionOption",
-                                      "type": "object",
-                                      "required": [
-                                        "id",
-                                        "text",
-                                        "isCorrect"
-                                      ],
-                                      "properties": {
-                                        "id": {
-                                          "type": "string",
-                                          "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
-                                          "example": "a",
-                                          "maxLength": 500,
-                                          "x-id-format": "external"
-                                        },
-                                        "text": {
-                                          "type": "string",
-                                          "description": "The text of the questionoption.",
-                                          "maxLength": 500
-                                        },
-                                        "isCorrect": {
-                                          "type": "boolean",
-                                          "description": "The is correct of the questionoption."
-                                        }
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                        "example": "a",
+                                        "maxLength": 500,
+                                        "x-id-format": "external"
+                                      },
+                                      "text": {
+                                        "type": "string",
+                                        "description": "The text of the questionoption.",
+                                        "maxLength": 500
+                                      },
+                                      "isCorrect": {
+                                        "type": "boolean",
+                                        "description": "The is correct of the questionoption."
                                       }
-                                    },
-                                    "description": "The options of the question."
+                                    }
                                   },
-                                  "correctAnswer": {
-                                    "type": "string",
-                                    "description": "The correct answer of the question.",
-                                    "maxLength": 500
-                                  }
+                                  "description": "The options of the question."
+                                },
+                                "correctAnswer": {
+                                  "type": "string",
+                                  "description": "The correct answer of the question.",
+                                  "maxLength": 500
                                 }
-                              },
-                              "description": "The questions of the quiz."
+                              }
                             },
-                            "totalQuestions": {
-                              "type": "integer",
-                              "description": "The total questions of the quiz.",
-                              "minimum": 0
-                            },
-                            "totalQuestionsInBank": {
-                              "type": "integer",
-                              "description": "The total questions in bank of the quiz.",
-                              "minimum": 0
-                            },
-                            "totalQuestionSets": {
-                              "type": "integer",
-                              "description": "The total question sets of the quiz.",
-                              "minimum": 0
-                            },
-                            "totalMarks": {
-                              "type": "integer",
-                              "description": "The total marks of the quiz.",
-                              "minimum": 0
-                            },
-                            "prerequisites": {
-                              "type": "array",
-                              "items": {
-                                "x-go-type": "Parent",
-                                "type": "object",
-                                "required": [
-                                  "id",
-                                  "title",
-                                  "relPermalink",
-                                  "type"
-                                ],
-                                "properties": {
-                                  "id": {
-                                    "type": "string",
-                                    "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
-                                    "example": "introduction-to-devops-and-sre",
-                                    "maxLength": 500,
-                                    "x-id-format": "external"
-                                  },
-                                  "title": {
-                                    "type": "string",
-                                    "description": "The title of the parent.",
-                                    "maxLength": 500
-                                  },
-                                  "relPermalink": {
-                                    "type": "string",
-                                    "description": "The rel permalink of the parent.",
-                                    "maxLength": 500
-                                  },
-                                  "type": {
-                                    "type": "string",
-                                    "description": "Type of the resource.",
-                                    "maxLength": 255
-                                  }
-                                }
-                              },
-                              "description": "The prerequisites of the quiz."
-                            },
-                            "parent": {
+                            "description": "The questions of the quiz."
+                          },
+                          "totalQuestions": {
+                            "type": "integer",
+                            "description": "The total questions of the quiz.",
+                            "minimum": 0
+                          },
+                          "totalQuestionsInBank": {
+                            "type": "integer",
+                            "description": "The total questions in bank of the quiz.",
+                            "minimum": 0
+                          },
+                          "totalQuestionSets": {
+                            "type": "integer",
+                            "description": "The total question sets of the quiz.",
+                            "minimum": 0
+                          },
+                          "totalMarks": {
+                            "type": "integer",
+                            "description": "The total marks of the quiz.",
+                            "minimum": 0
+                          },
+                          "prerequisites": {
+                            "type": "array",
+                            "items": {
                               "x-go-type": "Parent",
                               "type": "object",
                               "required": [
@@ -7435,52 +7399,87 @@ const AcademySchema: Record<string, unknown> = {
                                 }
                               }
                             },
-                            "nextPage": {
-                              "x-go-type": "Parent",
-                              "type": "object",
-                              "required": [
-                                "id",
-                                "title",
-                                "relPermalink",
-                                "type"
-                              ],
-                              "properties": {
-                                "id": {
-                                  "type": "string",
-                                  "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
-                                  "example": "introduction-to-devops-and-sre",
-                                  "maxLength": 500,
-                                  "x-id-format": "external"
-                                },
-                                "title": {
-                                  "type": "string",
-                                  "description": "The title of the parent.",
-                                  "maxLength": 500
-                                },
-                                "relPermalink": {
-                                  "type": "string",
-                                  "description": "The rel permalink of the parent.",
-                                  "maxLength": 500
-                                },
-                                "type": {
-                                  "type": "string",
-                                  "description": "Type of the resource.",
-                                  "maxLength": 255
-                                }
+                            "description": "The prerequisites of the quiz."
+                          },
+                          "parent": {
+                            "x-go-type": "Parent",
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "title",
+                              "relPermalink",
+                              "type"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                "example": "introduction-to-devops-and-sre",
+                                "maxLength": 500,
+                                "x-id-format": "external"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "The title of the parent.",
+                                "maxLength": 500
+                              },
+                              "relPermalink": {
+                                "type": "string",
+                                "description": "The rel permalink of the parent.",
+                                "maxLength": 500
+                              },
+                              "type": {
+                                "type": "string",
+                                "description": "Type of the resource.",
+                                "maxLength": 255
+                              }
+                            }
+                          },
+                          "nextPage": {
+                            "x-go-type": "Parent",
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "title",
+                              "relPermalink",
+                              "type"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                "example": "introduction-to-devops-and-sre",
+                                "maxLength": 500,
+                                "x-id-format": "external"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "The title of the parent.",
+                                "maxLength": 500
+                              },
+                              "relPermalink": {
+                                "type": "string",
+                                "description": "The rel permalink of the parent.",
+                                "maxLength": 500
+                              },
+                              "type": {
+                                "type": "string",
+                                "description": "Type of the resource.",
+                                "maxLength": 255
                               }
                             }
                           }
-                        },
-                        "attemptedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "The attempted at of the quizevaluationresult."
-                        },
-                        "attempts": {
-                          "type": "integer",
-                          "description": "The attempts of the quizevaluationresult.",
-                          "minimum": 0
                         }
+                      },
+                      "attemptedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The attempted at of the quizevaluationresult."
+                      },
+                      "attempts": {
+                        "type": "integer",
+                        "description": "The attempts of the quizevaluationresult.",
+                        "minimum": 0
                       }
                     }
                   }
@@ -7638,7 +7637,8 @@ const AcademySchema: Record<string, unknown> = {
                       "type": "number",
                       "format": "float",
                       "description": "The percentage scored of the quizevaluationresult.",
-                      "minimum": 0
+                      "minimum": 0,
+                      "maximum": 100
                     },
                     "totalMarks": {
                       "type": "integer",
@@ -14691,7 +14691,6 @@ const AcademySchema: Record<string, unknown> = {
           "createdAt",
           "updatedAt",
           "contentId",
-          "certificate",
           "metadata"
         ],
         "properties": {
@@ -14787,6 +14786,7 @@ const AcademySchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true
           },
           "certificate": {
+            "nullable": true,
             "x-go-type": "core.Map",
             "x-go-type-skip-optional-pointer": true,
             "description": "Issued certificate for completing the curricula under registration",
@@ -14945,7 +14945,8 @@ const AcademySchema: Record<string, unknown> = {
                 "type": "number",
                 "format": "float",
                 "description": "The percentage scored of the quizevaluationresult.",
-                "minimum": 0
+                "minimum": 0,
+                "maximum": 100
               },
               "totalMarks": {
                 "type": "integer",
@@ -15372,7 +15373,8 @@ const AcademySchema: Record<string, unknown> = {
               "type": "number",
               "format": "float",
               "description": "The percentage scored of the quizevaluationresult.",
-              "minimum": 0
+              "minimum": 0,
+              "maximum": 100
             },
             "totalMarks": {
               "type": "integer",
@@ -15860,7 +15862,6 @@ const AcademySchema: Record<string, unknown> = {
                 "createdAt",
                 "updatedAt",
                 "contentId",
-                "certificate",
                 "metadata"
               ],
               "properties": {
@@ -15956,6 +15957,7 @@ const AcademySchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 },
                 "certificate": {
+                  "nullable": true,
                   "x-go-type": "core.Map",
                   "x-go-type-skip-optional-pointer": true,
                   "description": "Issued certificate for completing the curricula under registration",
@@ -16197,7 +16199,8 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "number",
                   "format": "float",
                   "description": "The percentage scored of the quizevaluationresult.",
-                  "minimum": 0
+                  "minimum": 0,
+                  "maximum": 100
                 },
                 "totalMarks": {
                   "type": "integer",
@@ -17661,7 +17664,8 @@ const AcademySchema: Record<string, unknown> = {
                 "type": "number",
                 "format": "float",
                 "description": "The percentage scored of the quizevaluationresult.",
-                "minimum": 0
+                "minimum": 0,
+                "maximum": 100
               },
               "totalMarks": {
                 "type": "integer",
@@ -18450,7 +18454,8 @@ const AcademySchema: Record<string, unknown> = {
             "type": "number",
             "format": "float",
             "description": "The percentage scored of the quizevaluationresult.",
-            "minimum": 0
+            "minimum": 0,
+            "maximum": 100
           },
           "totalMarks": {
             "type": "integer",
@@ -19247,7 +19252,8 @@ const AcademySchema: Record<string, unknown> = {
                       "type": "number",
                       "format": "float",
                       "description": "The percentage scored of the quizevaluationresult.",
-                      "minimum": 0
+                      "minimum": 0,
+                      "maximum": 100
                     },
                     "totalMarks": {
                       "type": "integer",

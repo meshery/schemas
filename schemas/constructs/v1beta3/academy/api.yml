@@ -551,9 +551,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TestSubmissions'
+                $ref: '#/components/schemas/TestSubmissions'
         '400':
           description: Invalid request parameters
         '401':
@@ -1219,7 +1217,6 @@ components:
       - createdAt
       - updatedAt
       - contentId
-      - certificate
       - metadata
       properties:
         id:
@@ -1267,6 +1264,7 @@ components:
           x-oapi-codegen-extra-tags:
             db: deleted_at
         certificate:
+          nullable: true
           $ref: '#/components/schemas/Certificate'
           x-go-type: core.Map
           x-go-type-skip-optional-pointer: true
@@ -1908,6 +1906,7 @@ components:
           format: float
           description: The percentage scored of the quizevaluationresult.
           minimum: 0
+          maximum: 100
         totalMarks:
           type: integer
           description: The total marks of the quizevaluationresult.
