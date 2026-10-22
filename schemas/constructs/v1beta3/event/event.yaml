@@ -16,7 +16,11 @@ properties:
       json: owner
   systemId:
     type: string
-    description: System identifier of the event source.
+    description: >
+      System identifier of the event source: a Meshery Server instance ID, the
+      nil UUID for an event the provider emits itself, or the connection ID of
+      the client machine that emitted it (for example a desktop client
+      recording a run). Asserted by the sender, not checked.
     maxLength: 255
     x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:

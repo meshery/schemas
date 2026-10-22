@@ -371,6 +371,50 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/integrations/connections/desktop:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Connections
+      operationId: getDesktopConnectionsOfOrganization
+      summary: List the organization's desktop connections
+      description: >
+        Returns every live `desktop` connection in the session organization,
+        whoever registered it, as a summary: `id`, `name`, `kind`, `owner`,
+        `status` and `lastSeenAt` only. Any live member of the organization
+        may read it, so members can see which computers share its work; a
+        guest session cannot. Servers must never include the connection's
+        credential, metadata (beyond `lastSeenAt`), URL or description here:
+        the full connection stays readable only by its owner through
+        `getConnections`. `status` follows the heartbeat rule of
+        `recordConnectionHeartbeat` (a desktop connection silent for 3 minutes
+        reads `disconnected`). A caller who is not a live member of the
+        session organization receives `404`.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - name: owner
+          in: query
+          required: false
+          description: Only connections registered by this user.
+          schema:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+      responses:
+        "200":
+          description: Desktop connections of the organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionSummaryPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "../../v1beta2/core/api.yml#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/integrations/connections/desktop/{installationId}:
     delete:
       x-internal: ["cloud"]
@@ -1013,6 +1057,87 @@ components:
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             json: "transitionMap,omitempty"
+
+    ConnectionSummary:
+      type: object
+      description: >
+        Member-visible summary of a connection. Carries no credential, URL,
+        description or metadata other than `lastSeenAt`.
+      additionalProperties: false
+      required:
+        - id
+        - name
+        - kind
+        - status
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Connection ID.
+          x-order: 1
+        name:
+          type: string
+          description: Connection name.
+          maxLength: 255
+          x-order: 2
+        kind:
+          type: string
+          description: Connection kind, for example `desktop`.
+          maxLength: 255
+          x-order: 3
+        owner:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: ID of the user who registered the connection.
+          x-oapi-codegen-extra-tags:
+            json: "owner,omitempty"
+          x-order: 4
+        status:
+          type: string
+          description: Connection status as read, for example `connected` or `disconnected`.
+          maxLength: 255
+          x-order: 5
+        lastSeenAt:
+          type: string
+          format: date-time
+          description: Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.
+          nullable: true
+          x-go-type: core.NullTime
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-order: 6
+
+    ConnectionSummaryPage:
+      type: object
+      description: Page of connection summaries.
+      additionalProperties: false
+      required:
+        - connections
+        - totalCount
+        - page
+        - pageSize
+      properties:
+        connections:
+          type: array
+          description: Connection summaries on this page.
+          items:
+            $ref: "#/components/schemas/ConnectionSummary"
+            x-go-type: ConnectionSummary
+          x-order: 1
+        totalCount:
+          type: integer
+          description: Total number of connections on all pages.
+          minimum: 0
+          x-order: 2
+        page:
+          type: integer
+          description: Current page number.
+          minimum: 0
+          x-order: 3
+        pageSize:
+          type: integer
+          description: Number of elements per page.
+          minimum: 1
+          x-order: 4
 
     ConnectionPage:
       description: Represents a page of connections with meta information about connections count

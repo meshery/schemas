@@ -88,3 +88,15 @@ properties:
       db: deleted_at
       json: "deletedAt,omitempty"
     x-order: 9
+  createdBy:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      ID of the user whose session created the content item. Derived from the
+      authenticated session, never client-settable, and never changed by an
+      update. Omitted on content items created before it was recorded, and
+      when that user was later purged.
+    x-go-name: CreatedBy
+    x-oapi-codegen-extra-tags:
+      db: created_by
+      json: "createdBy,omitempty"
+    x-order: 10
