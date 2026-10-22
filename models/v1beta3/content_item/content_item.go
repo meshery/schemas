@@ -34,6 +34,9 @@ type ContentItem struct {
 
 	// DeletedAt Timestamp when the content item was soft-deleted.
 	DeletedAt *core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
+
+	// CreatedBy A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	CreatedBy *core.Uuid `db:"created_by" json:"createdBy,omitempty" yaml:"createdBy,omitempty"`
 }
 
 // ContentItemPage Paginated collection of content items.

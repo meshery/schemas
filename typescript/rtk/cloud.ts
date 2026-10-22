@@ -921,8 +921,12 @@ const injectedRtkApi = api
             order: queryArg?.order,
             resourceType: queryArg?.resourceType,
             resourceId: queryArg?.resourceId,
-            claimant: queryArg?.claimant,
+            claimantConnectionId: queryArg?.claimantConnectionId,
+            claimantUserId: queryArg?.claimantUserId,
             status: queryArg?.status,
+            outcome: queryArg?.outcome,
+            claimedSince: queryArg?.claimedSince,
+            claimedUntil: queryArg?.claimedUntil,
           },
         }),
         providesTags: ["Claim_claims"],
@@ -994,6 +998,20 @@ const injectedRtkApi = api
           method: "DELETE",
         }),
         invalidatesTags: ["Connection_API_Connections"],
+      }),
+      getDesktopConnectionsOfOrganization: build.query<
+        GetDesktopConnectionsOfOrganizationApiResponse,
+        GetDesktopConnectionsOfOrganizationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/desktop`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            owner: queryArg?.owner,
+          },
+        }),
+        providesTags: ["Connection_API_Connections"],
       }),
       deregisterDesktopConnection: build.mutation<
         DeregisterDesktopConnectionApiResponse,
@@ -1918,44 +1936,23 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/schedules`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Schedule_schedules"],
       }),
-      claimNextSchedule: build.mutation<ClaimNextScheduleApiResponse, ClaimNextScheduleApiArg>({
-        query: (queryArg) => ({ url: `/api/schedules/claim`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Schedule_schedules"],
-      }),
       getScheduleById: build.query<GetScheduleByIdApiResponse, GetScheduleByIdApiArg>({
         query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}` }),
         providesTags: ["Schedule_schedules"],
       }),
       updateSchedule: build.mutation<UpdateScheduleApiResponse, UpdateScheduleApiArg>({
-        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/schedules/${queryArg.scheduleId}`,
+          method: "PUT",
+          body: queryArg.body,
+          headers: {
+            "If-Match": queryArg["If-Match"],
+          },
+        }),
         invalidatesTags: ["Schedule_schedules"],
       }),
       deleteScheduleById: build.mutation<DeleteScheduleByIdApiResponse, DeleteScheduleByIdApiArg>({
         query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}`, method: "DELETE" }),
-        invalidatesTags: ["Schedule_schedules"],
-      }),
-      claimSchedule: build.mutation<ClaimScheduleApiResponse, ClaimScheduleApiArg>({
-        query: (queryArg) => ({
-          url: `/api/schedules/${queryArg.scheduleId}/claim`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Schedule_schedules"],
-      }),
-      renewScheduleClaim: build.mutation<RenewScheduleClaimApiResponse, RenewScheduleClaimApiArg>({
-        query: (queryArg) => ({
-          url: `/api/schedules/${queryArg.scheduleId}/claim/renew`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Schedule_schedules"],
-      }),
-      releaseScheduleClaim: build.mutation<ReleaseScheduleClaimApiResponse, ReleaseScheduleClaimApiArg>({
-        query: (queryArg) => ({
-          url: `/api/schedules/${queryArg.scheduleId}/claim/release`,
-          method: "POST",
-          body: queryArg.body,
-        }),
         invalidatesTags: ["Schedule_schedules"],
       }),
       getSchedulesOfWorkspace: build.query<GetSchedulesOfWorkspaceApiResponse, GetSchedulesOfWorkspaceApiArg>({
@@ -9116,20 +9113,34 @@ export type ListClaimsApiResponse = /** status 200 Claims page */ {
     id: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     organizationId: string;
-    /** Type of the claimed resource, for example `schedule`. */
+    /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
     resourceType: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     resourceId: string;
-    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-    claimant: string;
-    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantConnectionId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantUserId?: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+     */
     status: "active" | "released" | "expired";
     /** Time the claim was taken. */
     claimedAt: string;
     /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
     expiresAt: string;
-    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    /** Time of the last renewal. Null until the claim is first renewed. */
+    renewedAt?: string | null;
+    /** Time the claim was released. Null while the claim is active or after it expired. */
     releasedAt?: string | null;
+    /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+     */
+    outcome?: "completed" | "failed" | "cancelled";
+    /** Error reported with a `failed` outcome. Omitted otherwise. */
+    outcomeError?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    outcomeEventId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    releasedBy?: string;
     /** Timestamp of claim creation. */
     createdAt: string;
     /** Timestamp of last claim modification. */
@@ -9147,44 +9158,105 @@ export type ListClaimsApiArg = {
   resourceType?: string;
   /** Filter by claimed resource ID. */
   resourceId?: string;
-  /** Filter by holder identity. */
-  claimant?: string;
-  /** Filter by claim status. */
+  /** Filter by the connection that holds or held the claim. */
+  claimantConnectionId?: string;
+  /** Filter by the user whose session took the claim. */
+  claimantUserId?: string;
+  /** Filter by claim status, as read (a claim past `expiresAt` is `expired`). */
   status?: "active" | "released" | "expired";
+  /** Filter by the outcome reported on release. */
+  outcome?: "completed" | "failed" | "cancelled";
+  /** Only claims taken at or after this time. */
+  claimedSince?: string;
+  /** Only claims taken before this time. */
+  claimedUntil?: string;
 };
-export type CreateClaimApiResponse = /** status 201 Claim taken */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** Type of the claimed resource, for example `schedule`. */
-  resourceType: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  resourceId: string;
-  /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-  claimant: string;
-  /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
-  status: "active" | "released" | "expired";
-  /** Time the claim was taken. */
-  claimedAt: string;
-  /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
-  expiresAt: string;
-  /** Time the holder released the claim. Null while the claim is active or after it expired. */
-  releasedAt?: string | null;
-  /** Timestamp of claim creation. */
-  createdAt: string;
-  /** Timestamp of last claim modification. */
-  updatedAt: string;
-};
+export type CreateClaimApiResponse = /** status 200 Replay - the same connection already holds the active claim */
+  | {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
+      /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+      resourceType: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      resourceId: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantConnectionId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantUserId?: string;
+      /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+       */
+      status: "active" | "released" | "expired";
+      /** Time the claim was taken. */
+      claimedAt: string;
+      /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+      expiresAt: string;
+      /** Time of the last renewal. Null until the claim is first renewed. */
+      renewedAt?: string | null;
+      /** Time the claim was released. Null while the claim is active or after it expired. */
+      releasedAt?: string | null;
+      /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+       */
+      outcome?: "completed" | "failed" | "cancelled";
+      /** Error reported with a `failed` outcome. Omitted otherwise. */
+      outcomeError?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      outcomeEventId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      releasedBy?: string;
+      /** Timestamp of claim creation. */
+      createdAt: string;
+      /** Timestamp of last claim modification. */
+      updatedAt: string;
+    }
+  | /** status 201 Claim taken */ {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
+      /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+      resourceType: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      resourceId: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantConnectionId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantUserId?: string;
+      /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+       */
+      status: "active" | "released" | "expired";
+      /** Time the claim was taken. */
+      claimedAt: string;
+      /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+      expiresAt: string;
+      /** Time of the last renewal. Null until the claim is first renewed. */
+      renewedAt?: string | null;
+      /** Time the claim was released. Null while the claim is active or after it expired. */
+      releasedAt?: string | null;
+      /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+       */
+      outcome?: "completed" | "failed" | "cancelled";
+      /** Error reported with a `failed` outcome. Omitted otherwise. */
+      outcomeError?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      outcomeEventId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      releasedBy?: string;
+      /** Timestamp of claim creation. */
+      createdAt: string;
+      /** Timestamp of last claim modification. */
+      updatedAt: string;
+    };
 export type CreateClaimApiArg = {
   body: {
-    /** Type of the resource to claim, for example `schedule`. */
+    /** Type of the resource to claim, for example `content_item`. */
     resourceType: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     resourceId: string;
-    /** Identity of the worker taking the claim. */
-    claimant: string;
-    /** Requested claim duration in minutes; the server applies its default when omitted and may cap it. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    connectionId: string;
+    /** Requested claim duration in minutes; the server applies its default (30) when omitted and may cap it. */
     durationMinutes?: number;
   };
 };
@@ -9193,20 +9265,34 @@ export type GetClaimApiResponse = /** status 200 Claim response */ {
   id: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   organizationId: string;
-  /** Type of the claimed resource, for example `schedule`. */
+  /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
   resourceType: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   resourceId: string;
-  /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-  claimant: string;
-  /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  claimantConnectionId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  claimantUserId?: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+   */
   status: "active" | "released" | "expired";
   /** Time the claim was taken. */
   claimedAt: string;
   /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
   expiresAt: string;
-  /** Time the holder released the claim. Null while the claim is active or after it expired. */
+  /** Time of the last renewal. Null until the claim is first renewed. */
+  renewedAt?: string | null;
+  /** Time the claim was released. Null while the claim is active or after it expired. */
   releasedAt?: string | null;
+  /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+   */
+  outcome?: "completed" | "failed" | "cancelled";
+  /** Error reported with a `failed` outcome. Omitted otherwise. */
+  outcomeError?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  outcomeEventId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  releasedBy?: string;
   /** Timestamp of claim creation. */
   createdAt: string;
   /** Timestamp of last claim modification. */
@@ -9221,20 +9307,34 @@ export type RenewClaimApiResponse = /** status 200 Claim renewed */ {
   id: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   organizationId: string;
-  /** Type of the claimed resource, for example `schedule`. */
+  /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
   resourceType: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   resourceId: string;
-  /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-  claimant: string;
-  /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  claimantConnectionId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  claimantUserId?: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+   */
   status: "active" | "released" | "expired";
   /** Time the claim was taken. */
   claimedAt: string;
   /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
   expiresAt: string;
-  /** Time the holder released the claim. Null while the claim is active or after it expired. */
+  /** Time of the last renewal. Null until the claim is first renewed. */
+  renewedAt?: string | null;
+  /** Time the claim was released. Null while the claim is active or after it expired. */
   releasedAt?: string | null;
+  /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+   */
+  outcome?: "completed" | "failed" | "cancelled";
+  /** Error reported with a `failed` outcome. Omitted otherwise. */
+  outcomeError?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  outcomeEventId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  releasedBy?: string;
   /** Timestamp of claim creation. */
   createdAt: string;
   /** Timestamp of last claim modification. */
@@ -9244,9 +9344,9 @@ export type RenewClaimApiArg = {
   /** Claim ID */
   claimId: string;
   body: {
-    /** Identity of the holder renewing the claim. */
-    claimant: string;
-    /** Requested extension in minutes from now; the server applies its default when omitted and may cap it. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    connectionId: string;
+    /** Requested extension in minutes from now; the server applies its default (30) when omitted and may cap it. */
     durationMinutes?: number;
   };
 };
@@ -9255,20 +9355,34 @@ export type ReleaseClaimApiResponse = /** status 200 Claim released */ {
   id: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   organizationId: string;
-  /** Type of the claimed resource, for example `schedule`. */
+  /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
   resourceType: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   resourceId: string;
-  /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-  claimant: string;
-  /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  claimantConnectionId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  claimantUserId?: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+   */
   status: "active" | "released" | "expired";
   /** Time the claim was taken. */
   claimedAt: string;
   /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
   expiresAt: string;
-  /** Time the holder released the claim. Null while the claim is active or after it expired. */
+  /** Time of the last renewal. Null until the claim is first renewed. */
+  renewedAt?: string | null;
+  /** Time the claim was released. Null while the claim is active or after it expired. */
   releasedAt?: string | null;
+  /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+   */
+  outcome?: "completed" | "failed" | "cancelled";
+  /** Error reported with a `failed` outcome. Omitted otherwise. */
+  outcomeError?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  outcomeEventId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  releasedBy?: string;
   /** Timestamp of claim creation. */
   createdAt: string;
   /** Timestamp of last claim modification. */
@@ -9278,8 +9392,12 @@ export type ReleaseClaimApiArg = {
   /** Claim ID */
   claimId: string;
   body: {
-    /** Identity of the holder releasing the claim. */
-    claimant: string;
+    /** What happened to the work the claim held. */
+    outcome: "completed" | "failed" | "cancelled";
+    /** Error behind a `failed` outcome. Refused with any other outcome. */
+    outcomeError?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    outcomeEventId?: string;
   };
 };
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
@@ -11102,6 +11220,37 @@ export type DeleteMesheryConnectionApiArg = {
   /** Meshery server ID */
   mesheryServerId: string;
 };
+export type GetDesktopConnectionsOfOrganizationApiResponse = /** status 200 Desktop connections of the organization */ {
+  /** Connection summaries on this page. */
+  connections: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** Connection name. */
+    name: string;
+    /** Connection kind, for example `desktop`. */
+    kind: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    owner?: string;
+    /** Connection status as read, for example `connected` or `disconnected`. */
+    status: string;
+    /** Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one. */
+    lastSeenAt?: string | null;
+  }[];
+  /** Total number of connections on all pages. */
+  totalCount: number;
+  /** Current page number. */
+  page: number;
+  /** Number of elements per page. */
+  pageSize: number;
+};
+export type GetDesktopConnectionsOfOrganizationApiArg = {
+  /** Page number */
+  page?: number;
+  /** Number of items per page */
+  pageSize?: number;
+  /** Only connections registered by this user. */
+  owner?: string;
+};
 export type DeregisterDesktopConnectionApiResponse = unknown;
 export type DeregisterDesktopConnectionApiArg = {
   /** Installation identifier from `metadata.installationId`. */
@@ -11981,6 +12130,9 @@ export type ListContentItemsApiResponse = /** status 200 Content item page */ {
     updatedAt: string;
     /** Timestamp when the content item was soft-deleted. */
     deletedAt?: string | null;
+    /** ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+     */
+    createdBy?: string;
   }[];
 };
 export type ListContentItemsApiArg = {
@@ -12018,6 +12170,9 @@ export type InsertContentItemApiResponse = /** status 201 Content item created *
   updatedAt: string;
   /** Timestamp when the content item was soft-deleted. */
   deletedAt?: string | null;
+  /** ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+   */
+  createdBy?: string;
 };
 export type InsertContentItemApiArg = {
   body: {
@@ -12060,6 +12215,9 @@ export type GetContentItemApiResponse = /** status 200 Content item response */ 
   updatedAt: string;
   /** Timestamp when the content item was soft-deleted. */
   deletedAt?: string | null;
+  /** ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+   */
+  createdBy?: string;
 };
 export type GetContentItemApiArg = {
   /** Content item ID */
@@ -12084,6 +12242,9 @@ export type UpdateContentItemApiResponse = /** status 200 Content item updated *
   updatedAt: string;
   /** Timestamp when the content item was soft-deleted. */
   deletedAt?: string | null;
+  /** ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+   */
+  createdBy?: string;
 };
 export type UpdateContentItemApiArg = {
   /** Content item ID */
@@ -14569,7 +14730,8 @@ export type ImportGithubRepositoryApiResponse =
       /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
        */
       status: string;
-      /** ID of the system instance that emitted the event. */
+      /** ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+       */
       systemId: string;
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       owner?: string;
@@ -15984,7 +16146,8 @@ export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */
   data?: {
     /** UUID of the user associated with the event. */
     owner: string;
-    /** System identifier of the event source. */
+    /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
+     */
     systemId?: string;
     /** The category of the event. */
     category: string;
@@ -16054,7 +16217,8 @@ export type CreateEventApiResponse =
         /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
          */
         status: string;
-        /** ID of the system instance that emitted the event. */
+        /** ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+         */
         systemId: string;
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         owner?: string;
@@ -16089,7 +16253,8 @@ export type CreateEventApiResponse =
         /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
          */
         status: string;
-        /** ID of the system instance that emitted the event. */
+        /** ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+         */
         systemId: string;
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         owner?: string;
@@ -16127,7 +16292,8 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
   data?: {
     /** UUID of the user associated with the event. */
     owner: string;
-    /** System identifier of the event source. */
+    /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
+     */
     systemId?: string;
     /** The category of the event. */
     category: string;
@@ -18664,27 +18830,54 @@ export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
     organizationId: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     workspaceId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    createdBy?: string;
     /** Human-readable name for the schedule. */
     name: string;
     /** The action the worker runs when it holds the schedule's claim, for example a command name. */
     action: string;
-    /** Action parameters, stored as a JSON blob. */
+    /** Type of the resource the schedule acts on, named the way a claim's
+        `resourceType` is (lowercase snake_case construct name, for example
+        `content_item` or `profile`). A server verifies the target types it
+        serves and refuses others with 400. Set together with `targetId` or
+        not at all.
+         */
+    targetType?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    targetId?: string;
+    /** Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here. */
     params?: object;
     /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
     enabled: boolean;
     /** Time the schedule first becomes due. */
     runAt?: string | null;
-    /** Next time a recurring or retrying schedule becomes due. */
+    /** Next time the schedule becomes due. Null when it is never due again. */
     nextRunAt?: string | null;
-    /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+    /** How the schedule repeats once it has run. Empty, `once` and `none`
+        mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+        `monthly` repeat at the same wall-clock time one calendar day, week
+        or month later in the schedule's `timezone`, so a daily schedule
+        keeps its local time across daylight-saving changes. `every:<n>`
+        repeats every `n` minutes (1 to 999999). Occurrences are counted
+        from `runAt` (else from the current `nextRunAt`); the next due time
+        is the first occurrence after the run is released, so missed runs
+        are not replayed.
+         */
     recurrence?: string;
-    /** Lifecycle status. `pending`: created, not yet due-scheduled.
-        `scheduled`: waiting for its due time. `assigned`: designated for a
-        particular worker but not yet claimed. `claimed`: a worker holds the
-        claim and has not started. `running`: the claim holder is executing
-        it. `retrying`: the last attempt failed and another is due.
-        `completed`, `failed` and `cancelled` are terminal for a run-once
-        schedule; a recurring schedule returns to `scheduled`.
+    /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+        `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+        time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+        refuses a name it does not know with 400.
+         */
+    timezone: string;
+    /** Lifecycle status of a schedule. `pending`: created, not yet
+        due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+        designated for a particular worker but not yet claimed. `claimed`: a
+        worker holds the claim and has not started. `running`: the claim
+        holder is executing it. `retrying`: the last attempt failed and
+        another is due. `completed`, `failed` and `cancelled` are terminal
+        for a run-once schedule; a recurring schedule returns to `scheduled`
+        when its claim is released with a `completed` outcome.
          */
     status:
       | "pending"
@@ -18702,30 +18895,44 @@ export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
     maxRetries: number;
     /** Minutes to wait before a retry becomes due. */
     retryDelayMinutes?: number;
-    /** Time of the most recent attempt. */
+    /** Time the most recent attempt ended (the release time of its claim). Server-managed. */
     lastRunAt?: string | null;
-    /** Error reported by the most recent attempt. */
+    /** Error reported by the most recent attempt; empty after a successful one. Server-managed. */
     lastError?: string;
-    /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+    /** The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed. */
     claim?: {
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       id: string;
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       organizationId: string;
-      /** Type of the claimed resource, for example `schedule`. */
+      /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
       resourceType: string;
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       resourceId: string;
-      /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-      claimant: string;
-      /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantConnectionId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantUserId?: string;
+      /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+       */
       status: "active" | "released" | "expired";
       /** Time the claim was taken. */
       claimedAt: string;
       /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
       expiresAt: string;
-      /** Time the holder released the claim. Null while the claim is active or after it expired. */
+      /** Time of the last renewal. Null until the claim is first renewed. */
+      renewedAt?: string | null;
+      /** Time the claim was released. Null while the claim is active or after it expired. */
       releasedAt?: string | null;
+      /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+       */
+      outcome?: "completed" | "failed" | "cancelled";
+      /** Error reported with a `failed` outcome. Omitted otherwise. */
+      outcomeError?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      outcomeEventId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      releasedBy?: string;
       /** Timestamp of claim creation. */
       createdAt: string;
       /** Timestamp of last claim modification. */
@@ -18733,7 +18940,7 @@ export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
     };
     /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
     pausedAt?: string | null;
-    /** Identity that paused the schedule. Server-managed. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     pausedBy?: string;
     /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
     pauseReason?: string;
@@ -18775,27 +18982,54 @@ export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
   organizationId: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   workspaceId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string;
   /** Human-readable name for the schedule. */
   name: string;
   /** The action the worker runs when it holds the schedule's claim, for example a command name. */
   action: string;
-  /** Action parameters, stored as a JSON blob. */
+  /** Type of the resource the schedule acts on, named the way a claim's
+    `resourceType` is (lowercase snake_case construct name, for example
+    `content_item` or `profile`). A server verifies the target types it
+    serves and refuses others with 400. Set together with `targetId` or
+    not at all.
+     */
+  targetType?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  targetId?: string;
+  /** Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here. */
   params?: object;
   /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
   enabled: boolean;
   /** Time the schedule first becomes due. */
   runAt?: string | null;
-  /** Next time a recurring or retrying schedule becomes due. */
+  /** Next time the schedule becomes due. Null when it is never due again. */
   nextRunAt?: string | null;
-  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  /** How the schedule repeats once it has run. Empty, `once` and `none`
+    mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+    `monthly` repeat at the same wall-clock time one calendar day, week
+    or month later in the schedule's `timezone`, so a daily schedule
+    keeps its local time across daylight-saving changes. `every:<n>`
+    repeats every `n` minutes (1 to 999999). Occurrences are counted
+    from `runAt` (else from the current `nextRunAt`); the next due time
+    is the first occurrence after the run is released, so missed runs
+    are not replayed.
+     */
   recurrence?: string;
-  /** Lifecycle status. `pending`: created, not yet due-scheduled.
-    `scheduled`: waiting for its due time. `assigned`: designated for a
-    particular worker but not yet claimed. `claimed`: a worker holds the
-    claim and has not started. `running`: the claim holder is executing
-    it. `retrying`: the last attempt failed and another is due.
-    `completed`, `failed` and `cancelled` are terminal for a run-once
-    schedule; a recurring schedule returns to `scheduled`.
+  /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+    `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+    time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+    refuses a name it does not know with 400.
+     */
+  timezone: string;
+  /** Lifecycle status of a schedule. `pending`: created, not yet
+    due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+    designated for a particular worker but not yet claimed. `claimed`: a
+    worker holds the claim and has not started. `running`: the claim
+    holder is executing it. `retrying`: the last attempt failed and
+    another is due. `completed`, `failed` and `cancelled` are terminal
+    for a run-once schedule; a recurring schedule returns to `scheduled`
+    when its claim is released with a `completed` outcome.
      */
   status:
     | "pending"
@@ -18813,30 +19047,44 @@ export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
   maxRetries: number;
   /** Minutes to wait before a retry becomes due. */
   retryDelayMinutes?: number;
-  /** Time of the most recent attempt. */
+  /** Time the most recent attempt ended (the release time of its claim). Server-managed. */
   lastRunAt?: string | null;
-  /** Error reported by the most recent attempt. */
+  /** Error reported by the most recent attempt; empty after a successful one. Server-managed. */
   lastError?: string;
-  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  /** The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed. */
   claim?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     organizationId: string;
-    /** Type of the claimed resource, for example `schedule`. */
+    /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
     resourceType: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     resourceId: string;
-    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-    claimant: string;
-    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantConnectionId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantUserId?: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+     */
     status: "active" | "released" | "expired";
     /** Time the claim was taken. */
     claimedAt: string;
     /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
     expiresAt: string;
-    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    /** Time of the last renewal. Null until the claim is first renewed. */
+    renewedAt?: string | null;
+    /** Time the claim was released. Null while the claim is active or after it expired. */
     releasedAt?: string | null;
+    /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+     */
+    outcome?: "completed" | "failed" | "cancelled";
+    /** Error reported with a `failed` outcome. Omitted otherwise. */
+    outcomeError?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    outcomeEventId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    releasedBy?: string;
     /** Timestamp of claim creation. */
     createdAt: string;
     /** Timestamp of last claim modification. */
@@ -18844,7 +19092,7 @@ export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
   };
   /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
   pausedAt?: string | null;
-  /** Identity that paused the schedule. Server-managed. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   pausedBy?: string;
   /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
@@ -18865,126 +19113,72 @@ export type CreateScheduleApiArg = {
     name: string;
     /** The action the worker runs, for example a command name. */
     action: string;
+    /** Type of the resource the schedule acts on, named the way a claim's
+        `resourceType` is (lowercase snake_case construct name, for example
+        `content_item` or `profile`). A server verifies the target types it
+        serves and refuses others with 400. Set together with `targetId` or
+        not at all.
+         */
+    targetType?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    targetId?: string;
     /** Action parameters, stored as a JSON blob. */
     params?: object;
-    /** Whether the schedule is eligible to run. Defaults to true. */
+    /** Whether the schedule is eligible to run. */
     enabled?: boolean;
     /** Time the schedule first becomes due. */
     runAt?: string | null;
-    /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+    /** Next time the schedule becomes due. Omitted on create, it defaults to `runAt`; omitted on update, it is kept. Send null for never due again. */
+    nextRunAt?: string | null;
+    /** How the schedule repeats once it has run. Empty, `once` and `none`
+        mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+        `monthly` repeat at the same wall-clock time one calendar day, week
+        or month later in the schedule's `timezone`, so a daily schedule
+        keeps its local time across daylight-saving changes. `every:<n>`
+        repeats every `n` minutes (1 to 999999). Occurrences are counted
+        from `runAt` (else from the current `nextRunAt`); the next due time
+        is the first occurrence after the run is released, so missed runs
+        are not replayed.
+         */
     recurrence?: string;
-    /** Client-settable status. Omit to let the server choose `scheduled` for a due-timed schedule and `pending` otherwise. */
-    status?: "pending" | "scheduled" | "cancelled";
+    /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+        `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+        time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+        refuses a name it does not know with 400.
+         */
+    timezone?: string;
+    /** Lifecycle status of a schedule. `pending`: created, not yet
+        due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+        designated for a particular worker but not yet claimed. `claimed`: a
+        worker holds the claim and has not started. `running`: the claim
+        holder is executing it. `retrying`: the last attempt failed and
+        another is due. `completed`, `failed` and `cancelled` are terminal
+        for a run-once schedule; a recurring schedule returns to `scheduled`
+        when its claim is released with a `completed` outcome.
+         */
+    status?:
+      | "pending"
+      | "scheduled"
+      | "assigned"
+      | "claimed"
+      | "running"
+      | "retrying"
+      | "completed"
+      | "failed"
+      | "cancelled";
+    /** Retries used so far for the current run, for example 0 to re-arm a schedule. Omitted on update, it is kept. */
+    retryCount?: number;
     /** Maximum retries before the run is marked failed. */
     maxRetries?: number;
     /** Minutes to wait before a retry becomes due. */
     retryDelayMinutes?: number;
-    /** `true` pauses the schedule so it is never claimed (unless a claim
-        carries `ignorePause`); `false` resumes it. Omit to leave the pause
-        unchanged. The server records `pausedAt` and `pausedBy`.
+    /** `true` pauses the schedule so it is never claimed; `false`
+        resumes it. Omit to leave the pause unchanged. The server records
+        `pausedAt` and `pausedBy`.
          */
     paused?: boolean;
     /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
     pauseReason?: string;
-  };
-};
-export type ClaimNextScheduleApiResponse = /** status 200 The claimed schedule */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  workspaceId?: string;
-  /** Human-readable name for the schedule. */
-  name: string;
-  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
-  action: string;
-  /** Action parameters, stored as a JSON blob. */
-  params?: object;
-  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
-  enabled: boolean;
-  /** Time the schedule first becomes due. */
-  runAt?: string | null;
-  /** Next time a recurring or retrying schedule becomes due. */
-  nextRunAt?: string | null;
-  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
-  recurrence?: string;
-  /** Lifecycle status. `pending`: created, not yet due-scheduled.
-    `scheduled`: waiting for its due time. `assigned`: designated for a
-    particular worker but not yet claimed. `claimed`: a worker holds the
-    claim and has not started. `running`: the claim holder is executing
-    it. `retrying`: the last attempt failed and another is due.
-    `completed`, `failed` and `cancelled` are terminal for a run-once
-    schedule; a recurring schedule returns to `scheduled`.
-     */
-  status:
-    | "pending"
-    | "scheduled"
-    | "assigned"
-    | "claimed"
-    | "running"
-    | "retrying"
-    | "completed"
-    | "failed"
-    | "cancelled";
-  /** Attempts already retried for the current run. */
-  retryCount: number;
-  /** Maximum retries before the run is marked failed. */
-  maxRetries: number;
-  /** Minutes to wait before a retry becomes due. */
-  retryDelayMinutes?: number;
-  /** Time of the most recent attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent attempt. */
-  lastError?: string;
-  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
-  claim?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    organizationId: string;
-    /** Type of the claimed resource, for example `schedule`. */
-    resourceType: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    resourceId: string;
-    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-    claimant: string;
-    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
-    status: "active" | "released" | "expired";
-    /** Time the claim was taken. */
-    claimedAt: string;
-    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
-    expiresAt: string;
-    /** Time the holder released the claim. Null while the claim is active or after it expired. */
-    releasedAt?: string | null;
-    /** Timestamp of claim creation. */
-    createdAt: string;
-    /** Timestamp of last claim modification. */
-    updatedAt: string;
-  };
-  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
-  pausedAt?: string | null;
-  /** Identity that paused the schedule. Server-managed. */
-  pausedBy?: string;
-  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
-  pauseReason?: string;
-  /** Timestamp of schedule creation. */
-  createdAt: string;
-  /** Timestamp of last schedule modification. */
-  updatedAt: string;
-  /** Timestamp when the schedule was soft-deleted. Null while live. */
-  deletedAt?: string | null;
-};
-export type ClaimNextScheduleApiArg = {
-  body: {
-    /** Identity of the worker taking the claim. */
-    claimant: string;
-    /** Requested claim duration in minutes; the server applies its default when omitted and may cap it. */
-    durationMinutes?: number;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    workspaceId?: string;
-    /** Operator override that claims through the organization-wide and per-schedule pauses. */
-    ignorePause?: boolean;
   };
 };
 export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
@@ -18994,27 +19188,54 @@ export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
   organizationId: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   workspaceId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string;
   /** Human-readable name for the schedule. */
   name: string;
   /** The action the worker runs when it holds the schedule's claim, for example a command name. */
   action: string;
-  /** Action parameters, stored as a JSON blob. */
+  /** Type of the resource the schedule acts on, named the way a claim's
+    `resourceType` is (lowercase snake_case construct name, for example
+    `content_item` or `profile`). A server verifies the target types it
+    serves and refuses others with 400. Set together with `targetId` or
+    not at all.
+     */
+  targetType?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  targetId?: string;
+  /** Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here. */
   params?: object;
   /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
   enabled: boolean;
   /** Time the schedule first becomes due. */
   runAt?: string | null;
-  /** Next time a recurring or retrying schedule becomes due. */
+  /** Next time the schedule becomes due. Null when it is never due again. */
   nextRunAt?: string | null;
-  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  /** How the schedule repeats once it has run. Empty, `once` and `none`
+    mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+    `monthly` repeat at the same wall-clock time one calendar day, week
+    or month later in the schedule's `timezone`, so a daily schedule
+    keeps its local time across daylight-saving changes. `every:<n>`
+    repeats every `n` minutes (1 to 999999). Occurrences are counted
+    from `runAt` (else from the current `nextRunAt`); the next due time
+    is the first occurrence after the run is released, so missed runs
+    are not replayed.
+     */
   recurrence?: string;
-  /** Lifecycle status. `pending`: created, not yet due-scheduled.
-    `scheduled`: waiting for its due time. `assigned`: designated for a
-    particular worker but not yet claimed. `claimed`: a worker holds the
-    claim and has not started. `running`: the claim holder is executing
-    it. `retrying`: the last attempt failed and another is due.
-    `completed`, `failed` and `cancelled` are terminal for a run-once
-    schedule; a recurring schedule returns to `scheduled`.
+  /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+    `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+    time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+    refuses a name it does not know with 400.
+     */
+  timezone: string;
+  /** Lifecycle status of a schedule. `pending`: created, not yet
+    due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+    designated for a particular worker but not yet claimed. `claimed`: a
+    worker holds the claim and has not started. `running`: the claim
+    holder is executing it. `retrying`: the last attempt failed and
+    another is due. `completed`, `failed` and `cancelled` are terminal
+    for a run-once schedule; a recurring schedule returns to `scheduled`
+    when its claim is released with a `completed` outcome.
      */
   status:
     | "pending"
@@ -19032,30 +19253,44 @@ export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
   maxRetries: number;
   /** Minutes to wait before a retry becomes due. */
   retryDelayMinutes?: number;
-  /** Time of the most recent attempt. */
+  /** Time the most recent attempt ended (the release time of its claim). Server-managed. */
   lastRunAt?: string | null;
-  /** Error reported by the most recent attempt. */
+  /** Error reported by the most recent attempt; empty after a successful one. Server-managed. */
   lastError?: string;
-  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  /** The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed. */
   claim?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     organizationId: string;
-    /** Type of the claimed resource, for example `schedule`. */
+    /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
     resourceType: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     resourceId: string;
-    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-    claimant: string;
-    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantConnectionId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantUserId?: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+     */
     status: "active" | "released" | "expired";
     /** Time the claim was taken. */
     claimedAt: string;
     /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
     expiresAt: string;
-    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    /** Time of the last renewal. Null until the claim is first renewed. */
+    renewedAt?: string | null;
+    /** Time the claim was released. Null while the claim is active or after it expired. */
     releasedAt?: string | null;
+    /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+     */
+    outcome?: "completed" | "failed" | "cancelled";
+    /** Error reported with a `failed` outcome. Omitted otherwise. */
+    outcomeError?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    outcomeEventId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    releasedBy?: string;
     /** Timestamp of claim creation. */
     createdAt: string;
     /** Timestamp of last claim modification. */
@@ -19063,7 +19298,7 @@ export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
   };
   /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
   pausedAt?: string | null;
-  /** Identity that paused the schedule. Server-managed. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   pausedBy?: string;
   /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
@@ -19085,27 +19320,54 @@ export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
   organizationId: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   workspaceId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string;
   /** Human-readable name for the schedule. */
   name: string;
   /** The action the worker runs when it holds the schedule's claim, for example a command name. */
   action: string;
-  /** Action parameters, stored as a JSON blob. */
+  /** Type of the resource the schedule acts on, named the way a claim's
+    `resourceType` is (lowercase snake_case construct name, for example
+    `content_item` or `profile`). A server verifies the target types it
+    serves and refuses others with 400. Set together with `targetId` or
+    not at all.
+     */
+  targetType?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  targetId?: string;
+  /** Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here. */
   params?: object;
   /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
   enabled: boolean;
   /** Time the schedule first becomes due. */
   runAt?: string | null;
-  /** Next time a recurring or retrying schedule becomes due. */
+  /** Next time the schedule becomes due. Null when it is never due again. */
   nextRunAt?: string | null;
-  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  /** How the schedule repeats once it has run. Empty, `once` and `none`
+    mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+    `monthly` repeat at the same wall-clock time one calendar day, week
+    or month later in the schedule's `timezone`, so a daily schedule
+    keeps its local time across daylight-saving changes. `every:<n>`
+    repeats every `n` minutes (1 to 999999). Occurrences are counted
+    from `runAt` (else from the current `nextRunAt`); the next due time
+    is the first occurrence after the run is released, so missed runs
+    are not replayed.
+     */
   recurrence?: string;
-  /** Lifecycle status. `pending`: created, not yet due-scheduled.
-    `scheduled`: waiting for its due time. `assigned`: designated for a
-    particular worker but not yet claimed. `claimed`: a worker holds the
-    claim and has not started. `running`: the claim holder is executing
-    it. `retrying`: the last attempt failed and another is due.
-    `completed`, `failed` and `cancelled` are terminal for a run-once
-    schedule; a recurring schedule returns to `scheduled`.
+  /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+    `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+    time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+    refuses a name it does not know with 400.
+     */
+  timezone: string;
+  /** Lifecycle status of a schedule. `pending`: created, not yet
+    due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+    designated for a particular worker but not yet claimed. `claimed`: a
+    worker holds the claim and has not started. `running`: the claim
+    holder is executing it. `retrying`: the last attempt failed and
+    another is due. `completed`, `failed` and `cancelled` are terminal
+    for a run-once schedule; a recurring schedule returns to `scheduled`
+    when its claim is released with a `completed` outcome.
      */
   status:
     | "pending"
@@ -19123,30 +19385,44 @@ export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
   maxRetries: number;
   /** Minutes to wait before a retry becomes due. */
   retryDelayMinutes?: number;
-  /** Time of the most recent attempt. */
+  /** Time the most recent attempt ended (the release time of its claim). Server-managed. */
   lastRunAt?: string | null;
-  /** Error reported by the most recent attempt. */
+  /** Error reported by the most recent attempt; empty after a successful one. Server-managed. */
   lastError?: string;
-  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  /** The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed. */
   claim?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     organizationId: string;
-    /** Type of the claimed resource, for example `schedule`. */
+    /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
     resourceType: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     resourceId: string;
-    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-    claimant: string;
-    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantConnectionId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantUserId?: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+     */
     status: "active" | "released" | "expired";
     /** Time the claim was taken. */
     claimedAt: string;
     /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
     expiresAt: string;
-    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    /** Time of the last renewal. Null until the claim is first renewed. */
+    renewedAt?: string | null;
+    /** Time the claim was released. Null while the claim is active or after it expired. */
     releasedAt?: string | null;
+    /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+     */
+    outcome?: "completed" | "failed" | "cancelled";
+    /** Error reported with a `failed` outcome. Omitted otherwise. */
+    outcomeError?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    outcomeEventId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    releasedBy?: string;
     /** Timestamp of claim creation. */
     createdAt: string;
     /** Timestamp of last claim modification. */
@@ -19154,7 +19430,7 @@ export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
   };
   /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
   pausedAt?: string | null;
-  /** Identity that paused the schedule. Server-managed. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   pausedBy?: string;
   /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
@@ -19168,6 +19444,8 @@ export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
 export type UpdateScheduleApiArg = {
   /** Schedule ID */
   scheduleId: string;
+  /** Entity tag of the schedule as last read, from the `ETag` header of getScheduleById, createSchedule or updateSchedule. When present the write applies only if it still matches; otherwise 412. */
+  "If-Match"?: string;
   body: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
@@ -19177,23 +19455,68 @@ export type UpdateScheduleApiArg = {
     name: string;
     /** The action the worker runs, for example a command name. */
     action: string;
+    /** Type of the resource the schedule acts on, named the way a claim's
+        `resourceType` is (lowercase snake_case construct name, for example
+        `content_item` or `profile`). A server verifies the target types it
+        serves and refuses others with 400. Set together with `targetId` or
+        not at all.
+         */
+    targetType?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    targetId?: string;
     /** Action parameters, stored as a JSON blob. */
     params?: object;
-    /** Whether the schedule is eligible to run. Defaults to true. */
+    /** Whether the schedule is eligible to run. */
     enabled?: boolean;
     /** Time the schedule first becomes due. */
     runAt?: string | null;
-    /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+    /** Next time the schedule becomes due. Omitted on create, it defaults to `runAt`; omitted on update, it is kept. Send null for never due again. */
+    nextRunAt?: string | null;
+    /** How the schedule repeats once it has run. Empty, `once` and `none`
+        mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+        `monthly` repeat at the same wall-clock time one calendar day, week
+        or month later in the schedule's `timezone`, so a daily schedule
+        keeps its local time across daylight-saving changes. `every:<n>`
+        repeats every `n` minutes (1 to 999999). Occurrences are counted
+        from `runAt` (else from the current `nextRunAt`); the next due time
+        is the first occurrence after the run is released, so missed runs
+        are not replayed.
+         */
     recurrence?: string;
-    /** Client-settable status. Omit to let the server choose `scheduled` for a due-timed schedule and `pending` otherwise. */
-    status?: "pending" | "scheduled" | "cancelled";
+    /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+        `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+        time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+        refuses a name it does not know with 400.
+         */
+    timezone?: string;
+    /** Lifecycle status of a schedule. `pending`: created, not yet
+        due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+        designated for a particular worker but not yet claimed. `claimed`: a
+        worker holds the claim and has not started. `running`: the claim
+        holder is executing it. `retrying`: the last attempt failed and
+        another is due. `completed`, `failed` and `cancelled` are terminal
+        for a run-once schedule; a recurring schedule returns to `scheduled`
+        when its claim is released with a `completed` outcome.
+         */
+    status?:
+      | "pending"
+      | "scheduled"
+      | "assigned"
+      | "claimed"
+      | "running"
+      | "retrying"
+      | "completed"
+      | "failed"
+      | "cancelled";
+    /** Retries used so far for the current run, for example 0 to re-arm a schedule. Omitted on update, it is kept. */
+    retryCount?: number;
     /** Maximum retries before the run is marked failed. */
     maxRetries?: number;
     /** Minutes to wait before a retry becomes due. */
     retryDelayMinutes?: number;
-    /** `true` pauses the schedule so it is never claimed (unless a claim
-        carries `ignorePause`); `false` resumes it. Omit to leave the pause
-        unchanged. The server records `pausedAt` and `pausedBy`.
+    /** `true` pauses the schedule so it is never claimed; `false`
+        resumes it. Omit to leave the pause unchanged. The server records
+        `pausedAt` and `pausedBy`.
          */
     paused?: boolean;
     /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
@@ -19204,309 +19527,6 @@ export type DeleteScheduleByIdApiResponse = unknown;
 export type DeleteScheduleByIdApiArg = {
   /** Schedule ID */
   scheduleId: string;
-};
-export type ClaimScheduleApiResponse = /** status 200 The claimed schedule */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  workspaceId?: string;
-  /** Human-readable name for the schedule. */
-  name: string;
-  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
-  action: string;
-  /** Action parameters, stored as a JSON blob. */
-  params?: object;
-  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
-  enabled: boolean;
-  /** Time the schedule first becomes due. */
-  runAt?: string | null;
-  /** Next time a recurring or retrying schedule becomes due. */
-  nextRunAt?: string | null;
-  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
-  recurrence?: string;
-  /** Lifecycle status. `pending`: created, not yet due-scheduled.
-    `scheduled`: waiting for its due time. `assigned`: designated for a
-    particular worker but not yet claimed. `claimed`: a worker holds the
-    claim and has not started. `running`: the claim holder is executing
-    it. `retrying`: the last attempt failed and another is due.
-    `completed`, `failed` and `cancelled` are terminal for a run-once
-    schedule; a recurring schedule returns to `scheduled`.
-     */
-  status:
-    | "pending"
-    | "scheduled"
-    | "assigned"
-    | "claimed"
-    | "running"
-    | "retrying"
-    | "completed"
-    | "failed"
-    | "cancelled";
-  /** Attempts already retried for the current run. */
-  retryCount: number;
-  /** Maximum retries before the run is marked failed. */
-  maxRetries: number;
-  /** Minutes to wait before a retry becomes due. */
-  retryDelayMinutes?: number;
-  /** Time of the most recent attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent attempt. */
-  lastError?: string;
-  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
-  claim?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    organizationId: string;
-    /** Type of the claimed resource, for example `schedule`. */
-    resourceType: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    resourceId: string;
-    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-    claimant: string;
-    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
-    status: "active" | "released" | "expired";
-    /** Time the claim was taken. */
-    claimedAt: string;
-    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
-    expiresAt: string;
-    /** Time the holder released the claim. Null while the claim is active or after it expired. */
-    releasedAt?: string | null;
-    /** Timestamp of claim creation. */
-    createdAt: string;
-    /** Timestamp of last claim modification. */
-    updatedAt: string;
-  };
-  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
-  pausedAt?: string | null;
-  /** Identity that paused the schedule. Server-managed. */
-  pausedBy?: string;
-  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
-  pauseReason?: string;
-  /** Timestamp of schedule creation. */
-  createdAt: string;
-  /** Timestamp of last schedule modification. */
-  updatedAt: string;
-  /** Timestamp when the schedule was soft-deleted. Null while live. */
-  deletedAt?: string | null;
-};
-export type ClaimScheduleApiArg = {
-  /** Schedule ID */
-  scheduleId: string;
-  body: {
-    /** Identity of the worker taking the claim. */
-    claimant: string;
-    /** Requested claim duration in minutes; the server applies its default when omitted and may cap it. */
-    durationMinutes?: number;
-    /** Claim even though the schedule is not yet due (trigger now). A live claim held by another claimant still refuses. */
-    force?: boolean;
-    /** Operator override that claims through the organization-wide and per-schedule pauses. */
-    ignorePause?: boolean;
-  };
-};
-export type RenewScheduleClaimApiResponse = /** status 200 The schedule with its renewed claim */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  workspaceId?: string;
-  /** Human-readable name for the schedule. */
-  name: string;
-  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
-  action: string;
-  /** Action parameters, stored as a JSON blob. */
-  params?: object;
-  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
-  enabled: boolean;
-  /** Time the schedule first becomes due. */
-  runAt?: string | null;
-  /** Next time a recurring or retrying schedule becomes due. */
-  nextRunAt?: string | null;
-  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
-  recurrence?: string;
-  /** Lifecycle status. `pending`: created, not yet due-scheduled.
-    `scheduled`: waiting for its due time. `assigned`: designated for a
-    particular worker but not yet claimed. `claimed`: a worker holds the
-    claim and has not started. `running`: the claim holder is executing
-    it. `retrying`: the last attempt failed and another is due.
-    `completed`, `failed` and `cancelled` are terminal for a run-once
-    schedule; a recurring schedule returns to `scheduled`.
-     */
-  status:
-    | "pending"
-    | "scheduled"
-    | "assigned"
-    | "claimed"
-    | "running"
-    | "retrying"
-    | "completed"
-    | "failed"
-    | "cancelled";
-  /** Attempts already retried for the current run. */
-  retryCount: number;
-  /** Maximum retries before the run is marked failed. */
-  maxRetries: number;
-  /** Minutes to wait before a retry becomes due. */
-  retryDelayMinutes?: number;
-  /** Time of the most recent attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent attempt. */
-  lastError?: string;
-  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
-  claim?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    organizationId: string;
-    /** Type of the claimed resource, for example `schedule`. */
-    resourceType: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    resourceId: string;
-    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-    claimant: string;
-    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
-    status: "active" | "released" | "expired";
-    /** Time the claim was taken. */
-    claimedAt: string;
-    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
-    expiresAt: string;
-    /** Time the holder released the claim. Null while the claim is active or after it expired. */
-    releasedAt?: string | null;
-    /** Timestamp of claim creation. */
-    createdAt: string;
-    /** Timestamp of last claim modification. */
-    updatedAt: string;
-  };
-  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
-  pausedAt?: string | null;
-  /** Identity that paused the schedule. Server-managed. */
-  pausedBy?: string;
-  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
-  pauseReason?: string;
-  /** Timestamp of schedule creation. */
-  createdAt: string;
-  /** Timestamp of last schedule modification. */
-  updatedAt: string;
-  /** Timestamp when the schedule was soft-deleted. Null while live. */
-  deletedAt?: string | null;
-};
-export type RenewScheduleClaimApiArg = {
-  /** Schedule ID */
-  scheduleId: string;
-  body: {
-    /** Identity of the holder renewing the claim. */
-    claimant: string;
-    /** Requested extension in minutes from now; the server applies its default when omitted and may cap it. */
-    durationMinutes?: number;
-  };
-};
-export type ReleaseScheduleClaimApiResponse = /** status 200 The released schedule */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  workspaceId?: string;
-  /** Human-readable name for the schedule. */
-  name: string;
-  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
-  action: string;
-  /** Action parameters, stored as a JSON blob. */
-  params?: object;
-  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
-  enabled: boolean;
-  /** Time the schedule first becomes due. */
-  runAt?: string | null;
-  /** Next time a recurring or retrying schedule becomes due. */
-  nextRunAt?: string | null;
-  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
-  recurrence?: string;
-  /** Lifecycle status. `pending`: created, not yet due-scheduled.
-    `scheduled`: waiting for its due time. `assigned`: designated for a
-    particular worker but not yet claimed. `claimed`: a worker holds the
-    claim and has not started. `running`: the claim holder is executing
-    it. `retrying`: the last attempt failed and another is due.
-    `completed`, `failed` and `cancelled` are terminal for a run-once
-    schedule; a recurring schedule returns to `scheduled`.
-     */
-  status:
-    | "pending"
-    | "scheduled"
-    | "assigned"
-    | "claimed"
-    | "running"
-    | "retrying"
-    | "completed"
-    | "failed"
-    | "cancelled";
-  /** Attempts already retried for the current run. */
-  retryCount: number;
-  /** Maximum retries before the run is marked failed. */
-  maxRetries: number;
-  /** Minutes to wait before a retry becomes due. */
-  retryDelayMinutes?: number;
-  /** Time of the most recent attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent attempt. */
-  lastError?: string;
-  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
-  claim?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    organizationId: string;
-    /** Type of the claimed resource, for example `schedule`. */
-    resourceType: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    resourceId: string;
-    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-    claimant: string;
-    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
-    status: "active" | "released" | "expired";
-    /** Time the claim was taken. */
-    claimedAt: string;
-    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
-    expiresAt: string;
-    /** Time the holder released the claim. Null while the claim is active or after it expired. */
-    releasedAt?: string | null;
-    /** Timestamp of claim creation. */
-    createdAt: string;
-    /** Timestamp of last claim modification. */
-    updatedAt: string;
-  };
-  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
-  pausedAt?: string | null;
-  /** Identity that paused the schedule. Server-managed. */
-  pausedBy?: string;
-  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
-  pauseReason?: string;
-  /** Timestamp of schedule creation. */
-  createdAt: string;
-  /** Timestamp of last schedule modification. */
-  updatedAt: string;
-  /** Timestamp when the schedule was soft-deleted. Null while live. */
-  deletedAt?: string | null;
-};
-export type ReleaseScheduleClaimApiArg = {
-  /** Schedule ID */
-  scheduleId: string;
-  body: {
-    /** Identity of the holder releasing the claim. */
-    claimant: string;
-    /** Outcome status to record with the release. */
-    status?: "scheduled" | "retrying" | "completed" | "failed" | "cancelled";
-    /** Time of the attempt being reported. */
-    lastRunAt?: string | null;
-    /** Error reported by the attempt; empty on success. */
-    lastError?: string;
-    /** Next due time for a recurring or retrying schedule. */
-    nextRunAt?: string | null;
-    /** Retries used so far for the current run. */
-    retryCount?: number;
-  };
 };
 export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page */ {
   /** Current page number of the result set. */
@@ -19523,27 +19543,54 @@ export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page *
     organizationId: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     workspaceId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    createdBy?: string;
     /** Human-readable name for the schedule. */
     name: string;
     /** The action the worker runs when it holds the schedule's claim, for example a command name. */
     action: string;
-    /** Action parameters, stored as a JSON blob. */
+    /** Type of the resource the schedule acts on, named the way a claim's
+        `resourceType` is (lowercase snake_case construct name, for example
+        `content_item` or `profile`). A server verifies the target types it
+        serves and refuses others with 400. Set together with `targetId` or
+        not at all.
+         */
+    targetType?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    targetId?: string;
+    /** Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here. */
     params?: object;
     /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
     enabled: boolean;
     /** Time the schedule first becomes due. */
     runAt?: string | null;
-    /** Next time a recurring or retrying schedule becomes due. */
+    /** Next time the schedule becomes due. Null when it is never due again. */
     nextRunAt?: string | null;
-    /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+    /** How the schedule repeats once it has run. Empty, `once` and `none`
+        mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+        `monthly` repeat at the same wall-clock time one calendar day, week
+        or month later in the schedule's `timezone`, so a daily schedule
+        keeps its local time across daylight-saving changes. `every:<n>`
+        repeats every `n` minutes (1 to 999999). Occurrences are counted
+        from `runAt` (else from the current `nextRunAt`); the next due time
+        is the first occurrence after the run is released, so missed runs
+        are not replayed.
+         */
     recurrence?: string;
-    /** Lifecycle status. `pending`: created, not yet due-scheduled.
-        `scheduled`: waiting for its due time. `assigned`: designated for a
-        particular worker but not yet claimed. `claimed`: a worker holds the
-        claim and has not started. `running`: the claim holder is executing
-        it. `retrying`: the last attempt failed and another is due.
-        `completed`, `failed` and `cancelled` are terminal for a run-once
-        schedule; a recurring schedule returns to `scheduled`.
+    /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+        `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+        time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+        refuses a name it does not know with 400.
+         */
+    timezone: string;
+    /** Lifecycle status of a schedule. `pending`: created, not yet
+        due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+        designated for a particular worker but not yet claimed. `claimed`: a
+        worker holds the claim and has not started. `running`: the claim
+        holder is executing it. `retrying`: the last attempt failed and
+        another is due. `completed`, `failed` and `cancelled` are terminal
+        for a run-once schedule; a recurring schedule returns to `scheduled`
+        when its claim is released with a `completed` outcome.
          */
     status:
       | "pending"
@@ -19561,30 +19608,44 @@ export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page *
     maxRetries: number;
     /** Minutes to wait before a retry becomes due. */
     retryDelayMinutes?: number;
-    /** Time of the most recent attempt. */
+    /** Time the most recent attempt ended (the release time of its claim). Server-managed. */
     lastRunAt?: string | null;
-    /** Error reported by the most recent attempt. */
+    /** Error reported by the most recent attempt; empty after a successful one. Server-managed. */
     lastError?: string;
-    /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+    /** The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed. */
     claim?: {
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       id: string;
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       organizationId: string;
-      /** Type of the claimed resource, for example `schedule`. */
+      /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
       resourceType: string;
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       resourceId: string;
-      /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-      claimant: string;
-      /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantConnectionId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantUserId?: string;
+      /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+       */
       status: "active" | "released" | "expired";
       /** Time the claim was taken. */
       claimedAt: string;
       /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
       expiresAt: string;
-      /** Time the holder released the claim. Null while the claim is active or after it expired. */
+      /** Time of the last renewal. Null until the claim is first renewed. */
+      renewedAt?: string | null;
+      /** Time the claim was released. Null while the claim is active or after it expired. */
       releasedAt?: string | null;
+      /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+       */
+      outcome?: "completed" | "failed" | "cancelled";
+      /** Error reported with a `failed` outcome. Omitted otherwise. */
+      outcomeError?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      outcomeEventId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      releasedBy?: string;
       /** Timestamp of claim creation. */
       createdAt: string;
       /** Timestamp of last claim modification. */
@@ -19592,7 +19653,7 @@ export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page *
     };
     /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
     pausedAt?: string | null;
-    /** Identity that paused the schedule. Server-managed. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     pausedBy?: string;
     /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
     pauseReason?: string;
@@ -19634,27 +19695,54 @@ export type AssignScheduleToWorkspaceApiResponse = /** status 200 The linked sch
   organizationId: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   workspaceId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string;
   /** Human-readable name for the schedule. */
   name: string;
   /** The action the worker runs when it holds the schedule's claim, for example a command name. */
   action: string;
-  /** Action parameters, stored as a JSON blob. */
+  /** Type of the resource the schedule acts on, named the way a claim's
+    `resourceType` is (lowercase snake_case construct name, for example
+    `content_item` or `profile`). A server verifies the target types it
+    serves and refuses others with 400. Set together with `targetId` or
+    not at all.
+     */
+  targetType?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  targetId?: string;
+  /** Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here. */
   params?: object;
   /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
   enabled: boolean;
   /** Time the schedule first becomes due. */
   runAt?: string | null;
-  /** Next time a recurring or retrying schedule becomes due. */
+  /** Next time the schedule becomes due. Null when it is never due again. */
   nextRunAt?: string | null;
-  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
+  /** How the schedule repeats once it has run. Empty, `once` and `none`
+    mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+    `monthly` repeat at the same wall-clock time one calendar day, week
+    or month later in the schedule's `timezone`, so a daily schedule
+    keeps its local time across daylight-saving changes. `every:<n>`
+    repeats every `n` minutes (1 to 999999). Occurrences are counted
+    from `runAt` (else from the current `nextRunAt`); the next due time
+    is the first occurrence after the run is released, so missed runs
+    are not replayed.
+     */
   recurrence?: string;
-  /** Lifecycle status. `pending`: created, not yet due-scheduled.
-    `scheduled`: waiting for its due time. `assigned`: designated for a
-    particular worker but not yet claimed. `claimed`: a worker holds the
-    claim and has not started. `running`: the claim holder is executing
-    it. `retrying`: the last attempt failed and another is due.
-    `completed`, `failed` and `cancelled` are terminal for a run-once
-    schedule; a recurring schedule returns to `scheduled`.
+  /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+    `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+    time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+    refuses a name it does not know with 400.
+     */
+  timezone: string;
+  /** Lifecycle status of a schedule. `pending`: created, not yet
+    due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+    designated for a particular worker but not yet claimed. `claimed`: a
+    worker holds the claim and has not started. `running`: the claim
+    holder is executing it. `retrying`: the last attempt failed and
+    another is due. `completed`, `failed` and `cancelled` are terminal
+    for a run-once schedule; a recurring schedule returns to `scheduled`
+    when its claim is released with a `completed` outcome.
      */
   status:
     | "pending"
@@ -19672,30 +19760,44 @@ export type AssignScheduleToWorkspaceApiResponse = /** status 200 The linked sch
   maxRetries: number;
   /** Minutes to wait before a retry becomes due. */
   retryDelayMinutes?: number;
-  /** Time of the most recent attempt. */
+  /** Time the most recent attempt ended (the release time of its claim). Server-managed. */
   lastRunAt?: string | null;
-  /** Error reported by the most recent attempt. */
+  /** Error reported by the most recent attempt; empty after a successful one. Server-managed. */
   lastError?: string;
-  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
+  /** The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed. */
   claim?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     organizationId: string;
-    /** Type of the claimed resource, for example `schedule`. */
+    /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
     resourceType: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     resourceId: string;
-    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-    claimant: string;
-    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantConnectionId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantUserId?: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+     */
     status: "active" | "released" | "expired";
     /** Time the claim was taken. */
     claimedAt: string;
     /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
     expiresAt: string;
-    /** Time the holder released the claim. Null while the claim is active or after it expired. */
+    /** Time of the last renewal. Null until the claim is first renewed. */
+    renewedAt?: string | null;
+    /** Time the claim was released. Null while the claim is active or after it expired. */
     releasedAt?: string | null;
+    /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+     */
+    outcome?: "completed" | "failed" | "cancelled";
+    /** Error reported with a `failed` outcome. Omitted otherwise. */
+    outcomeError?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    outcomeEventId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    releasedBy?: string;
     /** Timestamp of claim creation. */
     createdAt: string;
     /** Timestamp of last claim modification. */
@@ -19703,7 +19805,7 @@ export type AssignScheduleToWorkspaceApiResponse = /** status 200 The linked sch
   };
   /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
   pausedAt?: string | null;
-  /** Identity that paused the schedule. Server-managed. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   pausedBy?: string;
   /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
   pauseReason?: string;
@@ -19720,93 +19822,7 @@ export type AssignScheduleToWorkspaceApiArg = {
   /** Schedule ID */
   scheduleId: string;
 };
-export type UnassignScheduleFromWorkspaceApiResponse = /** status 200 The unlinked schedule */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  organizationId: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  workspaceId?: string;
-  /** Human-readable name for the schedule. */
-  name: string;
-  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
-  action: string;
-  /** Action parameters, stored as a JSON blob. */
-  params?: object;
-  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
-  enabled: boolean;
-  /** Time the schedule first becomes due. */
-  runAt?: string | null;
-  /** Next time a recurring or retrying schedule becomes due. */
-  nextRunAt?: string | null;
-  /** Recurrence rule for repeating schedules. Empty for a run-once schedule. */
-  recurrence?: string;
-  /** Lifecycle status. `pending`: created, not yet due-scheduled.
-    `scheduled`: waiting for its due time. `assigned`: designated for a
-    particular worker but not yet claimed. `claimed`: a worker holds the
-    claim and has not started. `running`: the claim holder is executing
-    it. `retrying`: the last attempt failed and another is due.
-    `completed`, `failed` and `cancelled` are terminal for a run-once
-    schedule; a recurring schedule returns to `scheduled`.
-     */
-  status:
-    | "pending"
-    | "scheduled"
-    | "assigned"
-    | "claimed"
-    | "running"
-    | "retrying"
-    | "completed"
-    | "failed"
-    | "cancelled";
-  /** Attempts already retried for the current run. */
-  retryCount: number;
-  /** Maximum retries before the run is marked failed. */
-  maxRetries: number;
-  /** Minutes to wait before a retry becomes due. */
-  retryDelayMinutes?: number;
-  /** Time of the most recent attempt. */
-  lastRunAt?: string | null;
-  /** Error reported by the most recent attempt. */
-  lastError?: string;
-  /** The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed. */
-  claim?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    organizationId: string;
-    /** Type of the claimed resource, for example `schedule`. */
-    resourceType: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    resourceId: string;
-    /** Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-    claimant: string;
-    /** Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal. */
-    status: "active" | "released" | "expired";
-    /** Time the claim was taken. */
-    claimedAt: string;
-    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
-    expiresAt: string;
-    /** Time the holder released the claim. Null while the claim is active or after it expired. */
-    releasedAt?: string | null;
-    /** Timestamp of claim creation. */
-    createdAt: string;
-    /** Timestamp of last claim modification. */
-    updatedAt: string;
-  };
-  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
-  pausedAt?: string | null;
-  /** Identity that paused the schedule. Server-managed. */
-  pausedBy?: string;
-  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
-  pauseReason?: string;
-  /** Timestamp of schedule creation. */
-  createdAt: string;
-  /** Timestamp of last schedule modification. */
-  updatedAt: string;
-  /** Timestamp when the schedule was soft-deleted. Null while live. */
-  deletedAt?: string | null;
-};
+export type UnassignScheduleFromWorkspaceApiResponse = unknown;
 export type UnassignScheduleFromWorkspaceApiArg = {
   /** Workspace ID */
   workspaceId: string;
@@ -22226,6 +22242,8 @@ export const {
   useUpdateConnectionMutation,
   useDeleteConnectionMutation,
   useDeleteMesheryConnectionMutation,
+  useGetDesktopConnectionsOfOrganizationQuery,
+  useLazyGetDesktopConnectionsOfOrganizationQuery,
   useDeregisterDesktopConnectionMutation,
   useRecordConnectionHeartbeatMutation,
   useGetKubernetesContextQuery,
@@ -22386,14 +22404,10 @@ export const {
   useListSchedulesQuery,
   useLazyListSchedulesQuery,
   useCreateScheduleMutation,
-  useClaimNextScheduleMutation,
   useGetScheduleByIdQuery,
   useLazyGetScheduleByIdQuery,
   useUpdateScheduleMutation,
   useDeleteScheduleByIdMutation,
-  useClaimScheduleMutation,
-  useRenewScheduleClaimMutation,
-  useReleaseScheduleClaimMutation,
   useGetSchedulesOfWorkspaceQuery,
   useLazyGetSchedulesOfWorkspaceQuery,
   useAssignScheduleToWorkspaceMutation,

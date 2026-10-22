@@ -8605,6 +8605,210 @@ const ConnectionSchema: Record<string, unknown> = {
         }
       }
     },
+    "/api/integrations/connections/desktop": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Connections"
+        ],
+        "operationId": "getDesktopConnectionsOfOrganization",
+        "summary": "List the organization's desktop connections",
+        "description": "Returns every live `desktop` connection in the session organization, whoever registered it, as a summary: `id`, `name`, `kind`, `owner`, `status` and `lastSeenAt` only. Any live member of the organization may read it, so members can see which computers share its work; a guest session cannot. Servers must never include the connection's credential, metadata (beyond `lastSeenAt`), URL or description here: the full connection stays readable only by its owner through `getConnections`. `status` follows the heartbeat rule of `recordConnectionHeartbeat` (a desktop connection silent for 3 minutes reads `disconnected`). A caller who is not a live member of the session organization receives `404`.\n",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items per page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 10
+            }
+          },
+          {
+            "name": "owner",
+            "in": "query",
+            "required": false,
+            "description": "Only connections registered by this user.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Desktop connections of the organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Page of connection summaries.",
+                  "additionalProperties": false,
+                  "required": [
+                    "connections",
+                    "totalCount",
+                    "page",
+                    "pageSize"
+                  ],
+                  "properties": {
+                    "connections": {
+                      "type": "array",
+                      "description": "Connection summaries on this page.",
+                      "items": {
+                        "x-go-type": "ConnectionSummary",
+                        "type": "object",
+                        "description": "Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`.\n",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "name",
+                          "kind",
+                          "status"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-order": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Connection name.",
+                            "maxLength": 255,
+                            "x-order": 2
+                          },
+                          "kind": {
+                            "type": "string",
+                            "description": "Connection kind, for example `desktop`.",
+                            "maxLength": 255,
+                            "x-order": 3
+                          },
+                          "owner": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "owner,omitempty"
+                            },
+                            "x-order": 4
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Connection status as read, for example `connected` or `disconnected`.",
+                            "maxLength": 255,
+                            "x-order": 5
+                          },
+                          "lastSeenAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.",
+                            "nullable": true,
+                            "x-go-type": "core.NullTime",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core",
+                              "name": "core"
+                            },
+                            "x-order": 6
+                          }
+                        }
+                      },
+                      "x-order": 1
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of connections on all pages.",
+                      "minimum": 0,
+                      "x-order": 2
+                    },
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number.",
+                      "minimum": 0,
+                      "x-order": 3
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of elements per page.",
+                      "minimum": 1,
+                      "x-order": 4
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/integrations/connections/desktop/{installationId}": {
       "delete": {
         "x-internal": [
@@ -14294,6 +14498,175 @@ const ConnectionSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "json": "transitionMap,omitempty"
             }
+          }
+        }
+      },
+      "ConnectionSummary": {
+        "type": "object",
+        "description": "Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`.\n",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-order": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Connection name.",
+            "maxLength": 255,
+            "x-order": 2
+          },
+          "kind": {
+            "type": "string",
+            "description": "Connection kind, for example `desktop`.",
+            "maxLength": 255,
+            "x-order": 3
+          },
+          "owner": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "json": "owner,omitempty"
+            },
+            "x-order": 4
+          },
+          "status": {
+            "type": "string",
+            "description": "Connection status as read, for example `connected` or `disconnected`.",
+            "maxLength": 255,
+            "x-order": 5
+          },
+          "lastSeenAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.",
+            "nullable": true,
+            "x-go-type": "core.NullTime",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
+            },
+            "x-order": 6
+          }
+        }
+      },
+      "ConnectionSummaryPage": {
+        "type": "object",
+        "description": "Page of connection summaries.",
+        "additionalProperties": false,
+        "required": [
+          "connections",
+          "totalCount",
+          "page",
+          "pageSize"
+        ],
+        "properties": {
+          "connections": {
+            "type": "array",
+            "description": "Connection summaries on this page.",
+            "items": {
+              "x-go-type": "ConnectionSummary",
+              "type": "object",
+              "description": "Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`.\n",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "name",
+                "kind",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-order": 1
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Connection name.",
+                  "maxLength": 255,
+                  "x-order": 2
+                },
+                "kind": {
+                  "type": "string",
+                  "description": "Connection kind, for example `desktop`.",
+                  "maxLength": 255,
+                  "x-order": 3
+                },
+                "owner": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "owner,omitempty"
+                  },
+                  "x-order": 4
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Connection status as read, for example `connected` or `disconnected`.",
+                  "maxLength": 255,
+                  "x-order": 5
+                },
+                "lastSeenAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.",
+                  "nullable": true,
+                  "x-go-type": "core.NullTime",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core",
+                    "name": "core"
+                  },
+                  "x-order": 6
+                }
+              }
+            },
+            "x-order": 1
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of connections on all pages.",
+            "minimum": 0,
+            "x-order": 2
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number.",
+            "minimum": 0,
+            "x-order": 3
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of elements per page.",
+            "minimum": 1,
+            "x-order": 4
           }
         }
       },

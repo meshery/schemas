@@ -356,6 +356,42 @@ type ConnectionStatusInfo struct {
 // ConnectionStatusValue Connection Status Value
 type ConnectionStatusValue string
 
+// ConnectionSummary Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`.
+type ConnectionSummary struct {
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `json:"id" yaml:"id"`
+
+	// Name Connection name.
+	Name string `json:"name" yaml:"name"`
+
+	// Kind Connection kind, for example `desktop`.
+	Kind string `json:"kind" yaml:"kind"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// Status Connection status as read, for example `connected` or `disconnected`.
+	Status string `json:"status" yaml:"status"`
+
+	// LastSeenAt Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.
+	LastSeenAt *core.NullTime `json:"lastSeenAt" yaml:"lastSeenAt"`
+}
+
+// ConnectionSummaryPage Page of connection summaries.
+type ConnectionSummaryPage struct {
+	// Connections Connection summaries on this page.
+	Connections []ConnectionSummary `json:"connections" yaml:"connections"`
+
+	// TotalCount Total number of connections on all pages.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+
+	// Page Current page number.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Number of elements per page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+}
+
 // ConnectionsStatusPage Paginated list of connection status counts
 type ConnectionsStatusPage struct {
 	// ConnectionsStatus List of status counts

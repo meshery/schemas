@@ -127,7 +127,7 @@ type EventResult struct {
 	// Provider One of (x-oapi-codegen-extra-tags-cloud, github, google)
 	Provider core.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
 
-	// SystemId System identifier of the event source.
+	// SystemId System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
 	SystemId string `db:"system_id" json:"systemId" yaml:"systemId"`
 }
 

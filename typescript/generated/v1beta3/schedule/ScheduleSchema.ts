@@ -7,7 +7,7 @@ const ScheduleSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Schedule",
-    "description": "OpenAPI schema for organization schedules. A schedule is a job: an action\nwith parameters, a due time, an optional recurrence, a retry budget and a\nstatus. Schedules belong to an organization and may be linked to a\nworkspace. Workers take a schedule through a claim, the generic `claim`\nconstruct nested under the schedule at `/api/schedules/{scheduleId}/claim`:\nthe race between workers is decided server-side in a single statement,\nonly the holder renews or releases, and a claim past its `expiresAt` is\nstale so the schedule is claimable again. Pausing has two server scopes,\nthe organization-wide pause and a per-schedule pause; a schedule is\nclaimed only when neither says paused. Pause state is data, never a\npath: a schedule is paused or resumed with `paused` on\n`PUT /api/schedules/{scheduleId}`, and the organization-wide pause is the\n`schedulePause` organization preference (v1beta2 organization). Supersedes the per-user\n`/user/schedules` routes of v1beta2, which remain as a deprecated alias.\nOrganization scope: every operation acts only in the organization the\nsession resolved to (X-Current-Orgid, then the user's selected\norganization), and only when the caller is a live member of it. A\ncaller who is not a member receives the same 404 as an unknown id, so\nthe existence of another organization's schedules is never disclosed.\n",
+    "description": "OpenAPI schema for organization schedules. A schedule is a job: an action\nwith a typed target and parameters, a due time, an optional recurrence in\nan IANA timezone, a retry budget and a status. Schedules belong to an\norganization and may be linked to a workspace. Workers take a schedule\nthrough the generic `claim` construct, with `resourceType` `schedule` on\n`POST /api/claims`; there is one claim path and no schedule-specific\nclaim route. The race between workers is decided server-side in a\nsingle statement, only the holder renews, and a claim past its\n`expiresAt` is stale so the schedule is claimable again. Releasing a\nschedule's claim records the run's outcome on the schedule in the same\ntransaction: `lastRunAt` becomes the release time and `lastError` the\nclaim's `outcomeError`; a `failed` outcome with retries left increments\n`retryCount`, sets `status` `retrying` and makes the schedule due again\nafter `retryDelayMinutes`. Any other outcome (`completed`, `cancelled`,\nor `failed` with no retries left) resets `retryCount`; a recurring\nschedule then returns to `status` `scheduled` with `nextRunAt` at its\nnext occurrence, and a run-once schedule takes the outcome as its\n`status` with no `nextRunAt`. Deleting a schedule expires its live\nclaim. Pausing has two server scopes, the organization-wide pause\nand a per-schedule pause; a schedule is claimed only when neither says\npaused. Pause state is data, never a path: a schedule is paused or\nresumed with `paused` on `PUT /api/schedules/{scheduleId}`, and the\norganization-wide pause is the `schedulePause` organization preference\n(v1beta2 organization). Supersedes the per-user `/user/schedules` routes\nof v1beta2, which remain as a deprecated alias.\nOrganization scope: every operation acts only in the organization the\nsession resolved to (X-Current-Orgid, then the user's selected\norganization), and only when the caller is a live member of it. A\ncaller who is not a member receives the same 404 as an unknown id, so\nthe existence of another organization's schedules is never disclosed.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -27,7 +27,7 @@ const ScheduleSchema: Record<string, unknown> = {
   "tags": [
     {
       "name": "schedules",
-      "description": "Operations related to organization schedules and their claims."
+      "description": "Operations related to organization schedules."
     }
   ],
   "paths": {
@@ -99,6 +99,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "description": "Only schedules in this status.",
             "schema": {
               "type": "string",
+              "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
               "enum": [
                 "pending",
                 "scheduled",
@@ -149,7 +150,7 @@ const ScheduleSchema: Record<string, unknown> = {
                         "x-go-type": "Schedule",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "title": "Schedule Schema",
-                        "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
+                        "description": "Server-returned schedule. A schedule is a job: an action to run, what it\nacts on (`targetType`, `targetId`) and its parameters, when it is due\n(`runAt`, `nextRunAt`, `recurrence` in `timezone`), its retry budget and\nits outcome. Schedules belong to an organization and may be linked to a\nworkspace. A worker takes a schedule through the generic `claim`\nconstruct (`POST /api/claims` with `resourceType` `schedule`); there is\nno schedule-specific claim route. While the claim is live no other worker\ncan take the schedule, and a claim past its `expiresAt` is stale so the\nschedule is claimable again. Releasing the claim records the run's\noutcome on the schedule in the same transaction (see `status`). The\n`claim` and the status values `assigned`, `claimed` and `running` are\nserver-managed. Pausing is data, not an operation: a client sets `paused`\n(and optionally `pauseReason`) on create or update, and the server\nrecords `pausedAt` and `pausedBy`. Fields marked readOnly are\nserver-managed and ignored on input.\n",
                         "type": "object",
                         "additionalProperties": false,
                         "required": [
@@ -158,6 +159,7 @@ const ScheduleSchema: Record<string, unknown> = {
                           "name",
                           "action",
                           "enabled",
+                          "timezone",
                           "status",
                           "retryCount",
                           "maxRetries",
@@ -173,6 +175,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
+                            "readOnly": true,
                             "x-order": 1
                           },
                           "organizationId": {
@@ -183,6 +186,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
+                            "readOnly": true,
                             "x-go-name": "OrganizationID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "organization_id"
@@ -203,6 +207,21 @@ const ScheduleSchema: Record<string, unknown> = {
                             },
                             "x-order": 3
                           },
+                          "createdBy": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "readOnly": true,
+                            "x-go-name": "CreatedBy",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner"
+                            },
+                            "x-order": 4
+                          },
                           "name": {
                             "type": "string",
                             "description": "Human-readable name for the schedule.",
@@ -211,7 +230,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "name"
                             },
-                            "x-order": 4
+                            "x-order": 5
                           },
                           "action": {
                             "type": "string",
@@ -221,11 +240,38 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "action"
                             },
-                            "x-order": 5
+                            "x-order": 6
+                          },
+                          "targetType": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "target_type",
+                              "json": "targetType,omitempty"
+                            },
+                            "x-order": 7,
+                            "type": "string",
+                            "description": "Type of the resource the schedule acts on, named the way a claim's\n`resourceType` is (lowercase snake_case construct name, for example\n`content_item` or `profile`). A server verifies the target types it\nserves and refuses others with 400. Set together with `targetId` or\nnot at all.\n",
+                            "pattern": "^[a-z][a-z0-9_]*$",
+                            "minLength": 1,
+                            "maxLength": 64
+                          },
+                          "targetId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "TargetID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "target_id",
+                              "json": "targetId,omitempty"
+                            },
+                            "x-order": 8
                           },
                           "params": {
                             "type": "object",
-                            "description": "Action parameters, stored as a JSON blob.",
+                            "description": "Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here.",
                             "x-go-type": "core.Map",
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/core",
@@ -235,15 +281,16 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "params"
                             },
-                            "x-order": 6
+                            "x-order": 9
                           },
                           "enabled": {
                             "type": "boolean",
                             "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
+                            "default": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "enabled"
                             },
-                            "x-order": 7
+                            "x-order": 10
                           },
                           "runAt": {
                             "type": "string",
@@ -258,12 +305,12 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "run_at"
                             },
-                            "x-order": 8
+                            "x-order": 11
                           },
                           "nextRunAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "Next time a recurring or retrying schedule becomes due.",
+                            "description": "Next time the schedule becomes due. Null when it is never due again.",
                             "nullable": true,
                             "x-go-type": "core.NullTime",
                             "x-go-type-import": {
@@ -271,22 +318,36 @@ const ScheduleSchema: Record<string, unknown> = {
                               "name": "core"
                             },
                             "x-oapi-codegen-extra-tags": {
-                              "db": "next_run_at"
+                              "db": "next_run"
                             },
-                            "x-order": 9
+                            "x-order": 12
                           },
                           "recurrence": {
-                            "type": "string",
-                            "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                            "maxLength": 255,
                             "x-oapi-codegen-extra-tags": {
                               "db": "recurrence"
                             },
-                            "x-order": 10
+                            "x-order": 13,
+                            "type": "string",
+                            "description": "How the schedule repeats once it has run. Empty, `once` and `none`\nmean run once. `hourly` repeats every hour; `daily`, `weekly` and\n`monthly` repeat at the same wall-clock time one calendar day, week\nor month later in the schedule's `timezone`, so a daily schedule\nkeeps its local time across daylight-saving changes. `every:<n>`\nrepeats every `n` minutes (1 to 999999). Occurrences are counted\nfrom `runAt` (else from the current `nextRunAt`); the next due time\nis the first occurrence after the run is released, so missed runs\nare not replayed.\n",
+                            "pattern": "^(|once|none|hourly|daily|weekly|monthly|every:[1-9][0-9]{0,5})$",
+                            "maxLength": 255,
+                            "default": ""
+                          },
+                          "timezone": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "timezone"
+                            },
+                            "x-order": 14,
+                            "type": "string",
+                            "description": "IANA time zone name (for example `UTC` or `America/Chicago`) in which\n`daily`, `weekly` and `monthly` recurrences keep their wall-clock\ntime. Instants (`runAt`, `nextRunAt`) are always absolute. The server\nrefuses a name it does not know with 400.\n",
+                            "minLength": 1,
+                            "maxLength": 64,
+                            "pattern": "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+)*$",
+                            "default": "UTC"
                           },
                           "status": {
                             "type": "string",
-                            "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
+                            "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
                             "enum": [
                               "pending",
                               "scheduled",
@@ -301,57 +362,63 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "status"
                             },
-                            "x-order": 11
+                            "x-order": 15
                           },
                           "retryCount": {
                             "type": "integer",
                             "description": "Attempts already retried for the current run.",
                             "minimum": 0,
+                            "default": 0,
                             "x-oapi-codegen-extra-tags": {
                               "db": "retry_count"
                             },
-                            "x-order": 12
+                            "x-order": 16
                           },
                           "maxRetries": {
                             "type": "integer",
                             "description": "Maximum retries before the run is marked failed.",
                             "minimum": 0,
+                            "default": 0,
                             "x-oapi-codegen-extra-tags": {
                               "db": "max_retries"
                             },
-                            "x-order": 13
+                            "x-order": 17
                           },
                           "retryDelayMinutes": {
                             "type": "integer",
                             "description": "Minutes to wait before a retry becomes due.",
                             "minimum": 0,
+                            "default": 0,
                             "x-oapi-codegen-extra-tags": {
                               "db": "retry_delay_minutes"
                             },
-                            "x-order": 14
+                            "x-order": 18
                           },
                           "lastRunAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "Time of the most recent attempt.",
+                            "description": "Time the most recent attempt ended (the release time of its claim). Server-managed.",
                             "nullable": true,
+                            "readOnly": true,
                             "x-go-type": "core.NullTime",
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/core",
                               "name": "core"
                             },
                             "x-oapi-codegen-extra-tags": {
-                              "db": "last_run_at"
+                              "db": "last_run"
                             },
-                            "x-order": 15
+                            "x-order": 19
                           },
                           "lastError": {
                             "type": "string",
-                            "description": "Error reported by the most recent attempt.",
+                            "description": "Error reported by the most recent attempt; empty after a successful one. Server-managed.",
+                            "maxLength": 5000,
+                            "readOnly": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "last_error"
                             },
-                            "x-order": 16
+                            "x-order": 20
                           },
                           "claim": {
                             "x-go-type": "*claimv1beta3.Claim",
@@ -359,12 +426,13 @@ const ScheduleSchema: Record<string, unknown> = {
                               "path": "github.com/meshery/schemas/models/v1beta3/claim",
                               "name": "claimv1beta3"
                             },
-                            "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
+                            "description": "The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed.",
+                            "readOnly": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "-",
                               "json": "claim,omitempty"
                             },
-                            "x-order": 17,
+                            "x-order": 21,
                             "$schema": "http://json-schema.org/draft-07/schema#",
                             "title": "Claim Schema",
                             "type": "object",
@@ -374,7 +442,6 @@ const ScheduleSchema: Record<string, unknown> = {
                               "organizationId",
                               "resourceType",
                               "resourceId",
-                              "claimant",
                               "status",
                               "claimedAt",
                               "expiresAt",
@@ -408,7 +475,7 @@ const ScheduleSchema: Record<string, unknown> = {
                               },
                               "resourceType": {
                                 "type": "string",
-                                "description": "Type of the claimed resource, for example `schedule`.",
+                                "description": "Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`.",
                                 "minLength": 1,
                                 "maxLength": 64,
                                 "x-oapi-codegen-extra-tags": {
@@ -429,19 +496,39 @@ const ScheduleSchema: Record<string, unknown> = {
                                 },
                                 "x-order": 4
                               },
-                              "claimant": {
+                              "claimantConnectionId": {
                                 "type": "string",
-                                "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                                "minLength": 1,
-                                "maxLength": 255,
+                                "format": "uuid",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                },
+                                "x-go-name": "ClaimantConnectionID",
                                 "x-oapi-codegen-extra-tags": {
-                                  "db": "claimant"
+                                  "db": "claimant_connection_id",
+                                  "json": "claimantConnectionId,omitempty"
                                 },
                                 "x-order": 5
                               },
+                              "claimantUserId": {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                },
+                                "x-go-name": "ClaimantUserID",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "claimant_user_id",
+                                  "json": "claimantUserId,omitempty"
+                                },
+                                "x-order": 6
+                              },
                               "status": {
                                 "type": "string",
-                                "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
+                                "description": "Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.\n",
                                 "enum": [
                                   "active",
                                   "released",
@@ -450,14 +537,14 @@ const ScheduleSchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "status"
                                 },
-                                "x-order": 6
+                                "x-order": 7
                               },
                               "claimedAt": {
                                 "description": "Time the claim was taken.",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "claimed_at"
                                 },
-                                "x-order": 7,
+                                "x-order": 8,
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-type-skip-optional-pointer": true
@@ -467,15 +554,30 @@ const ScheduleSchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "expires_at"
                                 },
-                                "x-order": 8,
+                                "x-order": 9,
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-type-skip-optional-pointer": true
                               },
+                              "renewedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Time of the last renewal. Null until the claim is first renewed.",
+                                "nullable": true,
+                                "x-go-type": "core.NullTime",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/core",
+                                  "name": "core"
+                                },
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "renewed_at"
+                                },
+                                "x-order": 10
+                              },
                               "releasedAt": {
                                 "type": "string",
                                 "format": "date-time",
-                                "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
+                                "description": "Time the claim was released. Null while the claim is active or after it expired.",
                                 "nullable": true,
                                 "x-go-type": "core.NullTime",
                                 "x-go-type-import": {
@@ -485,14 +587,68 @@ const ScheduleSchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "released_at"
                                 },
-                                "x-order": 9
+                                "x-order": 11
+                              },
+                              "outcome": {
+                                "type": "string",
+                                "description": "What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.\n",
+                                "enum": [
+                                  "completed",
+                                  "failed",
+                                  "cancelled"
+                                ],
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "outcome",
+                                  "json": "outcome,omitempty"
+                                },
+                                "x-order": 12
+                              },
+                              "outcomeError": {
+                                "type": "string",
+                                "description": "Error reported with a `failed` outcome. Omitted otherwise.",
+                                "maxLength": 5000,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "outcome_error",
+                                  "json": "outcomeError,omitempty"
+                                },
+                                "x-order": 13
+                              },
+                              "outcomeEventId": {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                },
+                                "x-go-name": "OutcomeEventID",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "outcome_event_id",
+                                  "json": "outcomeEventId,omitempty"
+                                },
+                                "x-order": 14
+                              },
+                              "releasedBy": {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                },
+                                "x-go-name": "ReleasedBy",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "released_by",
+                                  "json": "releasedBy,omitempty"
+                                },
+                                "x-order": 15
                               },
                               "createdAt": {
                                 "description": "Timestamp of claim creation.",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "created_at"
                                 },
-                                "x-order": 10,
+                                "x-order": 16,
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-type-skip-optional-pointer": true
@@ -502,7 +658,7 @@ const ScheduleSchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "updated_at"
                                 },
-                                "x-order": 11,
+                                "x-order": 17,
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-type-skip-optional-pointer": true
@@ -514,6 +670,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "format": "date-time",
                             "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
                             "nullable": true,
+                            "readOnly": true,
                             "x-go-type": "core.NullTime",
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/core",
@@ -522,41 +679,50 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "paused_at"
                             },
-                            "x-order": 18
+                            "x-order": 22
                           },
                           "pausedBy": {
                             "type": "string",
-                            "description": "Identity that paused the schedule. Server-managed.",
-                            "maxLength": 255,
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "paused_by"
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
                             },
-                            "x-order": 19
+                            "readOnly": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "paused_by",
+                              "json": "pausedBy,omitempty"
+                            },
+                            "x-order": 23
                           },
                           "pauseReason": {
                             "type": "string",
                             "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
+                            "maxLength": 1000,
                             "x-oapi-codegen-extra-tags": {
                               "db": "pause_reason"
                             },
-                            "x-order": 20
+                            "x-order": 24
                           },
                           "createdAt": {
                             "description": "Timestamp of schedule creation.",
+                            "readOnly": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at"
                             },
-                            "x-order": 21,
+                            "x-order": 25,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "updatedAt": {
                             "description": "Timestamp of last schedule modification.",
+                            "readOnly": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at"
                             },
-                            "x-order": 22,
+                            "x-order": 26,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -566,6 +732,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "format": "date-time",
                             "description": "Timestamp when the schedule was soft-deleted. Null while live.",
                             "nullable": true,
+                            "readOnly": true,
                             "x-go-type": "core.NullTime",
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/core",
@@ -574,604 +741,11 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at"
                             },
-                            "x-order": 23
+                            "x-order": 27
                           }
                         }
                       },
                       "description": "Schedules included on this page of results."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Result not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "schedules"
-        ],
-        "summary": "Create a schedule",
-        "operationId": "createSchedule",
-        "description": "Creates a schedule in the organization of the authenticated session. The\nserver-managed fields (the claim, `pausedAt`, `pausedBy`, `retryCount`,\n`lastRunAt`, `lastError`, `organizationId` and the timestamps) are ignored\non input. `status` accepts only `pending`, `scheduled` and `cancelled`.\nSend `paused: true` to create the schedule already paused.\n",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "description": "Payload for creating or updating a schedule. Contains only\nclient-settable fields; the owning `organizationId`, the claim,\n`pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError` and the\ntimestamps are server-managed. The server ignores them on input. Pausing\nis a field, not an operation: `paused` pauses or resumes the schedule.\n`status` accepts only `pending`,\n`scheduled` and `cancelled` here; the other values are set by the\nclaim and release operations.\n",
-                "required": [
-                  "name",
-                  "action"
-                ],
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "format": "uuid",
-                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                    "x-go-type": "uuid.UUID",
-                    "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
-                    },
-                    "x-oapi-codegen-extra-tags": {
-                      "json": "id,omitempty"
-                    }
-                  },
-                  "workspaceId": {
-                    "type": "string",
-                    "format": "uuid",
-                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                    "x-go-type": "uuid.UUID",
-                    "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
-                    },
-                    "x-oapi-codegen-extra-tags": {
-                      "json": "workspaceId,omitempty"
-                    }
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Human-readable name for the schedule.",
-                    "minLength": 1,
-                    "maxLength": 255
-                  },
-                  "action": {
-                    "type": "string",
-                    "description": "The action the worker runs, for example a command name.",
-                    "minLength": 1,
-                    "maxLength": 255
-                  },
-                  "params": {
-                    "type": "object",
-                    "description": "Action parameters, stored as a JSON blob.",
-                    "x-go-type": "core.Map",
-                    "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/core",
-                      "name": "core"
-                    },
-                    "x-go-type-skip-optional-pointer": true
-                  },
-                  "enabled": {
-                    "type": "boolean",
-                    "description": "Whether the schedule is eligible to run. Defaults to true."
-                  },
-                  "runAt": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "Time the schedule first becomes due.",
-                    "nullable": true,
-                    "x-go-type": "core.NullTime",
-                    "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/core",
-                      "name": "core"
-                    }
-                  },
-                  "recurrence": {
-                    "type": "string",
-                    "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                    "maxLength": 255
-                  },
-                  "status": {
-                    "type": "string",
-                    "description": "Client-settable status. Omit to let the server choose `scheduled` for a due-timed schedule and `pending` otherwise.",
-                    "enum": [
-                      "pending",
-                      "scheduled",
-                      "cancelled"
-                    ]
-                  },
-                  "maxRetries": {
-                    "type": "integer",
-                    "description": "Maximum retries before the run is marked failed.",
-                    "minimum": 0
-                  },
-                  "retryDelayMinutes": {
-                    "type": "integer",
-                    "description": "Minutes to wait before a retry becomes due.",
-                    "minimum": 0
-                  },
-                  "paused": {
-                    "type": "boolean",
-                    "description": "`true` pauses the schedule so it is never claimed (unless a claim\ncarries `ignorePause`); `false` resumes it. Omit to leave the pause\nunchanged. The server records `pausedAt` and `pausedBy`.\n"
-                  },
-                  "pauseReason": {
-                    "type": "string",
-                    "description": "Reason for pausing; stored only while `paused` is true and cleared on resume.",
-                    "maxLength": 1000
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Schedule created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$schema": "http://json-schema.org/draft-07/schema#",
-                  "title": "Schedule Schema",
-                  "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "id",
-                    "organizationId",
-                    "name",
-                    "action",
-                    "enabled",
-                    "status",
-                    "retryCount",
-                    "maxRetries",
-                    "createdAt",
-                    "updatedAt"
-                  ],
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-order": 1
-                    },
-                    "organizationId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-go-name": "OrganizationID",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "organization_id"
-                      },
-                      "x-order": 2
-                    },
-                    "workspaceId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "workspace_id",
-                        "json": "workspaceId,omitempty"
-                      },
-                      "x-order": 3
-                    },
-                    "name": {
-                      "type": "string",
-                      "description": "Human-readable name for the schedule.",
-                      "minLength": 1,
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "name"
-                      },
-                      "x-order": 4
-                    },
-                    "action": {
-                      "type": "string",
-                      "description": "The action the worker runs when it holds the schedule's claim, for example a command name.",
-                      "minLength": 1,
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "action"
-                      },
-                      "x-order": 5
-                    },
-                    "params": {
-                      "type": "object",
-                      "description": "Action parameters, stored as a JSON blob.",
-                      "x-go-type": "core.Map",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-go-type-skip-optional-pointer": true,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "params"
-                      },
-                      "x-order": 6
-                    },
-                    "enabled": {
-                      "type": "boolean",
-                      "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "enabled"
-                      },
-                      "x-order": 7
-                    },
-                    "runAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time the schedule first becomes due.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "run_at"
-                      },
-                      "x-order": 8
-                    },
-                    "nextRunAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Next time a recurring or retrying schedule becomes due.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "next_run_at"
-                      },
-                      "x-order": 9
-                    },
-                    "recurrence": {
-                      "type": "string",
-                      "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "recurrence"
-                      },
-                      "x-order": 10
-                    },
-                    "status": {
-                      "type": "string",
-                      "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
-                      "enum": [
-                        "pending",
-                        "scheduled",
-                        "assigned",
-                        "claimed",
-                        "running",
-                        "retrying",
-                        "completed",
-                        "failed",
-                        "cancelled"
-                      ],
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "status"
-                      },
-                      "x-order": 11
-                    },
-                    "retryCount": {
-                      "type": "integer",
-                      "description": "Attempts already retried for the current run.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "retry_count"
-                      },
-                      "x-order": 12
-                    },
-                    "maxRetries": {
-                      "type": "integer",
-                      "description": "Maximum retries before the run is marked failed.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "max_retries"
-                      },
-                      "x-order": 13
-                    },
-                    "retryDelayMinutes": {
-                      "type": "integer",
-                      "description": "Minutes to wait before a retry becomes due.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "retry_delay_minutes"
-                      },
-                      "x-order": 14
-                    },
-                    "lastRunAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time of the most recent attempt.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "last_run_at"
-                      },
-                      "x-order": 15
-                    },
-                    "lastError": {
-                      "type": "string",
-                      "description": "Error reported by the most recent attempt.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "last_error"
-                      },
-                      "x-order": 16
-                    },
-                    "claim": {
-                      "x-go-type": "*claimv1beta3.Claim",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1beta3/claim",
-                        "name": "claimv1beta3"
-                      },
-                      "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "-",
-                        "json": "claim,omitempty"
-                      },
-                      "x-order": 17,
-                      "$schema": "http://json-schema.org/draft-07/schema#",
-                      "title": "Claim Schema",
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "id",
-                        "organizationId",
-                        "resourceType",
-                        "resourceId",
-                        "claimant",
-                        "status",
-                        "claimedAt",
-                        "expiresAt",
-                        "createdAt",
-                        "updatedAt"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-order": 1
-                        },
-                        "organizationId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-go-name": "OrganizationID",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "organization_id"
-                          },
-                          "x-order": 2
-                        },
-                        "resourceType": {
-                          "type": "string",
-                          "description": "Type of the claimed resource, for example `schedule`.",
-                          "minLength": 1,
-                          "maxLength": 64,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "resource_type"
-                          },
-                          "x-order": 3
-                        },
-                        "resourceId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "resource_id"
-                          },
-                          "x-order": 4
-                        },
-                        "claimant": {
-                          "type": "string",
-                          "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                          "minLength": 1,
-                          "maxLength": 255,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "claimant"
-                          },
-                          "x-order": 5
-                        },
-                        "status": {
-                          "type": "string",
-                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
-                          "enum": [
-                            "active",
-                            "released",
-                            "expired"
-                          ],
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "status"
-                          },
-                          "x-order": 6
-                        },
-                        "claimedAt": {
-                          "description": "Time the claim was taken.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "claimed_at"
-                          },
-                          "x-order": 7,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "expiresAt": {
-                          "description": "Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "expires_at"
-                          },
-                          "x-order": 8,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "releasedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
-                          "nullable": true,
-                          "x-go-type": "core.NullTime",
-                          "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/core",
-                            "name": "core"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "released_at"
-                          },
-                          "x-order": 9
-                        },
-                        "createdAt": {
-                          "description": "Timestamp of claim creation.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at"
-                          },
-                          "x-order": 10,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "updatedAt": {
-                          "description": "Timestamp of last claim modification.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at"
-                          },
-                          "x-order": 11,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        }
-                      }
-                    },
-                    "pausedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_at"
-                      },
-                      "x-order": 18
-                    },
-                    "pausedBy": {
-                      "type": "string",
-                      "description": "Identity that paused the schedule. Server-managed.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_by"
-                      },
-                      "x-order": 19
-                    },
-                    "pauseReason": {
-                      "type": "string",
-                      "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "pause_reason"
-                      },
-                      "x-order": 20
-                    },
-                    "createdAt": {
-                      "description": "Timestamp of schedule creation.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at"
-                      },
-                      "x-order": 21,
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "updatedAt": {
-                      "description": "Timestamp of last schedule modification.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at"
-                      },
-                      "x-order": 22,
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "deletedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Timestamp when the schedule was soft-deleted. Null while live.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at"
-                      },
-                      "x-order": 23
                     }
                   }
                 }
@@ -1219,9 +793,7 @@ const ScheduleSchema: Record<string, unknown> = {
             }
           }
         }
-      }
-    },
-    "/api/schedules/claim": {
+      },
       "post": {
         "x-internal": [
           "cloud"
@@ -1229,31 +801,33 @@ const ScheduleSchema: Record<string, unknown> = {
         "tags": [
           "schedules"
         ],
-        "summary": "Claim the next due schedule",
-        "operationId": "claimNextSchedule",
-        "description": "Claims one due, enabled, unclaimed and unpaused schedule for `claimant`\nin a single server-side statement, optionally restricted to one\nworkspace, and answers it with its new claim. When no schedule\nqualifies the answer is 204: a lost race is never an error.\n`ignorePause` is the single operator override over the pause scopes.\n",
+        "summary": "Create a schedule",
+        "operationId": "createSchedule",
+        "description": "Creates a schedule in the organization of the authenticated session,\nowned by the session user (`createdBy`). `status` accepts only\n`pending`, `scheduled` and `cancelled`; omitted, the server picks\n`scheduled` when the schedule has a due time and `pending` otherwise.\n`nextRunAt` defaults to `runAt`. A `targetId` must name a live\nresource of `targetType` in the organization, else 400. Send\n`paused: true` to create the schedule already paused.\n",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Request to claim the next due schedule.",
+                "additionalProperties": false,
+                "description": "Payload for creating or updating a schedule. Contains only\nclient-settable fields; the owning `organizationId`, `createdBy`, the\nclaim, `pausedAt`, `pausedBy`, `lastRunAt`, `lastError` and the\ntimestamps are server-managed and refused as unknown fields. Pausing\nis a field, not an operation: `paused` pauses or resumes the\nschedule. `status` accepts only `pending`, `scheduled` and\n`cancelled` here (otherwise 400); the other values are set by the\nserver as the schedule is claimed and released.\n",
                 "required": [
-                  "claimant"
+                  "name",
+                  "action"
                 ],
                 "properties": {
-                  "claimant": {
+                  "id": {
                     "type": "string",
-                    "description": "Identity of the worker taking the claim.",
-                    "minLength": 1,
-                    "maxLength": 255
-                  },
-                  "durationMinutes": {
-                    "type": "integer",
-                    "description": "Requested claim duration in minutes; the server applies its default when omitted and may cap it.",
-                    "minimum": 1,
-                    "maximum": 1440
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    },
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "id,omitempty"
+                    }
                   },
                   "workspaceId": {
                     "type": "string",
@@ -1267,9 +841,133 @@ const ScheduleSchema: Record<string, unknown> = {
                       "json": "workspaceId,omitempty"
                     }
                   },
-                  "ignorePause": {
+                  "name": {
+                    "type": "string",
+                    "description": "Human-readable name for the schedule.",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "action": {
+                    "type": "string",
+                    "description": "The action the worker runs, for example a command name.",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "targetType": {
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "targetType,omitempty"
+                    },
+                    "type": "string",
+                    "description": "Type of the resource the schedule acts on, named the way a claim's\n`resourceType` is (lowercase snake_case construct name, for example\n`content_item` or `profile`). A server verifies the target types it\nserves and refuses others with 400. Set together with `targetId` or\nnot at all.\n",
+                    "pattern": "^[a-z][a-z0-9_]*$",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "targetId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    },
+                    "x-go-name": "TargetID",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "targetId,omitempty"
+                    }
+                  },
+                  "params": {
+                    "type": "object",
+                    "description": "Action parameters, stored as a JSON blob.",
+                    "x-go-type": "core.Map",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/core",
+                      "name": "core"
+                    },
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "enabled": {
                     "type": "boolean",
-                    "description": "Operator override that claims through the organization-wide and per-schedule pauses."
+                    "description": "Whether the schedule is eligible to run.",
+                    "default": true
+                  },
+                  "runAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Time the schedule first becomes due.",
+                    "nullable": true,
+                    "x-go-type": "core.NullTime",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/core",
+                      "name": "core"
+                    }
+                  },
+                  "nextRunAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Next time the schedule becomes due. Omitted on create, it defaults to `runAt`; omitted on update, it is kept. Send null for never due again.",
+                    "nullable": true,
+                    "x-go-type": "core.NullTime",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/core",
+                      "name": "core"
+                    }
+                  },
+                  "recurrence": {
+                    "type": "string",
+                    "description": "How the schedule repeats once it has run. Empty, `once` and `none`\nmean run once. `hourly` repeats every hour; `daily`, `weekly` and\n`monthly` repeat at the same wall-clock time one calendar day, week\nor month later in the schedule's `timezone`, so a daily schedule\nkeeps its local time across daylight-saving changes. `every:<n>`\nrepeats every `n` minutes (1 to 999999). Occurrences are counted\nfrom `runAt` (else from the current `nextRunAt`); the next due time\nis the first occurrence after the run is released, so missed runs\nare not replayed.\n",
+                    "pattern": "^(|once|none|hourly|daily|weekly|monthly|every:[1-9][0-9]{0,5})$",
+                    "maxLength": 255,
+                    "default": ""
+                  },
+                  "timezone": {
+                    "type": "string",
+                    "description": "IANA time zone name (for example `UTC` or `America/Chicago`) in which\n`daily`, `weekly` and `monthly` recurrences keep their wall-clock\ntime. Instants (`runAt`, `nextRunAt`) are always absolute. The server\nrefuses a name it does not know with 400.\n",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "pattern": "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+)*$",
+                    "default": "UTC"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
+                    "enum": [
+                      "pending",
+                      "scheduled",
+                      "assigned",
+                      "claimed",
+                      "running",
+                      "retrying",
+                      "completed",
+                      "failed",
+                      "cancelled"
+                    ]
+                  },
+                  "retryCount": {
+                    "type": "integer",
+                    "description": "Retries used so far for the current run, for example 0 to re-arm a schedule. Omitted on update, it is kept.",
+                    "minimum": 0
+                  },
+                  "maxRetries": {
+                    "type": "integer",
+                    "description": "Maximum retries before the run is marked failed.",
+                    "minimum": 0,
+                    "default": 0
+                  },
+                  "retryDelayMinutes": {
+                    "type": "integer",
+                    "description": "Minutes to wait before a retry becomes due.",
+                    "minimum": 0,
+                    "default": 0
+                  },
+                  "paused": {
+                    "type": "boolean",
+                    "description": "`true` pauses the schedule so it is never claimed; `false`\nresumes it. Omit to leave the pause unchanged. The server records\n`pausedAt` and `pausedBy`.\n"
+                  },
+                  "pauseReason": {
+                    "type": "string",
+                    "description": "Reason for pausing; stored only while `paused` is true and cleared on resume.",
+                    "maxLength": 1000
                   }
                 }
               }
@@ -1277,14 +975,22 @@ const ScheduleSchema: Record<string, unknown> = {
           }
         },
         "responses": {
-          "200": {
-            "description": "The claimed schedule",
+          "201": {
+            "description": "Schedule created",
+            "headers": {
+              "ETag": {
+                "description": "Strong entity tag of the schedule. It changes whenever the schedule changes; send it back as `If-Match` to make updateSchedule conditional.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Schedule Schema",
-                  "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
+                  "description": "Server-returned schedule. A schedule is a job: an action to run, what it\nacts on (`targetType`, `targetId`) and its parameters, when it is due\n(`runAt`, `nextRunAt`, `recurrence` in `timezone`), its retry budget and\nits outcome. Schedules belong to an organization and may be linked to a\nworkspace. A worker takes a schedule through the generic `claim`\nconstruct (`POST /api/claims` with `resourceType` `schedule`); there is\nno schedule-specific claim route. While the claim is live no other worker\ncan take the schedule, and a claim past its `expiresAt` is stale so the\nschedule is claimable again. Releasing the claim records the run's\noutcome on the schedule in the same transaction (see `status`). The\n`claim` and the status values `assigned`, `claimed` and `running` are\nserver-managed. Pausing is data, not an operation: a client sets `paused`\n(and optionally `pauseReason`) on create or update, and the server\nrecords `pausedAt` and `pausedBy`. Fields marked readOnly are\nserver-managed and ignored on input.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -1293,6 +999,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     "name",
                     "action",
                     "enabled",
+                    "timezone",
                     "status",
                     "retryCount",
                     "maxRetries",
@@ -1308,6 +1015,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
+                      "readOnly": true,
                       "x-order": 1
                     },
                     "organizationId": {
@@ -1318,6 +1026,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
+                      "readOnly": true,
                       "x-go-name": "OrganizationID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id"
@@ -1338,6 +1047,21 @@ const ScheduleSchema: Record<string, unknown> = {
                       },
                       "x-order": 3
                     },
+                    "createdBy": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "readOnly": true,
+                      "x-go-name": "CreatedBy",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner"
+                      },
+                      "x-order": 4
+                    },
                     "name": {
                       "type": "string",
                       "description": "Human-readable name for the schedule.",
@@ -1346,7 +1070,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "name"
                       },
-                      "x-order": 4
+                      "x-order": 5
                     },
                     "action": {
                       "type": "string",
@@ -1356,11 +1080,38 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "action"
                       },
-                      "x-order": 5
+                      "x-order": 6
+                    },
+                    "targetType": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "target_type",
+                        "json": "targetType,omitempty"
+                      },
+                      "x-order": 7,
+                      "type": "string",
+                      "description": "Type of the resource the schedule acts on, named the way a claim's\n`resourceType` is (lowercase snake_case construct name, for example\n`content_item` or `profile`). A server verifies the target types it\nserves and refuses others with 400. Set together with `targetId` or\nnot at all.\n",
+                      "pattern": "^[a-z][a-z0-9_]*$",
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "targetId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-name": "TargetID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "target_id",
+                        "json": "targetId,omitempty"
+                      },
+                      "x-order": 8
                     },
                     "params": {
                       "type": "object",
-                      "description": "Action parameters, stored as a JSON blob.",
+                      "description": "Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here.",
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
@@ -1370,15 +1121,16 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "params"
                       },
-                      "x-order": 6
+                      "x-order": 9
                     },
                     "enabled": {
                       "type": "boolean",
                       "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
+                      "default": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "enabled"
                       },
-                      "x-order": 7
+                      "x-order": 10
                     },
                     "runAt": {
                       "type": "string",
@@ -1393,12 +1145,12 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "run_at"
                       },
-                      "x-order": 8
+                      "x-order": 11
                     },
                     "nextRunAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Next time a recurring or retrying schedule becomes due.",
+                      "description": "Next time the schedule becomes due. Null when it is never due again.",
                       "nullable": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
@@ -1406,22 +1158,36 @@ const ScheduleSchema: Record<string, unknown> = {
                         "name": "core"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "next_run_at"
+                        "db": "next_run"
                       },
-                      "x-order": 9
+                      "x-order": 12
                     },
                     "recurrence": {
-                      "type": "string",
-                      "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                      "maxLength": 255,
                       "x-oapi-codegen-extra-tags": {
                         "db": "recurrence"
                       },
-                      "x-order": 10
+                      "x-order": 13,
+                      "type": "string",
+                      "description": "How the schedule repeats once it has run. Empty, `once` and `none`\nmean run once. `hourly` repeats every hour; `daily`, `weekly` and\n`monthly` repeat at the same wall-clock time one calendar day, week\nor month later in the schedule's `timezone`, so a daily schedule\nkeeps its local time across daylight-saving changes. `every:<n>`\nrepeats every `n` minutes (1 to 999999). Occurrences are counted\nfrom `runAt` (else from the current `nextRunAt`); the next due time\nis the first occurrence after the run is released, so missed runs\nare not replayed.\n",
+                      "pattern": "^(|once|none|hourly|daily|weekly|monthly|every:[1-9][0-9]{0,5})$",
+                      "maxLength": 255,
+                      "default": ""
+                    },
+                    "timezone": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "timezone"
+                      },
+                      "x-order": 14,
+                      "type": "string",
+                      "description": "IANA time zone name (for example `UTC` or `America/Chicago`) in which\n`daily`, `weekly` and `monthly` recurrences keep their wall-clock\ntime. Instants (`runAt`, `nextRunAt`) are always absolute. The server\nrefuses a name it does not know with 400.\n",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "pattern": "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+)*$",
+                      "default": "UTC"
                     },
                     "status": {
                       "type": "string",
-                      "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
+                      "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
                       "enum": [
                         "pending",
                         "scheduled",
@@ -1436,57 +1202,63 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "status"
                       },
-                      "x-order": 11
+                      "x-order": 15
                     },
                     "retryCount": {
                       "type": "integer",
                       "description": "Attempts already retried for the current run.",
                       "minimum": 0,
+                      "default": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "retry_count"
                       },
-                      "x-order": 12
+                      "x-order": 16
                     },
                     "maxRetries": {
                       "type": "integer",
                       "description": "Maximum retries before the run is marked failed.",
                       "minimum": 0,
+                      "default": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "max_retries"
                       },
-                      "x-order": 13
+                      "x-order": 17
                     },
                     "retryDelayMinutes": {
                       "type": "integer",
                       "description": "Minutes to wait before a retry becomes due.",
                       "minimum": 0,
+                      "default": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "retry_delay_minutes"
                       },
-                      "x-order": 14
+                      "x-order": 18
                     },
                     "lastRunAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Time of the most recent attempt.",
+                      "description": "Time the most recent attempt ended (the release time of its claim). Server-managed.",
                       "nullable": true,
+                      "readOnly": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
                         "name": "core"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "last_run_at"
+                        "db": "last_run"
                       },
-                      "x-order": 15
+                      "x-order": 19
                     },
                     "lastError": {
                       "type": "string",
-                      "description": "Error reported by the most recent attempt.",
+                      "description": "Error reported by the most recent attempt; empty after a successful one. Server-managed.",
+                      "maxLength": 5000,
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "last_error"
                       },
-                      "x-order": 16
+                      "x-order": 20
                     },
                     "claim": {
                       "x-go-type": "*claimv1beta3.Claim",
@@ -1494,12 +1266,13 @@ const ScheduleSchema: Record<string, unknown> = {
                         "path": "github.com/meshery/schemas/models/v1beta3/claim",
                         "name": "claimv1beta3"
                       },
-                      "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
+                      "description": "The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed.",
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "-",
                         "json": "claim,omitempty"
                       },
-                      "x-order": 17,
+                      "x-order": 21,
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "title": "Claim Schema",
                       "type": "object",
@@ -1509,7 +1282,6 @@ const ScheduleSchema: Record<string, unknown> = {
                         "organizationId",
                         "resourceType",
                         "resourceId",
-                        "claimant",
                         "status",
                         "claimedAt",
                         "expiresAt",
@@ -1543,7 +1315,7 @@ const ScheduleSchema: Record<string, unknown> = {
                         },
                         "resourceType": {
                           "type": "string",
-                          "description": "Type of the claimed resource, for example `schedule`.",
+                          "description": "Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`.",
                           "minLength": 1,
                           "maxLength": 64,
                           "x-oapi-codegen-extra-tags": {
@@ -1564,19 +1336,39 @@ const ScheduleSchema: Record<string, unknown> = {
                           },
                           "x-order": 4
                         },
-                        "claimant": {
+                        "claimantConnectionId": {
                           "type": "string",
-                          "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                          "minLength": 1,
-                          "maxLength": 255,
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ClaimantConnectionID",
                           "x-oapi-codegen-extra-tags": {
-                            "db": "claimant"
+                            "db": "claimant_connection_id",
+                            "json": "claimantConnectionId,omitempty"
                           },
                           "x-order": 5
                         },
+                        "claimantUserId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ClaimantUserID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "claimant_user_id",
+                            "json": "claimantUserId,omitempty"
+                          },
+                          "x-order": 6
+                        },
                         "status": {
                           "type": "string",
-                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
+                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.\n",
                           "enum": [
                             "active",
                             "released",
@@ -1585,14 +1377,14 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "status"
                           },
-                          "x-order": 6
+                          "x-order": 7
                         },
                         "claimedAt": {
                           "description": "Time the claim was taken.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "claimed_at"
                           },
-                          "x-order": 7,
+                          "x-order": 8,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
@@ -1602,15 +1394,30 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "expires_at"
                           },
-                          "x-order": 8,
+                          "x-order": 9,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
                         },
+                        "renewedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Time of the last renewal. Null until the claim is first renewed.",
+                          "nullable": true,
+                          "x-go-type": "core.NullTime",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "renewed_at"
+                          },
+                          "x-order": 10
+                        },
                         "releasedAt": {
                           "type": "string",
                           "format": "date-time",
-                          "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
+                          "description": "Time the claim was released. Null while the claim is active or after it expired.",
                           "nullable": true,
                           "x-go-type": "core.NullTime",
                           "x-go-type-import": {
@@ -1620,14 +1427,68 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "released_at"
                           },
-                          "x-order": 9
+                          "x-order": 11
+                        },
+                        "outcome": {
+                          "type": "string",
+                          "description": "What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.\n",
+                          "enum": [
+                            "completed",
+                            "failed",
+                            "cancelled"
+                          ],
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "outcome",
+                            "json": "outcome,omitempty"
+                          },
+                          "x-order": 12
+                        },
+                        "outcomeError": {
+                          "type": "string",
+                          "description": "Error reported with a `failed` outcome. Omitted otherwise.",
+                          "maxLength": 5000,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "outcome_error",
+                            "json": "outcomeError,omitempty"
+                          },
+                          "x-order": 13
+                        },
+                        "outcomeEventId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "OutcomeEventID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "outcome_event_id",
+                            "json": "outcomeEventId,omitempty"
+                          },
+                          "x-order": 14
+                        },
+                        "releasedBy": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ReleasedBy",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "released_by",
+                            "json": "releasedBy,omitempty"
+                          },
+                          "x-order": 15
                         },
                         "createdAt": {
                           "description": "Timestamp of claim creation.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "created_at"
                           },
-                          "x-order": 10,
+                          "x-order": 16,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
@@ -1637,7 +1498,7 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "updated_at"
                           },
-                          "x-order": 11,
+                          "x-order": 17,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
@@ -1649,6 +1510,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "format": "date-time",
                       "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
                       "nullable": true,
+                      "readOnly": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
@@ -1657,41 +1519,50 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "paused_at"
                       },
-                      "x-order": 18
+                      "x-order": 22
                     },
                     "pausedBy": {
                       "type": "string",
-                      "description": "Identity that paused the schedule. Server-managed.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_by"
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
                       },
-                      "x-order": 19
+                      "readOnly": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "paused_by",
+                        "json": "pausedBy,omitempty"
+                      },
+                      "x-order": 23
                     },
                     "pauseReason": {
                       "type": "string",
                       "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
+                      "maxLength": 1000,
                       "x-oapi-codegen-extra-tags": {
                         "db": "pause_reason"
                       },
-                      "x-order": 20
+                      "x-order": 24
                     },
                     "createdAt": {
                       "description": "Timestamp of schedule creation.",
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at"
                       },
-                      "x-order": 21,
+                      "x-order": 25,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "updatedAt": {
                       "description": "Timestamp of last schedule modification.",
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at"
                       },
-                      "x-order": 22,
+                      "x-order": 26,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -1701,6 +1572,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "format": "date-time",
                       "description": "Timestamp when the schedule was soft-deleted. Null while live.",
                       "nullable": true,
+                      "readOnly": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
@@ -1709,15 +1581,12 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
                       },
-                      "x-order": 23
+                      "x-order": 27
                     }
                   }
                 }
               }
             }
-          },
-          "204": {
-            "description": "No schedule was due and claimable"
           },
           "400": {
             "description": "Invalid request body or request param",
@@ -1772,7 +1641,7 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Get a schedule by ID",
         "operationId": "getScheduleById",
-        "description": "Returns the schedule with its live claim, when one is held.\n",
+        "description": "Returns the schedule with its live claim, when one is held, and its\nentity tag in the `ETag` header.\n",
         "parameters": [
           {
             "name": "scheduleId",
@@ -1793,12 +1662,20 @@ const ScheduleSchema: Record<string, unknown> = {
         "responses": {
           "200": {
             "description": "Schedule response",
+            "headers": {
+              "ETag": {
+                "description": "Strong entity tag of the schedule. It changes whenever the schedule changes; send it back as `If-Match` to make updateSchedule conditional.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Schedule Schema",
-                  "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
+                  "description": "Server-returned schedule. A schedule is a job: an action to run, what it\nacts on (`targetType`, `targetId`) and its parameters, when it is due\n(`runAt`, `nextRunAt`, `recurrence` in `timezone`), its retry budget and\nits outcome. Schedules belong to an organization and may be linked to a\nworkspace. A worker takes a schedule through the generic `claim`\nconstruct (`POST /api/claims` with `resourceType` `schedule`); there is\nno schedule-specific claim route. While the claim is live no other worker\ncan take the schedule, and a claim past its `expiresAt` is stale so the\nschedule is claimable again. Releasing the claim records the run's\noutcome on the schedule in the same transaction (see `status`). The\n`claim` and the status values `assigned`, `claimed` and `running` are\nserver-managed. Pausing is data, not an operation: a client sets `paused`\n(and optionally `pauseReason`) on create or update, and the server\nrecords `pausedAt` and `pausedBy`. Fields marked readOnly are\nserver-managed and ignored on input.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -1807,6 +1684,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     "name",
                     "action",
                     "enabled",
+                    "timezone",
                     "status",
                     "retryCount",
                     "maxRetries",
@@ -1822,6 +1700,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
+                      "readOnly": true,
                       "x-order": 1
                     },
                     "organizationId": {
@@ -1832,6 +1711,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
+                      "readOnly": true,
                       "x-go-name": "OrganizationID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id"
@@ -1852,6 +1732,21 @@ const ScheduleSchema: Record<string, unknown> = {
                       },
                       "x-order": 3
                     },
+                    "createdBy": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "readOnly": true,
+                      "x-go-name": "CreatedBy",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner"
+                      },
+                      "x-order": 4
+                    },
                     "name": {
                       "type": "string",
                       "description": "Human-readable name for the schedule.",
@@ -1860,7 +1755,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "name"
                       },
-                      "x-order": 4
+                      "x-order": 5
                     },
                     "action": {
                       "type": "string",
@@ -1870,11 +1765,38 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "action"
                       },
-                      "x-order": 5
+                      "x-order": 6
+                    },
+                    "targetType": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "target_type",
+                        "json": "targetType,omitempty"
+                      },
+                      "x-order": 7,
+                      "type": "string",
+                      "description": "Type of the resource the schedule acts on, named the way a claim's\n`resourceType` is (lowercase snake_case construct name, for example\n`content_item` or `profile`). A server verifies the target types it\nserves and refuses others with 400. Set together with `targetId` or\nnot at all.\n",
+                      "pattern": "^[a-z][a-z0-9_]*$",
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "targetId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-name": "TargetID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "target_id",
+                        "json": "targetId,omitempty"
+                      },
+                      "x-order": 8
                     },
                     "params": {
                       "type": "object",
-                      "description": "Action parameters, stored as a JSON blob.",
+                      "description": "Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here.",
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
@@ -1884,15 +1806,16 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "params"
                       },
-                      "x-order": 6
+                      "x-order": 9
                     },
                     "enabled": {
                       "type": "boolean",
                       "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
+                      "default": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "enabled"
                       },
-                      "x-order": 7
+                      "x-order": 10
                     },
                     "runAt": {
                       "type": "string",
@@ -1907,12 +1830,12 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "run_at"
                       },
-                      "x-order": 8
+                      "x-order": 11
                     },
                     "nextRunAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Next time a recurring or retrying schedule becomes due.",
+                      "description": "Next time the schedule becomes due. Null when it is never due again.",
                       "nullable": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
@@ -1920,22 +1843,36 @@ const ScheduleSchema: Record<string, unknown> = {
                         "name": "core"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "next_run_at"
+                        "db": "next_run"
                       },
-                      "x-order": 9
+                      "x-order": 12
                     },
                     "recurrence": {
-                      "type": "string",
-                      "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                      "maxLength": 255,
                       "x-oapi-codegen-extra-tags": {
                         "db": "recurrence"
                       },
-                      "x-order": 10
+                      "x-order": 13,
+                      "type": "string",
+                      "description": "How the schedule repeats once it has run. Empty, `once` and `none`\nmean run once. `hourly` repeats every hour; `daily`, `weekly` and\n`monthly` repeat at the same wall-clock time one calendar day, week\nor month later in the schedule's `timezone`, so a daily schedule\nkeeps its local time across daylight-saving changes. `every:<n>`\nrepeats every `n` minutes (1 to 999999). Occurrences are counted\nfrom `runAt` (else from the current `nextRunAt`); the next due time\nis the first occurrence after the run is released, so missed runs\nare not replayed.\n",
+                      "pattern": "^(|once|none|hourly|daily|weekly|monthly|every:[1-9][0-9]{0,5})$",
+                      "maxLength": 255,
+                      "default": ""
+                    },
+                    "timezone": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "timezone"
+                      },
+                      "x-order": 14,
+                      "type": "string",
+                      "description": "IANA time zone name (for example `UTC` or `America/Chicago`) in which\n`daily`, `weekly` and `monthly` recurrences keep their wall-clock\ntime. Instants (`runAt`, `nextRunAt`) are always absolute. The server\nrefuses a name it does not know with 400.\n",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "pattern": "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+)*$",
+                      "default": "UTC"
                     },
                     "status": {
                       "type": "string",
-                      "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
+                      "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
                       "enum": [
                         "pending",
                         "scheduled",
@@ -1950,57 +1887,63 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "status"
                       },
-                      "x-order": 11
+                      "x-order": 15
                     },
                     "retryCount": {
                       "type": "integer",
                       "description": "Attempts already retried for the current run.",
                       "minimum": 0,
+                      "default": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "retry_count"
                       },
-                      "x-order": 12
+                      "x-order": 16
                     },
                     "maxRetries": {
                       "type": "integer",
                       "description": "Maximum retries before the run is marked failed.",
                       "minimum": 0,
+                      "default": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "max_retries"
                       },
-                      "x-order": 13
+                      "x-order": 17
                     },
                     "retryDelayMinutes": {
                       "type": "integer",
                       "description": "Minutes to wait before a retry becomes due.",
                       "minimum": 0,
+                      "default": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "retry_delay_minutes"
                       },
-                      "x-order": 14
+                      "x-order": 18
                     },
                     "lastRunAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Time of the most recent attempt.",
+                      "description": "Time the most recent attempt ended (the release time of its claim). Server-managed.",
                       "nullable": true,
+                      "readOnly": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
                         "name": "core"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "last_run_at"
+                        "db": "last_run"
                       },
-                      "x-order": 15
+                      "x-order": 19
                     },
                     "lastError": {
                       "type": "string",
-                      "description": "Error reported by the most recent attempt.",
+                      "description": "Error reported by the most recent attempt; empty after a successful one. Server-managed.",
+                      "maxLength": 5000,
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "last_error"
                       },
-                      "x-order": 16
+                      "x-order": 20
                     },
                     "claim": {
                       "x-go-type": "*claimv1beta3.Claim",
@@ -2008,12 +1951,13 @@ const ScheduleSchema: Record<string, unknown> = {
                         "path": "github.com/meshery/schemas/models/v1beta3/claim",
                         "name": "claimv1beta3"
                       },
-                      "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
+                      "description": "The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed.",
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "-",
                         "json": "claim,omitempty"
                       },
-                      "x-order": 17,
+                      "x-order": 21,
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "title": "Claim Schema",
                       "type": "object",
@@ -2023,7 +1967,6 @@ const ScheduleSchema: Record<string, unknown> = {
                         "organizationId",
                         "resourceType",
                         "resourceId",
-                        "claimant",
                         "status",
                         "claimedAt",
                         "expiresAt",
@@ -2057,7 +2000,7 @@ const ScheduleSchema: Record<string, unknown> = {
                         },
                         "resourceType": {
                           "type": "string",
-                          "description": "Type of the claimed resource, for example `schedule`.",
+                          "description": "Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`.",
                           "minLength": 1,
                           "maxLength": 64,
                           "x-oapi-codegen-extra-tags": {
@@ -2078,19 +2021,39 @@ const ScheduleSchema: Record<string, unknown> = {
                           },
                           "x-order": 4
                         },
-                        "claimant": {
+                        "claimantConnectionId": {
                           "type": "string",
-                          "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                          "minLength": 1,
-                          "maxLength": 255,
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ClaimantConnectionID",
                           "x-oapi-codegen-extra-tags": {
-                            "db": "claimant"
+                            "db": "claimant_connection_id",
+                            "json": "claimantConnectionId,omitempty"
                           },
                           "x-order": 5
                         },
+                        "claimantUserId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ClaimantUserID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "claimant_user_id",
+                            "json": "claimantUserId,omitempty"
+                          },
+                          "x-order": 6
+                        },
                         "status": {
                           "type": "string",
-                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
+                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.\n",
                           "enum": [
                             "active",
                             "released",
@@ -2099,14 +2062,14 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "status"
                           },
-                          "x-order": 6
+                          "x-order": 7
                         },
                         "claimedAt": {
                           "description": "Time the claim was taken.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "claimed_at"
                           },
-                          "x-order": 7,
+                          "x-order": 8,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
@@ -2116,15 +2079,30 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "expires_at"
                           },
-                          "x-order": 8,
+                          "x-order": 9,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
                         },
+                        "renewedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Time of the last renewal. Null until the claim is first renewed.",
+                          "nullable": true,
+                          "x-go-type": "core.NullTime",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "renewed_at"
+                          },
+                          "x-order": 10
+                        },
                         "releasedAt": {
                           "type": "string",
                           "format": "date-time",
-                          "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
+                          "description": "Time the claim was released. Null while the claim is active or after it expired.",
                           "nullable": true,
                           "x-go-type": "core.NullTime",
                           "x-go-type-import": {
@@ -2134,14 +2112,68 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "released_at"
                           },
-                          "x-order": 9
+                          "x-order": 11
+                        },
+                        "outcome": {
+                          "type": "string",
+                          "description": "What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.\n",
+                          "enum": [
+                            "completed",
+                            "failed",
+                            "cancelled"
+                          ],
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "outcome",
+                            "json": "outcome,omitempty"
+                          },
+                          "x-order": 12
+                        },
+                        "outcomeError": {
+                          "type": "string",
+                          "description": "Error reported with a `failed` outcome. Omitted otherwise.",
+                          "maxLength": 5000,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "outcome_error",
+                            "json": "outcomeError,omitempty"
+                          },
+                          "x-order": 13
+                        },
+                        "outcomeEventId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "OutcomeEventID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "outcome_event_id",
+                            "json": "outcomeEventId,omitempty"
+                          },
+                          "x-order": 14
+                        },
+                        "releasedBy": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ReleasedBy",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "released_by",
+                            "json": "releasedBy,omitempty"
+                          },
+                          "x-order": 15
                         },
                         "createdAt": {
                           "description": "Timestamp of claim creation.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "created_at"
                           },
-                          "x-order": 10,
+                          "x-order": 16,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
@@ -2151,7 +2183,7 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "updated_at"
                           },
-                          "x-order": 11,
+                          "x-order": 17,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
@@ -2163,6 +2195,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "format": "date-time",
                       "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
                       "nullable": true,
+                      "readOnly": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
@@ -2171,41 +2204,50 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "paused_at"
                       },
-                      "x-order": 18
+                      "x-order": 22
                     },
                     "pausedBy": {
                       "type": "string",
-                      "description": "Identity that paused the schedule. Server-managed.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_by"
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
                       },
-                      "x-order": 19
+                      "readOnly": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "paused_by",
+                        "json": "pausedBy,omitempty"
+                      },
+                      "x-order": 23
                     },
                     "pauseReason": {
                       "type": "string",
                       "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
+                      "maxLength": 1000,
                       "x-oapi-codegen-extra-tags": {
                         "db": "pause_reason"
                       },
-                      "x-order": 20
+                      "x-order": 24
                     },
                     "createdAt": {
                       "description": "Timestamp of schedule creation.",
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at"
                       },
-                      "x-order": 21,
+                      "x-order": 25,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "updatedAt": {
                       "description": "Timestamp of last schedule modification.",
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at"
                       },
-                      "x-order": 22,
+                      "x-order": 26,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -2215,6 +2257,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "format": "date-time",
                       "description": "Timestamp when the schedule was soft-deleted. Null while live.",
                       "nullable": true,
+                      "readOnly": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
@@ -2223,7 +2266,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
                       },
-                      "x-order": 23
+                      "x-order": 27
                     }
                   }
                 }
@@ -2271,7 +2314,7 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Update a schedule",
         "operationId": "updateSchedule",
-        "description": "Updates the client-settable fields of a schedule. The server-managed\nfields (the claim, `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`,\n`lastError`, `organizationId` and the timestamps) are ignored on input.\n`status` accepts only `pending`, `scheduled` and `cancelled`. Pause or resume the\nschedule by setting `paused` (with an optional `pauseReason`); the\nserver then records `pausedAt` and `pausedBy`. Pausing a paused\nschedule keeps its original `pausedAt`; omitting `paused` leaves the\npause unchanged.\n",
+        "description": "Updates the client-settable fields present in the payload; an\nomitted optional field keeps its stored value, and `null` clears a\nnullable one (`workspaceId`, `runAt`, `nextRunAt`, and `targetType`\nwith `targetId`). `status` accepts only\n`pending`, `scheduled` and `cancelled`. Pause or resume the schedule\nby setting `paused` (with an optional `pauseReason`); the server then\nrecords `pausedAt` and `pausedBy`. Pausing a paused schedule keeps\nits original `pausedAt`; omitting `paused` leaves the pause\nunchanged. The optional `If-Match` header makes the write\nconditional on the entity tag the schedule carried when it was read:\nwhen it no longer matches, the request is refused with 412 and\nnothing is written. Without `If-Match` the write is unconditional.\n",
         "parameters": [
           {
             "name": "scheduleId",
@@ -2287,6 +2330,16 @@ const ScheduleSchema: Record<string, unknown> = {
                 "path": "github.com/gofrs/uuid"
               }
             }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "description": "Entity tag of the schedule as last read, from the `ETag` header of getScheduleById, createSchedule or updateSchedule. When present the write applies only if it still matches; otherwise 412.",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
           }
         ],
         "requestBody": {
@@ -2295,7 +2348,8 @@ const ScheduleSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating a schedule. Contains only\nclient-settable fields; the owning `organizationId`, the claim,\n`pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError` and the\ntimestamps are server-managed. The server ignores them on input. Pausing\nis a field, not an operation: `paused` pauses or resumes the schedule.\n`status` accepts only `pending`,\n`scheduled` and `cancelled` here; the other values are set by the\nclaim and release operations.\n",
+                "additionalProperties": false,
+                "description": "Payload for creating or updating a schedule. Contains only\nclient-settable fields; the owning `organizationId`, `createdBy`, the\nclaim, `pausedAt`, `pausedBy`, `lastRunAt`, `lastError` and the\ntimestamps are server-managed and refused as unknown fields. Pausing\nis a field, not an operation: `paused` pauses or resumes the\nschedule. `status` accepts only `pending`, `scheduled` and\n`cancelled` here (otherwise 400); the other values are set by the\nserver as the schedule is claimed and released.\n",
                 "required": [
                   "name",
                   "action"
@@ -2337,6 +2391,29 @@ const ScheduleSchema: Record<string, unknown> = {
                     "minLength": 1,
                     "maxLength": 255
                   },
+                  "targetType": {
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "targetType,omitempty"
+                    },
+                    "type": "string",
+                    "description": "Type of the resource the schedule acts on, named the way a claim's\n`resourceType` is (lowercase snake_case construct name, for example\n`content_item` or `profile`). A server verifies the target types it\nserves and refuses others with 400. Set together with `targetId` or\nnot at all.\n",
+                    "pattern": "^[a-z][a-z0-9_]*$",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "targetId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    },
+                    "x-go-name": "TargetID",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "targetId,omitempty"
+                    }
+                  },
                   "params": {
                     "type": "object",
                     "description": "Action parameters, stored as a JSON blob.",
@@ -2349,7 +2426,8 @@ const ScheduleSchema: Record<string, unknown> = {
                   },
                   "enabled": {
                     "type": "boolean",
-                    "description": "Whether the schedule is eligible to run. Defaults to true."
+                    "description": "Whether the schedule is eligible to run.",
+                    "default": true
                   },
                   "runAt": {
                     "type": "string",
@@ -2362,33 +2440,67 @@ const ScheduleSchema: Record<string, unknown> = {
                       "name": "core"
                     }
                   },
+                  "nextRunAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Next time the schedule becomes due. Omitted on create, it defaults to `runAt`; omitted on update, it is kept. Send null for never due again.",
+                    "nullable": true,
+                    "x-go-type": "core.NullTime",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/core",
+                      "name": "core"
+                    }
+                  },
                   "recurrence": {
                     "type": "string",
-                    "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                    "maxLength": 255
+                    "description": "How the schedule repeats once it has run. Empty, `once` and `none`\nmean run once. `hourly` repeats every hour; `daily`, `weekly` and\n`monthly` repeat at the same wall-clock time one calendar day, week\nor month later in the schedule's `timezone`, so a daily schedule\nkeeps its local time across daylight-saving changes. `every:<n>`\nrepeats every `n` minutes (1 to 999999). Occurrences are counted\nfrom `runAt` (else from the current `nextRunAt`); the next due time\nis the first occurrence after the run is released, so missed runs\nare not replayed.\n",
+                    "pattern": "^(|once|none|hourly|daily|weekly|monthly|every:[1-9][0-9]{0,5})$",
+                    "maxLength": 255,
+                    "default": ""
+                  },
+                  "timezone": {
+                    "type": "string",
+                    "description": "IANA time zone name (for example `UTC` or `America/Chicago`) in which\n`daily`, `weekly` and `monthly` recurrences keep their wall-clock\ntime. Instants (`runAt`, `nextRunAt`) are always absolute. The server\nrefuses a name it does not know with 400.\n",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "pattern": "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+)*$",
+                    "default": "UTC"
                   },
                   "status": {
                     "type": "string",
-                    "description": "Client-settable status. Omit to let the server choose `scheduled` for a due-timed schedule and `pending` otherwise.",
+                    "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
                     "enum": [
                       "pending",
                       "scheduled",
+                      "assigned",
+                      "claimed",
+                      "running",
+                      "retrying",
+                      "completed",
+                      "failed",
                       "cancelled"
                     ]
+                  },
+                  "retryCount": {
+                    "type": "integer",
+                    "description": "Retries used so far for the current run, for example 0 to re-arm a schedule. Omitted on update, it is kept.",
+                    "minimum": 0
                   },
                   "maxRetries": {
                     "type": "integer",
                     "description": "Maximum retries before the run is marked failed.",
-                    "minimum": 0
+                    "minimum": 0,
+                    "default": 0
                   },
                   "retryDelayMinutes": {
                     "type": "integer",
                     "description": "Minutes to wait before a retry becomes due.",
-                    "minimum": 0
+                    "minimum": 0,
+                    "default": 0
                   },
                   "paused": {
                     "type": "boolean",
-                    "description": "`true` pauses the schedule so it is never claimed (unless a claim\ncarries `ignorePause`); `false` resumes it. Omit to leave the pause\nunchanged. The server records `pausedAt` and `pausedBy`.\n"
+                    "description": "`true` pauses the schedule so it is never claimed; `false`\nresumes it. Omit to leave the pause unchanged. The server records\n`pausedAt` and `pausedBy`.\n"
                   },
                   "pauseReason": {
                     "type": "string",
@@ -2403,12 +2515,20 @@ const ScheduleSchema: Record<string, unknown> = {
         "responses": {
           "200": {
             "description": "Schedule updated",
+            "headers": {
+              "ETag": {
+                "description": "Strong entity tag of the schedule. It changes whenever the schedule changes; send it back as `If-Match` to make updateSchedule conditional.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Schedule Schema",
-                  "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
+                  "description": "Server-returned schedule. A schedule is a job: an action to run, what it\nacts on (`targetType`, `targetId`) and its parameters, when it is due\n(`runAt`, `nextRunAt`, `recurrence` in `timezone`), its retry budget and\nits outcome. Schedules belong to an organization and may be linked to a\nworkspace. A worker takes a schedule through the generic `claim`\nconstruct (`POST /api/claims` with `resourceType` `schedule`); there is\nno schedule-specific claim route. While the claim is live no other worker\ncan take the schedule, and a claim past its `expiresAt` is stale so the\nschedule is claimable again. Releasing the claim records the run's\noutcome on the schedule in the same transaction (see `status`). The\n`claim` and the status values `assigned`, `claimed` and `running` are\nserver-managed. Pausing is data, not an operation: a client sets `paused`\n(and optionally `pauseReason`) on create or update, and the server\nrecords `pausedAt` and `pausedBy`. Fields marked readOnly are\nserver-managed and ignored on input.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -2417,6 +2537,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     "name",
                     "action",
                     "enabled",
+                    "timezone",
                     "status",
                     "retryCount",
                     "maxRetries",
@@ -2432,6 +2553,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
+                      "readOnly": true,
                       "x-order": 1
                     },
                     "organizationId": {
@@ -2442,6 +2564,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
+                      "readOnly": true,
                       "x-go-name": "OrganizationID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id"
@@ -2462,6 +2585,21 @@ const ScheduleSchema: Record<string, unknown> = {
                       },
                       "x-order": 3
                     },
+                    "createdBy": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "readOnly": true,
+                      "x-go-name": "CreatedBy",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner"
+                      },
+                      "x-order": 4
+                    },
                     "name": {
                       "type": "string",
                       "description": "Human-readable name for the schedule.",
@@ -2470,7 +2608,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "name"
                       },
-                      "x-order": 4
+                      "x-order": 5
                     },
                     "action": {
                       "type": "string",
@@ -2480,11 +2618,38 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "action"
                       },
-                      "x-order": 5
+                      "x-order": 6
+                    },
+                    "targetType": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "target_type",
+                        "json": "targetType,omitempty"
+                      },
+                      "x-order": 7,
+                      "type": "string",
+                      "description": "Type of the resource the schedule acts on, named the way a claim's\n`resourceType` is (lowercase snake_case construct name, for example\n`content_item` or `profile`). A server verifies the target types it\nserves and refuses others with 400. Set together with `targetId` or\nnot at all.\n",
+                      "pattern": "^[a-z][a-z0-9_]*$",
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "targetId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-name": "TargetID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "target_id",
+                        "json": "targetId,omitempty"
+                      },
+                      "x-order": 8
                     },
                     "params": {
                       "type": "object",
-                      "description": "Action parameters, stored as a JSON blob.",
+                      "description": "Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here.",
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
@@ -2494,15 +2659,16 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "params"
                       },
-                      "x-order": 6
+                      "x-order": 9
                     },
                     "enabled": {
                       "type": "boolean",
                       "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
+                      "default": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "enabled"
                       },
-                      "x-order": 7
+                      "x-order": 10
                     },
                     "runAt": {
                       "type": "string",
@@ -2517,12 +2683,12 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "run_at"
                       },
-                      "x-order": 8
+                      "x-order": 11
                     },
                     "nextRunAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Next time a recurring or retrying schedule becomes due.",
+                      "description": "Next time the schedule becomes due. Null when it is never due again.",
                       "nullable": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
@@ -2530,22 +2696,36 @@ const ScheduleSchema: Record<string, unknown> = {
                         "name": "core"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "next_run_at"
+                        "db": "next_run"
                       },
-                      "x-order": 9
+                      "x-order": 12
                     },
                     "recurrence": {
-                      "type": "string",
-                      "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                      "maxLength": 255,
                       "x-oapi-codegen-extra-tags": {
                         "db": "recurrence"
                       },
-                      "x-order": 10
+                      "x-order": 13,
+                      "type": "string",
+                      "description": "How the schedule repeats once it has run. Empty, `once` and `none`\nmean run once. `hourly` repeats every hour; `daily`, `weekly` and\n`monthly` repeat at the same wall-clock time one calendar day, week\nor month later in the schedule's `timezone`, so a daily schedule\nkeeps its local time across daylight-saving changes. `every:<n>`\nrepeats every `n` minutes (1 to 999999). Occurrences are counted\nfrom `runAt` (else from the current `nextRunAt`); the next due time\nis the first occurrence after the run is released, so missed runs\nare not replayed.\n",
+                      "pattern": "^(|once|none|hourly|daily|weekly|monthly|every:[1-9][0-9]{0,5})$",
+                      "maxLength": 255,
+                      "default": ""
+                    },
+                    "timezone": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "timezone"
+                      },
+                      "x-order": 14,
+                      "type": "string",
+                      "description": "IANA time zone name (for example `UTC` or `America/Chicago`) in which\n`daily`, `weekly` and `monthly` recurrences keep their wall-clock\ntime. Instants (`runAt`, `nextRunAt`) are always absolute. The server\nrefuses a name it does not know with 400.\n",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "pattern": "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+)*$",
+                      "default": "UTC"
                     },
                     "status": {
                       "type": "string",
-                      "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
+                      "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
                       "enum": [
                         "pending",
                         "scheduled",
@@ -2560,57 +2740,63 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "status"
                       },
-                      "x-order": 11
+                      "x-order": 15
                     },
                     "retryCount": {
                       "type": "integer",
                       "description": "Attempts already retried for the current run.",
                       "minimum": 0,
+                      "default": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "retry_count"
                       },
-                      "x-order": 12
+                      "x-order": 16
                     },
                     "maxRetries": {
                       "type": "integer",
                       "description": "Maximum retries before the run is marked failed.",
                       "minimum": 0,
+                      "default": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "max_retries"
                       },
-                      "x-order": 13
+                      "x-order": 17
                     },
                     "retryDelayMinutes": {
                       "type": "integer",
                       "description": "Minutes to wait before a retry becomes due.",
                       "minimum": 0,
+                      "default": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "retry_delay_minutes"
                       },
-                      "x-order": 14
+                      "x-order": 18
                     },
                     "lastRunAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Time of the most recent attempt.",
+                      "description": "Time the most recent attempt ended (the release time of its claim). Server-managed.",
                       "nullable": true,
+                      "readOnly": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
                         "name": "core"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "last_run_at"
+                        "db": "last_run"
                       },
-                      "x-order": 15
+                      "x-order": 19
                     },
                     "lastError": {
                       "type": "string",
-                      "description": "Error reported by the most recent attempt.",
+                      "description": "Error reported by the most recent attempt; empty after a successful one. Server-managed.",
+                      "maxLength": 5000,
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "last_error"
                       },
-                      "x-order": 16
+                      "x-order": 20
                     },
                     "claim": {
                       "x-go-type": "*claimv1beta3.Claim",
@@ -2618,12 +2804,13 @@ const ScheduleSchema: Record<string, unknown> = {
                         "path": "github.com/meshery/schemas/models/v1beta3/claim",
                         "name": "claimv1beta3"
                       },
-                      "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
+                      "description": "The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed.",
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "-",
                         "json": "claim,omitempty"
                       },
-                      "x-order": 17,
+                      "x-order": 21,
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "title": "Claim Schema",
                       "type": "object",
@@ -2633,7 +2820,6 @@ const ScheduleSchema: Record<string, unknown> = {
                         "organizationId",
                         "resourceType",
                         "resourceId",
-                        "claimant",
                         "status",
                         "claimedAt",
                         "expiresAt",
@@ -2667,7 +2853,7 @@ const ScheduleSchema: Record<string, unknown> = {
                         },
                         "resourceType": {
                           "type": "string",
-                          "description": "Type of the claimed resource, for example `schedule`.",
+                          "description": "Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`.",
                           "minLength": 1,
                           "maxLength": 64,
                           "x-oapi-codegen-extra-tags": {
@@ -2688,19 +2874,39 @@ const ScheduleSchema: Record<string, unknown> = {
                           },
                           "x-order": 4
                         },
-                        "claimant": {
+                        "claimantConnectionId": {
                           "type": "string",
-                          "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                          "minLength": 1,
-                          "maxLength": 255,
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ClaimantConnectionID",
                           "x-oapi-codegen-extra-tags": {
-                            "db": "claimant"
+                            "db": "claimant_connection_id",
+                            "json": "claimantConnectionId,omitempty"
                           },
                           "x-order": 5
                         },
+                        "claimantUserId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ClaimantUserID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "claimant_user_id",
+                            "json": "claimantUserId,omitempty"
+                          },
+                          "x-order": 6
+                        },
                         "status": {
                           "type": "string",
-                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
+                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.\n",
                           "enum": [
                             "active",
                             "released",
@@ -2709,14 +2915,14 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "status"
                           },
-                          "x-order": 6
+                          "x-order": 7
                         },
                         "claimedAt": {
                           "description": "Time the claim was taken.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "claimed_at"
                           },
-                          "x-order": 7,
+                          "x-order": 8,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
@@ -2726,15 +2932,30 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "expires_at"
                           },
-                          "x-order": 8,
+                          "x-order": 9,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
                         },
+                        "renewedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Time of the last renewal. Null until the claim is first renewed.",
+                          "nullable": true,
+                          "x-go-type": "core.NullTime",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "renewed_at"
+                          },
+                          "x-order": 10
+                        },
                         "releasedAt": {
                           "type": "string",
                           "format": "date-time",
-                          "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
+                          "description": "Time the claim was released. Null while the claim is active or after it expired.",
                           "nullable": true,
                           "x-go-type": "core.NullTime",
                           "x-go-type-import": {
@@ -2744,14 +2965,68 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "released_at"
                           },
-                          "x-order": 9
+                          "x-order": 11
+                        },
+                        "outcome": {
+                          "type": "string",
+                          "description": "What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.\n",
+                          "enum": [
+                            "completed",
+                            "failed",
+                            "cancelled"
+                          ],
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "outcome",
+                            "json": "outcome,omitempty"
+                          },
+                          "x-order": 12
+                        },
+                        "outcomeError": {
+                          "type": "string",
+                          "description": "Error reported with a `failed` outcome. Omitted otherwise.",
+                          "maxLength": 5000,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "outcome_error",
+                            "json": "outcomeError,omitempty"
+                          },
+                          "x-order": 13
+                        },
+                        "outcomeEventId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "OutcomeEventID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "outcome_event_id",
+                            "json": "outcomeEventId,omitempty"
+                          },
+                          "x-order": 14
+                        },
+                        "releasedBy": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ReleasedBy",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "released_by",
+                            "json": "releasedBy,omitempty"
+                          },
+                          "x-order": 15
                         },
                         "createdAt": {
                           "description": "Timestamp of claim creation.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "created_at"
                           },
-                          "x-order": 10,
+                          "x-order": 16,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
@@ -2761,7 +3036,7 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "updated_at"
                           },
-                          "x-order": 11,
+                          "x-order": 17,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
@@ -2773,6 +3048,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "format": "date-time",
                       "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
                       "nullable": true,
+                      "readOnly": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
@@ -2781,41 +3057,50 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "paused_at"
                       },
-                      "x-order": 18
+                      "x-order": 22
                     },
                     "pausedBy": {
                       "type": "string",
-                      "description": "Identity that paused the schedule. Server-managed.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_by"
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
                       },
-                      "x-order": 19
+                      "readOnly": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "paused_by",
+                        "json": "pausedBy,omitempty"
+                      },
+                      "x-order": 23
                     },
                     "pauseReason": {
                       "type": "string",
                       "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
+                      "maxLength": 1000,
                       "x-oapi-codegen-extra-tags": {
                         "db": "pause_reason"
                       },
-                      "x-order": 20
+                      "x-order": 24
                     },
                     "createdAt": {
                       "description": "Timestamp of schedule creation.",
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at"
                       },
-                      "x-order": 21,
+                      "x-order": 25,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "updatedAt": {
                       "description": "Timestamp of last schedule modification.",
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at"
                       },
-                      "x-order": 22,
+                      "x-order": 26,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -2825,6 +3110,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "format": "date-time",
                       "description": "Timestamp when the schedule was soft-deleted. Null while live.",
                       "nullable": true,
+                      "readOnly": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
@@ -2833,7 +3119,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
                       },
-                      "x-order": 23
+                      "x-order": 27
                     }
                   }
                 }
@@ -2870,6 +3156,9 @@ const ScheduleSchema: Record<string, unknown> = {
               }
             }
           },
+          "412": {
+            "description": "Precondition failed - `If-Match` does not match the schedule's current entity tag, so nothing was written. Read the schedule again and reapply the change."
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -2891,7 +3180,7 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Delete a schedule",
         "operationId": "deleteScheduleById",
-        "description": "Soft-deletes the schedule. A schedule with a live claim is deleted all the same; its claim is released.\n",
+        "description": "Soft-deletes the schedule. A schedule with a live claim is deleted\nall the same, and that claim is expired in the same transaction.\n",
         "parameters": [
           {
             "name": "scheduleId",
@@ -2925,1697 +3214,6 @@ const ScheduleSchema: Record<string, unknown> = {
           },
           "404": {
             "description": "Result not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/schedules/{scheduleId}/claim": {
-      "post": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "schedules"
-        ],
-        "summary": "Claim a schedule",
-        "operationId": "claimSchedule",
-        "description": "Claims this schedule for `claimant`. Without `force` the schedule must be\ndue; `force` drops only the due test (trigger now), and a live claim held\nby another claimant still answers 409. Pauses refuse the claim unless\n`ignorePause` is set. Answers the schedule with its new claim.\n",
-        "parameters": [
-          {
-            "name": "scheduleId",
-            "in": "path",
-            "description": "Schedule ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              }
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "description": "Request to claim one named schedule.",
-                "required": [
-                  "claimant"
-                ],
-                "properties": {
-                  "claimant": {
-                    "type": "string",
-                    "description": "Identity of the worker taking the claim.",
-                    "minLength": 1,
-                    "maxLength": 255
-                  },
-                  "durationMinutes": {
-                    "type": "integer",
-                    "description": "Requested claim duration in minutes; the server applies its default when omitted and may cap it.",
-                    "minimum": 1,
-                    "maximum": 1440
-                  },
-                  "force": {
-                    "type": "boolean",
-                    "description": "Claim even though the schedule is not yet due (trigger now). A live claim held by another claimant still refuses."
-                  },
-                  "ignorePause": {
-                    "type": "boolean",
-                    "description": "Operator override that claims through the organization-wide and per-schedule pauses."
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The claimed schedule",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$schema": "http://json-schema.org/draft-07/schema#",
-                  "title": "Schedule Schema",
-                  "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "id",
-                    "organizationId",
-                    "name",
-                    "action",
-                    "enabled",
-                    "status",
-                    "retryCount",
-                    "maxRetries",
-                    "createdAt",
-                    "updatedAt"
-                  ],
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-order": 1
-                    },
-                    "organizationId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-go-name": "OrganizationID",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "organization_id"
-                      },
-                      "x-order": 2
-                    },
-                    "workspaceId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "workspace_id",
-                        "json": "workspaceId,omitempty"
-                      },
-                      "x-order": 3
-                    },
-                    "name": {
-                      "type": "string",
-                      "description": "Human-readable name for the schedule.",
-                      "minLength": 1,
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "name"
-                      },
-                      "x-order": 4
-                    },
-                    "action": {
-                      "type": "string",
-                      "description": "The action the worker runs when it holds the schedule's claim, for example a command name.",
-                      "minLength": 1,
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "action"
-                      },
-                      "x-order": 5
-                    },
-                    "params": {
-                      "type": "object",
-                      "description": "Action parameters, stored as a JSON blob.",
-                      "x-go-type": "core.Map",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-go-type-skip-optional-pointer": true,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "params"
-                      },
-                      "x-order": 6
-                    },
-                    "enabled": {
-                      "type": "boolean",
-                      "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "enabled"
-                      },
-                      "x-order": 7
-                    },
-                    "runAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time the schedule first becomes due.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "run_at"
-                      },
-                      "x-order": 8
-                    },
-                    "nextRunAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Next time a recurring or retrying schedule becomes due.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "next_run_at"
-                      },
-                      "x-order": 9
-                    },
-                    "recurrence": {
-                      "type": "string",
-                      "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "recurrence"
-                      },
-                      "x-order": 10
-                    },
-                    "status": {
-                      "type": "string",
-                      "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
-                      "enum": [
-                        "pending",
-                        "scheduled",
-                        "assigned",
-                        "claimed",
-                        "running",
-                        "retrying",
-                        "completed",
-                        "failed",
-                        "cancelled"
-                      ],
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "status"
-                      },
-                      "x-order": 11
-                    },
-                    "retryCount": {
-                      "type": "integer",
-                      "description": "Attempts already retried for the current run.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "retry_count"
-                      },
-                      "x-order": 12
-                    },
-                    "maxRetries": {
-                      "type": "integer",
-                      "description": "Maximum retries before the run is marked failed.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "max_retries"
-                      },
-                      "x-order": 13
-                    },
-                    "retryDelayMinutes": {
-                      "type": "integer",
-                      "description": "Minutes to wait before a retry becomes due.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "retry_delay_minutes"
-                      },
-                      "x-order": 14
-                    },
-                    "lastRunAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time of the most recent attempt.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "last_run_at"
-                      },
-                      "x-order": 15
-                    },
-                    "lastError": {
-                      "type": "string",
-                      "description": "Error reported by the most recent attempt.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "last_error"
-                      },
-                      "x-order": 16
-                    },
-                    "claim": {
-                      "x-go-type": "*claimv1beta3.Claim",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1beta3/claim",
-                        "name": "claimv1beta3"
-                      },
-                      "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "-",
-                        "json": "claim,omitempty"
-                      },
-                      "x-order": 17,
-                      "$schema": "http://json-schema.org/draft-07/schema#",
-                      "title": "Claim Schema",
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "id",
-                        "organizationId",
-                        "resourceType",
-                        "resourceId",
-                        "claimant",
-                        "status",
-                        "claimedAt",
-                        "expiresAt",
-                        "createdAt",
-                        "updatedAt"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-order": 1
-                        },
-                        "organizationId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-go-name": "OrganizationID",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "organization_id"
-                          },
-                          "x-order": 2
-                        },
-                        "resourceType": {
-                          "type": "string",
-                          "description": "Type of the claimed resource, for example `schedule`.",
-                          "minLength": 1,
-                          "maxLength": 64,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "resource_type"
-                          },
-                          "x-order": 3
-                        },
-                        "resourceId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "resource_id"
-                          },
-                          "x-order": 4
-                        },
-                        "claimant": {
-                          "type": "string",
-                          "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                          "minLength": 1,
-                          "maxLength": 255,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "claimant"
-                          },
-                          "x-order": 5
-                        },
-                        "status": {
-                          "type": "string",
-                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
-                          "enum": [
-                            "active",
-                            "released",
-                            "expired"
-                          ],
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "status"
-                          },
-                          "x-order": 6
-                        },
-                        "claimedAt": {
-                          "description": "Time the claim was taken.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "claimed_at"
-                          },
-                          "x-order": 7,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "expiresAt": {
-                          "description": "Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "expires_at"
-                          },
-                          "x-order": 8,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "releasedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
-                          "nullable": true,
-                          "x-go-type": "core.NullTime",
-                          "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/core",
-                            "name": "core"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "released_at"
-                          },
-                          "x-order": 9
-                        },
-                        "createdAt": {
-                          "description": "Timestamp of claim creation.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at"
-                          },
-                          "x-order": 10,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "updatedAt": {
-                          "description": "Timestamp of last claim modification.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at"
-                          },
-                          "x-order": 11,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        }
-                      }
-                    },
-                    "pausedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_at"
-                      },
-                      "x-order": 18
-                    },
-                    "pausedBy": {
-                      "type": "string",
-                      "description": "Identity that paused the schedule. Server-managed.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_by"
-                      },
-                      "x-order": 19
-                    },
-                    "pauseReason": {
-                      "type": "string",
-                      "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "pause_reason"
-                      },
-                      "x-order": 20
-                    },
-                    "createdAt": {
-                      "description": "Timestamp of schedule creation.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at"
-                      },
-                      "x-order": 21,
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "updatedAt": {
-                      "description": "Timestamp of last schedule modification.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at"
-                      },
-                      "x-order": 22,
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "deletedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Timestamp when the schedule was soft-deleted. Null while live.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at"
-                      },
-                      "x-order": 23
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Result not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict - the schedule is held by another claimant's live claim, or the caller is not the holder of the claim it tried to renew or release",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/schedules/{scheduleId}/claim/renew": {
-      "post": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "schedules"
-        ],
-        "summary": "Renew a schedule's claim",
-        "operationId": "renewScheduleClaim",
-        "description": "Moves the claim's `expiresAt` forward for the holder only. A claim that\nis not live or belongs to another claimant answers 409 and is never\ntaken back.\n",
-        "parameters": [
-          {
-            "name": "scheduleId",
-            "in": "path",
-            "description": "Schedule ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              }
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "description": "Payload for renewing a claim. Only the holder named by `claimant` may renew.",
-                "required": [
-                  "claimant"
-                ],
-                "properties": {
-                  "claimant": {
-                    "type": "string",
-                    "description": "Identity of the holder renewing the claim.",
-                    "minLength": 1,
-                    "maxLength": 255
-                  },
-                  "durationMinutes": {
-                    "type": "integer",
-                    "description": "Requested extension in minutes from now; the server applies its default when omitted and may cap it.",
-                    "minimum": 1,
-                    "maximum": 1440
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The schedule with its renewed claim",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$schema": "http://json-schema.org/draft-07/schema#",
-                  "title": "Schedule Schema",
-                  "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "id",
-                    "organizationId",
-                    "name",
-                    "action",
-                    "enabled",
-                    "status",
-                    "retryCount",
-                    "maxRetries",
-                    "createdAt",
-                    "updatedAt"
-                  ],
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-order": 1
-                    },
-                    "organizationId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-go-name": "OrganizationID",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "organization_id"
-                      },
-                      "x-order": 2
-                    },
-                    "workspaceId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "workspace_id",
-                        "json": "workspaceId,omitempty"
-                      },
-                      "x-order": 3
-                    },
-                    "name": {
-                      "type": "string",
-                      "description": "Human-readable name for the schedule.",
-                      "minLength": 1,
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "name"
-                      },
-                      "x-order": 4
-                    },
-                    "action": {
-                      "type": "string",
-                      "description": "The action the worker runs when it holds the schedule's claim, for example a command name.",
-                      "minLength": 1,
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "action"
-                      },
-                      "x-order": 5
-                    },
-                    "params": {
-                      "type": "object",
-                      "description": "Action parameters, stored as a JSON blob.",
-                      "x-go-type": "core.Map",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-go-type-skip-optional-pointer": true,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "params"
-                      },
-                      "x-order": 6
-                    },
-                    "enabled": {
-                      "type": "boolean",
-                      "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "enabled"
-                      },
-                      "x-order": 7
-                    },
-                    "runAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time the schedule first becomes due.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "run_at"
-                      },
-                      "x-order": 8
-                    },
-                    "nextRunAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Next time a recurring or retrying schedule becomes due.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "next_run_at"
-                      },
-                      "x-order": 9
-                    },
-                    "recurrence": {
-                      "type": "string",
-                      "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "recurrence"
-                      },
-                      "x-order": 10
-                    },
-                    "status": {
-                      "type": "string",
-                      "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
-                      "enum": [
-                        "pending",
-                        "scheduled",
-                        "assigned",
-                        "claimed",
-                        "running",
-                        "retrying",
-                        "completed",
-                        "failed",
-                        "cancelled"
-                      ],
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "status"
-                      },
-                      "x-order": 11
-                    },
-                    "retryCount": {
-                      "type": "integer",
-                      "description": "Attempts already retried for the current run.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "retry_count"
-                      },
-                      "x-order": 12
-                    },
-                    "maxRetries": {
-                      "type": "integer",
-                      "description": "Maximum retries before the run is marked failed.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "max_retries"
-                      },
-                      "x-order": 13
-                    },
-                    "retryDelayMinutes": {
-                      "type": "integer",
-                      "description": "Minutes to wait before a retry becomes due.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "retry_delay_minutes"
-                      },
-                      "x-order": 14
-                    },
-                    "lastRunAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time of the most recent attempt.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "last_run_at"
-                      },
-                      "x-order": 15
-                    },
-                    "lastError": {
-                      "type": "string",
-                      "description": "Error reported by the most recent attempt.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "last_error"
-                      },
-                      "x-order": 16
-                    },
-                    "claim": {
-                      "x-go-type": "*claimv1beta3.Claim",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1beta3/claim",
-                        "name": "claimv1beta3"
-                      },
-                      "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "-",
-                        "json": "claim,omitempty"
-                      },
-                      "x-order": 17,
-                      "$schema": "http://json-schema.org/draft-07/schema#",
-                      "title": "Claim Schema",
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "id",
-                        "organizationId",
-                        "resourceType",
-                        "resourceId",
-                        "claimant",
-                        "status",
-                        "claimedAt",
-                        "expiresAt",
-                        "createdAt",
-                        "updatedAt"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-order": 1
-                        },
-                        "organizationId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-go-name": "OrganizationID",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "organization_id"
-                          },
-                          "x-order": 2
-                        },
-                        "resourceType": {
-                          "type": "string",
-                          "description": "Type of the claimed resource, for example `schedule`.",
-                          "minLength": 1,
-                          "maxLength": 64,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "resource_type"
-                          },
-                          "x-order": 3
-                        },
-                        "resourceId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "resource_id"
-                          },
-                          "x-order": 4
-                        },
-                        "claimant": {
-                          "type": "string",
-                          "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                          "minLength": 1,
-                          "maxLength": 255,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "claimant"
-                          },
-                          "x-order": 5
-                        },
-                        "status": {
-                          "type": "string",
-                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
-                          "enum": [
-                            "active",
-                            "released",
-                            "expired"
-                          ],
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "status"
-                          },
-                          "x-order": 6
-                        },
-                        "claimedAt": {
-                          "description": "Time the claim was taken.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "claimed_at"
-                          },
-                          "x-order": 7,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "expiresAt": {
-                          "description": "Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "expires_at"
-                          },
-                          "x-order": 8,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "releasedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
-                          "nullable": true,
-                          "x-go-type": "core.NullTime",
-                          "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/core",
-                            "name": "core"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "released_at"
-                          },
-                          "x-order": 9
-                        },
-                        "createdAt": {
-                          "description": "Timestamp of claim creation.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at"
-                          },
-                          "x-order": 10,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "updatedAt": {
-                          "description": "Timestamp of last claim modification.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at"
-                          },
-                          "x-order": 11,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        }
-                      }
-                    },
-                    "pausedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_at"
-                      },
-                      "x-order": 18
-                    },
-                    "pausedBy": {
-                      "type": "string",
-                      "description": "Identity that paused the schedule. Server-managed.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_by"
-                      },
-                      "x-order": 19
-                    },
-                    "pauseReason": {
-                      "type": "string",
-                      "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "pause_reason"
-                      },
-                      "x-order": 20
-                    },
-                    "createdAt": {
-                      "description": "Timestamp of schedule creation.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at"
-                      },
-                      "x-order": 21,
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "updatedAt": {
-                      "description": "Timestamp of last schedule modification.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at"
-                      },
-                      "x-order": 22,
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "deletedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Timestamp when the schedule was soft-deleted. Null while live.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at"
-                      },
-                      "x-order": 23
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Result not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict - the schedule is held by another claimant's live claim, or the caller is not the holder of the claim it tried to renew or release",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/schedules/{scheduleId}/claim/release": {
-      "post": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "schedules"
-        ],
-        "summary": "Release a schedule's claim",
-        "operationId": "releaseScheduleClaim",
-        "description": "Releases the holder's claim and applies the run's outcome in the same\nstatement (`status`, `lastRunAt`, `lastError`, `nextRunAt`,\n`retryCount`). A release by another claimant answers 409.\n",
-        "parameters": [
-          {
-            "name": "scheduleId",
-            "in": "path",
-            "description": "Schedule ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              }
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "description": "Request to release a schedule's claim and record the run's outcome.",
-                "required": [
-                  "claimant"
-                ],
-                "properties": {
-                  "claimant": {
-                    "type": "string",
-                    "description": "Identity of the holder releasing the claim.",
-                    "minLength": 1,
-                    "maxLength": 255
-                  },
-                  "status": {
-                    "type": "string",
-                    "description": "Outcome status to record with the release.",
-                    "enum": [
-                      "scheduled",
-                      "retrying",
-                      "completed",
-                      "failed",
-                      "cancelled"
-                    ]
-                  },
-                  "lastRunAt": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "Time of the attempt being reported.",
-                    "nullable": true,
-                    "x-go-type": "core.NullTime",
-                    "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/core",
-                      "name": "core"
-                    }
-                  },
-                  "lastError": {
-                    "type": "string",
-                    "description": "Error reported by the attempt; empty on success."
-                  },
-                  "nextRunAt": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "Next due time for a recurring or retrying schedule.",
-                    "nullable": true,
-                    "x-go-type": "core.NullTime",
-                    "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/core",
-                      "name": "core"
-                    }
-                  },
-                  "retryCount": {
-                    "type": "integer",
-                    "description": "Retries used so far for the current run.",
-                    "minimum": 0
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The released schedule",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$schema": "http://json-schema.org/draft-07/schema#",
-                  "title": "Schedule Schema",
-                  "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "id",
-                    "organizationId",
-                    "name",
-                    "action",
-                    "enabled",
-                    "status",
-                    "retryCount",
-                    "maxRetries",
-                    "createdAt",
-                    "updatedAt"
-                  ],
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-order": 1
-                    },
-                    "organizationId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-go-name": "OrganizationID",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "organization_id"
-                      },
-                      "x-order": 2
-                    },
-                    "workspaceId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "workspace_id",
-                        "json": "workspaceId,omitempty"
-                      },
-                      "x-order": 3
-                    },
-                    "name": {
-                      "type": "string",
-                      "description": "Human-readable name for the schedule.",
-                      "minLength": 1,
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "name"
-                      },
-                      "x-order": 4
-                    },
-                    "action": {
-                      "type": "string",
-                      "description": "The action the worker runs when it holds the schedule's claim, for example a command name.",
-                      "minLength": 1,
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "action"
-                      },
-                      "x-order": 5
-                    },
-                    "params": {
-                      "type": "object",
-                      "description": "Action parameters, stored as a JSON blob.",
-                      "x-go-type": "core.Map",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-go-type-skip-optional-pointer": true,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "params"
-                      },
-                      "x-order": 6
-                    },
-                    "enabled": {
-                      "type": "boolean",
-                      "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "enabled"
-                      },
-                      "x-order": 7
-                    },
-                    "runAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time the schedule first becomes due.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "run_at"
-                      },
-                      "x-order": 8
-                    },
-                    "nextRunAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Next time a recurring or retrying schedule becomes due.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "next_run_at"
-                      },
-                      "x-order": 9
-                    },
-                    "recurrence": {
-                      "type": "string",
-                      "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "recurrence"
-                      },
-                      "x-order": 10
-                    },
-                    "status": {
-                      "type": "string",
-                      "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
-                      "enum": [
-                        "pending",
-                        "scheduled",
-                        "assigned",
-                        "claimed",
-                        "running",
-                        "retrying",
-                        "completed",
-                        "failed",
-                        "cancelled"
-                      ],
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "status"
-                      },
-                      "x-order": 11
-                    },
-                    "retryCount": {
-                      "type": "integer",
-                      "description": "Attempts already retried for the current run.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "retry_count"
-                      },
-                      "x-order": 12
-                    },
-                    "maxRetries": {
-                      "type": "integer",
-                      "description": "Maximum retries before the run is marked failed.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "max_retries"
-                      },
-                      "x-order": 13
-                    },
-                    "retryDelayMinutes": {
-                      "type": "integer",
-                      "description": "Minutes to wait before a retry becomes due.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "retry_delay_minutes"
-                      },
-                      "x-order": 14
-                    },
-                    "lastRunAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time of the most recent attempt.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "last_run_at"
-                      },
-                      "x-order": 15
-                    },
-                    "lastError": {
-                      "type": "string",
-                      "description": "Error reported by the most recent attempt.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "last_error"
-                      },
-                      "x-order": 16
-                    },
-                    "claim": {
-                      "x-go-type": "*claimv1beta3.Claim",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1beta3/claim",
-                        "name": "claimv1beta3"
-                      },
-                      "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "-",
-                        "json": "claim,omitempty"
-                      },
-                      "x-order": 17,
-                      "$schema": "http://json-schema.org/draft-07/schema#",
-                      "title": "Claim Schema",
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "id",
-                        "organizationId",
-                        "resourceType",
-                        "resourceId",
-                        "claimant",
-                        "status",
-                        "claimedAt",
-                        "expiresAt",
-                        "createdAt",
-                        "updatedAt"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-order": 1
-                        },
-                        "organizationId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-go-name": "OrganizationID",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "organization_id"
-                          },
-                          "x-order": 2
-                        },
-                        "resourceType": {
-                          "type": "string",
-                          "description": "Type of the claimed resource, for example `schedule`.",
-                          "minLength": 1,
-                          "maxLength": 64,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "resource_type"
-                          },
-                          "x-order": 3
-                        },
-                        "resourceId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "resource_id"
-                          },
-                          "x-order": 4
-                        },
-                        "claimant": {
-                          "type": "string",
-                          "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                          "minLength": 1,
-                          "maxLength": 255,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "claimant"
-                          },
-                          "x-order": 5
-                        },
-                        "status": {
-                          "type": "string",
-                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
-                          "enum": [
-                            "active",
-                            "released",
-                            "expired"
-                          ],
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "status"
-                          },
-                          "x-order": 6
-                        },
-                        "claimedAt": {
-                          "description": "Time the claim was taken.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "claimed_at"
-                          },
-                          "x-order": 7,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "expiresAt": {
-                          "description": "Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "expires_at"
-                          },
-                          "x-order": 8,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "releasedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
-                          "nullable": true,
-                          "x-go-type": "core.NullTime",
-                          "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/core",
-                            "name": "core"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "released_at"
-                          },
-                          "x-order": 9
-                        },
-                        "createdAt": {
-                          "description": "Timestamp of claim creation.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at"
-                          },
-                          "x-order": 10,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "updatedAt": {
-                          "description": "Timestamp of last claim modification.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at"
-                          },
-                          "x-order": 11,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        }
-                      }
-                    },
-                    "pausedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_at"
-                      },
-                      "x-order": 18
-                    },
-                    "pausedBy": {
-                      "type": "string",
-                      "description": "Identity that paused the schedule. Server-managed.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_by"
-                      },
-                      "x-order": 19
-                    },
-                    "pauseReason": {
-                      "type": "string",
-                      "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "pause_reason"
-                      },
-                      "x-order": 20
-                    },
-                    "createdAt": {
-                      "description": "Timestamp of schedule creation.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at"
-                      },
-                      "x-order": 21,
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "updatedAt": {
-                      "description": "Timestamp of last schedule modification.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at"
-                      },
-                      "x-order": 22,
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "deletedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Timestamp when the schedule was soft-deleted. Null while live.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at"
-                      },
-                      "x-order": 23
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Result not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict - the schedule is held by another claimant's live claim, or the caller is not the holder of the claim it tried to renew or release",
             "content": {
               "text/plain": {
                 "schema": {
@@ -4705,6 +3303,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "description": "Only schedules in this status.",
             "schema": {
               "type": "string",
+              "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
               "enum": [
                 "pending",
                 "scheduled",
@@ -4755,7 +3354,7 @@ const ScheduleSchema: Record<string, unknown> = {
                         "x-go-type": "Schedule",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "title": "Schedule Schema",
-                        "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
+                        "description": "Server-returned schedule. A schedule is a job: an action to run, what it\nacts on (`targetType`, `targetId`) and its parameters, when it is due\n(`runAt`, `nextRunAt`, `recurrence` in `timezone`), its retry budget and\nits outcome. Schedules belong to an organization and may be linked to a\nworkspace. A worker takes a schedule through the generic `claim`\nconstruct (`POST /api/claims` with `resourceType` `schedule`); there is\nno schedule-specific claim route. While the claim is live no other worker\ncan take the schedule, and a claim past its `expiresAt` is stale so the\nschedule is claimable again. Releasing the claim records the run's\noutcome on the schedule in the same transaction (see `status`). The\n`claim` and the status values `assigned`, `claimed` and `running` are\nserver-managed. Pausing is data, not an operation: a client sets `paused`\n(and optionally `pauseReason`) on create or update, and the server\nrecords `pausedAt` and `pausedBy`. Fields marked readOnly are\nserver-managed and ignored on input.\n",
                         "type": "object",
                         "additionalProperties": false,
                         "required": [
@@ -4764,6 +3363,7 @@ const ScheduleSchema: Record<string, unknown> = {
                           "name",
                           "action",
                           "enabled",
+                          "timezone",
                           "status",
                           "retryCount",
                           "maxRetries",
@@ -4779,6 +3379,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
+                            "readOnly": true,
                             "x-order": 1
                           },
                           "organizationId": {
@@ -4789,6 +3390,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
+                            "readOnly": true,
                             "x-go-name": "OrganizationID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "organization_id"
@@ -4809,6 +3411,21 @@ const ScheduleSchema: Record<string, unknown> = {
                             },
                             "x-order": 3
                           },
+                          "createdBy": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "readOnly": true,
+                            "x-go-name": "CreatedBy",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner"
+                            },
+                            "x-order": 4
+                          },
                           "name": {
                             "type": "string",
                             "description": "Human-readable name for the schedule.",
@@ -4817,7 +3434,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "name"
                             },
-                            "x-order": 4
+                            "x-order": 5
                           },
                           "action": {
                             "type": "string",
@@ -4827,11 +3444,38 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "action"
                             },
-                            "x-order": 5
+                            "x-order": 6
+                          },
+                          "targetType": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "target_type",
+                              "json": "targetType,omitempty"
+                            },
+                            "x-order": 7,
+                            "type": "string",
+                            "description": "Type of the resource the schedule acts on, named the way a claim's\n`resourceType` is (lowercase snake_case construct name, for example\n`content_item` or `profile`). A server verifies the target types it\nserves and refuses others with 400. Set together with `targetId` or\nnot at all.\n",
+                            "pattern": "^[a-z][a-z0-9_]*$",
+                            "minLength": 1,
+                            "maxLength": 64
+                          },
+                          "targetId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "TargetID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "target_id",
+                              "json": "targetId,omitempty"
+                            },
+                            "x-order": 8
                           },
                           "params": {
                             "type": "object",
-                            "description": "Action parameters, stored as a JSON blob.",
+                            "description": "Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here.",
                             "x-go-type": "core.Map",
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/core",
@@ -4841,15 +3485,16 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "params"
                             },
-                            "x-order": 6
+                            "x-order": 9
                           },
                           "enabled": {
                             "type": "boolean",
                             "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
+                            "default": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "enabled"
                             },
-                            "x-order": 7
+                            "x-order": 10
                           },
                           "runAt": {
                             "type": "string",
@@ -4864,12 +3509,12 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "run_at"
                             },
-                            "x-order": 8
+                            "x-order": 11
                           },
                           "nextRunAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "Next time a recurring or retrying schedule becomes due.",
+                            "description": "Next time the schedule becomes due. Null when it is never due again.",
                             "nullable": true,
                             "x-go-type": "core.NullTime",
                             "x-go-type-import": {
@@ -4877,22 +3522,36 @@ const ScheduleSchema: Record<string, unknown> = {
                               "name": "core"
                             },
                             "x-oapi-codegen-extra-tags": {
-                              "db": "next_run_at"
+                              "db": "next_run"
                             },
-                            "x-order": 9
+                            "x-order": 12
                           },
                           "recurrence": {
-                            "type": "string",
-                            "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                            "maxLength": 255,
                             "x-oapi-codegen-extra-tags": {
                               "db": "recurrence"
                             },
-                            "x-order": 10
+                            "x-order": 13,
+                            "type": "string",
+                            "description": "How the schedule repeats once it has run. Empty, `once` and `none`\nmean run once. `hourly` repeats every hour; `daily`, `weekly` and\n`monthly` repeat at the same wall-clock time one calendar day, week\nor month later in the schedule's `timezone`, so a daily schedule\nkeeps its local time across daylight-saving changes. `every:<n>`\nrepeats every `n` minutes (1 to 999999). Occurrences are counted\nfrom `runAt` (else from the current `nextRunAt`); the next due time\nis the first occurrence after the run is released, so missed runs\nare not replayed.\n",
+                            "pattern": "^(|once|none|hourly|daily|weekly|monthly|every:[1-9][0-9]{0,5})$",
+                            "maxLength": 255,
+                            "default": ""
+                          },
+                          "timezone": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "timezone"
+                            },
+                            "x-order": 14,
+                            "type": "string",
+                            "description": "IANA time zone name (for example `UTC` or `America/Chicago`) in which\n`daily`, `weekly` and `monthly` recurrences keep their wall-clock\ntime. Instants (`runAt`, `nextRunAt`) are always absolute. The server\nrefuses a name it does not know with 400.\n",
+                            "minLength": 1,
+                            "maxLength": 64,
+                            "pattern": "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+)*$",
+                            "default": "UTC"
                           },
                           "status": {
                             "type": "string",
-                            "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
+                            "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
                             "enum": [
                               "pending",
                               "scheduled",
@@ -4907,57 +3566,63 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "status"
                             },
-                            "x-order": 11
+                            "x-order": 15
                           },
                           "retryCount": {
                             "type": "integer",
                             "description": "Attempts already retried for the current run.",
                             "minimum": 0,
+                            "default": 0,
                             "x-oapi-codegen-extra-tags": {
                               "db": "retry_count"
                             },
-                            "x-order": 12
+                            "x-order": 16
                           },
                           "maxRetries": {
                             "type": "integer",
                             "description": "Maximum retries before the run is marked failed.",
                             "minimum": 0,
+                            "default": 0,
                             "x-oapi-codegen-extra-tags": {
                               "db": "max_retries"
                             },
-                            "x-order": 13
+                            "x-order": 17
                           },
                           "retryDelayMinutes": {
                             "type": "integer",
                             "description": "Minutes to wait before a retry becomes due.",
                             "minimum": 0,
+                            "default": 0,
                             "x-oapi-codegen-extra-tags": {
                               "db": "retry_delay_minutes"
                             },
-                            "x-order": 14
+                            "x-order": 18
                           },
                           "lastRunAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "Time of the most recent attempt.",
+                            "description": "Time the most recent attempt ended (the release time of its claim). Server-managed.",
                             "nullable": true,
+                            "readOnly": true,
                             "x-go-type": "core.NullTime",
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/core",
                               "name": "core"
                             },
                             "x-oapi-codegen-extra-tags": {
-                              "db": "last_run_at"
+                              "db": "last_run"
                             },
-                            "x-order": 15
+                            "x-order": 19
                           },
                           "lastError": {
                             "type": "string",
-                            "description": "Error reported by the most recent attempt.",
+                            "description": "Error reported by the most recent attempt; empty after a successful one. Server-managed.",
+                            "maxLength": 5000,
+                            "readOnly": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "last_error"
                             },
-                            "x-order": 16
+                            "x-order": 20
                           },
                           "claim": {
                             "x-go-type": "*claimv1beta3.Claim",
@@ -4965,12 +3630,13 @@ const ScheduleSchema: Record<string, unknown> = {
                               "path": "github.com/meshery/schemas/models/v1beta3/claim",
                               "name": "claimv1beta3"
                             },
-                            "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
+                            "description": "The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed.",
+                            "readOnly": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "-",
                               "json": "claim,omitempty"
                             },
-                            "x-order": 17,
+                            "x-order": 21,
                             "$schema": "http://json-schema.org/draft-07/schema#",
                             "title": "Claim Schema",
                             "type": "object",
@@ -4980,7 +3646,6 @@ const ScheduleSchema: Record<string, unknown> = {
                               "organizationId",
                               "resourceType",
                               "resourceId",
-                              "claimant",
                               "status",
                               "claimedAt",
                               "expiresAt",
@@ -5014,7 +3679,7 @@ const ScheduleSchema: Record<string, unknown> = {
                               },
                               "resourceType": {
                                 "type": "string",
-                                "description": "Type of the claimed resource, for example `schedule`.",
+                                "description": "Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`.",
                                 "minLength": 1,
                                 "maxLength": 64,
                                 "x-oapi-codegen-extra-tags": {
@@ -5035,19 +3700,39 @@ const ScheduleSchema: Record<string, unknown> = {
                                 },
                                 "x-order": 4
                               },
-                              "claimant": {
+                              "claimantConnectionId": {
                                 "type": "string",
-                                "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                                "minLength": 1,
-                                "maxLength": 255,
+                                "format": "uuid",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                },
+                                "x-go-name": "ClaimantConnectionID",
                                 "x-oapi-codegen-extra-tags": {
-                                  "db": "claimant"
+                                  "db": "claimant_connection_id",
+                                  "json": "claimantConnectionId,omitempty"
                                 },
                                 "x-order": 5
                               },
+                              "claimantUserId": {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                },
+                                "x-go-name": "ClaimantUserID",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "claimant_user_id",
+                                  "json": "claimantUserId,omitempty"
+                                },
+                                "x-order": 6
+                              },
                               "status": {
                                 "type": "string",
-                                "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
+                                "description": "Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.\n",
                                 "enum": [
                                   "active",
                                   "released",
@@ -5056,14 +3741,14 @@ const ScheduleSchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "status"
                                 },
-                                "x-order": 6
+                                "x-order": 7
                               },
                               "claimedAt": {
                                 "description": "Time the claim was taken.",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "claimed_at"
                                 },
-                                "x-order": 7,
+                                "x-order": 8,
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-type-skip-optional-pointer": true
@@ -5073,15 +3758,30 @@ const ScheduleSchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "expires_at"
                                 },
-                                "x-order": 8,
+                                "x-order": 9,
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-type-skip-optional-pointer": true
                               },
+                              "renewedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Time of the last renewal. Null until the claim is first renewed.",
+                                "nullable": true,
+                                "x-go-type": "core.NullTime",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/core",
+                                  "name": "core"
+                                },
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "renewed_at"
+                                },
+                                "x-order": 10
+                              },
                               "releasedAt": {
                                 "type": "string",
                                 "format": "date-time",
-                                "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
+                                "description": "Time the claim was released. Null while the claim is active or after it expired.",
                                 "nullable": true,
                                 "x-go-type": "core.NullTime",
                                 "x-go-type-import": {
@@ -5091,14 +3791,68 @@ const ScheduleSchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "released_at"
                                 },
-                                "x-order": 9
+                                "x-order": 11
+                              },
+                              "outcome": {
+                                "type": "string",
+                                "description": "What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.\n",
+                                "enum": [
+                                  "completed",
+                                  "failed",
+                                  "cancelled"
+                                ],
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "outcome",
+                                  "json": "outcome,omitempty"
+                                },
+                                "x-order": 12
+                              },
+                              "outcomeError": {
+                                "type": "string",
+                                "description": "Error reported with a `failed` outcome. Omitted otherwise.",
+                                "maxLength": 5000,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "outcome_error",
+                                  "json": "outcomeError,omitempty"
+                                },
+                                "x-order": 13
+                              },
+                              "outcomeEventId": {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                },
+                                "x-go-name": "OutcomeEventID",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "outcome_event_id",
+                                  "json": "outcomeEventId,omitempty"
+                                },
+                                "x-order": 14
+                              },
+                              "releasedBy": {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                },
+                                "x-go-name": "ReleasedBy",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "released_by",
+                                  "json": "releasedBy,omitempty"
+                                },
+                                "x-order": 15
                               },
                               "createdAt": {
                                 "description": "Timestamp of claim creation.",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "created_at"
                                 },
-                                "x-order": 10,
+                                "x-order": 16,
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-type-skip-optional-pointer": true
@@ -5108,7 +3862,7 @@ const ScheduleSchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "updated_at"
                                 },
-                                "x-order": 11,
+                                "x-order": 17,
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-type-skip-optional-pointer": true
@@ -5120,6 +3874,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "format": "date-time",
                             "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
                             "nullable": true,
+                            "readOnly": true,
                             "x-go-type": "core.NullTime",
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/core",
@@ -5128,41 +3883,50 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "paused_at"
                             },
-                            "x-order": 18
+                            "x-order": 22
                           },
                           "pausedBy": {
                             "type": "string",
-                            "description": "Identity that paused the schedule. Server-managed.",
-                            "maxLength": 255,
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "paused_by"
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
                             },
-                            "x-order": 19
+                            "readOnly": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "paused_by",
+                              "json": "pausedBy,omitempty"
+                            },
+                            "x-order": 23
                           },
                           "pauseReason": {
                             "type": "string",
                             "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
+                            "maxLength": 1000,
                             "x-oapi-codegen-extra-tags": {
                               "db": "pause_reason"
                             },
-                            "x-order": 20
+                            "x-order": 24
                           },
                           "createdAt": {
                             "description": "Timestamp of schedule creation.",
+                            "readOnly": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at"
                             },
-                            "x-order": 21,
+                            "x-order": 25,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "updatedAt": {
                             "description": "Timestamp of last schedule modification.",
+                            "readOnly": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at"
                             },
-                            "x-order": 22,
+                            "x-order": 26,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -5172,6 +3936,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "format": "date-time",
                             "description": "Timestamp when the schedule was soft-deleted. Null while live.",
                             "nullable": true,
+                            "readOnly": true,
                             "x-go-type": "core.NullTime",
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/core",
@@ -5180,13 +3945,23 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at"
                             },
-                            "x-order": 23
+                            "x-order": 27
                           }
                         }
                       },
                       "description": "Schedules included on this page of results."
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -5234,7 +4009,7 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Link a schedule to a workspace",
         "operationId": "assignScheduleToWorkspace",
-        "description": "Links the schedule to the workspace, replacing any previous workspace link: a schedule belongs to at most one workspace.\n",
+        "description": "Links the schedule to the workspace, replacing any previous\nworkspace link: a schedule belongs to at most one workspace. The\nworkspace must be in the schedule's organization.\n",
         "parameters": [
           {
             "name": "workspaceId",
@@ -5275,7 +4050,7 @@ const ScheduleSchema: Record<string, unknown> = {
                 "schema": {
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Schedule Schema",
-                  "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
+                  "description": "Server-returned schedule. A schedule is a job: an action to run, what it\nacts on (`targetType`, `targetId`) and its parameters, when it is due\n(`runAt`, `nextRunAt`, `recurrence` in `timezone`), its retry budget and\nits outcome. Schedules belong to an organization and may be linked to a\nworkspace. A worker takes a schedule through the generic `claim`\nconstruct (`POST /api/claims` with `resourceType` `schedule`); there is\nno schedule-specific claim route. While the claim is live no other worker\ncan take the schedule, and a claim past its `expiresAt` is stale so the\nschedule is claimable again. Releasing the claim records the run's\noutcome on the schedule in the same transaction (see `status`). The\n`claim` and the status values `assigned`, `claimed` and `running` are\nserver-managed. Pausing is data, not an operation: a client sets `paused`\n(and optionally `pauseReason`) on create or update, and the server\nrecords `pausedAt` and `pausedBy`. Fields marked readOnly are\nserver-managed and ignored on input.\n",
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
@@ -5284,6 +4059,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     "name",
                     "action",
                     "enabled",
+                    "timezone",
                     "status",
                     "retryCount",
                     "maxRetries",
@@ -5299,6 +4075,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
+                      "readOnly": true,
                       "x-order": 1
                     },
                     "organizationId": {
@@ -5309,6 +4086,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
+                      "readOnly": true,
                       "x-go-name": "OrganizationID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id"
@@ -5329,6 +4107,21 @@ const ScheduleSchema: Record<string, unknown> = {
                       },
                       "x-order": 3
                     },
+                    "createdBy": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "readOnly": true,
+                      "x-go-name": "CreatedBy",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner"
+                      },
+                      "x-order": 4
+                    },
                     "name": {
                       "type": "string",
                       "description": "Human-readable name for the schedule.",
@@ -5337,7 +4130,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "name"
                       },
-                      "x-order": 4
+                      "x-order": 5
                     },
                     "action": {
                       "type": "string",
@@ -5347,11 +4140,38 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "action"
                       },
-                      "x-order": 5
+                      "x-order": 6
+                    },
+                    "targetType": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "target_type",
+                        "json": "targetType,omitempty"
+                      },
+                      "x-order": 7,
+                      "type": "string",
+                      "description": "Type of the resource the schedule acts on, named the way a claim's\n`resourceType` is (lowercase snake_case construct name, for example\n`content_item` or `profile`). A server verifies the target types it\nserves and refuses others with 400. Set together with `targetId` or\nnot at all.\n",
+                      "pattern": "^[a-z][a-z0-9_]*$",
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "targetId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-name": "TargetID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "target_id",
+                        "json": "targetId,omitempty"
+                      },
+                      "x-order": 8
                     },
                     "params": {
                       "type": "object",
-                      "description": "Action parameters, stored as a JSON blob.",
+                      "description": "Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here.",
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
@@ -5361,15 +4181,16 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "params"
                       },
-                      "x-order": 6
+                      "x-order": 9
                     },
                     "enabled": {
                       "type": "boolean",
                       "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
+                      "default": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "enabled"
                       },
-                      "x-order": 7
+                      "x-order": 10
                     },
                     "runAt": {
                       "type": "string",
@@ -5384,12 +4205,12 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "run_at"
                       },
-                      "x-order": 8
+                      "x-order": 11
                     },
                     "nextRunAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Next time a recurring or retrying schedule becomes due.",
+                      "description": "Next time the schedule becomes due. Null when it is never due again.",
                       "nullable": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
@@ -5397,22 +4218,36 @@ const ScheduleSchema: Record<string, unknown> = {
                         "name": "core"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "next_run_at"
+                        "db": "next_run"
                       },
-                      "x-order": 9
+                      "x-order": 12
                     },
                     "recurrence": {
-                      "type": "string",
-                      "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                      "maxLength": 255,
                       "x-oapi-codegen-extra-tags": {
                         "db": "recurrence"
                       },
-                      "x-order": 10
+                      "x-order": 13,
+                      "type": "string",
+                      "description": "How the schedule repeats once it has run. Empty, `once` and `none`\nmean run once. `hourly` repeats every hour; `daily`, `weekly` and\n`monthly` repeat at the same wall-clock time one calendar day, week\nor month later in the schedule's `timezone`, so a daily schedule\nkeeps its local time across daylight-saving changes. `every:<n>`\nrepeats every `n` minutes (1 to 999999). Occurrences are counted\nfrom `runAt` (else from the current `nextRunAt`); the next due time\nis the first occurrence after the run is released, so missed runs\nare not replayed.\n",
+                      "pattern": "^(|once|none|hourly|daily|weekly|monthly|every:[1-9][0-9]{0,5})$",
+                      "maxLength": 255,
+                      "default": ""
+                    },
+                    "timezone": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "timezone"
+                      },
+                      "x-order": 14,
+                      "type": "string",
+                      "description": "IANA time zone name (for example `UTC` or `America/Chicago`) in which\n`daily`, `weekly` and `monthly` recurrences keep their wall-clock\ntime. Instants (`runAt`, `nextRunAt`) are always absolute. The server\nrefuses a name it does not know with 400.\n",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "pattern": "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+)*$",
+                      "default": "UTC"
                     },
                     "status": {
                       "type": "string",
-                      "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
+                      "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
                       "enum": [
                         "pending",
                         "scheduled",
@@ -5427,57 +4262,63 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "status"
                       },
-                      "x-order": 11
+                      "x-order": 15
                     },
                     "retryCount": {
                       "type": "integer",
                       "description": "Attempts already retried for the current run.",
                       "minimum": 0,
+                      "default": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "retry_count"
                       },
-                      "x-order": 12
+                      "x-order": 16
                     },
                     "maxRetries": {
                       "type": "integer",
                       "description": "Maximum retries before the run is marked failed.",
                       "minimum": 0,
+                      "default": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "max_retries"
                       },
-                      "x-order": 13
+                      "x-order": 17
                     },
                     "retryDelayMinutes": {
                       "type": "integer",
                       "description": "Minutes to wait before a retry becomes due.",
                       "minimum": 0,
+                      "default": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "retry_delay_minutes"
                       },
-                      "x-order": 14
+                      "x-order": 18
                     },
                     "lastRunAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Time of the most recent attempt.",
+                      "description": "Time the most recent attempt ended (the release time of its claim). Server-managed.",
                       "nullable": true,
+                      "readOnly": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
                         "name": "core"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "last_run_at"
+                        "db": "last_run"
                       },
-                      "x-order": 15
+                      "x-order": 19
                     },
                     "lastError": {
                       "type": "string",
-                      "description": "Error reported by the most recent attempt.",
+                      "description": "Error reported by the most recent attempt; empty after a successful one. Server-managed.",
+                      "maxLength": 5000,
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "last_error"
                       },
-                      "x-order": 16
+                      "x-order": 20
                     },
                     "claim": {
                       "x-go-type": "*claimv1beta3.Claim",
@@ -5485,12 +4326,13 @@ const ScheduleSchema: Record<string, unknown> = {
                         "path": "github.com/meshery/schemas/models/v1beta3/claim",
                         "name": "claimv1beta3"
                       },
-                      "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
+                      "description": "The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed.",
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "-",
                         "json": "claim,omitempty"
                       },
-                      "x-order": 17,
+                      "x-order": 21,
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "title": "Claim Schema",
                       "type": "object",
@@ -5500,7 +4342,6 @@ const ScheduleSchema: Record<string, unknown> = {
                         "organizationId",
                         "resourceType",
                         "resourceId",
-                        "claimant",
                         "status",
                         "claimedAt",
                         "expiresAt",
@@ -5534,7 +4375,7 @@ const ScheduleSchema: Record<string, unknown> = {
                         },
                         "resourceType": {
                           "type": "string",
-                          "description": "Type of the claimed resource, for example `schedule`.",
+                          "description": "Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`.",
                           "minLength": 1,
                           "maxLength": 64,
                           "x-oapi-codegen-extra-tags": {
@@ -5555,19 +4396,39 @@ const ScheduleSchema: Record<string, unknown> = {
                           },
                           "x-order": 4
                         },
-                        "claimant": {
+                        "claimantConnectionId": {
                           "type": "string",
-                          "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                          "minLength": 1,
-                          "maxLength": 255,
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ClaimantConnectionID",
                           "x-oapi-codegen-extra-tags": {
-                            "db": "claimant"
+                            "db": "claimant_connection_id",
+                            "json": "claimantConnectionId,omitempty"
                           },
                           "x-order": 5
                         },
+                        "claimantUserId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ClaimantUserID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "claimant_user_id",
+                            "json": "claimantUserId,omitempty"
+                          },
+                          "x-order": 6
+                        },
                         "status": {
                           "type": "string",
-                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
+                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.\n",
                           "enum": [
                             "active",
                             "released",
@@ -5576,14 +4437,14 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "status"
                           },
-                          "x-order": 6
+                          "x-order": 7
                         },
                         "claimedAt": {
                           "description": "Time the claim was taken.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "claimed_at"
                           },
-                          "x-order": 7,
+                          "x-order": 8,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
@@ -5593,15 +4454,30 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "expires_at"
                           },
-                          "x-order": 8,
+                          "x-order": 9,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
                         },
+                        "renewedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Time of the last renewal. Null until the claim is first renewed.",
+                          "nullable": true,
+                          "x-go-type": "core.NullTime",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "renewed_at"
+                          },
+                          "x-order": 10
+                        },
                         "releasedAt": {
                           "type": "string",
                           "format": "date-time",
-                          "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
+                          "description": "Time the claim was released. Null while the claim is active or after it expired.",
                           "nullable": true,
                           "x-go-type": "core.NullTime",
                           "x-go-type-import": {
@@ -5611,14 +4487,68 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "released_at"
                           },
-                          "x-order": 9
+                          "x-order": 11
+                        },
+                        "outcome": {
+                          "type": "string",
+                          "description": "What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.\n",
+                          "enum": [
+                            "completed",
+                            "failed",
+                            "cancelled"
+                          ],
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "outcome",
+                            "json": "outcome,omitempty"
+                          },
+                          "x-order": 12
+                        },
+                        "outcomeError": {
+                          "type": "string",
+                          "description": "Error reported with a `failed` outcome. Omitted otherwise.",
+                          "maxLength": 5000,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "outcome_error",
+                            "json": "outcomeError,omitempty"
+                          },
+                          "x-order": 13
+                        },
+                        "outcomeEventId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "OutcomeEventID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "outcome_event_id",
+                            "json": "outcomeEventId,omitempty"
+                          },
+                          "x-order": 14
+                        },
+                        "releasedBy": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-go-name": "ReleasedBy",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "released_by",
+                            "json": "releasedBy,omitempty"
+                          },
+                          "x-order": 15
                         },
                         "createdAt": {
                           "description": "Timestamp of claim creation.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "created_at"
                           },
-                          "x-order": 10,
+                          "x-order": 16,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
@@ -5628,7 +4558,7 @@ const ScheduleSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "updated_at"
                           },
-                          "x-order": 11,
+                          "x-order": 17,
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
@@ -5640,6 +4570,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "format": "date-time",
                       "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
                       "nullable": true,
+                      "readOnly": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
@@ -5648,41 +4579,50 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "paused_at"
                       },
-                      "x-order": 18
+                      "x-order": 22
                     },
                     "pausedBy": {
                       "type": "string",
-                      "description": "Identity that paused the schedule. Server-managed.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_by"
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
                       },
-                      "x-order": 19
+                      "readOnly": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "paused_by",
+                        "json": "pausedBy,omitempty"
+                      },
+                      "x-order": 23
                     },
                     "pauseReason": {
                       "type": "string",
                       "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
+                      "maxLength": 1000,
                       "x-oapi-codegen-extra-tags": {
                         "db": "pause_reason"
                       },
-                      "x-order": 20
+                      "x-order": 24
                     },
                     "createdAt": {
                       "description": "Timestamp of schedule creation.",
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at"
                       },
-                      "x-order": 21,
+                      "x-order": 25,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "updatedAt": {
                       "description": "Timestamp of last schedule modification.",
+                      "readOnly": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at"
                       },
-                      "x-order": 22,
+                      "x-order": 26,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -5692,6 +4632,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "format": "date-time",
                       "description": "Timestamp when the schedule was soft-deleted. Null while live.",
                       "nullable": true,
+                      "readOnly": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core",
@@ -5700,9 +4641,19 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
                       },
-                      "x-order": 23
+                      "x-order": 27
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -5748,7 +4699,7 @@ const ScheduleSchema: Record<string, unknown> = {
         ],
         "summary": "Unlink a schedule from a workspace",
         "operationId": "unassignScheduleFromWorkspace",
-        "description": "Removes the schedule's link to the workspace. The schedule itself is kept.\n",
+        "description": "Removes the schedule's link to the workspace. The schedule itself is\nkept. A schedule that is not linked to this workspace answers 404.\n",
         "parameters": [
           {
             "name": "workspaceId",
@@ -5782,444 +4733,8 @@ const ScheduleSchema: Record<string, unknown> = {
           }
         ],
         "responses": {
-          "200": {
-            "description": "The unlinked schedule",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$schema": "http://json-schema.org/draft-07/schema#",
-                  "title": "Schedule Schema",
-                  "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "id",
-                    "organizationId",
-                    "name",
-                    "action",
-                    "enabled",
-                    "status",
-                    "retryCount",
-                    "maxRetries",
-                    "createdAt",
-                    "updatedAt"
-                  ],
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-order": 1
-                    },
-                    "organizationId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-go-name": "OrganizationID",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "organization_id"
-                      },
-                      "x-order": 2
-                    },
-                    "workspaceId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "workspace_id",
-                        "json": "workspaceId,omitempty"
-                      },
-                      "x-order": 3
-                    },
-                    "name": {
-                      "type": "string",
-                      "description": "Human-readable name for the schedule.",
-                      "minLength": 1,
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "name"
-                      },
-                      "x-order": 4
-                    },
-                    "action": {
-                      "type": "string",
-                      "description": "The action the worker runs when it holds the schedule's claim, for example a command name.",
-                      "minLength": 1,
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "action"
-                      },
-                      "x-order": 5
-                    },
-                    "params": {
-                      "type": "object",
-                      "description": "Action parameters, stored as a JSON blob.",
-                      "x-go-type": "core.Map",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-go-type-skip-optional-pointer": true,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "params"
-                      },
-                      "x-order": 6
-                    },
-                    "enabled": {
-                      "type": "boolean",
-                      "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "enabled"
-                      },
-                      "x-order": 7
-                    },
-                    "runAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time the schedule first becomes due.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "run_at"
-                      },
-                      "x-order": 8
-                    },
-                    "nextRunAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Next time a recurring or retrying schedule becomes due.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "next_run_at"
-                      },
-                      "x-order": 9
-                    },
-                    "recurrence": {
-                      "type": "string",
-                      "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "recurrence"
-                      },
-                      "x-order": 10
-                    },
-                    "status": {
-                      "type": "string",
-                      "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
-                      "enum": [
-                        "pending",
-                        "scheduled",
-                        "assigned",
-                        "claimed",
-                        "running",
-                        "retrying",
-                        "completed",
-                        "failed",
-                        "cancelled"
-                      ],
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "status"
-                      },
-                      "x-order": 11
-                    },
-                    "retryCount": {
-                      "type": "integer",
-                      "description": "Attempts already retried for the current run.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "retry_count"
-                      },
-                      "x-order": 12
-                    },
-                    "maxRetries": {
-                      "type": "integer",
-                      "description": "Maximum retries before the run is marked failed.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "max_retries"
-                      },
-                      "x-order": 13
-                    },
-                    "retryDelayMinutes": {
-                      "type": "integer",
-                      "description": "Minutes to wait before a retry becomes due.",
-                      "minimum": 0,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "retry_delay_minutes"
-                      },
-                      "x-order": 14
-                    },
-                    "lastRunAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time of the most recent attempt.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "last_run_at"
-                      },
-                      "x-order": 15
-                    },
-                    "lastError": {
-                      "type": "string",
-                      "description": "Error reported by the most recent attempt.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "last_error"
-                      },
-                      "x-order": 16
-                    },
-                    "claim": {
-                      "x-go-type": "*claimv1beta3.Claim",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1beta3/claim",
-                        "name": "claimv1beta3"
-                      },
-                      "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "-",
-                        "json": "claim,omitempty"
-                      },
-                      "x-order": 17,
-                      "$schema": "http://json-schema.org/draft-07/schema#",
-                      "title": "Claim Schema",
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "id",
-                        "organizationId",
-                        "resourceType",
-                        "resourceId",
-                        "claimant",
-                        "status",
-                        "claimedAt",
-                        "expiresAt",
-                        "createdAt",
-                        "updatedAt"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-order": 1
-                        },
-                        "organizationId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-go-name": "OrganizationID",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "organization_id"
-                          },
-                          "x-order": 2
-                        },
-                        "resourceType": {
-                          "type": "string",
-                          "description": "Type of the claimed resource, for example `schedule`.",
-                          "minLength": 1,
-                          "maxLength": 64,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "resource_type"
-                          },
-                          "x-order": 3
-                        },
-                        "resourceId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "resource_id"
-                          },
-                          "x-order": 4
-                        },
-                        "claimant": {
-                          "type": "string",
-                          "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                          "minLength": 1,
-                          "maxLength": 255,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "claimant"
-                          },
-                          "x-order": 5
-                        },
-                        "status": {
-                          "type": "string",
-                          "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
-                          "enum": [
-                            "active",
-                            "released",
-                            "expired"
-                          ],
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "status"
-                          },
-                          "x-order": 6
-                        },
-                        "claimedAt": {
-                          "description": "Time the claim was taken.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "claimed_at"
-                          },
-                          "x-order": 7,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "expiresAt": {
-                          "description": "Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "expires_at"
-                          },
-                          "x-order": 8,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "releasedAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
-                          "nullable": true,
-                          "x-go-type": "core.NullTime",
-                          "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/core",
-                            "name": "core"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "released_at"
-                          },
-                          "x-order": 9
-                        },
-                        "createdAt": {
-                          "description": "Timestamp of claim creation.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at"
-                          },
-                          "x-order": 10,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "updatedAt": {
-                          "description": "Timestamp of last claim modification.",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at"
-                          },
-                          "x-order": 11,
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        }
-                      }
-                    },
-                    "pausedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_at"
-                      },
-                      "x-order": 18
-                    },
-                    "pausedBy": {
-                      "type": "string",
-                      "description": "Identity that paused the schedule. Server-managed.",
-                      "maxLength": 255,
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "paused_by"
-                      },
-                      "x-order": 19
-                    },
-                    "pauseReason": {
-                      "type": "string",
-                      "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "pause_reason"
-                      },
-                      "x-order": 20
-                    },
-                    "createdAt": {
-                      "description": "Timestamp of schedule creation.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at"
-                      },
-                      "x-order": 21,
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "updatedAt": {
-                      "description": "Timestamp of last schedule modification.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at"
-                      },
-                      "x-order": 22,
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "deletedAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "Timestamp when the schedule was soft-deleted. Null while live.",
-                      "nullable": true,
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core",
-                        "name": "core"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at"
-                      },
-                      "x-order": 23
-                    }
-                  }
-                }
-              }
-            }
+          "204": {
+            "description": "Schedule unlinked"
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
@@ -6294,16 +4809,6 @@ const ScheduleSchema: Record<string, unknown> = {
           }
         }
       },
-      "409": {
-        "description": "Conflict - the schedule is held by another claimant's live claim, or the caller is not the holder of the claim it tried to renew or release",
-        "content": {
-          "text/plain": {
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
-      },
       "500": {
         "description": "Internal server error",
         "content": {
@@ -6315,7 +4820,25 @@ const ScheduleSchema: Record<string, unknown> = {
         }
       }
     },
+    "headers": {
+      "ScheduleETag": {
+        "description": "Strong entity tag of the schedule. It changes whenever the schedule changes; send it back as `If-Match` to make updateSchedule conditional.",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
     "parameters": {
+      "ifMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": false,
+        "description": "Entity tag of the schedule as last read, from the `ETag` header of getScheduleById, createSchedule or updateSchedule. When present the write applies only if it still matches; otherwise 412.",
+        "schema": {
+          "type": "string",
+          "maxLength": 255
+        }
+      },
       "scheduleId": {
         "name": "scheduleId",
         "in": "path",
@@ -6368,6 +4891,7 @@ const ScheduleSchema: Record<string, unknown> = {
         "description": "Only schedules in this status.",
         "schema": {
           "type": "string",
+          "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
           "enum": [
             "pending",
             "scheduled",
@@ -6420,7 +4944,7 @@ const ScheduleSchema: Record<string, unknown> = {
       "Schedule": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "title": "Schedule Schema",
-        "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
+        "description": "Server-returned schedule. A schedule is a job: an action to run, what it\nacts on (`targetType`, `targetId`) and its parameters, when it is due\n(`runAt`, `nextRunAt`, `recurrence` in `timezone`), its retry budget and\nits outcome. Schedules belong to an organization and may be linked to a\nworkspace. A worker takes a schedule through the generic `claim`\nconstruct (`POST /api/claims` with `resourceType` `schedule`); there is\nno schedule-specific claim route. While the claim is live no other worker\ncan take the schedule, and a claim past its `expiresAt` is stale so the\nschedule is claimable again. Releasing the claim records the run's\noutcome on the schedule in the same transaction (see `status`). The\n`claim` and the status values `assigned`, `claimed` and `running` are\nserver-managed. Pausing is data, not an operation: a client sets `paused`\n(and optionally `pauseReason`) on create or update, and the server\nrecords `pausedAt` and `pausedBy`. Fields marked readOnly are\nserver-managed and ignored on input.\n",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -6429,6 +4953,7 @@ const ScheduleSchema: Record<string, unknown> = {
           "name",
           "action",
           "enabled",
+          "timezone",
           "status",
           "retryCount",
           "maxRetries",
@@ -6444,6 +4969,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
+            "readOnly": true,
             "x-order": 1
           },
           "organizationId": {
@@ -6454,6 +4980,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
+            "readOnly": true,
             "x-go-name": "OrganizationID",
             "x-oapi-codegen-extra-tags": {
               "db": "organization_id"
@@ -6474,6 +5001,21 @@ const ScheduleSchema: Record<string, unknown> = {
             },
             "x-order": 3
           },
+          "createdBy": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "readOnly": true,
+            "x-go-name": "CreatedBy",
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner"
+            },
+            "x-order": 4
+          },
           "name": {
             "type": "string",
             "description": "Human-readable name for the schedule.",
@@ -6482,7 +5024,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "name"
             },
-            "x-order": 4
+            "x-order": 5
           },
           "action": {
             "type": "string",
@@ -6492,11 +5034,38 @@ const ScheduleSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "action"
             },
-            "x-order": 5
+            "x-order": 6
+          },
+          "targetType": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "target_type",
+              "json": "targetType,omitempty"
+            },
+            "x-order": 7,
+            "type": "string",
+            "description": "Type of the resource the schedule acts on, named the way a claim's\n`resourceType` is (lowercase snake_case construct name, for example\n`content_item` or `profile`). A server verifies the target types it\nserves and refuses others with 400. Set together with `targetId` or\nnot at all.\n",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "targetId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "TargetID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "target_id",
+              "json": "targetId,omitempty"
+            },
+            "x-order": 8
           },
           "params": {
             "type": "object",
-            "description": "Action parameters, stored as a JSON blob.",
+            "description": "Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here.",
             "x-go-type": "core.Map",
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/core",
@@ -6506,15 +5075,16 @@ const ScheduleSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "params"
             },
-            "x-order": 6
+            "x-order": 9
           },
           "enabled": {
             "type": "boolean",
             "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
+            "default": true,
             "x-oapi-codegen-extra-tags": {
               "db": "enabled"
             },
-            "x-order": 7
+            "x-order": 10
           },
           "runAt": {
             "type": "string",
@@ -6529,12 +5099,12 @@ const ScheduleSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "run_at"
             },
-            "x-order": 8
+            "x-order": 11
           },
           "nextRunAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Next time a recurring or retrying schedule becomes due.",
+            "description": "Next time the schedule becomes due. Null when it is never due again.",
             "nullable": true,
             "x-go-type": "core.NullTime",
             "x-go-type-import": {
@@ -6542,22 +5112,36 @@ const ScheduleSchema: Record<string, unknown> = {
               "name": "core"
             },
             "x-oapi-codegen-extra-tags": {
-              "db": "next_run_at"
+              "db": "next_run"
             },
-            "x-order": 9
+            "x-order": 12
           },
           "recurrence": {
-            "type": "string",
-            "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-            "maxLength": 255,
             "x-oapi-codegen-extra-tags": {
               "db": "recurrence"
             },
-            "x-order": 10
+            "x-order": 13,
+            "type": "string",
+            "description": "How the schedule repeats once it has run. Empty, `once` and `none`\nmean run once. `hourly` repeats every hour; `daily`, `weekly` and\n`monthly` repeat at the same wall-clock time one calendar day, week\nor month later in the schedule's `timezone`, so a daily schedule\nkeeps its local time across daylight-saving changes. `every:<n>`\nrepeats every `n` minutes (1 to 999999). Occurrences are counted\nfrom `runAt` (else from the current `nextRunAt`); the next due time\nis the first occurrence after the run is released, so missed runs\nare not replayed.\n",
+            "pattern": "^(|once|none|hourly|daily|weekly|monthly|every:[1-9][0-9]{0,5})$",
+            "maxLength": 255,
+            "default": ""
+          },
+          "timezone": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "timezone"
+            },
+            "x-order": 14,
+            "type": "string",
+            "description": "IANA time zone name (for example `UTC` or `America/Chicago`) in which\n`daily`, `weekly` and `monthly` recurrences keep their wall-clock\ntime. Instants (`runAt`, `nextRunAt`) are always absolute. The server\nrefuses a name it does not know with 400.\n",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+)*$",
+            "default": "UTC"
           },
           "status": {
             "type": "string",
-            "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
+            "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
             "enum": [
               "pending",
               "scheduled",
@@ -6572,57 +5156,63 @@ const ScheduleSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "status"
             },
-            "x-order": 11
+            "x-order": 15
           },
           "retryCount": {
             "type": "integer",
             "description": "Attempts already retried for the current run.",
             "minimum": 0,
+            "default": 0,
             "x-oapi-codegen-extra-tags": {
               "db": "retry_count"
             },
-            "x-order": 12
+            "x-order": 16
           },
           "maxRetries": {
             "type": "integer",
             "description": "Maximum retries before the run is marked failed.",
             "minimum": 0,
+            "default": 0,
             "x-oapi-codegen-extra-tags": {
               "db": "max_retries"
             },
-            "x-order": 13
+            "x-order": 17
           },
           "retryDelayMinutes": {
             "type": "integer",
             "description": "Minutes to wait before a retry becomes due.",
             "minimum": 0,
+            "default": 0,
             "x-oapi-codegen-extra-tags": {
               "db": "retry_delay_minutes"
             },
-            "x-order": 14
+            "x-order": 18
           },
           "lastRunAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Time of the most recent attempt.",
+            "description": "Time the most recent attempt ended (the release time of its claim). Server-managed.",
             "nullable": true,
+            "readOnly": true,
             "x-go-type": "core.NullTime",
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/core",
               "name": "core"
             },
             "x-oapi-codegen-extra-tags": {
-              "db": "last_run_at"
+              "db": "last_run"
             },
-            "x-order": 15
+            "x-order": 19
           },
           "lastError": {
             "type": "string",
-            "description": "Error reported by the most recent attempt.",
+            "description": "Error reported by the most recent attempt; empty after a successful one. Server-managed.",
+            "maxLength": 5000,
+            "readOnly": true,
             "x-oapi-codegen-extra-tags": {
               "db": "last_error"
             },
-            "x-order": 16
+            "x-order": 20
           },
           "claim": {
             "x-go-type": "*claimv1beta3.Claim",
@@ -6630,12 +5220,13 @@ const ScheduleSchema: Record<string, unknown> = {
               "path": "github.com/meshery/schemas/models/v1beta3/claim",
               "name": "claimv1beta3"
             },
-            "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
+            "description": "The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed.",
+            "readOnly": true,
             "x-oapi-codegen-extra-tags": {
               "db": "-",
               "json": "claim,omitempty"
             },
-            "x-order": 17,
+            "x-order": 21,
             "$schema": "http://json-schema.org/draft-07/schema#",
             "title": "Claim Schema",
             "type": "object",
@@ -6645,7 +5236,6 @@ const ScheduleSchema: Record<string, unknown> = {
               "organizationId",
               "resourceType",
               "resourceId",
-              "claimant",
               "status",
               "claimedAt",
               "expiresAt",
@@ -6679,7 +5269,7 @@ const ScheduleSchema: Record<string, unknown> = {
               },
               "resourceType": {
                 "type": "string",
-                "description": "Type of the claimed resource, for example `schedule`.",
+                "description": "Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`.",
                 "minLength": 1,
                 "maxLength": 64,
                 "x-oapi-codegen-extra-tags": {
@@ -6700,19 +5290,39 @@ const ScheduleSchema: Record<string, unknown> = {
                 },
                 "x-order": 4
               },
-              "claimant": {
+              "claimantConnectionId": {
                 "type": "string",
-                "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                "minLength": 1,
-                "maxLength": 255,
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                },
+                "x-go-name": "ClaimantConnectionID",
                 "x-oapi-codegen-extra-tags": {
-                  "db": "claimant"
+                  "db": "claimant_connection_id",
+                  "json": "claimantConnectionId,omitempty"
                 },
                 "x-order": 5
               },
+              "claimantUserId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                },
+                "x-go-name": "ClaimantUserID",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "claimant_user_id",
+                  "json": "claimantUserId,omitempty"
+                },
+                "x-order": 6
+              },
               "status": {
                 "type": "string",
-                "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
+                "description": "Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.\n",
                 "enum": [
                   "active",
                   "released",
@@ -6721,14 +5331,14 @@ const ScheduleSchema: Record<string, unknown> = {
                 "x-oapi-codegen-extra-tags": {
                   "db": "status"
                 },
-                "x-order": 6
+                "x-order": 7
               },
               "claimedAt": {
                 "description": "Time the claim was taken.",
                 "x-oapi-codegen-extra-tags": {
                   "db": "claimed_at"
                 },
-                "x-order": 7,
+                "x-order": 8,
                 "type": "string",
                 "format": "date-time",
                 "x-go-type-skip-optional-pointer": true
@@ -6738,15 +5348,30 @@ const ScheduleSchema: Record<string, unknown> = {
                 "x-oapi-codegen-extra-tags": {
                   "db": "expires_at"
                 },
-                "x-order": 8,
+                "x-order": 9,
                 "type": "string",
                 "format": "date-time",
                 "x-go-type-skip-optional-pointer": true
               },
+              "renewedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Time of the last renewal. Null until the claim is first renewed.",
+                "nullable": true,
+                "x-go-type": "core.NullTime",
+                "x-go-type-import": {
+                  "path": "github.com/meshery/schemas/models/core",
+                  "name": "core"
+                },
+                "x-oapi-codegen-extra-tags": {
+                  "db": "renewed_at"
+                },
+                "x-order": 10
+              },
               "releasedAt": {
                 "type": "string",
                 "format": "date-time",
-                "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
+                "description": "Time the claim was released. Null while the claim is active or after it expired.",
                 "nullable": true,
                 "x-go-type": "core.NullTime",
                 "x-go-type-import": {
@@ -6756,14 +5381,68 @@ const ScheduleSchema: Record<string, unknown> = {
                 "x-oapi-codegen-extra-tags": {
                   "db": "released_at"
                 },
-                "x-order": 9
+                "x-order": 11
+              },
+              "outcome": {
+                "type": "string",
+                "description": "What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.\n",
+                "enum": [
+                  "completed",
+                  "failed",
+                  "cancelled"
+                ],
+                "x-oapi-codegen-extra-tags": {
+                  "db": "outcome",
+                  "json": "outcome,omitempty"
+                },
+                "x-order": 12
+              },
+              "outcomeError": {
+                "type": "string",
+                "description": "Error reported with a `failed` outcome. Omitted otherwise.",
+                "maxLength": 5000,
+                "x-oapi-codegen-extra-tags": {
+                  "db": "outcome_error",
+                  "json": "outcomeError,omitempty"
+                },
+                "x-order": 13
+              },
+              "outcomeEventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                },
+                "x-go-name": "OutcomeEventID",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "outcome_event_id",
+                  "json": "outcomeEventId,omitempty"
+                },
+                "x-order": 14
+              },
+              "releasedBy": {
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                },
+                "x-go-name": "ReleasedBy",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "released_by",
+                  "json": "releasedBy,omitempty"
+                },
+                "x-order": 15
               },
               "createdAt": {
                 "description": "Timestamp of claim creation.",
                 "x-oapi-codegen-extra-tags": {
                   "db": "created_at"
                 },
-                "x-order": 10,
+                "x-order": 16,
                 "type": "string",
                 "format": "date-time",
                 "x-go-type-skip-optional-pointer": true
@@ -6773,7 +5452,7 @@ const ScheduleSchema: Record<string, unknown> = {
                 "x-oapi-codegen-extra-tags": {
                   "db": "updated_at"
                 },
-                "x-order": 11,
+                "x-order": 17,
                 "type": "string",
                 "format": "date-time",
                 "x-go-type-skip-optional-pointer": true
@@ -6785,6 +5464,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "format": "date-time",
             "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
             "nullable": true,
+            "readOnly": true,
             "x-go-type": "core.NullTime",
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/core",
@@ -6793,41 +5473,50 @@ const ScheduleSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "paused_at"
             },
-            "x-order": 18
+            "x-order": 22
           },
           "pausedBy": {
             "type": "string",
-            "description": "Identity that paused the schedule. Server-managed.",
-            "maxLength": 255,
-            "x-oapi-codegen-extra-tags": {
-              "db": "paused_by"
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
             },
-            "x-order": 19
+            "readOnly": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "paused_by",
+              "json": "pausedBy,omitempty"
+            },
+            "x-order": 23
           },
           "pauseReason": {
             "type": "string",
             "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
+            "maxLength": 1000,
             "x-oapi-codegen-extra-tags": {
               "db": "pause_reason"
             },
-            "x-order": 20
+            "x-order": 24
           },
           "createdAt": {
             "description": "Timestamp of schedule creation.",
+            "readOnly": true,
             "x-oapi-codegen-extra-tags": {
               "db": "created_at"
             },
-            "x-order": 21,
+            "x-order": 25,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
           "updatedAt": {
             "description": "Timestamp of last schedule modification.",
+            "readOnly": true,
             "x-oapi-codegen-extra-tags": {
               "db": "updated_at"
             },
-            "x-order": 22,
+            "x-order": 26,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
@@ -6837,6 +5526,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "format": "date-time",
             "description": "Timestamp when the schedule was soft-deleted. Null while live.",
             "nullable": true,
+            "readOnly": true,
             "x-go-type": "core.NullTime",
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/core",
@@ -6845,13 +5535,51 @@ const ScheduleSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "deleted_at"
             },
-            "x-order": 23
+            "x-order": 27
           }
         }
       },
+      "ScheduleStatus": {
+        "type": "string",
+        "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
+        "enum": [
+          "pending",
+          "scheduled",
+          "assigned",
+          "claimed",
+          "running",
+          "retrying",
+          "completed",
+          "failed",
+          "cancelled"
+        ]
+      },
+      "ScheduleRecurrence": {
+        "type": "string",
+        "description": "How the schedule repeats once it has run. Empty, `once` and `none`\nmean run once. `hourly` repeats every hour; `daily`, `weekly` and\n`monthly` repeat at the same wall-clock time one calendar day, week\nor month later in the schedule's `timezone`, so a daily schedule\nkeeps its local time across daylight-saving changes. `every:<n>`\nrepeats every `n` minutes (1 to 999999). Occurrences are counted\nfrom `runAt` (else from the current `nextRunAt`); the next due time\nis the first occurrence after the run is released, so missed runs\nare not replayed.\n",
+        "pattern": "^(|once|none|hourly|daily|weekly|monthly|every:[1-9][0-9]{0,5})$",
+        "maxLength": 255,
+        "default": ""
+      },
+      "ScheduleTimezone": {
+        "type": "string",
+        "description": "IANA time zone name (for example `UTC` or `America/Chicago`) in which\n`daily`, `weekly` and `monthly` recurrences keep their wall-clock\ntime. Instants (`runAt`, `nextRunAt`) are always absolute. The server\nrefuses a name it does not know with 400.\n",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+)*$",
+        "default": "UTC"
+      },
+      "ScheduleTargetType": {
+        "type": "string",
+        "description": "Type of the resource the schedule acts on, named the way a claim's\n`resourceType` is (lowercase snake_case construct name, for example\n`content_item` or `profile`). A server verifies the target types it\nserves and refuses others with 400. Set together with `targetId` or\nnot at all.\n",
+        "pattern": "^[a-z][a-z0-9_]*$",
+        "minLength": 1,
+        "maxLength": 64
+      },
       "SchedulePayload": {
         "type": "object",
-        "description": "Payload for creating or updating a schedule. Contains only\nclient-settable fields; the owning `organizationId`, the claim,\n`pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError` and the\ntimestamps are server-managed. The server ignores them on input. Pausing\nis a field, not an operation: `paused` pauses or resumes the schedule.\n`status` accepts only `pending`,\n`scheduled` and `cancelled` here; the other values are set by the\nclaim and release operations.\n",
+        "additionalProperties": false,
+        "description": "Payload for creating or updating a schedule. Contains only\nclient-settable fields; the owning `organizationId`, `createdBy`, the\nclaim, `pausedAt`, `pausedBy`, `lastRunAt`, `lastError` and the\ntimestamps are server-managed and refused as unknown fields. Pausing\nis a field, not an operation: `paused` pauses or resumes the\nschedule. `status` accepts only `pending`, `scheduled` and\n`cancelled` here (otherwise 400); the other values are set by the\nserver as the schedule is claimed and released.\n",
         "required": [
           "name",
           "action"
@@ -6893,6 +5621,29 @@ const ScheduleSchema: Record<string, unknown> = {
             "minLength": 1,
             "maxLength": 255
           },
+          "targetType": {
+            "x-oapi-codegen-extra-tags": {
+              "json": "targetType,omitempty"
+            },
+            "type": "string",
+            "description": "Type of the resource the schedule acts on, named the way a claim's\n`resourceType` is (lowercase snake_case construct name, for example\n`content_item` or `profile`). A server verifies the target types it\nserves and refuses others with 400. Set together with `targetId` or\nnot at all.\n",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "targetId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "TargetID",
+            "x-oapi-codegen-extra-tags": {
+              "json": "targetId,omitempty"
+            }
+          },
           "params": {
             "type": "object",
             "description": "Action parameters, stored as a JSON blob.",
@@ -6905,7 +5656,8 @@ const ScheduleSchema: Record<string, unknown> = {
           },
           "enabled": {
             "type": "boolean",
-            "description": "Whether the schedule is eligible to run. Defaults to true."
+            "description": "Whether the schedule is eligible to run.",
+            "default": true
           },
           "runAt": {
             "type": "string",
@@ -6918,161 +5670,72 @@ const ScheduleSchema: Record<string, unknown> = {
               "name": "core"
             }
           },
+          "nextRunAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Next time the schedule becomes due. Omitted on create, it defaults to `runAt`; omitted on update, it is kept. Send null for never due again.",
+            "nullable": true,
+            "x-go-type": "core.NullTime",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
+            }
+          },
           "recurrence": {
             "type": "string",
-            "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-            "maxLength": 255
+            "description": "How the schedule repeats once it has run. Empty, `once` and `none`\nmean run once. `hourly` repeats every hour; `daily`, `weekly` and\n`monthly` repeat at the same wall-clock time one calendar day, week\nor month later in the schedule's `timezone`, so a daily schedule\nkeeps its local time across daylight-saving changes. `every:<n>`\nrepeats every `n` minutes (1 to 999999). Occurrences are counted\nfrom `runAt` (else from the current `nextRunAt`); the next due time\nis the first occurrence after the run is released, so missed runs\nare not replayed.\n",
+            "pattern": "^(|once|none|hourly|daily|weekly|monthly|every:[1-9][0-9]{0,5})$",
+            "maxLength": 255,
+            "default": ""
+          },
+          "timezone": {
+            "type": "string",
+            "description": "IANA time zone name (for example `UTC` or `America/Chicago`) in which\n`daily`, `weekly` and `monthly` recurrences keep their wall-clock\ntime. Instants (`runAt`, `nextRunAt`) are always absolute. The server\nrefuses a name it does not know with 400.\n",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+)*$",
+            "default": "UTC"
           },
           "status": {
             "type": "string",
-            "description": "Client-settable status. Omit to let the server choose `scheduled` for a due-timed schedule and `pending` otherwise.",
+            "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
             "enum": [
               "pending",
               "scheduled",
-              "cancelled"
-            ]
-          },
-          "maxRetries": {
-            "type": "integer",
-            "description": "Maximum retries before the run is marked failed.",
-            "minimum": 0
-          },
-          "retryDelayMinutes": {
-            "type": "integer",
-            "description": "Minutes to wait before a retry becomes due.",
-            "minimum": 0
-          },
-          "paused": {
-            "type": "boolean",
-            "description": "`true` pauses the schedule so it is never claimed (unless a claim\ncarries `ignorePause`); `false` resumes it. Omit to leave the pause\nunchanged. The server records `pausedAt` and `pausedBy`.\n"
-          },
-          "pauseReason": {
-            "type": "string",
-            "description": "Reason for pausing; stored only while `paused` is true and cleared on resume.",
-            "maxLength": 1000
-          }
-        }
-      },
-      "ScheduleClaimRequest": {
-        "type": "object",
-        "description": "Request to claim the next due schedule.",
-        "required": [
-          "claimant"
-        ],
-        "properties": {
-          "claimant": {
-            "type": "string",
-            "description": "Identity of the worker taking the claim.",
-            "minLength": 1,
-            "maxLength": 255
-          },
-          "durationMinutes": {
-            "type": "integer",
-            "description": "Requested claim duration in minutes; the server applies its default when omitted and may cap it.",
-            "minimum": 1,
-            "maximum": 1440
-          },
-          "workspaceId": {
-            "type": "string",
-            "format": "uuid",
-            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "json": "workspaceId,omitempty"
-            }
-          },
-          "ignorePause": {
-            "type": "boolean",
-            "description": "Operator override that claims through the organization-wide and per-schedule pauses."
-          }
-        }
-      },
-      "ScheduleTargetedClaimRequest": {
-        "type": "object",
-        "description": "Request to claim one named schedule.",
-        "required": [
-          "claimant"
-        ],
-        "properties": {
-          "claimant": {
-            "type": "string",
-            "description": "Identity of the worker taking the claim.",
-            "minLength": 1,
-            "maxLength": 255
-          },
-          "durationMinutes": {
-            "type": "integer",
-            "description": "Requested claim duration in minutes; the server applies its default when omitted and may cap it.",
-            "minimum": 1,
-            "maximum": 1440
-          },
-          "force": {
-            "type": "boolean",
-            "description": "Claim even though the schedule is not yet due (trigger now). A live claim held by another claimant still refuses."
-          },
-          "ignorePause": {
-            "type": "boolean",
-            "description": "Operator override that claims through the organization-wide and per-schedule pauses."
-          }
-        }
-      },
-      "ScheduleClaimReleaseRequest": {
-        "type": "object",
-        "description": "Request to release a schedule's claim and record the run's outcome.",
-        "required": [
-          "claimant"
-        ],
-        "properties": {
-          "claimant": {
-            "type": "string",
-            "description": "Identity of the holder releasing the claim.",
-            "minLength": 1,
-            "maxLength": 255
-          },
-          "status": {
-            "type": "string",
-            "description": "Outcome status to record with the release.",
-            "enum": [
-              "scheduled",
+              "assigned",
+              "claimed",
+              "running",
               "retrying",
               "completed",
               "failed",
               "cancelled"
             ]
           },
-          "lastRunAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Time of the attempt being reported.",
-            "nullable": true,
-            "x-go-type": "core.NullTime",
-            "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/core",
-              "name": "core"
-            }
-          },
-          "lastError": {
-            "type": "string",
-            "description": "Error reported by the attempt; empty on success."
-          },
-          "nextRunAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Next due time for a recurring or retrying schedule.",
-            "nullable": true,
-            "x-go-type": "core.NullTime",
-            "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/core",
-              "name": "core"
-            }
-          },
           "retryCount": {
             "type": "integer",
-            "description": "Retries used so far for the current run.",
+            "description": "Retries used so far for the current run, for example 0 to re-arm a schedule. Omitted on update, it is kept.",
             "minimum": 0
+          },
+          "maxRetries": {
+            "type": "integer",
+            "description": "Maximum retries before the run is marked failed.",
+            "minimum": 0,
+            "default": 0
+          },
+          "retryDelayMinutes": {
+            "type": "integer",
+            "description": "Minutes to wait before a retry becomes due.",
+            "minimum": 0,
+            "default": 0
+          },
+          "paused": {
+            "type": "boolean",
+            "description": "`true` pauses the schedule so it is never claimed; `false`\nresumes it. Omit to leave the pause unchanged. The server records\n`pausedAt` and `pausedBy`.\n"
+          },
+          "pauseReason": {
+            "type": "string",
+            "description": "Reason for pausing; stored only while `paused` is true and cleared on resume.",
+            "maxLength": 1000
           }
         }
       },
@@ -7107,7 +5770,7 @@ const ScheduleSchema: Record<string, unknown> = {
               "x-go-type": "Schedule",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "title": "Schedule Schema",
-              "description": "Server-returned schedule. A schedule is a job: an action to run with its\nparameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry\nbudget and its outcome. Schedules belong to an organization and may be\nlinked to a workspace. A worker takes a schedule through a claim (the\ngeneric `claim` construct, nested under the schedule); while the claim is\nlive no other worker can take it, and a claim past its `expiresAt` is\nstale and the schedule is claimable again. The `claim` and the status\nvalues `assigned`, `claimed` and `running` are server-managed and change\nonly through the claim and release operations. Pausing is data, not an\noperation: a client sets `paused` (and optionally `pauseReason`) on create\nor update, and the server records `pausedAt` and `pausedBy`.\n",
+              "description": "Server-returned schedule. A schedule is a job: an action to run, what it\nacts on (`targetType`, `targetId`) and its parameters, when it is due\n(`runAt`, `nextRunAt`, `recurrence` in `timezone`), its retry budget and\nits outcome. Schedules belong to an organization and may be linked to a\nworkspace. A worker takes a schedule through the generic `claim`\nconstruct (`POST /api/claims` with `resourceType` `schedule`); there is\nno schedule-specific claim route. While the claim is live no other worker\ncan take the schedule, and a claim past its `expiresAt` is stale so the\nschedule is claimable again. Releasing the claim records the run's\noutcome on the schedule in the same transaction (see `status`). The\n`claim` and the status values `assigned`, `claimed` and `running` are\nserver-managed. Pausing is data, not an operation: a client sets `paused`\n(and optionally `pauseReason`) on create or update, and the server\nrecords `pausedAt` and `pausedBy`. Fields marked readOnly are\nserver-managed and ignored on input.\n",
               "type": "object",
               "additionalProperties": false,
               "required": [
@@ -7116,6 +5779,7 @@ const ScheduleSchema: Record<string, unknown> = {
                 "name",
                 "action",
                 "enabled",
+                "timezone",
                 "status",
                 "retryCount",
                 "maxRetries",
@@ -7131,6 +5795,7 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
+                  "readOnly": true,
                   "x-order": 1
                 },
                 "organizationId": {
@@ -7141,6 +5806,7 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
+                  "readOnly": true,
                   "x-go-name": "OrganizationID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "organization_id"
@@ -7161,6 +5827,21 @@ const ScheduleSchema: Record<string, unknown> = {
                   },
                   "x-order": 3
                 },
+                "createdBy": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "readOnly": true,
+                  "x-go-name": "CreatedBy",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "owner"
+                  },
+                  "x-order": 4
+                },
                 "name": {
                   "type": "string",
                   "description": "Human-readable name for the schedule.",
@@ -7169,7 +5850,7 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "name"
                   },
-                  "x-order": 4
+                  "x-order": 5
                 },
                 "action": {
                   "type": "string",
@@ -7179,11 +5860,38 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "action"
                   },
-                  "x-order": 5
+                  "x-order": 6
+                },
+                "targetType": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "target_type",
+                    "json": "targetType,omitempty"
+                  },
+                  "x-order": 7,
+                  "type": "string",
+                  "description": "Type of the resource the schedule acts on, named the way a claim's\n`resourceType` is (lowercase snake_case construct name, for example\n`content_item` or `profile`). A server verifies the target types it\nserves and refuses others with 400. Set together with `targetId` or\nnot at all.\n",
+                  "pattern": "^[a-z][a-z0-9_]*$",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                "targetId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "TargetID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "target_id",
+                    "json": "targetId,omitempty"
+                  },
+                  "x-order": 8
                 },
                 "params": {
                   "type": "object",
-                  "description": "Action parameters, stored as a JSON blob.",
+                  "description": "Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here.",
                   "x-go-type": "core.Map",
                   "x-go-type-import": {
                     "path": "github.com/meshery/schemas/models/core",
@@ -7193,15 +5901,16 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "params"
                   },
-                  "x-order": 6
+                  "x-order": 9
                 },
                 "enabled": {
                   "type": "boolean",
                   "description": "Whether the schedule is eligible to run. A disabled schedule is never claimed.",
+                  "default": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "enabled"
                   },
-                  "x-order": 7
+                  "x-order": 10
                 },
                 "runAt": {
                   "type": "string",
@@ -7216,12 +5925,12 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "run_at"
                   },
-                  "x-order": 8
+                  "x-order": 11
                 },
                 "nextRunAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "Next time a recurring or retrying schedule becomes due.",
+                  "description": "Next time the schedule becomes due. Null when it is never due again.",
                   "nullable": true,
                   "x-go-type": "core.NullTime",
                   "x-go-type-import": {
@@ -7229,22 +5938,36 @@ const ScheduleSchema: Record<string, unknown> = {
                     "name": "core"
                   },
                   "x-oapi-codegen-extra-tags": {
-                    "db": "next_run_at"
+                    "db": "next_run"
                   },
-                  "x-order": 9
+                  "x-order": 12
                 },
                 "recurrence": {
-                  "type": "string",
-                  "description": "Recurrence rule for repeating schedules. Empty for a run-once schedule.",
-                  "maxLength": 255,
                   "x-oapi-codegen-extra-tags": {
                     "db": "recurrence"
                   },
-                  "x-order": 10
+                  "x-order": 13,
+                  "type": "string",
+                  "description": "How the schedule repeats once it has run. Empty, `once` and `none`\nmean run once. `hourly` repeats every hour; `daily`, `weekly` and\n`monthly` repeat at the same wall-clock time one calendar day, week\nor month later in the schedule's `timezone`, so a daily schedule\nkeeps its local time across daylight-saving changes. `every:<n>`\nrepeats every `n` minutes (1 to 999999). Occurrences are counted\nfrom `runAt` (else from the current `nextRunAt`); the next due time\nis the first occurrence after the run is released, so missed runs\nare not replayed.\n",
+                  "pattern": "^(|once|none|hourly|daily|weekly|monthly|every:[1-9][0-9]{0,5})$",
+                  "maxLength": 255,
+                  "default": ""
+                },
+                "timezone": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "timezone"
+                  },
+                  "x-order": 14,
+                  "type": "string",
+                  "description": "IANA time zone name (for example `UTC` or `America/Chicago`) in which\n`daily`, `weekly` and `monthly` recurrences keep their wall-clock\ntime. Instants (`runAt`, `nextRunAt`) are always absolute. The server\nrefuses a name it does not know with 400.\n",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[A-Za-z][A-Za-z0-9_+-]*(/[A-Za-z0-9_+-]+)*$",
+                  "default": "UTC"
                 },
                 "status": {
                   "type": "string",
-                  "description": "Lifecycle status. `pending`: created, not yet due-scheduled.\n`scheduled`: waiting for its due time. `assigned`: designated for a\nparticular worker but not yet claimed. `claimed`: a worker holds the\nclaim and has not started. `running`: the claim holder is executing\nit. `retrying`: the last attempt failed and another is due.\n`completed`, `failed` and `cancelled` are terminal for a run-once\nschedule; a recurring schedule returns to `scheduled`.\n",
+                  "description": "Lifecycle status of a schedule. `pending`: created, not yet\ndue-scheduled. `scheduled`: waiting for its due time. `assigned`:\ndesignated for a particular worker but not yet claimed. `claimed`: a\nworker holds the claim and has not started. `running`: the claim\nholder is executing it. `retrying`: the last attempt failed and\nanother is due. `completed`, `failed` and `cancelled` are terminal\nfor a run-once schedule; a recurring schedule returns to `scheduled`\nwhen its claim is released with a `completed` outcome.\n",
                   "enum": [
                     "pending",
                     "scheduled",
@@ -7259,57 +5982,63 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "status"
                   },
-                  "x-order": 11
+                  "x-order": 15
                 },
                 "retryCount": {
                   "type": "integer",
                   "description": "Attempts already retried for the current run.",
                   "minimum": 0,
+                  "default": 0,
                   "x-oapi-codegen-extra-tags": {
                     "db": "retry_count"
                   },
-                  "x-order": 12
+                  "x-order": 16
                 },
                 "maxRetries": {
                   "type": "integer",
                   "description": "Maximum retries before the run is marked failed.",
                   "minimum": 0,
+                  "default": 0,
                   "x-oapi-codegen-extra-tags": {
                     "db": "max_retries"
                   },
-                  "x-order": 13
+                  "x-order": 17
                 },
                 "retryDelayMinutes": {
                   "type": "integer",
                   "description": "Minutes to wait before a retry becomes due.",
                   "minimum": 0,
+                  "default": 0,
                   "x-oapi-codegen-extra-tags": {
                     "db": "retry_delay_minutes"
                   },
-                  "x-order": 14
+                  "x-order": 18
                 },
                 "lastRunAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "Time of the most recent attempt.",
+                  "description": "Time the most recent attempt ended (the release time of its claim). Server-managed.",
                   "nullable": true,
+                  "readOnly": true,
                   "x-go-type": "core.NullTime",
                   "x-go-type-import": {
                     "path": "github.com/meshery/schemas/models/core",
                     "name": "core"
                   },
                   "x-oapi-codegen-extra-tags": {
-                    "db": "last_run_at"
+                    "db": "last_run"
                   },
-                  "x-order": 15
+                  "x-order": 19
                 },
                 "lastError": {
                   "type": "string",
-                  "description": "Error reported by the most recent attempt.",
+                  "description": "Error reported by the most recent attempt; empty after a successful one. Server-managed.",
+                  "maxLength": 5000,
+                  "readOnly": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "last_error"
                   },
-                  "x-order": 16
+                  "x-order": 20
                 },
                 "claim": {
                   "x-go-type": "*claimv1beta3.Claim",
@@ -7317,12 +6046,13 @@ const ScheduleSchema: Record<string, unknown> = {
                     "path": "github.com/meshery/schemas/models/v1beta3/claim",
                     "name": "claimv1beta3"
                   },
-                  "description": "The schedule's live claim, when one is held. Server-managed; omitted when the schedule is unclaimed.",
+                  "description": "The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed.",
+                  "readOnly": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "-",
                     "json": "claim,omitempty"
                   },
-                  "x-order": 17,
+                  "x-order": 21,
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "title": "Claim Schema",
                   "type": "object",
@@ -7332,7 +6062,6 @@ const ScheduleSchema: Record<string, unknown> = {
                     "organizationId",
                     "resourceType",
                     "resourceId",
-                    "claimant",
                     "status",
                     "claimedAt",
                     "expiresAt",
@@ -7366,7 +6095,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     },
                     "resourceType": {
                       "type": "string",
-                      "description": "Type of the claimed resource, for example `schedule`.",
+                      "description": "Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`.",
                       "minLength": 1,
                       "maxLength": 64,
                       "x-oapi-codegen-extra-tags": {
@@ -7387,19 +6116,39 @@ const ScheduleSchema: Record<string, unknown> = {
                       },
                       "x-order": 4
                     },
-                    "claimant": {
+                    "claimantConnectionId": {
                       "type": "string",
-                      "description": "Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).",
-                      "minLength": 1,
-                      "maxLength": 255,
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-name": "ClaimantConnectionID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "claimant"
+                        "db": "claimant_connection_id",
+                        "json": "claimantConnectionId,omitempty"
                       },
                       "x-order": 5
                     },
+                    "claimantUserId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-name": "ClaimantUserID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "claimant_user_id",
+                        "json": "claimantUserId,omitempty"
+                      },
+                      "x-order": 6
+                    },
                     "status": {
                       "type": "string",
-                      "description": "Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.",
+                      "description": "Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.\n",
                       "enum": [
                         "active",
                         "released",
@@ -7408,14 +6157,14 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "status"
                       },
-                      "x-order": 6
+                      "x-order": 7
                     },
                     "claimedAt": {
                       "description": "Time the claim was taken.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "claimed_at"
                       },
-                      "x-order": 7,
+                      "x-order": 8,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -7425,15 +6174,30 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at"
                       },
-                      "x-order": 8,
+                      "x-order": 9,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
+                    "renewedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Time of the last renewal. Null until the claim is first renewed.",
+                      "nullable": true,
+                      "x-go-type": "core.NullTime",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "renewed_at"
+                      },
+                      "x-order": 10
+                    },
                     "releasedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Time the holder released the claim. Null while the claim is active or after it expired.",
+                      "description": "Time the claim was released. Null while the claim is active or after it expired.",
                       "nullable": true,
                       "x-go-type": "core.NullTime",
                       "x-go-type-import": {
@@ -7443,14 +6207,68 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "released_at"
                       },
-                      "x-order": 9
+                      "x-order": 11
+                    },
+                    "outcome": {
+                      "type": "string",
+                      "description": "What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.\n",
+                      "enum": [
+                        "completed",
+                        "failed",
+                        "cancelled"
+                      ],
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "outcome",
+                        "json": "outcome,omitempty"
+                      },
+                      "x-order": 12
+                    },
+                    "outcomeError": {
+                      "type": "string",
+                      "description": "Error reported with a `failed` outcome. Omitted otherwise.",
+                      "maxLength": 5000,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "outcome_error",
+                        "json": "outcomeError,omitempty"
+                      },
+                      "x-order": 13
+                    },
+                    "outcomeEventId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-name": "OutcomeEventID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "outcome_event_id",
+                        "json": "outcomeEventId,omitempty"
+                      },
+                      "x-order": 14
+                    },
+                    "releasedBy": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-name": "ReleasedBy",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "released_by",
+                        "json": "releasedBy,omitempty"
+                      },
+                      "x-order": 15
                     },
                     "createdAt": {
                       "description": "Timestamp of claim creation.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at"
                       },
-                      "x-order": 10,
+                      "x-order": 16,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -7460,7 +6278,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at"
                       },
-                      "x-order": 11,
+                      "x-order": 17,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -7472,6 +6290,7 @@ const ScheduleSchema: Record<string, unknown> = {
                   "format": "date-time",
                   "description": "Time the schedule was paused. Null when the schedule is not paused. Server-managed.",
                   "nullable": true,
+                  "readOnly": true,
                   "x-go-type": "core.NullTime",
                   "x-go-type-import": {
                     "path": "github.com/meshery/schemas/models/core",
@@ -7480,41 +6299,50 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "paused_at"
                   },
-                  "x-order": 18
+                  "x-order": 22
                 },
                 "pausedBy": {
                   "type": "string",
-                  "description": "Identity that paused the schedule. Server-managed.",
-                  "maxLength": 255,
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "paused_by"
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
                   },
-                  "x-order": 19
+                  "readOnly": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "paused_by",
+                    "json": "pausedBy,omitempty"
+                  },
+                  "x-order": 23
                 },
                 "pauseReason": {
                   "type": "string",
                   "description": "Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.",
+                  "maxLength": 1000,
                   "x-oapi-codegen-extra-tags": {
                     "db": "pause_reason"
                   },
-                  "x-order": 20
+                  "x-order": 24
                 },
                 "createdAt": {
                   "description": "Timestamp of schedule creation.",
+                  "readOnly": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "created_at"
                   },
-                  "x-order": 21,
+                  "x-order": 25,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "updatedAt": {
                   "description": "Timestamp of last schedule modification.",
+                  "readOnly": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at"
                   },
-                  "x-order": 22,
+                  "x-order": 26,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
@@ -7524,6 +6352,7 @@ const ScheduleSchema: Record<string, unknown> = {
                   "format": "date-time",
                   "description": "Timestamp when the schedule was soft-deleted. Null while live.",
                   "nullable": true,
+                  "readOnly": true,
                   "x-go-type": "core.NullTime",
                   "x-go-type-import": {
                     "path": "github.com/meshery/schemas/models/core",
@@ -7532,7 +6361,7 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "deleted_at"
                   },
-                  "x-order": 23
+                  "x-order": 27
                 }
               }
             },

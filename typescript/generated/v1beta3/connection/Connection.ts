@@ -140,6 +140,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/integrations/connections/desktop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the organization's desktop connections
+         * @description Returns every live `desktop` connection in the session organization, whoever registered it, as a summary: `id`, `name`, `kind`, `owner`, `status` and `lastSeenAt` only. Any live member of the organization may read it, so members can see which computers share its work; a guest session cannot. Servers must never include the connection's credential, metadata (beyond `lastSeenAt`), URL or description here: the full connection stays readable only by its owner through `getConnections`. `status` follows the heartbeat rule of `recordConnectionHeartbeat` (a desktop connection silent for 3 minutes reads `disconnected`). A caller who is not a live member of the session organization receives `404`.
+         */
+        get: operations["getDesktopConnectionsOfOrganization"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/integrations/connections/desktop/{installationId}": {
         parameters: {
             query?: never;
@@ -921,6 +941,63 @@ export interface components {
                     description?: string;
                 }[];
             };
+        };
+        /** @description Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`. */
+        ConnectionSummary: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description Connection name. */
+            name: string;
+            /** @description Connection kind, for example `desktop`. */
+            kind: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            owner?: string;
+            /** @description Connection status as read, for example `connected` or `disconnected`. */
+            status: string;
+            /**
+             * Format: date-time
+             * @description Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.
+             */
+            lastSeenAt?: string | null;
+        };
+        /** @description Page of connection summaries. */
+        ConnectionSummaryPage: {
+            /** @description Connection summaries on this page. */
+            connections: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /** @description Connection name. */
+                name: string;
+                /** @description Connection kind, for example `desktop`. */
+                kind: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                owner?: string;
+                /** @description Connection status as read, for example `connected` or `disconnected`. */
+                status: string;
+                /**
+                 * Format: date-time
+                 * @description Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.
+                 */
+                lastSeenAt?: string | null;
+            }[];
+            /** @description Total number of connections on all pages. */
+            totalCount: number;
+            /** @description Current page number. */
+            page: number;
+            /** @description Number of elements per page. */
+            pageSize: number;
         };
         /** @description Represents a page of connections with meta information about connections count */
         ConnectionPage: {
@@ -5047,6 +5124,100 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getDesktopConnectionsOfOrganization: {
+        parameters: {
+            query?: {
+                /** @description Page number */
+                page?: number;
+                /** @description Number of items per page */
+                pageSize?: number;
+                /** @description Only connections registered by this user. */
+                owner?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Desktop connections of the organization */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Connection summaries on this page. */
+                        connections: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /** @description Connection name. */
+                            name: string;
+                            /** @description Connection kind, for example `desktop`. */
+                            kind: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            owner?: string;
+                            /** @description Connection status as read, for example `connected` or `disconnected`. */
+                            status: string;
+                            /**
+                             * Format: date-time
+                             * @description Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.
+                             */
+                            lastSeenAt?: string | null;
+                        }[];
+                        /** @description Total number of connections on all pages. */
+                        totalCount: number;
+                        /** @description Current page number. */
+                        page: number;
+                        /** @description Number of elements per page. */
+                        pageSize: number;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
