@@ -999,7 +999,10 @@ const injectedRtkApi = api
         DeregisterDesktopConnectionApiResponse,
         DeregisterDesktopConnectionApiArg
       >({
-        query: (queryArg) => ({ url: `/api/integrations/connections/desktop/${queryArg.machineId}`, method: "DELETE" }),
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/desktop/${queryArg.installationId}`,
+          method: "DELETE",
+        }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
       recordConnectionHeartbeat: build.mutation<RecordConnectionHeartbeatApiResponse, RecordConnectionHeartbeatApiArg>({
@@ -9520,7 +9523,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
-    /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+    /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
      */
     organizationId?: string;
     /** Associated environments for this connection */
@@ -9841,7 +9844,7 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
        */
       organizationId?: string;
       /** Associated environments for this connection */
@@ -10119,7 +10122,7 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
        */
       organizationId?: string;
       /** Associated environments for this connection */
@@ -10583,7 +10586,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
    */
   organizationId?: string;
   /** Associated environments for this connection */
@@ -10865,7 +10868,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
    */
   organizationId?: string;
   /** Associated environments for this connection */
@@ -11101,8 +11104,8 @@ export type DeleteMesheryConnectionApiArg = {
 };
 export type DeregisterDesktopConnectionApiResponse = unknown;
 export type DeregisterDesktopConnectionApiArg = {
-  /** Stable per-install machine identifier from `metadata.machineId`. */
-  machineId: string;
+  /** Installation identifier from `metadata.installationId`. */
+  installationId: string;
 };
 export type RecordConnectionHeartbeatApiResponse = /** status 200 Connection after the heartbeat */ {
   /** Connection ID */
@@ -11343,7 +11346,7 @@ export type RecordConnectionHeartbeatApiResponse = /** status 200 Connection aft
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
    */
   organizationId?: string;
   /** Associated environments for this connection */
@@ -18622,7 +18625,7 @@ export type GetProviderCapabilitiesApiResponse = /** status 200 The capabilities
   extensions?: {
     [key: string]: any;
   };
-  /** Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{machineId}` placeholders.
+  /** Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{installationId}` placeholders.
    */
   capabilities?: {
     /** Feature name, for example `persist-connection`. */

@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "fb2f3275d706b0bbe7db5884ebf64f3de3a9bef2c81d3dc1deaeed1f8b6255bb" as const;
+export const PERMISSIONS_INDEX_ID = "e0e93dd7284f2834f1d2b5683e27025aa3747e63ff4d78d8624039dc9fa9232a" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -5141,6 +5141,17 @@ export const Keys = {
     subcategory: "MeshMonkey",
     function: "As daemonsets",
     description: ""
+  },
+
+  /**
+   * Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
+   */
+  BlowhornAccessDiagnostics: {
+    id: "afb597fc-a027-4ade-b5f9-c5f82b67b053" as PermissionKey,
+    category: "Blowhorn",
+    subcategory: "Diagnostics",
+    function: "Access Diagnostics",
+    description: "Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces."
   }
 } as const;
 
@@ -7467,7 +7478,12 @@ export const PermissionKeys = {
   /**
    * No description available
    */
-  ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey
+  ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey,
+
+  /**
+   * Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
+   */
+  BlowhornAccessDiagnostics: "afb597fc-a027-4ade-b5f9-c5f82b67b053" as PermissionKey
 } as const;
 
 /**

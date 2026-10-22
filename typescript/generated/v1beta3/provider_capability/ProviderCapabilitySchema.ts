@@ -664,7 +664,7 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
                     },
                     "capabilities": {
                       "type": "array",
-                      "description": "Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{machineId}` placeholders.\n",
+                      "description": "Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{installationId}` placeholders.\n",
                       "items": {
                         "type": "object",
                         "description": "One feature the provider serves and the endpoint that serves it.",
@@ -1420,7 +1420,7 @@ const ProviderCapabilitySchema: Record<string, unknown> = {
           },
           "capabilities": {
             "type": "array",
-            "description": "Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{machineId}` placeholders.\n",
+            "description": "Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{installationId}` placeholders.\n",
             "items": {
               "type": "object",
               "description": "One feature the provider serves and the endpoint that serves it.",

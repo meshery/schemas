@@ -3287,7 +3287,7 @@ export interface components {
                 deletedAt?: string | null;
                 /**
                  * Format: uuid
-                 * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                 * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
                  */
                 organizationId?: string;
                 /** @description Associated environments for this connection */
@@ -12383,7 +12383,7 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
                          */
                         organizationId?: string;
                         /** @description Associated environments for this connection */
@@ -13675,7 +13675,7 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+                         * @description Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
                          */
                         organizationId?: string;
                         /** @description Associated environments for this connection */

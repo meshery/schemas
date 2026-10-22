@@ -51,7 +51,7 @@ type ClientUpgradeRequiredError struct {
 // fields arrive only with a new `contractVersion` (1.1 added
 // `compatibility` and `session`).
 type ProviderCapability struct {
-	// Capabilities Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{machineId}` placeholders.
+	// Capabilities Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{installationId}` placeholders.
 	Capabilities *[]ProviderFeature `json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
 
 	// Compatibility Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`.
