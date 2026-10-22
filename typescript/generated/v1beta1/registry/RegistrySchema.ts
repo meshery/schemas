@@ -38941,7 +38941,7 @@ const RegistrySchema: Record<string, unknown> = {
                         "x-go-type-skip-optional-pointer": true
                       },
                       "organizationId": {
-                        "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                        "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
                         "x-oapi-codegen-extra-tags": {
                           "db": "organization_id",
                           "json": "organizationId,omitempty"
@@ -50055,7 +50055,7 @@ const RegistrySchema: Record<string, unknown> = {
                         "x-go-type-skip-optional-pointer": true
                       },
                       "organizationId": {
-                        "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                        "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
                         "x-oapi-codegen-extra-tags": {
                           "db": "organization_id",
                           "json": "organizationId,omitempty"
@@ -70151,7 +70151,7 @@ const RegistrySchema: Record<string, unknown> = {
                 "x-go-type-skip-optional-pointer": true
               },
               "organizationId": {
-                "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.machineId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
                 "x-oapi-codegen-extra-tags": {
                   "db": "organization_id",
                   "json": "organizationId,omitempty"

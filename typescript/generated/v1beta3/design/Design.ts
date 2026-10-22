@@ -3274,7 +3274,7 @@ export interface components {
                 status: string;
                 /**
                  * Format: uuid
-                 * @description ID of the system instance that emitted the event.
+                 * @description ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
                  */
                 systemId: string;
                 /**
@@ -8939,7 +8939,7 @@ export interface operations {
                             status: string;
                             /**
                              * Format: uuid
-                             * @description ID of the system instance that emitted the event.
+                             * @description ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
                              */
                             systemId: string;
                             /**

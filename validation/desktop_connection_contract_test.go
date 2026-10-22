@@ -18,7 +18,7 @@ func TestDesktopConnectionContract(t *testing.T) {
 		}
 	}
 
-	del := mustLookup(t, doc, "paths", "/api/integrations/connections/desktop/{machineId}", "delete")
+	del := mustLookup(t, doc, "paths", "/api/integrations/connections/desktop/{installationId}", "delete")
 	if got := mustValue(del, "operationId"); got != "deregisterDesktopConnection" {
 		t.Errorf("deregister operationId = %v", got)
 	}
@@ -34,10 +34,21 @@ func TestDesktopConnectionContract(t *testing.T) {
 	}
 
 	meta := mustLookup(t, doc, "components", "schemas", "DesktopConnectionMetadata", "properties")
-	for _, name := range []string{"machineId", "hostname", "os", "osVersion", "appVersion", "clientName", "buildSha", "tokenId", "lastSeenAt"} {
+	for _, name := range []string{"installationId", "computerId", "hostname", "os", "osVersion", "appVersion", "clientName", "buildSha", "tokenId", "lastSeenAt"} {
 		if _, ok := mappingValue(meta, name); !ok {
 			t.Errorf("DesktopConnectionMetadata must define %q", name)
 		}
+	}
+	if _, ok := mappingValue(meta, "machineId"); ok {
+		t.Error("DesktopConnectionMetadata must not define machineId; installationId replaces it")
+	}
+	required, _ := mustValue(mustLookup(t, doc, "components", "schemas", "DesktopConnectionMetadata"), "required").([]any)
+	if len(required) != 1 || required[0] != "installationId" {
+		t.Errorf("DesktopConnectionMetadata required = %v, want [installationId]", required)
+	}
+	// computerId carries only a SHA-256 digest, never a raw hardware id.
+	if got := mustValue(mustLookup(t, meta, "computerId"), "pattern"); got != "^[0-9a-f]{64}$" {
+		t.Errorf("computerId pattern = %v", got)
 	}
 	// The client is identified by clientName, a value; no product-specific key.
 	for _, name := range []string{"appName", "product"} {

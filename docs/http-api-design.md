@@ -218,22 +218,31 @@ The construct is client-agnostic: no client is named in the schema.
 
 `v1beta3/schedule` serves organization schedules at `/api/schedules`, linked to workspaces through
 `/api/workspaces/{workspaceId}/schedules[/{scheduleId}]`. A schedule is a job: an `action` with
-`params`, a due time, an optional `recurrence`, a retry budget and a `status` (`pending`,
+a typed target (`targetType`, `targetId`) and `params`, a due time, an optional `recurrence`
+(empty, `once`, `none`, `hourly`, `daily`, `weekly`, `monthly` or `every:<minutes>`) kept in an
+IANA `timezone`, an owner (`createdBy`), a retry budget and a `status` (`pending`,
 `scheduled`, `assigned`, `claimed`, `running`, `retrying`, `completed`, `failed`, `cancelled`).
 The per-user `/user/schedules` routes of `v1beta2/schedule` remain as a deprecated alias for
 Meshery Server's persist-schedules capability.
 
 Workers take a schedule through a **claim**, the generic `v1beta3/claim` construct: a time-bound
-hold by one `claimant` on one resource (`resourceType`, `resourceId`), with `claimedAt`,
-`expiresAt` and `status` (`active`, `released`, `expired`). The claim is nested under the schedule
-(`/api/schedules/{scheduleId}/claim`, `/claim/renew`, `/claim/release`; `/api/schedules/claim`
-takes the next due one) and is also usable on its own at `/api/claims` for any other resource.
+hold by one connection (`claimantConnectionId`, on behalf of the session user
+`claimantUserId`) on one resource (`resourceType`, `resourceId`), with `claimedAt`,
+`expiresAt`, `renewedAt`, `status` (`active`, `released`, `expired`) and, once released, an
+`outcome`. Released and expired claims are kept as history ([claim contract](claim-contract.md)). There
+is one claim path: a schedule is claimed at `POST /api/claims` with `resourceType` `schedule`,
+and renewed and released at `/api/claims/{claimId}/renew` and `/release`. The schedule carries its
+live claim as the read-only `claim` field. Releasing a schedule's claim records the run's outcome
+on the schedule in the same transaction (`lastRunAt`, `lastError`, `status`, `retryCount`,
+`nextRunAt`), and deleting a schedule expires its live claim. `GET /api/schedules/{scheduleId}`
+answers an `ETag`; send it as `If-Match` on `PUT` to make the update conditional (412 when stale).
 The rules a consumer must enforce:
 
-- The race is decided server-side in one statement; of two racing claimants exactly one wins, and
-  claiming the next due schedule answers 204 when nothing qualifies, never an error.
-- Only the holder renews or releases; anyone else gets 409 and the claim is never taken back.
-- A claim past `expiresAt` is stale and the resource is claimable again.
+- The race is decided server-side in one statement; of two racing claimants exactly one wins.
+- Only the holding connection renews. The holder (from any of its connections) or a member holding
+  "Release claims of other members" releases; anyone else gets 409 and the claim is never taken back.
+- A claim past `expiresAt` reads as `expired` and the resource is claimable again; at most one claim
+  per resource is active in an organization.
 - Only organization admins may set or lift the organization-wide pause. A create or update that
   changes `schedulePause` from anyone else is refused with 403. Omitting `schedulePause` from a
   preferences write keeps the current pause unchanged. Lifting it (`paused` false) clears

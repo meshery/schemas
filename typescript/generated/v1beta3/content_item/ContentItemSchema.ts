@@ -245,6 +245,21 @@ const ContentItemSchema: Record<string, unknown> = {
                               "json": "deletedAt,omitempty"
                             },
                             "x-order": 9
+                          },
+                          "createdBy": {
+                            "description": "ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.\n",
+                            "x-go-name": "CreatedBy",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_by",
+                              "json": "createdBy,omitempty"
+                            },
+                            "x-order": 10,
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           }
                         }
                       },
@@ -487,6 +502,21 @@ const ContentItemSchema: Record<string, unknown> = {
                         "json": "deletedAt,omitempty"
                       },
                       "x-order": 9
+                    },
+                    "createdBy": {
+                      "description": "ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.\n",
+                      "x-go-name": "CreatedBy",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_by",
+                        "json": "createdBy,omitempty"
+                      },
+                      "x-order": 10,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     }
                   }
                 }
@@ -709,6 +739,21 @@ const ContentItemSchema: Record<string, unknown> = {
                         "json": "deletedAt,omitempty"
                       },
                       "x-order": 9
+                    },
+                    "createdBy": {
+                      "description": "ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.\n",
+                      "x-go-name": "CreatedBy",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_by",
+                        "json": "createdBy,omitempty"
+                      },
+                      "x-order": 10,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     }
                   }
                 }
@@ -974,6 +1019,21 @@ const ContentItemSchema: Record<string, unknown> = {
                         "json": "deletedAt,omitempty"
                       },
                       "x-order": 9
+                    },
+                    "createdBy": {
+                      "description": "ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.\n",
+                      "x-go-name": "CreatedBy",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_by",
+                        "json": "createdBy,omitempty"
+                      },
+                      "x-order": 10,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     }
                   }
                 }
@@ -1410,6 +1470,21 @@ const ContentItemSchema: Record<string, unknown> = {
               "json": "deletedAt,omitempty"
             },
             "x-order": 9
+          },
+          "createdBy": {
+            "description": "ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.\n",
+            "x-go-name": "CreatedBy",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_by",
+              "json": "createdBy,omitempty"
+            },
+            "x-order": 10,
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
           }
         }
       },
@@ -1603,6 +1678,21 @@ const ContentItemSchema: Record<string, unknown> = {
                     "json": "deletedAt,omitempty"
                   },
                   "x-order": 9
+                },
+                "createdBy": {
+                  "description": "ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.\n",
+                  "x-go-name": "CreatedBy",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_by",
+                    "json": "createdBy,omitempty"
+                  },
+                  "x-order": 10,
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 }
               }
             },

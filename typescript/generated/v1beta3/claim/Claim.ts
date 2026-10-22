@@ -13,17 +13,24 @@ export interface paths {
         };
         /**
          * List claims
-         * @description Returns a paginated list of claims in the organization of the authenticated session, optionally filtered by resource, claimant or status.
+         * @description Returns a paginated list of the claims in the organization of the authenticated session, active and historical, optionally filtered by resource, holding connection, user, status, outcome and the time the claim was taken. Ordered by `claimedAt`, newest first, unless `order` is `claimedAt asc`. Every member holding View Claims sees every claim in the organization.
          */
         get: operations["listClaims"];
         put?: never;
         /**
          * Claim a resource
-         * @description Takes a claim on the named resource for `claimant`. Succeeds when the
-         *     resource has no live claim or its live claim already belongs to the
-         *     same claimant; a live claim held by another claimant answers 409. A
-         *     stale claim (past `expiresAt`) is superseded. Decided in a single
-         *     server-side statement, so of two racing claimants exactly one wins.
+         * @description Takes a claim on the named resource for the connection
+         *     `connectionId`, which must be the caller's own live connection in the
+         *     session organization. Succeeds with `201` when the resource has no
+         *     active claim. When the same connection already holds the active claim
+         *     the call is a replay and returns it unchanged with `200`. An active
+         *     claim held by another connection answers `409`. A claim past
+         *     `expiresAt`, or one whose holding connection was deleted, is marked
+         *     `expired` and superseded. The resource must exist in the session
+         *     organization; a server verifies the resource types it serves (for
+         *     example `content_item` and `schedule`) and refuses any other type with
+         *     `400`. Decided in a single server-side statement, so of two racing
+         *     claimants exactly one wins.
          */
         post: operations["createClaim"];
         delete?: never;
@@ -60,7 +67,7 @@ export interface paths {
         put?: never;
         /**
          * Renew a claim
-         * @description Moves `expiresAt` forward for the holder only. A claim that is not active, or that belongs to another claimant, answers 409 and is never taken back.
+         * @description Moves `expiresAt` forward and sets `renewedAt`, for the holding connection only: `connectionId` must be the caller's own live connection and the one that holds the claim. A claim that is not active (released, or past `expiresAt`), or that another connection holds, answers `409` and is never taken back.
          */
         post: operations["renewClaim"];
         delete?: never;
@@ -80,7 +87,7 @@ export interface paths {
         put?: never;
         /**
          * Release a claim
-         * @description Ends the claim for the holder, setting `status` to `released` and `releasedAt`. Releasing a claim that is already released is a no-op; a release by another claimant answers 409.
+         * @description Ends an active claim and records what happened: sets `status` to `released`, `releasedAt`, `releasedBy` and the reported `outcome`, `outcomeError` and `outcomeEventId`. The holder may release its own claim from any of its connections (the claim's `claimantUserId` is the caller); a member holding Release claims of other members may release anyone's. Anyone else is answered `409`. Releasing a claim that is already released is a no-op that returns the stored claim unchanged, whatever outcome is sent. A claim that expired cannot be released (`409`): the resource may already have been handed off. `outcomeError` is accepted only with `outcome: failed`; `outcomeEventId` must name a live event the claim's holder owns, else `404`.
          */
         post: operations["releaseClaim"];
         delete?: never;
@@ -95,16 +102,19 @@ export interface components {
     schemas: {
         /**
          * Claim Schema
-         * @description Server-returned claim: a time-bound hold that one claimant takes on one
+         * @description Server-returned claim: a time-bound hold that one connection takes on one
          *     resource so that competing workers never act on it twice. A claim is
          *     generic: it names the resource it holds by type and ID, and any construct
-         *     can be claimed (a schedule is the first). A claim is live while its
-         *     status is `active` and `expiresAt` is in the future; a live claim held by
-         *     another claimant refuses a new claim on the same resource. A claim whose
-         *     `expiresAt` has passed is stale and the resource may be claimed again,
-         *     so a claimant that disappears never strands the resource. Only the
-         *     holder renews or releases a claim. The race between claimants is decided
-         *     server-side in a single statement.
+         *     can be claimed. A claim is held by a connection (`claimantConnectionId`,
+         *     for example the connection a desktop client registered for its machine)
+         *     on behalf of the user whose session took it (`claimantUserId`). At most
+         *     one claim per resource is `active` in an organization. A claim whose
+         *     `expiresAt` has passed reads as `expired` and the resource may be claimed
+         *     again, so a holder that disappears never strands the resource. Released
+         *     and expired claims are kept as history: a handoff is an `expired` claim
+         *     followed by an `active` claim on the same resource. The holder reports
+         *     what happened (`outcome`) when it releases the claim. The race between
+         *     claimants is decided server-side in a single statement.
          */
         Claim: {
             /**
@@ -117,17 +127,25 @@ export interface components {
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             organizationId: string;
-            /** @description Type of the claimed resource, for example `schedule`. */
+            /** @description Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
             resourceType: string;
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             resourceId: string;
-            /** @description Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-            claimant: string;
             /**
-             * @description Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            claimantConnectionId?: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            claimantUserId?: string;
+            /**
+             * @description Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
              * @enum {string}
              */
             status: "active" | "released" | "expired";
@@ -143,9 +161,31 @@ export interface components {
             expiresAt: string;
             /**
              * Format: date-time
-             * @description Time the holder released the claim. Null while the claim is active or after it expired.
+             * @description Time of the last renewal. Null until the claim is first renewed.
+             */
+            renewedAt?: string | null;
+            /**
+             * Format: date-time
+             * @description Time the claim was released. Null while the claim is active or after it expired.
              */
             releasedAt?: string | null;
+            /**
+             * @description What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+             * @enum {string}
+             */
+            outcome?: "completed" | "failed" | "cancelled";
+            /** @description Error reported with a `failed` outcome. Omitted otherwise. */
+            outcomeError?: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            outcomeEventId?: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            releasedBy?: string;
             /**
              * Format: date-time
              * @description Timestamp of claim creation.
@@ -159,33 +199,49 @@ export interface components {
         };
         /**
          * @description Payload for taking a claim. Contains only client-settable fields;
-         *     the owning `organizationId`, `status`, `claimedAt`, `expiresAt` and
-         *     the timestamps are server-managed.
+         *     the owning `organizationId`, `claimantUserId`, `status`,
+         *     `claimedAt`, `expiresAt` and the timestamps are server-managed.
          */
         ClaimPayload: {
-            /** @description Type of the resource to claim, for example `schedule`. */
+            /** @description Type of the resource to claim, for example `content_item`. */
             resourceType: string;
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             resourceId: string;
-            /** @description Identity of the worker taking the claim. */
-            claimant: string;
-            /** @description Requested claim duration in minutes; the server applies its default when omitted and may cap it. */
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            connectionId: string;
+            /** @description Requested claim duration in minutes; the server applies its default (30) when omitted and may cap it. */
             durationMinutes?: number;
         };
-        /** @description Payload for renewing a claim. Only the holder named by `claimant` may renew. */
+        /** @description Payload for renewing a claim. Only the holding connection may renew. */
         ClaimRenewPayload: {
-            /** @description Identity of the holder renewing the claim. */
-            claimant: string;
-            /** @description Requested extension in minutes from now; the server applies its default when omitted and may cap it. */
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            connectionId: string;
+            /** @description Requested extension in minutes from now; the server applies its default (30) when omitted and may cap it. */
             durationMinutes?: number;
         };
-        /** @description Payload for releasing a claim. Only the holder named by `claimant` may release. */
+        /** @description Payload for releasing a claim with the outcome of the work it held. The releaser is the session user; no connection is needed, so a holder can release a stuck hold from another of its computers, and an authorized member can release someone else's. */
         ClaimReleasePayload: {
-            /** @description Identity of the holder releasing the claim. */
-            claimant: string;
+            /**
+             * @description What happened to the work the claim held.
+             * @enum {string}
+             */
+            outcome: "completed" | "failed" | "cancelled";
+            /** @description Error behind a `failed` outcome. Refused with any other outcome. */
+            outcomeError?: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            outcomeEventId?: string;
         };
         /** @description Paginated collection of claims. */
         ClaimPage: {
@@ -207,17 +263,25 @@ export interface components {
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 organizationId: string;
-                /** @description Type of the claimed resource, for example `schedule`. */
+                /** @description Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
                 resourceType: string;
                 /**
                  * Format: uuid
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 resourceId: string;
-                /** @description Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-                claimant: string;
                 /**
-                 * @description Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                claimantConnectionId?: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                claimantUserId?: string;
+                /**
+                 * @description Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
                  * @enum {string}
                  */
                 status: "active" | "released" | "expired";
@@ -233,9 +297,31 @@ export interface components {
                 expiresAt: string;
                 /**
                  * Format: date-time
-                 * @description Time the holder released the claim. Null while the claim is active or after it expired.
+                 * @description Time of the last renewal. Null until the claim is first renewed.
+                 */
+                renewedAt?: string | null;
+                /**
+                 * Format: date-time
+                 * @description Time the claim was released. Null while the claim is active or after it expired.
                  */
                 releasedAt?: string | null;
+                /**
+                 * @description What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+                 * @enum {string}
+                 */
+                outcome?: "completed" | "failed" | "cancelled";
+                /** @description Error reported with a `failed` outcome. Omitted otherwise. */
+                outcomeError?: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                outcomeEventId?: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                releasedBy?: string;
                 /**
                  * Format: date-time
                  * @description Timestamp of claim creation.
@@ -268,6 +354,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Forbidden */
+        403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Result not found */
         404: {
             headers: {
@@ -277,7 +372,7 @@ export interface components {
                 "text/plain": string;
             };
         };
-        /** @description Conflict - the resource is held by another claimant's live claim, or the caller is not the holder of the claim it tried to renew or release */
+        /** @description Conflict - another connection holds the resource's active claim, the claim is not active, or the caller may not renew or release it */
         409: {
             headers: {
                 [name: string]: unknown;
@@ -325,10 +420,18 @@ export interface operations {
                 resourceType?: string;
                 /** @description Filter by claimed resource ID. */
                 resourceId?: string;
-                /** @description Filter by holder identity. */
-                claimant?: string;
-                /** @description Filter by claim status. */
+                /** @description Filter by the connection that holds or held the claim. */
+                claimantConnectionId?: string;
+                /** @description Filter by the user whose session took the claim. */
+                claimantUserId?: string;
+                /** @description Filter by claim status, as read (a claim past `expiresAt` is `expired`). */
                 status?: "active" | "released" | "expired";
+                /** @description Filter by the outcome reported on release. */
+                outcome?: "completed" | "failed" | "cancelled";
+                /** @description Only claims taken at or after this time. */
+                claimedSince?: string;
+                /** @description Only claims taken before this time. */
+                claimedUntil?: string;
             };
             header?: never;
             path?: never;
@@ -361,17 +464,25 @@ export interface operations {
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             organizationId: string;
-                            /** @description Type of the claimed resource, for example `schedule`. */
+                            /** @description Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
                             resourceType: string;
                             /**
                              * Format: uuid
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             resourceId: string;
-                            /** @description Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-                            claimant: string;
                             /**
-                             * @description Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            claimantConnectionId?: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            claimantUserId?: string;
+                            /**
+                             * @description Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
                              * @enum {string}
                              */
                             status: "active" | "released" | "expired";
@@ -387,9 +498,31 @@ export interface operations {
                             expiresAt: string;
                             /**
                              * Format: date-time
-                             * @description Time the holder released the claim. Null while the claim is active or after it expired.
+                             * @description Time of the last renewal. Null until the claim is first renewed.
+                             */
+                            renewedAt?: string | null;
+                            /**
+                             * Format: date-time
+                             * @description Time the claim was released. Null while the claim is active or after it expired.
                              */
                             releasedAt?: string | null;
+                            /**
+                             * @description What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+                             * @enum {string}
+                             */
+                            outcome?: "completed" | "failed" | "cancelled";
+                            /** @description Error reported with a `failed` outcome. Omitted otherwise. */
+                            outcomeError?: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            outcomeEventId?: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            releasedBy?: string;
                             /**
                              * Format: date-time
                              * @description Timestamp of claim creation.
@@ -404,8 +537,26 @@ export interface operations {
                     };
                 };
             };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -443,21 +594,113 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    /** @description Type of the resource to claim, for example `schedule`. */
+                    /** @description Type of the resource to claim, for example `content_item`. */
                     resourceType: string;
                     /**
                      * Format: uuid
                      * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                      */
                     resourceId: string;
-                    /** @description Identity of the worker taking the claim. */
-                    claimant: string;
-                    /** @description Requested claim duration in minutes; the server applies its default when omitted and may cap it. */
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    connectionId: string;
+                    /** @description Requested claim duration in minutes; the server applies its default (30) when omitted and may cap it. */
                     durationMinutes?: number;
                 };
             };
         };
         responses: {
+            /** @description Replay - the same connection already holds the active claim */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        organizationId: string;
+                        /** @description Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+                        resourceType: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        resourceId: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        claimantConnectionId?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        claimantUserId?: string;
+                        /**
+                         * @description Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+                         * @enum {string}
+                         */
+                        status: "active" | "released" | "expired";
+                        /**
+                         * Format: date-time
+                         * @description Time the claim was taken.
+                         */
+                        claimedAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale.
+                         */
+                        expiresAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Time of the last renewal. Null until the claim is first renewed.
+                         */
+                        renewedAt?: string | null;
+                        /**
+                         * Format: date-time
+                         * @description Time the claim was released. Null while the claim is active or after it expired.
+                         */
+                        releasedAt?: string | null;
+                        /**
+                         * @description What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+                         * @enum {string}
+                         */
+                        outcome?: "completed" | "failed" | "cancelled";
+                        /** @description Error reported with a `failed` outcome. Omitted otherwise. */
+                        outcomeError?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        outcomeEventId?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        releasedBy?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of claim creation.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of last claim modification.
+                         */
+                        updatedAt: string;
+                    };
+                };
+            };
             /** @description Claim taken */
             201: {
                 headers: {
@@ -475,17 +718,25 @@ export interface operations {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         organizationId: string;
-                        /** @description Type of the claimed resource, for example `schedule`. */
+                        /** @description Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
                         resourceType: string;
                         /**
                          * Format: uuid
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         resourceId: string;
-                        /** @description Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-                        claimant: string;
                         /**
-                         * @description Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        claimantConnectionId?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        claimantUserId?: string;
+                        /**
+                         * @description Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
                          * @enum {string}
                          */
                         status: "active" | "released" | "expired";
@@ -501,9 +752,31 @@ export interface operations {
                         expiresAt: string;
                         /**
                          * Format: date-time
-                         * @description Time the holder released the claim. Null while the claim is active or after it expired.
+                         * @description Time of the last renewal. Null until the claim is first renewed.
+                         */
+                        renewedAt?: string | null;
+                        /**
+                         * Format: date-time
+                         * @description Time the claim was released. Null while the claim is active or after it expired.
                          */
                         releasedAt?: string | null;
+                        /**
+                         * @description What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+                         * @enum {string}
+                         */
+                        outcome?: "completed" | "failed" | "cancelled";
+                        /** @description Error reported with a `failed` outcome. Omitted otherwise. */
+                        outcomeError?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        outcomeEventId?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        releasedBy?: string;
                         /**
                          * Format: date-time
                          * @description Timestamp of claim creation.
@@ -535,6 +808,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -544,7 +826,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the resource is held by another claimant's live claim, or the caller is not the holder of the claim it tried to renew or release */
+            /** @description Conflict - another connection holds the resource's active claim, the claim is not active, or the caller may not renew or release it */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -593,17 +875,25 @@ export interface operations {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         organizationId: string;
-                        /** @description Type of the claimed resource, for example `schedule`. */
+                        /** @description Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
                         resourceType: string;
                         /**
                          * Format: uuid
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         resourceId: string;
-                        /** @description Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-                        claimant: string;
                         /**
-                         * @description Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        claimantConnectionId?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        claimantUserId?: string;
+                        /**
+                         * @description Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
                          * @enum {string}
                          */
                         status: "active" | "released" | "expired";
@@ -619,9 +909,31 @@ export interface operations {
                         expiresAt: string;
                         /**
                          * Format: date-time
-                         * @description Time the holder released the claim. Null while the claim is active or after it expired.
+                         * @description Time of the last renewal. Null until the claim is first renewed.
+                         */
+                        renewedAt?: string | null;
+                        /**
+                         * Format: date-time
+                         * @description Time the claim was released. Null while the claim is active or after it expired.
                          */
                         releasedAt?: string | null;
+                        /**
+                         * @description What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+                         * @enum {string}
+                         */
+                        outcome?: "completed" | "failed" | "cancelled";
+                        /** @description Error reported with a `failed` outcome. Omitted otherwise. */
+                        outcomeError?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        outcomeEventId?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        releasedBy?: string;
                         /**
                          * Format: date-time
                          * @description Timestamp of claim creation.
@@ -637,6 +949,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -677,9 +998,12 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    /** @description Identity of the holder renewing the claim. */
-                    claimant: string;
-                    /** @description Requested extension in minutes from now; the server applies its default when omitted and may cap it. */
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    connectionId: string;
+                    /** @description Requested extension in minutes from now; the server applies its default (30) when omitted and may cap it. */
                     durationMinutes?: number;
                 };
             };
@@ -702,17 +1026,25 @@ export interface operations {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         organizationId: string;
-                        /** @description Type of the claimed resource, for example `schedule`. */
+                        /** @description Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
                         resourceType: string;
                         /**
                          * Format: uuid
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         resourceId: string;
-                        /** @description Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-                        claimant: string;
                         /**
-                         * @description Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        claimantConnectionId?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        claimantUserId?: string;
+                        /**
+                         * @description Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
                          * @enum {string}
                          */
                         status: "active" | "released" | "expired";
@@ -728,9 +1060,31 @@ export interface operations {
                         expiresAt: string;
                         /**
                          * Format: date-time
-                         * @description Time the holder released the claim. Null while the claim is active or after it expired.
+                         * @description Time of the last renewal. Null until the claim is first renewed.
+                         */
+                        renewedAt?: string | null;
+                        /**
+                         * Format: date-time
+                         * @description Time the claim was released. Null while the claim is active or after it expired.
                          */
                         releasedAt?: string | null;
+                        /**
+                         * @description What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+                         * @enum {string}
+                         */
+                        outcome?: "completed" | "failed" | "cancelled";
+                        /** @description Error reported with a `failed` outcome. Omitted otherwise. */
+                        outcomeError?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        outcomeEventId?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        releasedBy?: string;
                         /**
                          * Format: date-time
                          * @description Timestamp of claim creation.
@@ -762,6 +1116,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -771,7 +1134,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the resource is held by another claimant's live claim, or the caller is not the holder of the claim it tried to renew or release */
+            /** @description Conflict - another connection holds the resource's active claim, the claim is not active, or the caller may not renew or release it */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -804,8 +1167,18 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    /** @description Identity of the holder releasing the claim. */
-                    claimant: string;
+                    /**
+                     * @description What happened to the work the claim held.
+                     * @enum {string}
+                     */
+                    outcome: "completed" | "failed" | "cancelled";
+                    /** @description Error behind a `failed` outcome. Refused with any other outcome. */
+                    outcomeError?: string;
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    outcomeEventId?: string;
                 };
             };
         };
@@ -827,17 +1200,25 @@ export interface operations {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         organizationId: string;
-                        /** @description Type of the claimed resource, for example `schedule`. */
+                        /** @description Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
                         resourceType: string;
                         /**
                          * Format: uuid
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         resourceId: string;
-                        /** @description Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier). */
-                        claimant: string;
                         /**
-                         * @description Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        claimantConnectionId?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        claimantUserId?: string;
+                        /**
+                         * @description Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
                          * @enum {string}
                          */
                         status: "active" | "released" | "expired";
@@ -853,9 +1234,31 @@ export interface operations {
                         expiresAt: string;
                         /**
                          * Format: date-time
-                         * @description Time the holder released the claim. Null while the claim is active or after it expired.
+                         * @description Time of the last renewal. Null until the claim is first renewed.
+                         */
+                        renewedAt?: string | null;
+                        /**
+                         * Format: date-time
+                         * @description Time the claim was released. Null while the claim is active or after it expired.
                          */
                         releasedAt?: string | null;
+                        /**
+                         * @description What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+                         * @enum {string}
+                         */
+                        outcome?: "completed" | "failed" | "cancelled";
+                        /** @description Error reported with a `failed` outcome. Omitted otherwise. */
+                        outcomeError?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        outcomeEventId?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        releasedBy?: string;
                         /**
                          * Format: date-time
                          * @description Timestamp of claim creation.
@@ -887,6 +1290,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -896,7 +1308,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the resource is held by another claimant's live claim, or the caller is not the holder of the claim it tried to renew or release */
+            /** @description Conflict - another connection holds the resource's active claim, the claim is not active, or the caller may not renew or release it */
             409: {
                 headers: {
                     [name: string]: unknown;

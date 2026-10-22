@@ -123,6 +123,11 @@ export interface components {
              * @description Timestamp when the content item was soft-deleted.
              */
             deletedAt?: string | null;
+            /**
+             * Format: uuid
+             * @description ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+             */
+            createdBy?: string;
         };
         /**
          * @description Payload for inserting or updating a content item.
@@ -199,6 +204,11 @@ export interface components {
                  * @description Timestamp when the content item was soft-deleted.
                  */
                 deletedAt?: string | null;
+                /**
+                 * Format: uuid
+                 * @description ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+                 */
+                createdBy?: string;
             }[];
         };
     };
@@ -361,6 +371,11 @@ export interface operations {
                              * @description Timestamp when the content item was soft-deleted.
                              */
                             deletedAt?: string | null;
+                            /**
+                             * Format: uuid
+                             * @description ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+                             */
+                            createdBy?: string;
                         }[];
                     };
                 };
@@ -480,6 +495,11 @@ export interface operations {
                          * @description Timestamp when the content item was soft-deleted.
                          */
                         deletedAt?: string | null;
+                        /**
+                         * Format: uuid
+                         * @description ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+                         */
+                        createdBy?: string;
                     };
                 };
             };
@@ -591,6 +611,11 @@ export interface operations {
                          * @description Timestamp when the content item was soft-deleted.
                          */
                         deletedAt?: string | null;
+                        /**
+                         * Format: uuid
+                         * @description ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+                         */
+                        createdBy?: string;
                     };
                 };
             };
@@ -721,6 +746,11 @@ export interface operations {
                          * @description Timestamp when the content item was soft-deleted.
                          */
                         deletedAt?: string | null;
+                        /**
+                         * Format: uuid
+                         * @description ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+                         */
+                        createdBy?: string;
                     };
                 };
             };

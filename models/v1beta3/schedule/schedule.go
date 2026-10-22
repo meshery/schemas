@@ -10,57 +10,32 @@ import (
 
 // Defines values for ScheduleStatus.
 const (
-	ScheduleStatusAssigned  ScheduleStatus = "assigned"
-	ScheduleStatusCancelled ScheduleStatus = "cancelled"
-	ScheduleStatusClaimed   ScheduleStatus = "claimed"
-	ScheduleStatusCompleted ScheduleStatus = "completed"
-	ScheduleStatusFailed    ScheduleStatus = "failed"
-	ScheduleStatusPending   ScheduleStatus = "pending"
-	ScheduleStatusRetrying  ScheduleStatus = "retrying"
-	ScheduleStatusRunning   ScheduleStatus = "running"
-	ScheduleStatusScheduled ScheduleStatus = "scheduled"
+	Assigned  ScheduleStatus = "assigned"
+	Cancelled ScheduleStatus = "cancelled"
+	Claimed   ScheduleStatus = "claimed"
+	Completed ScheduleStatus = "completed"
+	Failed    ScheduleStatus = "failed"
+	Pending   ScheduleStatus = "pending"
+	Retrying  ScheduleStatus = "retrying"
+	Running   ScheduleStatus = "running"
+	Scheduled ScheduleStatus = "scheduled"
 )
 
-// Defines values for ScheduleClaimReleaseRequestStatus.
-const (
-	ScheduleClaimReleaseRequestStatusCancelled ScheduleClaimReleaseRequestStatus = "cancelled"
-	ScheduleClaimReleaseRequestStatusCompleted ScheduleClaimReleaseRequestStatus = "completed"
-	ScheduleClaimReleaseRequestStatusFailed    ScheduleClaimReleaseRequestStatus = "failed"
-	ScheduleClaimReleaseRequestStatusRetrying  ScheduleClaimReleaseRequestStatus = "retrying"
-	ScheduleClaimReleaseRequestStatusScheduled ScheduleClaimReleaseRequestStatus = "scheduled"
-)
-
-// Defines values for SchedulePayloadStatus.
-const (
-	SchedulePayloadStatusCancelled SchedulePayloadStatus = "cancelled"
-	SchedulePayloadStatusPending   SchedulePayloadStatus = "pending"
-	SchedulePayloadStatusScheduled SchedulePayloadStatus = "scheduled"
-)
-
-// Defines values for StatusQuery.
-const (
-	StatusQueryAssigned  StatusQuery = "assigned"
-	StatusQueryCancelled StatusQuery = "cancelled"
-	StatusQueryClaimed   StatusQuery = "claimed"
-	StatusQueryCompleted StatusQuery = "completed"
-	StatusQueryFailed    StatusQuery = "failed"
-	StatusQueryPending   StatusQuery = "pending"
-	StatusQueryRetrying  StatusQuery = "retrying"
-	StatusQueryRunning   StatusQuery = "running"
-	StatusQueryScheduled StatusQuery = "scheduled"
-)
-
-// Schedule Server-returned schedule. A schedule is a job: an action to run with its
-// parameters, when it is due (`runAt`, `nextRunAt`, `recurrence`), its retry
-// budget and its outcome. Schedules belong to an organization and may be
-// linked to a workspace. A worker takes a schedule through a claim (the
-// generic `claim` construct, nested under the schedule); while the claim is
-// live no other worker can take it, and a claim past its `expiresAt` is
-// stale and the schedule is claimable again. The `claim` and the status
-// values `assigned`, `claimed` and `running` are server-managed and change
-// only through the claim and release operations. Pausing is data, not an
-// operation: a client sets `paused` (and optionally `pauseReason`) on create
-// or update, and the server records `pausedAt` and `pausedBy`.
+// Schedule Server-returned schedule. A schedule is a job: an action to run, what it
+// acts on (`targetType`, `targetId`) and its parameters, when it is due
+// (`runAt`, `nextRunAt`, `recurrence` in `timezone`), its retry budget and
+// its outcome. Schedules belong to an organization and may be linked to a
+// workspace. A worker takes a schedule through the generic `claim`
+// construct (`POST /api/claims` with `resourceType` `schedule`); there is
+// no schedule-specific claim route. While the claim is live no other worker
+// can take the schedule, and a claim past its `expiresAt` is stale so the
+// schedule is claimable again. Releasing the claim records the run's
+// outcome on the schedule in the same transaction (see `status`). The
+// `claim` and the status values `assigned`, `claimed` and `running` are
+// server-managed. Pausing is data, not an operation: a client sets `paused`
+// (and optionally `pauseReason`) on create or update, and the server
+// records `pausedAt` and `pausedBy`. Fields marked readOnly are
+// server-managed and ignored on input.
 type Schedule struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID core.Uuid `json:"id" yaml:"id"`
@@ -71,13 +46,26 @@ type Schedule struct {
 	// WorkspaceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	WorkspaceId *core.Uuid `db:"workspace_id" json:"workspaceId,omitempty" yaml:"workspaceId,omitempty"`
 
+	// CreatedBy A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	CreatedBy *core.Uuid `db:"owner" json:"createdBy,omitempty" yaml:"createdBy,omitempty"`
+
 	// Name Human-readable name for the schedule.
 	Name string `db:"name" json:"name" yaml:"name"`
 
 	// Action The action the worker runs when it holds the schedule's claim, for example a command name.
 	Action string `db:"action" json:"action" yaml:"action"`
 
-	// Params Action parameters, stored as a JSON blob.
+	// TargetType Type of the resource the schedule acts on, named the way a claim's
+	// `resourceType` is (lowercase snake_case construct name, for example
+	// `content_item` or `profile`). A server verifies the target types it
+	// serves and refuses others with 400. Set together with `targetId` or
+	// not at all.
+	TargetType *ScheduleTargetType `db:"target_type" json:"targetType,omitempty" yaml:"targetType,omitempty"`
+
+	// TargetId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	TargetID *core.Uuid `db:"target_id" json:"targetId,omitempty" yaml:"targetId,omitempty"`
+
+	// Params Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here.
 	Params core.Map `db:"params" json:"params,omitempty" yaml:"params,omitempty"`
 
 	// Enabled Whether the schedule is eligible to run. A disabled schedule is never claimed.
@@ -86,19 +74,34 @@ type Schedule struct {
 	// RunAt Time the schedule first becomes due.
 	RunAt *core.NullTime `db:"run_at" json:"runAt" yaml:"runAt"`
 
-	// NextRunAt Next time a recurring or retrying schedule becomes due.
-	NextRunAt *core.NullTime `db:"next_run_at" json:"nextRunAt" yaml:"nextRunAt"`
+	// NextRunAt Next time the schedule becomes due. Null when it is never due again.
+	NextRunAt *core.NullTime `db:"next_run" json:"nextRunAt" yaml:"nextRunAt"`
 
-	// Recurrence Recurrence rule for repeating schedules. Empty for a run-once schedule.
-	Recurrence *string `db:"recurrence" json:"recurrence,omitempty" yaml:"recurrence,omitempty"`
+	// Recurrence How the schedule repeats once it has run. Empty, `once` and `none`
+	// mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+	// `monthly` repeat at the same wall-clock time one calendar day, week
+	// or month later in the schedule's `timezone`, so a daily schedule
+	// keeps its local time across daylight-saving changes. `every:<n>`
+	// repeats every `n` minutes (1 to 999999). Occurrences are counted
+	// from `runAt` (else from the current `nextRunAt`); the next due time
+	// is the first occurrence after the run is released, so missed runs
+	// are not replayed.
+	Recurrence *ScheduleRecurrence `db:"recurrence" json:"recurrence,omitempty" yaml:"recurrence,omitempty"`
 
-	// Status Lifecycle status. `pending`: created, not yet due-scheduled.
-	// `scheduled`: waiting for its due time. `assigned`: designated for a
-	// particular worker but not yet claimed. `claimed`: a worker holds the
-	// claim and has not started. `running`: the claim holder is executing
-	// it. `retrying`: the last attempt failed and another is due.
-	// `completed`, `failed` and `cancelled` are terminal for a run-once
-	// schedule; a recurring schedule returns to `scheduled`.
+	// Timezone IANA time zone name (for example `UTC` or `America/Chicago`) in which
+	// `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+	// time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+	// refuses a name it does not know with 400.
+	Timezone ScheduleTimezone `db:"timezone" json:"timezone" yaml:"timezone"`
+
+	// Status Lifecycle status of a schedule. `pending`: created, not yet
+	// due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+	// designated for a particular worker but not yet claimed. `claimed`: a
+	// worker holds the claim and has not started. `running`: the claim
+	// holder is executing it. `retrying`: the last attempt failed and
+	// another is due. `completed`, `failed` and `cancelled` are terminal
+	// for a run-once schedule; a recurring schedule returns to `scheduled`
+	// when its claim is released with a `completed` outcome.
 	Status ScheduleStatus `db:"status" json:"status" yaml:"status"`
 
 	// RetryCount Attempts already retried for the current run.
@@ -110,29 +113,32 @@ type Schedule struct {
 	// RetryDelayMinutes Minutes to wait before a retry becomes due.
 	RetryDelayMinutes *int `db:"retry_delay_minutes" json:"retryDelayMinutes,omitempty" yaml:"retryDelayMinutes,omitempty"`
 
-	// LastRunAt Time of the most recent attempt.
-	LastRunAt *core.NullTime `db:"last_run_at" json:"lastRunAt" yaml:"lastRunAt"`
+	// LastRunAt Time the most recent attempt ended (the release time of its claim). Server-managed.
+	LastRunAt *core.NullTime `db:"last_run" json:"lastRunAt" yaml:"lastRunAt"`
 
-	// LastError Error reported by the most recent attempt.
+	// LastError Error reported by the most recent attempt; empty after a successful one. Server-managed.
 	LastError *string `db:"last_error" json:"lastError,omitempty" yaml:"lastError,omitempty"`
 
-	// Claim Server-returned claim: a time-bound hold that one claimant takes on one
+	// Claim Server-returned claim: a time-bound hold that one connection takes on one
 	// resource so that competing workers never act on it twice. A claim is
 	// generic: it names the resource it holds by type and ID, and any construct
-	// can be claimed (a schedule is the first). A claim is live while its
-	// status is `active` and `expiresAt` is in the future; a live claim held by
-	// another claimant refuses a new claim on the same resource. A claim whose
-	// `expiresAt` has passed is stale and the resource may be claimed again,
-	// so a claimant that disappears never strands the resource. Only the
-	// holder renews or releases a claim. The race between claimants is decided
-	// server-side in a single statement.
+	// can be claimed. A claim is held by a connection (`claimantConnectionId`,
+	// for example the connection a desktop client registered for its machine)
+	// on behalf of the user whose session took it (`claimantUserId`). At most
+	// one claim per resource is `active` in an organization. A claim whose
+	// `expiresAt` has passed reads as `expired` and the resource may be claimed
+	// again, so a holder that disappears never strands the resource. Released
+	// and expired claims are kept as history: a handoff is an `expired` claim
+	// followed by an `active` claim on the same resource. The holder reports
+	// what happened (`outcome`) when it releases the claim. The race between
+	// claimants is decided server-side in a single statement.
 	Claim *claimv1beta3.Claim `db:"-" json:"claim,omitempty" yaml:"claim,omitempty"`
 
 	// PausedAt Time the schedule was paused. Null when the schedule is not paused. Server-managed.
 	PausedAt *core.NullTime `db:"paused_at" json:"pausedAt" yaml:"pausedAt"`
 
-	// PausedBy Identity that paused the schedule. Server-managed.
-	PausedBy *string `db:"paused_by" json:"pausedBy,omitempty" yaml:"pausedBy,omitempty"`
+	// PausedBy A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	PausedBy *core.Uuid `db:"paused_by" json:"pausedBy,omitempty" yaml:"pausedBy,omitempty"`
 
 	// PauseReason Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused.
 	PauseReason *string   `db:"pause_reason" json:"pauseReason,omitempty" yaml:"pauseReason,omitempty"`
@@ -141,54 +147,6 @@ type Schedule struct {
 
 	// DeletedAt Timestamp when the schedule was soft-deleted. Null while live.
 	DeletedAt *core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
-}
-
-// ScheduleStatus Lifecycle status. `pending`: created, not yet due-scheduled.
-// `scheduled`: waiting for its due time. `assigned`: designated for a
-// particular worker but not yet claimed. `claimed`: a worker holds the
-// claim and has not started. `running`: the claim holder is executing
-// it. `retrying`: the last attempt failed and another is due.
-// `completed`, `failed` and `cancelled` are terminal for a run-once
-// schedule; a recurring schedule returns to `scheduled`.
-type ScheduleStatus string
-
-// ScheduleClaimReleaseRequest Request to release a schedule's claim and record the run's outcome.
-type ScheduleClaimReleaseRequest struct {
-	// Claimant Identity of the holder releasing the claim.
-	Claimant string `json:"claimant" yaml:"claimant"`
-
-	// LastError Error reported by the attempt; empty on success.
-	LastError *string `json:"lastError,omitempty" yaml:"lastError,omitempty"`
-
-	// LastRunAt Time of the attempt being reported.
-	LastRunAt *core.NullTime `json:"lastRunAt" yaml:"lastRunAt"`
-
-	// NextRunAt Next due time for a recurring or retrying schedule.
-	NextRunAt *core.NullTime `json:"nextRunAt" yaml:"nextRunAt"`
-
-	// RetryCount Retries used so far for the current run.
-	RetryCount *int `json:"retryCount,omitempty" yaml:"retryCount,omitempty"`
-
-	// Status Outcome status to record with the release.
-	Status *ScheduleClaimReleaseRequestStatus `json:"status,omitempty" yaml:"status,omitempty"`
-}
-
-// ScheduleClaimReleaseRequestStatus Outcome status to record with the release.
-type ScheduleClaimReleaseRequestStatus string
-
-// ScheduleClaimRequest Request to claim the next due schedule.
-type ScheduleClaimRequest struct {
-	// Claimant Identity of the worker taking the claim.
-	Claimant string `json:"claimant" yaml:"claimant"`
-
-	// DurationMinutes Requested claim duration in minutes; the server applies its default when omitted and may cap it.
-	DurationMinutes *int `json:"durationMinutes,omitempty" yaml:"durationMinutes,omitempty"`
-
-	// IgnorePause Operator override that claims through the organization-wide and per-schedule pauses.
-	IgnorePause *bool `json:"ignorePause,omitempty" yaml:"ignorePause,omitempty"`
-
-	// WorkspaceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	WorkspaceId *core.Uuid `json:"workspaceId,omitempty" yaml:"workspaceId,omitempty"`
 }
 
 // SchedulePage Paginated collection of schedules.
@@ -207,18 +165,18 @@ type SchedulePage struct {
 }
 
 // SchedulePayload Payload for creating or updating a schedule. Contains only
-// client-settable fields; the owning `organizationId`, the claim,
-// `pausedAt`, `pausedBy`, `retryCount`, `lastRunAt`, `lastError` and the
-// timestamps are server-managed. The server ignores them on input. Pausing
-// is a field, not an operation: `paused` pauses or resumes the schedule.
-// `status` accepts only `pending`,
-// `scheduled` and `cancelled` here; the other values are set by the
-// claim and release operations.
+// client-settable fields; the owning `organizationId`, `createdBy`, the
+// claim, `pausedAt`, `pausedBy`, `lastRunAt`, `lastError` and the
+// timestamps are server-managed and refused as unknown fields. Pausing
+// is a field, not an operation: `paused` pauses or resumes the
+// schedule. `status` accepts only `pending`, `scheduled` and
+// `cancelled` here (otherwise 400); the other values are set by the
+// server as the schedule is claimed and released.
 type SchedulePayload struct {
 	// Action The action the worker runs, for example a command name.
 	Action string `json:"action" yaml:"action"`
 
-	// Enabled Whether the schedule is eligible to run. Defaults to true.
+	// Enabled Whether the schedule is eligible to run.
 	Enabled *bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -230,19 +188,33 @@ type SchedulePayload struct {
 	// Name Human-readable name for the schedule.
 	Name string `json:"name" yaml:"name"`
 
+	// NextRunAt Next time the schedule becomes due. Omitted on create, it defaults to `runAt`; omitted on update, it is kept. Send null for never due again.
+	NextRunAt *core.NullTime `json:"nextRunAt" yaml:"nextRunAt"`
+
 	// Params Action parameters, stored as a JSON blob.
 	Params core.Map `json:"params,omitempty" yaml:"params,omitempty"`
 
 	// PauseReason Reason for pausing; stored only while `paused` is true and cleared on resume.
 	PauseReason *string `json:"pauseReason,omitempty" yaml:"pauseReason,omitempty"`
 
-	// Paused `true` pauses the schedule so it is never claimed (unless a claim
-	// carries `ignorePause`); `false` resumes it. Omit to leave the pause
-	// unchanged. The server records `pausedAt` and `pausedBy`.
+	// Paused `true` pauses the schedule so it is never claimed; `false`
+	// resumes it. Omit to leave the pause unchanged. The server records
+	// `pausedAt` and `pausedBy`.
 	Paused *bool `json:"paused,omitempty" yaml:"paused,omitempty"`
 
-	// Recurrence Recurrence rule for repeating schedules. Empty for a run-once schedule.
-	Recurrence *string `json:"recurrence,omitempty" yaml:"recurrence,omitempty"`
+	// Recurrence How the schedule repeats once it has run. Empty, `once` and `none`
+	// mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+	// `monthly` repeat at the same wall-clock time one calendar day, week
+	// or month later in the schedule's `timezone`, so a daily schedule
+	// keeps its local time across daylight-saving changes. `every:<n>`
+	// repeats every `n` minutes (1 to 999999). Occurrences are counted
+	// from `runAt` (else from the current `nextRunAt`); the next due time
+	// is the first occurrence after the run is released, so missed runs
+	// are not replayed.
+	Recurrence *ScheduleRecurrence `json:"recurrence,omitempty" yaml:"recurrence,omitempty"`
+
+	// RetryCount Retries used so far for the current run, for example 0 to re-arm a schedule. Omitted on update, it is kept.
+	RetryCount *int `json:"retryCount,omitempty" yaml:"retryCount,omitempty"`
 
 	// RetryDelayMinutes Minutes to wait before a retry becomes due.
 	RetryDelayMinutes *int `json:"retryDelayMinutes,omitempty" yaml:"retryDelayMinutes,omitempty"`
@@ -250,30 +222,72 @@ type SchedulePayload struct {
 	// RunAt Time the schedule first becomes due.
 	RunAt *core.NullTime `json:"runAt" yaml:"runAt"`
 
-	// Status Client-settable status. Omit to let the server choose `scheduled` for a due-timed schedule and `pending` otherwise.
-	Status *SchedulePayloadStatus `json:"status,omitempty" yaml:"status,omitempty"`
+	// Status Lifecycle status of a schedule. `pending`: created, not yet
+	// due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+	// designated for a particular worker but not yet claimed. `claimed`: a
+	// worker holds the claim and has not started. `running`: the claim
+	// holder is executing it. `retrying`: the last attempt failed and
+	// another is due. `completed`, `failed` and `cancelled` are terminal
+	// for a run-once schedule; a recurring schedule returns to `scheduled`
+	// when its claim is released with a `completed` outcome.
+	Status *ScheduleStatus `json:"status,omitempty" yaml:"status,omitempty"`
+
+	// TargetId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	TargetID *core.Uuid `json:"targetId,omitempty" yaml:"targetId,omitempty"`
+
+	// TargetType Type of the resource the schedule acts on, named the way a claim's
+	// `resourceType` is (lowercase snake_case construct name, for example
+	// `content_item` or `profile`). A server verifies the target types it
+	// serves and refuses others with 400. Set together with `targetId` or
+	// not at all.
+	TargetType *ScheduleTargetType `json:"targetType,omitempty" yaml:"targetType,omitempty"`
+
+	// Timezone IANA time zone name (for example `UTC` or `America/Chicago`) in which
+	// `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+	// time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+	// refuses a name it does not know with 400.
+	Timezone *ScheduleTimezone `json:"timezone,omitempty" yaml:"timezone,omitempty"`
 
 	// WorkspaceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	WorkspaceId *core.Uuid `json:"workspaceId,omitempty" yaml:"workspaceId,omitempty"`
 }
 
-// SchedulePayloadStatus Client-settable status. Omit to let the server choose `scheduled` for a due-timed schedule and `pending` otherwise.
-type SchedulePayloadStatus string
+// ScheduleRecurrence How the schedule repeats once it has run. Empty, `once` and `none`
+// mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+// `monthly` repeat at the same wall-clock time one calendar day, week
+// or month later in the schedule's `timezone`, so a daily schedule
+// keeps its local time across daylight-saving changes. `every:<n>`
+// repeats every `n` minutes (1 to 999999). Occurrences are counted
+// from `runAt` (else from the current `nextRunAt`); the next due time
+// is the first occurrence after the run is released, so missed runs
+// are not replayed.
+type ScheduleRecurrence = string
 
-// ScheduleTargetedClaimRequest Request to claim one named schedule.
-type ScheduleTargetedClaimRequest struct {
-	// Claimant Identity of the worker taking the claim.
-	Claimant string `json:"claimant" yaml:"claimant"`
+// ScheduleStatus Lifecycle status of a schedule. `pending`: created, not yet
+// due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+// designated for a particular worker but not yet claimed. `claimed`: a
+// worker holds the claim and has not started. `running`: the claim
+// holder is executing it. `retrying`: the last attempt failed and
+// another is due. `completed`, `failed` and `cancelled` are terminal
+// for a run-once schedule; a recurring schedule returns to `scheduled`
+// when its claim is released with a `completed` outcome.
+type ScheduleStatus string
 
-	// DurationMinutes Requested claim duration in minutes; the server applies its default when omitted and may cap it.
-	DurationMinutes *int `json:"durationMinutes,omitempty" yaml:"durationMinutes,omitempty"`
+// ScheduleTargetType Type of the resource the schedule acts on, named the way a claim's
+// `resourceType` is (lowercase snake_case construct name, for example
+// `content_item` or `profile`). A server verifies the target types it
+// serves and refuses others with 400. Set together with `targetId` or
+// not at all.
+type ScheduleTargetType = string
 
-	// Force Claim even though the schedule is not yet due (trigger now). A live claim held by another claimant still refuses.
-	Force *bool `json:"force,omitempty" yaml:"force,omitempty"`
+// ScheduleTimezone IANA time zone name (for example `UTC` or `America/Chicago`) in which
+// `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+// time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+// refuses a name it does not know with 400.
+type ScheduleTimezone = string
 
-	// IgnorePause Operator override that claims through the organization-wide and per-schedule pauses.
-	IgnorePause *bool `json:"ignorePause,omitempty" yaml:"ignorePause,omitempty"`
-}
+// IfMatch defines model for ifMatch.
+type IfMatch = string
 
 // Order defines model for order.
 type Order = string
@@ -290,8 +304,15 @@ type ScheduleId = core.Uuid
 // Search defines model for search.
 type Search = string
 
-// StatusQuery defines model for statusQuery.
-type StatusQuery string
+// StatusQuery Lifecycle status of a schedule. `pending`: created, not yet
+// due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+// designated for a particular worker but not yet claimed. `claimed`: a
+// worker holds the claim and has not started. `running`: the claim
+// holder is executing it. `retrying`: the last attempt failed and
+// another is due. `completed`, `failed` and `cancelled` are terminal
+// for a run-once schedule; a recurring schedule returns to `scheduled`
+// when its claim is released with a `completed` outcome.
+type StatusQuery = ScheduleStatus
 
 // WorkspaceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type WorkspaceId = core.Uuid

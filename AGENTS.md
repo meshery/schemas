@@ -183,6 +183,7 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/release-procedure-skill.md`](docs/release-procedure-skill.md)** - using the `meshery-schemas-release` skill, verification commands, troubleshooting.
 - **[`docs/environment-purpose-contract.md`](docs/environment-purpose-contract.md)** - what `Environment.purpose` means, why it is not client-settable, and what each consumer must enforce for that to hold.
 - **[`docs/profile-contract.md`](docs/profile-contract.md)** - the profile construct, its workspace assignment, and its permission keys.
+- **[`docs/claim-contract.md`](docs/claim-contract.md)** - the claim construct: connection holders, expiry at read time, kept history, release outcomes, and its permission keys.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
 - **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
 

@@ -14,16 +14,33 @@ const (
 	Released ClaimStatus = "released"
 )
 
-// Claim Server-returned claim: a time-bound hold that one claimant takes on one
+// Defines values for ClaimOutcome.
+const (
+	ClaimOutcomeCancelled ClaimOutcome = "cancelled"
+	ClaimOutcomeCompleted ClaimOutcome = "completed"
+	ClaimOutcomeFailed    ClaimOutcome = "failed"
+)
+
+// Defines values for ClaimReleasePayloadOutcome.
+const (
+	ClaimReleasePayloadOutcomeCancelled ClaimReleasePayloadOutcome = "cancelled"
+	ClaimReleasePayloadOutcomeCompleted ClaimReleasePayloadOutcome = "completed"
+	ClaimReleasePayloadOutcomeFailed    ClaimReleasePayloadOutcome = "failed"
+)
+
+// Claim Server-returned claim: a time-bound hold that one connection takes on one
 // resource so that competing workers never act on it twice. A claim is
 // generic: it names the resource it holds by type and ID, and any construct
-// can be claimed (a schedule is the first). A claim is live while its
-// status is `active` and `expiresAt` is in the future; a live claim held by
-// another claimant refuses a new claim on the same resource. A claim whose
-// `expiresAt` has passed is stale and the resource may be claimed again,
-// so a claimant that disappears never strands the resource. Only the
-// holder renews or releases a claim. The race between claimants is decided
-// server-side in a single statement.
+// can be claimed. A claim is held by a connection (`claimantConnectionId`,
+// for example the connection a desktop client registered for its machine)
+// on behalf of the user whose session took it (`claimantUserId`). At most
+// one claim per resource is `active` in an organization. A claim whose
+// `expiresAt` has passed reads as `expired` and the resource may be claimed
+// again, so a holder that disappears never strands the resource. Released
+// and expired claims are kept as history: a handoff is an `expired` claim
+// followed by an `active` claim on the same resource. The holder reports
+// what happened (`outcome`) when it releases the claim. The race between
+// claimants is decided server-side in a single statement.
 type Claim struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID core.Uuid `json:"id" yaml:"id"`
@@ -31,28 +48,49 @@ type Claim struct {
 	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	OrganizationID core.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`
 
-	// ResourceType Type of the claimed resource, for example `schedule`.
+	// ResourceType Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`.
 	ResourceType string `db:"resource_type" json:"resourceType" yaml:"resourceType"`
 
 	// ResourceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ResourceId core.Uuid `db:"resource_id" json:"resourceId" yaml:"resourceId"`
 
-	// Claimant Identity of the holder, as asserted by the worker that took the claim (for example a machine and process identifier).
-	Claimant string `db:"claimant" json:"claimant" yaml:"claimant"`
+	// ClaimantConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ClaimantConnectionID *core.Uuid `db:"claimant_connection_id" json:"claimantConnectionId,omitempty" yaml:"claimantConnectionId,omitempty"`
 
-	// Status Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.
+	// ClaimantUserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ClaimantUserID *core.Uuid `db:"claimant_user_id" json:"claimantUserId,omitempty" yaml:"claimantUserId,omitempty"`
+
+	// Status Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
 	Status    ClaimStatus `db:"status" json:"status" yaml:"status"`
 	ClaimedAt core.Time   `db:"claimed_at" json:"claimedAt" yaml:"claimedAt"`
 	ExpiresAt core.Time   `db:"expires_at" json:"expiresAt" yaml:"expiresAt"`
 
-	// ReleasedAt Time the holder released the claim. Null while the claim is active or after it expired.
+	// RenewedAt Time of the last renewal. Null until the claim is first renewed.
+	RenewedAt *core.NullTime `db:"renewed_at" json:"renewedAt" yaml:"renewedAt"`
+
+	// ReleasedAt Time the claim was released. Null while the claim is active or after it expired.
 	ReleasedAt *core.NullTime `db:"released_at" json:"releasedAt" yaml:"releasedAt"`
-	CreatedAt  core.Time      `db:"created_at" json:"createdAt" yaml:"createdAt"`
-	UpdatedAt  core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+
+	// Outcome What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+	Outcome *ClaimOutcome `db:"outcome" json:"outcome,omitempty" yaml:"outcome,omitempty"`
+
+	// OutcomeError Error reported with a `failed` outcome. Omitted otherwise.
+	OutcomeError *string `db:"outcome_error" json:"outcomeError,omitempty" yaml:"outcomeError,omitempty"`
+
+	// OutcomeEventId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OutcomeEventID *core.Uuid `db:"outcome_event_id" json:"outcomeEventId,omitempty" yaml:"outcomeEventId,omitempty"`
+
+	// ReleasedBy A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ReleasedBy *core.Uuid `db:"released_by" json:"releasedBy,omitempty" yaml:"releasedBy,omitempty"`
+	CreatedAt  core.Time  `db:"created_at" json:"createdAt" yaml:"createdAt"`
+	UpdatedAt  core.Time  `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 }
 
-// ClaimStatus Lifecycle of the claim. `active` while held, `released` once the holder lets it go, `expired` once `expiresAt` passed without a renewal.
+// ClaimStatus Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
 type ClaimStatus string
+
+// ClaimOutcome What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+type ClaimOutcome string
 
 // ClaimPage Paginated collection of claims.
 type ClaimPage struct {
@@ -70,34 +108,43 @@ type ClaimPage struct {
 }
 
 // ClaimPayload Payload for taking a claim. Contains only client-settable fields;
-// the owning `organizationId`, `status`, `claimedAt`, `expiresAt` and
-// the timestamps are server-managed.
+// the owning `organizationId`, `claimantUserId`, `status`,
+// `claimedAt`, `expiresAt` and the timestamps are server-managed.
 type ClaimPayload struct {
-	// Claimant Identity of the worker taking the claim.
-	Claimant string `json:"claimant" yaml:"claimant"`
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionID core.Uuid `json:"connectionId" yaml:"connectionId"`
 
-	// DurationMinutes Requested claim duration in minutes; the server applies its default when omitted and may cap it.
+	// DurationMinutes Requested claim duration in minutes; the server applies its default (30) when omitted and may cap it.
 	DurationMinutes *int `json:"durationMinutes,omitempty" yaml:"durationMinutes,omitempty"`
 
 	// ResourceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ResourceId core.Uuid `json:"resourceId" yaml:"resourceId"`
 
-	// ResourceType Type of the resource to claim, for example `schedule`.
+	// ResourceType Type of the resource to claim, for example `content_item`.
 	ResourceType string `json:"resourceType" yaml:"resourceType"`
 }
 
-// ClaimReleasePayload Payload for releasing a claim. Only the holder named by `claimant` may release.
+// ClaimReleasePayload Payload for releasing a claim with the outcome of the work it held. The releaser is the session user; no connection is needed, so a holder can release a stuck hold from another of its computers, and an authorized member can release someone else's.
 type ClaimReleasePayload struct {
-	// Claimant Identity of the holder releasing the claim.
-	Claimant string `json:"claimant" yaml:"claimant"`
+	// Outcome What happened to the work the claim held.
+	Outcome ClaimReleasePayloadOutcome `json:"outcome" yaml:"outcome"`
+
+	// OutcomeError Error behind a `failed` outcome. Refused with any other outcome.
+	OutcomeError *string `json:"outcomeError,omitempty" yaml:"outcomeError,omitempty"`
+
+	// OutcomeEventId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OutcomeEventID *core.Uuid `json:"outcomeEventId,omitempty" yaml:"outcomeEventId,omitempty"`
 }
 
-// ClaimRenewPayload Payload for renewing a claim. Only the holder named by `claimant` may renew.
-type ClaimRenewPayload struct {
-	// Claimant Identity of the holder renewing the claim.
-	Claimant string `json:"claimant" yaml:"claimant"`
+// ClaimReleasePayloadOutcome What happened to the work the claim held.
+type ClaimReleasePayloadOutcome string
 
-	// DurationMinutes Requested extension in minutes from now; the server applies its default when omitted and may cap it.
+// ClaimRenewPayload Payload for renewing a claim. Only the holding connection may renew.
+type ClaimRenewPayload struct {
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionID core.Uuid `json:"connectionId" yaml:"connectionId"`
+
+	// DurationMinutes Requested extension in minutes from now; the server applies its default (30) when omitted and may cap it.
 	DurationMinutes *int `json:"durationMinutes,omitempty" yaml:"durationMinutes,omitempty"`
 }
 
