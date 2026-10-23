@@ -87,7 +87,10 @@ paths:
         - designs
       summary: Save design
       operationId: upsertPattern
-      description: Creates or updates an infrastructure design.
+      description: >
+        Creates or updates an infrastructure design. The server assigns
+        `organizationId` from the session organization; clients do not send
+        it. On update the organization stays the one assigned at create.
       requestBody:
         required: true
         content:
@@ -1025,7 +1028,13 @@ components:
 
     MesheryPattern:
       type: object
-      description: Server-returned design (pattern) resource as persisted by meshery-cloud.
+      description: >
+        Server-returned design (pattern) resource as persisted in
+        `meshery_patterns`. `organizationId` is required and read-only: the
+        server assigns it from the session organization and clients never
+        send it.
+      required:
+        - organizationId
       properties:
         id:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/Id"
@@ -1045,6 +1054,20 @@ components:
           description: Owning user ID.
           x-oapi-codegen-extra-tags:
             db: owner
+        organizationId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: >
+            The organization the design belongs to. The server sets it from
+            the session organization (`X-Current-Orgid`, or the caller's
+            selected organization) on create, including import. Never accepted
+            from clients. A workspace this design is assigned to must belong
+            to this same organization.
+          readOnly: true
+          x-go-name: OrganizationID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: organization_id
+            json: organizationId
         user:
           $ref: "../../v1beta2/user/api.yml#/components/schemas/User"
           description: >
@@ -1237,11 +1260,12 @@ components:
       description: >
         Client-settable subset of the design (pattern) entity used as the
         body of the inner `patternData` envelope on
-        POST /api/content/patterns. Server-generated fields (createdAt,
-        updatedAt, viewCount, downloadCount, cloneCount, deploymentCount,
-        shareCount, the joined `user` object, and the imported-source
-        `sourceContent` blob) are deliberately excluded — the server
-        ignores them on writes and re-projects them on the response.
+        POST /api/content/patterns. Server-generated fields (`organizationId`,
+        createdAt, updatedAt, viewCount, downloadCount, cloneCount,
+        deploymentCount, shareCount, the joined `user` object, and the
+        imported-source `sourceContent` blob) are deliberately excluded. The
+        server assigns `organizationId` from the session organization, ignores
+        any client value, and re-projects server-owned fields on the response.
       properties:
         id:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/Id"

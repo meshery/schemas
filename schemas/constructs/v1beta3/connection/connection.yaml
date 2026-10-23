@@ -11,6 +11,7 @@ required:
   - subType
   - kind
   - status
+  - organizationId
 properties:
   id:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
@@ -197,16 +198,21 @@ properties:
   organizationId:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
     description: >
-      Organization the connection is registered in, taken from the
-      `X-Current-Orgid` header on registration. Servers implementing this
-      contract use it, with the owner and `metadata.installationId`, as the
-      deduplication key for `desktop` connections. Lets an organization list
-      and count its connections (for example its registered desktop installs)
-      without going through each owner. Absent on connections that predate it.
+      The organization the connection belongs to. The server sets it from
+      the session organization (`X-Current-Orgid`, or the caller's selected
+      organization when that header is absent) when the connection is
+      registered, and keeps it on later updates. Never accepted from clients
+      on connection write payloads. Not marked readOnly: `RegistrantData`
+      inlines this entity into registry registration requests, and readOnly
+      there drops the connection field from the generated RTK client. A
+      value sent on that inlined connection is ignored. With the owner and
+      `metadata.installationId`, it is the deduplication key for `desktop`
+      connections.
+    x-go-name: OrganizationID
+    x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:
       db: organization_id
-      json: organizationId,omitempty
-    x-go-type-skip-optional-pointer: false
+      json: organizationId
     x-order: 19
   environments:
     type: array
