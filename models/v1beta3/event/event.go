@@ -12,6 +12,12 @@ import (
 	"github.com/meshery/schemas/models/core"
 )
 
+// Defines values for EventsScope.
+const (
+	Organization EventsScope = "organization"
+	User         EventsScope = "user"
+)
+
 // BulkDeleteRequest Payload for bulk-deleting events by ID.
 type BulkDeleteRequest struct {
 	// Ids UUIDs of the events to delete.
@@ -70,6 +76,9 @@ type Event struct {
 	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
 
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID core.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`
+
 	// Severity Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
 	Severity string `db:"severity" json:"severity" yaml:"severity"`
 
@@ -120,6 +129,9 @@ type EventResult struct {
 
 	// LastName The last name of the user associated with the event.
 	LastName *string `json:"lastName,omitempty" yaml:"lastName,omitempty"`
+
+	// OrganizationID The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+	OrganizationID uuid.UUID `db:"organization_id" json:"organizationId" yaml:"organizationId"`
 
 	// Owner UUID of the user associated with the event.
 	Owner uuid.UUID `db:"owner" json:"owner" yaml:"owner"`
@@ -200,6 +212,9 @@ type EventId = uuid.UUID
 
 // Filter defines model for filter.
 type Filter = string
+
+// EventsScope defines model for eventsScope.
+type EventsScope string
 
 // Order defines model for order.
 type Order = string

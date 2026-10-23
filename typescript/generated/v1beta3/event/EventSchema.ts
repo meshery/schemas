@@ -558,6 +558,22 @@ const EventSchema: Record<string, unknown> = {
                               "json": "systemId"
                             }
                           },
+                          "organizationId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.\n",
+                            "readOnly": true,
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            }
+                          },
                           "category": {
                             "type": "string",
                             "description": "The category of the event.",
@@ -821,7 +837,7 @@ const EventSchema: Record<string, unknown> = {
             }
           }
         },
-        "description": "Records an event and answers 201 with it. When the payload carries an `idempotencyKey` the authenticated caller already used, nothing new is recorded and the answer is 200 with the event first recorded under that key.\n",
+        "description": "Records an event and answers 201 with it. When the payload carries an `idempotencyKey` the authenticated caller already used, nothing new is recorded and the answer is 200 with the event first recorded under that key. The server assigns the organization from the session; clients do not send it.\n",
         "responses": {
           "200": {
             "description": "An event with this `idempotencyKey` was already recorded by the same caller; it is returned unchanged and no new event is recorded.\n",
@@ -841,6 +857,7 @@ const EventSchema: Record<string, unknown> = {
                     "severity",
                     "status",
                     "systemId",
+                    "organizationId",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -850,6 +867,7 @@ const EventSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "id"
                       },
+                      "x-order": 7,
                       "type": "string",
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
@@ -863,6 +881,7 @@ const EventSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "acted_upon"
                       },
+                      "x-order": 1,
                       "type": "string",
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
@@ -877,7 +896,8 @@ const EventSchema: Record<string, unknown> = {
                       "maxLength": 500,
                       "x-oapi-codegen-extra-tags": {
                         "db": "action"
-                      }
+                      },
+                      "x-order": 2
                     },
                     "category": {
                       "type": "string",
@@ -885,7 +905,8 @@ const EventSchema: Record<string, unknown> = {
                       "maxLength": 500,
                       "x-oapi-codegen-extra-tags": {
                         "db": "category"
-                      }
+                      },
+                      "x-order": 3
                     },
                     "description": {
                       "type": "string",
@@ -893,7 +914,8 @@ const EventSchema: Record<string, unknown> = {
                       "maxLength": 5000,
                       "x-oapi-codegen-extra-tags": {
                         "db": "description"
-                      }
+                      },
+                      "x-order": 6
                     },
                     "metadata": {
                       "type": "object",
@@ -907,7 +929,8 @@ const EventSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "metadata"
-                      }
+                      },
+                      "x-order": 8
                     },
                     "operationId": {
                       "description": "ID correlating the events one operation emitted.",
@@ -915,6 +938,7 @@ const EventSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "operation_id"
                       },
+                      "x-order": 9,
                       "type": "string",
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
@@ -929,7 +953,8 @@ const EventSchema: Record<string, unknown> = {
                       "maxLength": 255,
                       "x-oapi-codegen-extra-tags": {
                         "db": "severity"
-                      }
+                      },
+                      "x-order": 12
                     },
                     "status": {
                       "type": "string",
@@ -937,10 +962,12 @@ const EventSchema: Record<string, unknown> = {
                       "maxLength": 255,
                       "x-oapi-codegen-extra-tags": {
                         "db": "status"
-                      }
+                      },
+                      "x-order": 13
                     },
                     "systemId": {
                       "description": "ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.\n",
+                      "x-order": 14,
                       "type": "string",
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
@@ -963,13 +990,32 @@ const EventSchema: Record<string, unknown> = {
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "owner"
-                      }
+                      },
+                      "x-order": 10
+                    },
+                    "organizationId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "readOnly": true,
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "x-order": 11
                     },
                     "createdAt": {
                       "description": "Timestamp when the event was recorded.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at"
                       },
+                      "x-order": 4,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -979,6 +1025,7 @@ const EventSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at"
                       },
+                      "x-order": 15,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -988,6 +1035,7 @@ const EventSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
                       },
+                      "x-order": 5,
                       "x-go-type": "meshcore.NullTime",
                       "x-go-type-import": {
                         "name": "meshcore",
@@ -1021,6 +1069,7 @@ const EventSchema: Record<string, unknown> = {
                     "severity",
                     "status",
                     "systemId",
+                    "organizationId",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -1030,6 +1079,7 @@ const EventSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "id"
                       },
+                      "x-order": 7,
                       "type": "string",
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
@@ -1043,6 +1093,7 @@ const EventSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "acted_upon"
                       },
+                      "x-order": 1,
                       "type": "string",
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
@@ -1057,7 +1108,8 @@ const EventSchema: Record<string, unknown> = {
                       "maxLength": 500,
                       "x-oapi-codegen-extra-tags": {
                         "db": "action"
-                      }
+                      },
+                      "x-order": 2
                     },
                     "category": {
                       "type": "string",
@@ -1065,7 +1117,8 @@ const EventSchema: Record<string, unknown> = {
                       "maxLength": 500,
                       "x-oapi-codegen-extra-tags": {
                         "db": "category"
-                      }
+                      },
+                      "x-order": 3
                     },
                     "description": {
                       "type": "string",
@@ -1073,7 +1126,8 @@ const EventSchema: Record<string, unknown> = {
                       "maxLength": 5000,
                       "x-oapi-codegen-extra-tags": {
                         "db": "description"
-                      }
+                      },
+                      "x-order": 6
                     },
                     "metadata": {
                       "type": "object",
@@ -1087,7 +1141,8 @@ const EventSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "metadata"
-                      }
+                      },
+                      "x-order": 8
                     },
                     "operationId": {
                       "description": "ID correlating the events one operation emitted.",
@@ -1095,6 +1150,7 @@ const EventSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "operation_id"
                       },
+                      "x-order": 9,
                       "type": "string",
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
@@ -1109,7 +1165,8 @@ const EventSchema: Record<string, unknown> = {
                       "maxLength": 255,
                       "x-oapi-codegen-extra-tags": {
                         "db": "severity"
-                      }
+                      },
+                      "x-order": 12
                     },
                     "status": {
                       "type": "string",
@@ -1117,10 +1174,12 @@ const EventSchema: Record<string, unknown> = {
                       "maxLength": 255,
                       "x-oapi-codegen-extra-tags": {
                         "db": "status"
-                      }
+                      },
+                      "x-order": 13
                     },
                     "systemId": {
                       "description": "ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.\n",
+                      "x-order": 14,
                       "type": "string",
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
@@ -1143,13 +1202,32 @@ const EventSchema: Record<string, unknown> = {
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "owner"
-                      }
+                      },
+                      "x-order": 10
+                    },
+                    "organizationId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "readOnly": true,
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "x-order": 11
                     },
                     "createdAt": {
                       "description": "Timestamp when the event was recorded.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at"
                       },
+                      "x-order": 4,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -1159,6 +1237,7 @@ const EventSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at"
                       },
+                      "x-order": 15,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -1168,6 +1247,7 @@ const EventSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
                       },
+                      "x-order": 5,
                       "x-go-type": "meshcore.NullTime",
                       "x-go-type-import": {
                         "name": "meshcore",
@@ -1267,6 +1347,20 @@ const EventSchema: Record<string, unknown> = {
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "required": false,
+            "description": "Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403.\n",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "user",
+                "organization"
+              ],
+              "default": "user"
+            }
           }
         ],
         "responses": {
@@ -1333,6 +1427,22 @@ const EventSchema: Record<string, unknown> = {
                               "json": "systemId"
                             }
                           },
+                          "organizationId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.\n",
+                            "readOnly": true,
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            }
+                          },
                           "category": {
                             "type": "string",
                             "description": "The category of the event.",
@@ -1396,6 +1506,57 @@ const EventSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
             "description": "Not found"
@@ -1794,6 +1955,20 @@ const EventSchema: Record<string, unknown> = {
         "schema": {
           "type": "string"
         }
+      },
+      "eventsScope": {
+        "name": "scope",
+        "in": "query",
+        "required": false,
+        "description": "Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403.\n",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "user",
+            "organization"
+          ],
+          "default": "user"
+        }
       }
     },
     "securitySchemes": {
@@ -1997,6 +2172,22 @@ const EventSchema: Record<string, unknown> = {
               "json": "systemId"
             }
           },
+          "organizationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.\n",
+            "readOnly": true,
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "OrganizationID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "organization_id",
+              "json": "organizationId"
+            }
+          },
           "category": {
             "type": "string",
             "description": "The category of the event.",
@@ -2065,6 +2256,7 @@ const EventSchema: Record<string, unknown> = {
           "severity",
           "status",
           "systemId",
+          "organizationId",
           "createdAt",
           "updatedAt"
         ],
@@ -2074,6 +2266,7 @@ const EventSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "id"
             },
+            "x-order": 7,
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
@@ -2087,6 +2280,7 @@ const EventSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "acted_upon"
             },
+            "x-order": 1,
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
@@ -2101,7 +2295,8 @@ const EventSchema: Record<string, unknown> = {
             "maxLength": 500,
             "x-oapi-codegen-extra-tags": {
               "db": "action"
-            }
+            },
+            "x-order": 2
           },
           "category": {
             "type": "string",
@@ -2109,7 +2304,8 @@ const EventSchema: Record<string, unknown> = {
             "maxLength": 500,
             "x-oapi-codegen-extra-tags": {
               "db": "category"
-            }
+            },
+            "x-order": 3
           },
           "description": {
             "type": "string",
@@ -2117,7 +2313,8 @@ const EventSchema: Record<string, unknown> = {
             "maxLength": 5000,
             "x-oapi-codegen-extra-tags": {
               "db": "description"
-            }
+            },
+            "x-order": 6
           },
           "metadata": {
             "type": "object",
@@ -2131,7 +2328,8 @@ const EventSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "metadata"
-            }
+            },
+            "x-order": 8
           },
           "operationId": {
             "description": "ID correlating the events one operation emitted.",
@@ -2139,6 +2337,7 @@ const EventSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "operation_id"
             },
+            "x-order": 9,
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
@@ -2153,7 +2352,8 @@ const EventSchema: Record<string, unknown> = {
             "maxLength": 255,
             "x-oapi-codegen-extra-tags": {
               "db": "severity"
-            }
+            },
+            "x-order": 12
           },
           "status": {
             "type": "string",
@@ -2161,10 +2361,12 @@ const EventSchema: Record<string, unknown> = {
             "maxLength": 255,
             "x-oapi-codegen-extra-tags": {
               "db": "status"
-            }
+            },
+            "x-order": 13
           },
           "systemId": {
             "description": "ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.\n",
+            "x-order": 14,
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
@@ -2187,13 +2389,32 @@ const EventSchema: Record<string, unknown> = {
             },
             "x-oapi-codegen-extra-tags": {
               "db": "owner"
-            }
+            },
+            "x-order": 10
+          },
+          "organizationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "readOnly": true,
+            "x-go-name": "OrganizationID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "organization_id",
+              "json": "organizationId"
+            },
+            "x-order": 11
           },
           "createdAt": {
             "description": "Timestamp when the event was recorded.",
             "x-oapi-codegen-extra-tags": {
               "db": "created_at"
             },
+            "x-order": 4,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
@@ -2203,6 +2424,7 @@ const EventSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "updated_at"
             },
+            "x-order": 15,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
@@ -2212,6 +2434,7 @@ const EventSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "deleted_at"
             },
+            "x-order": 5,
             "x-go-type": "meshcore.NullTime",
             "x-go-type-import": {
               "name": "meshcore",
@@ -2281,6 +2504,22 @@ const EventSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "system_id",
                     "json": "systemId"
+                  }
+                },
+                "organizationId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.\n",
+                  "readOnly": true,
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId"
                   }
                 },
                 "category": {

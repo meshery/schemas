@@ -3283,6 +3283,11 @@ export interface components {
                  */
                 owner?: string;
                 /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                readonly organizationId: string;
+                /**
                  * Format: date-time
                  * @description Timestamp when the event was recorded.
                  */
@@ -8947,6 +8952,11 @@ export interface operations {
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             owner?: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            readonly organizationId: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the event was recorded.

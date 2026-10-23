@@ -10788,6 +10788,7 @@ const DesignSchema: Record<string, unknown> = {
                           "severity",
                           "status",
                           "systemId",
+                          "organizationId",
                           "createdAt",
                           "updatedAt"
                         ],
@@ -10797,6 +10798,7 @@ const DesignSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "id"
                             },
+                            "x-order": 7,
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
@@ -10810,6 +10812,7 @@ const DesignSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "acted_upon"
                             },
+                            "x-order": 1,
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
@@ -10824,7 +10827,8 @@ const DesignSchema: Record<string, unknown> = {
                             "maxLength": 500,
                             "x-oapi-codegen-extra-tags": {
                               "db": "action"
-                            }
+                            },
+                            "x-order": 2
                           },
                           "category": {
                             "type": "string",
@@ -10832,7 +10836,8 @@ const DesignSchema: Record<string, unknown> = {
                             "maxLength": 500,
                             "x-oapi-codegen-extra-tags": {
                               "db": "category"
-                            }
+                            },
+                            "x-order": 3
                           },
                           "description": {
                             "type": "string",
@@ -10840,7 +10845,8 @@ const DesignSchema: Record<string, unknown> = {
                             "maxLength": 5000,
                             "x-oapi-codegen-extra-tags": {
                               "db": "description"
-                            }
+                            },
+                            "x-order": 6
                           },
                           "metadata": {
                             "type": "object",
@@ -10854,7 +10860,8 @@ const DesignSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "metadata"
-                            }
+                            },
+                            "x-order": 8
                           },
                           "operationId": {
                             "description": "ID correlating the events one operation emitted.",
@@ -10862,6 +10869,7 @@ const DesignSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "operation_id"
                             },
+                            "x-order": 9,
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
@@ -10876,7 +10884,8 @@ const DesignSchema: Record<string, unknown> = {
                             "maxLength": 255,
                             "x-oapi-codegen-extra-tags": {
                               "db": "severity"
-                            }
+                            },
+                            "x-order": 12
                           },
                           "status": {
                             "type": "string",
@@ -10884,10 +10893,12 @@ const DesignSchema: Record<string, unknown> = {
                             "maxLength": 255,
                             "x-oapi-codegen-extra-tags": {
                               "db": "status"
-                            }
+                            },
+                            "x-order": 13
                           },
                           "systemId": {
                             "description": "ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.\n",
+                            "x-order": 14,
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
@@ -10910,13 +10921,32 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "owner"
-                            }
+                            },
+                            "x-order": 10
+                          },
+                          "organizationId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "x-order": 11
                           },
                           "createdAt": {
                             "description": "Timestamp when the event was recorded.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at"
                             },
+                            "x-order": 4,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -10926,6 +10956,7 @@ const DesignSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at"
                             },
+                            "x-order": 15,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -10935,6 +10966,7 @@ const DesignSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at"
                             },
+                            "x-order": 5,
                             "x-go-type": "meshcore.NullTime",
                             "x-go-type-import": {
                               "name": "meshcore",
@@ -24925,6 +24957,7 @@ const DesignSchema: Record<string, unknown> = {
                 "severity",
                 "status",
                 "systemId",
+                "organizationId",
                 "createdAt",
                 "updatedAt"
               ],
@@ -24934,6 +24967,7 @@ const DesignSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "id"
                   },
+                  "x-order": 7,
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
@@ -24947,6 +24981,7 @@ const DesignSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "acted_upon"
                   },
+                  "x-order": 1,
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
@@ -24961,7 +24996,8 @@ const DesignSchema: Record<string, unknown> = {
                   "maxLength": 500,
                   "x-oapi-codegen-extra-tags": {
                     "db": "action"
-                  }
+                  },
+                  "x-order": 2
                 },
                 "category": {
                   "type": "string",
@@ -24969,7 +25005,8 @@ const DesignSchema: Record<string, unknown> = {
                   "maxLength": 500,
                   "x-oapi-codegen-extra-tags": {
                     "db": "category"
-                  }
+                  },
+                  "x-order": 3
                 },
                 "description": {
                   "type": "string",
@@ -24977,7 +25014,8 @@ const DesignSchema: Record<string, unknown> = {
                   "maxLength": 5000,
                   "x-oapi-codegen-extra-tags": {
                     "db": "description"
-                  }
+                  },
+                  "x-order": 6
                 },
                 "metadata": {
                   "type": "object",
@@ -24991,7 +25029,8 @@ const DesignSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "metadata"
-                  }
+                  },
+                  "x-order": 8
                 },
                 "operationId": {
                   "description": "ID correlating the events one operation emitted.",
@@ -24999,6 +25038,7 @@ const DesignSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "operation_id"
                   },
+                  "x-order": 9,
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
@@ -25013,7 +25053,8 @@ const DesignSchema: Record<string, unknown> = {
                   "maxLength": 255,
                   "x-oapi-codegen-extra-tags": {
                     "db": "severity"
-                  }
+                  },
+                  "x-order": 12
                 },
                 "status": {
                   "type": "string",
@@ -25021,10 +25062,12 @@ const DesignSchema: Record<string, unknown> = {
                   "maxLength": 255,
                   "x-oapi-codegen-extra-tags": {
                     "db": "status"
-                  }
+                  },
+                  "x-order": 13
                 },
                 "systemId": {
                   "description": "ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.\n",
+                  "x-order": 14,
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
@@ -25047,13 +25090,32 @@ const DesignSchema: Record<string, unknown> = {
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "owner"
-                  }
+                  },
+                  "x-order": 10
+                },
+                "organizationId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId"
+                  },
+                  "x-order": 11
                 },
                 "createdAt": {
                   "description": "Timestamp when the event was recorded.",
                   "x-oapi-codegen-extra-tags": {
                     "db": "created_at"
                   },
+                  "x-order": 4,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
@@ -25063,6 +25125,7 @@ const DesignSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at"
                   },
+                  "x-order": 15,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
@@ -25072,6 +25135,7 @@ const DesignSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "deleted_at"
                   },
+                  "x-order": 5,
                   "x-go-type": "meshcore.NullTime",
                   "x-go-type-import": {
                     "name": "meshcore",

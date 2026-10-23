@@ -104,7 +104,7 @@ export interface paths {
         put?: never;
         /**
          * Create a new event
-         * @description Records an event and answers 201 with it. When the payload carries an `idempotencyKey` the authenticated caller already used, nothing new is recorded and the answer is 200 with the event first recorded under that key.
+         * @description Records an event and answers 201 with it. When the payload carries an `idempotencyKey` the authenticated caller already used, nothing new is recorded and the answer is 200 with the event first recorded under that key. The server assigns the organization from the session; clients do not send it.
          */
         post: operations["createEvent"];
         delete?: never;
@@ -240,6 +240,11 @@ export interface components {
             owner: string;
             /** @description System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked. */
             systemId?: string;
+            /**
+             * Format: uuid
+             * @description The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+             */
+            readonly organizationId?: string;
             /** @description The category of the event. */
             category: string;
             /** @description The action of the event. */
@@ -305,6 +310,11 @@ export interface components {
              */
             owner?: string;
             /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            readonly organizationId: string;
+            /**
              * Format: date-time
              * @description Timestamp when the event was recorded.
              */
@@ -337,6 +347,11 @@ export interface components {
                 owner: string;
                 /** @description System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked. */
                 systemId?: string;
+                /**
+                 * Format: uuid
+                 * @description The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+                 */
+                readonly organizationId?: string;
                 /** @description The category of the event. */
                 category: string;
                 /** @description The action of the event. */
@@ -485,6 +500,8 @@ export interface components {
         filter: string;
         /** @description Get filtered reponses */
         eventsFilter: string;
+        /** @description Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403. */
+        eventsScope: "user" | "organization";
     };
     requestBodies: never;
     headers: never;
@@ -795,6 +812,11 @@ export interface operations {
                             owner: string;
                             /** @description System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked. */
                             systemId?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+                             */
+                            readonly organizationId?: string;
                             /** @description The category of the event. */
                             category: string;
                             /** @description The action of the event. */
@@ -1006,6 +1028,11 @@ export interface operations {
                          */
                         owner?: string;
                         /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        readonly organizationId: string;
+                        /**
                          * Format: date-time
                          * @description Timestamp when the event was recorded.
                          */
@@ -1070,6 +1097,11 @@ export interface operations {
                          */
                         owner?: string;
                         /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        readonly organizationId: string;
+                        /**
                          * Format: date-time
                          * @description Timestamp when the event was recorded.
                          */
@@ -1129,6 +1161,8 @@ export interface operations {
                 order?: string;
                 /** @description Get filtered reponses */
                 filter?: string;
+                /** @description Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403. */
+                scope?: "user" | "organization";
             };
             header?: never;
             path?: never;
@@ -1158,6 +1192,11 @@ export interface operations {
                             owner: string;
                             /** @description System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked. */
                             systemId?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+                             */
+                            readonly organizationId?: string;
                             /** @description The category of the event. */
                             category: string;
                             /** @description The action of the event. */
@@ -1190,6 +1229,29 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
             };
             /** @description Not found */
             404: {

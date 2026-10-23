@@ -16913,6 +16913,8 @@ export type CreateEventApiResponse =
         systemId: string;
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         owner?: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        organizationId: string;
         /** Timestamp when the event was recorded. */
         createdAt: string;
         /** Timestamp when the event was last updated. */
@@ -16949,6 +16951,8 @@ export type CreateEventApiResponse =
         systemId: string;
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         owner?: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        organizationId: string;
         /** Timestamp when the event was recorded. */
         createdAt: string;
         /** Timestamp when the event was last updated. */

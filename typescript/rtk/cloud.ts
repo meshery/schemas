@@ -1438,6 +1438,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             filter: queryArg?.filter,
+            scope: queryArg?.scope,
           },
         }),
         providesTags: ["Events_events"],
@@ -14736,6 +14737,8 @@ export type ImportGithubRepositoryApiResponse =
       systemId: string;
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       owner?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
       /** Timestamp when the event was recorded. */
       createdAt: string;
       /** Timestamp when the event was last updated. */
@@ -16150,6 +16153,9 @@ export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */
     /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
      */
     systemId?: string;
+    /** The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+     */
+    organizationId?: string;
     /** The category of the event. */
     category: string;
     /** The action of the event. */
@@ -16223,6 +16229,8 @@ export type CreateEventApiResponse =
         systemId: string;
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         owner?: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        organizationId: string;
         /** Timestamp when the event was recorded. */
         createdAt: string;
         /** Timestamp when the event was last updated. */
@@ -16259,6 +16267,8 @@ export type CreateEventApiResponse =
         systemId: string;
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         owner?: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        organizationId: string;
         /** Timestamp when the event was recorded. */
         createdAt: string;
         /** Timestamp when the event was last updated. */
@@ -16296,6 +16306,9 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
     /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
      */
     systemId?: string;
+    /** The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+     */
+    organizationId?: string;
     /** The category of the event. */
     category: string;
     /** The action of the event. */
@@ -16325,6 +16338,9 @@ export type GetEventsApiArg = {
   order?: string;
   /** Get filtered reponses */
   filter?: string;
+  /** Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403.
+   */
+  scope?: "user" | "organization";
 };
 export type GetEventSummaryByUserApiResponse = /** status 200 Event summary page */ {
   /** Current page number of the result set. */
