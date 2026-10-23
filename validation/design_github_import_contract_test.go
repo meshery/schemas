@@ -337,14 +337,15 @@ func TestGithubImportResponseContract(t *testing.T) {
 
 // Event must describe the bytes MeshKit's models/events.Event marshals
 // (meshery/meshkit models/events/events.go): every JSON name it writes, with
-// `required` holding exactly the fields it writes without omitempty.
+// `required` holding the fields it writes without omitempty, plus
+// organizationId, which the server assigns and always returns.
 func TestEventMirrorsMeshkitEventWireShape(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), eventV1beta3Spec))
 	event := mustLookup(t, doc, "components", "schemas", "Event")
 
 	alwaysWritten := []string{
 		"actedUpon", "action", "category", "createdAt", "description", "id",
-		"metadata", "operationId", "severity", "status", "systemId", "updatedAt",
+		"metadata", "operationId", "organizationId", "severity", "status", "systemId", "updatedAt",
 	}
 	omitEmpty := []string{"deletedAt", "owner"}
 
