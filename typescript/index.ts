@@ -3,6 +3,7 @@
 
 // v1alpha1
 import { components as CapabilityComponents } from "./generated/v1alpha1/capability/Capability";
+import { components as ModelSourceComponents } from "./generated/v1alpha1/model_source/ModelSource";
 import { components as CatalogComponents } from "./generated/v1alpha2/catalog/Catalog";
 
 // v1beta1
@@ -61,6 +62,7 @@ import { components as V1Beta3UserComponents } from "./generated/v1beta3/user/Us
 
 // OpenAPI Schemas
 // import CapabilityDefinitionV1Alpha1OpenApiSchema from "./generated/v1alpha1/capability/CapabilitySchema";
+// import ModelSourceDefinitionV1Alpha1OpenApiSchema from "./generated/v1alpha1/model_source/ModelSourceSchema";
 // import CatalogDefinitionV1Alpha2OpenApiSchema from "./generated/v1alpha2/catalog/CatalogSchema";
 import CategoryDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/category/CategorySchema";
 import SubCategoryDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/subcategory/SubcategorySchema";
@@ -128,6 +130,18 @@ export {
 export namespace v1alpha1 {
   export type CatalogData = CatalogComponents["schemas"]["CatalogData"];
   export type Capability = CapabilityComponents["schemas"];
+  export type ModelSource = ModelSourceComponents["schemas"]["ModelSource"];
+  export type ModelSourceSource = ModelSourceComponents["schemas"]["ModelSourceSource"];
+  export type ModelSourceMetadata = ModelSourceComponents["schemas"]["ModelSourceMetadata"];
+  export type ModelSourcePublish = ModelSourceComponents["schemas"]["ModelSourcePublish"];
+  export type ModelSourceWebsite = ModelSourceComponents["schemas"]["ModelSourceWebsite"];
+  export type ComponentOverride = ModelSourceComponents["schemas"]["ComponentOverride"];
+  export type Category = ModelSourceComponents["schemas"]["Category"];
+  export type SubCategory = ModelSourceComponents["schemas"]["SubCategory"];
+  export type Categories = ModelSourceComponents["schemas"]["Categories"];
+  export type CapabilityDefinition = ModelSourceComponents["schemas"]["Capability"];
+  export type ModelCapability = ModelSourceComponents["schemas"]["Capability"];
+  export type Capabilities = ModelSourceComponents["schemas"]["Capabilities"];
 }
 
 export namespace v1alpha2 {
