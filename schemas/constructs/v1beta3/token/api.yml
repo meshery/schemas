@@ -153,17 +153,21 @@ paths:
       - cloud
       tags:
       - tokens
-      summary: Show native client sign-in consent
+      summary: Authorize native client sign-in
       operationId: getNativeClientAuthorization
       description: >-
         Browser-facing step of the native client sign-in flow (RFC 8252 loopback
         redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in
-        user, never URL credentials. Validates the request and renders a consent
-        page that asks the user to allow the named local client to act on their
-        behalf. Nothing is issued by this call. When the request names the
-        client application (`client`) and its version (`clientVersion`) and
-        that version is below the provider's minimum for that client, an
-        update page is rendered with status 426 instead of the consent page.
+        user and the Create Token permission. Validates the request. When the
+        request names the client application (`client`) and its version
+        (`clientVersion`) and that version is below the provider minimum, it
+        renders the update page with status 426 and issues nothing. Otherwise
+        it stores a single-use authorization code that expires after 60
+        seconds, bound to the user, the client name and the PKCE code
+        challenge, and redirects the browser to
+        http://127.0.0.1:{port}/callback with code and state query parameters.
+        Only the 127.0.0.1 loopback IP literal is ever used; no token or cookie
+        is placed in the redirect; no consent page is shown.
       parameters:
       - $ref: '#/components/parameters/nativeClientName'
       - $ref: '#/components/parameters/nativeClient'
@@ -172,44 +176,6 @@ paths:
       - $ref: '#/components/parameters/nativeCodeChallenge'
       - $ref: '#/components/parameters/nativeCodeChallengeMethod'
       - $ref: '#/components/parameters/nativeState'
-      responses:
-        '200':
-          description: Consent page
-          content:
-            text/html:
-              schema:
-                type: string
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '426':
-          description: Update page; the client's version is below the provider's minimum for that client.
-          content:
-            text/html:
-              schema:
-                type: string
-    post:
-      x-internal:
-      - cloud
-      tags:
-      - tokens
-      summary: Approve native client sign-in
-      operationId: approveNativeClientAuthorization
-      description: >-
-        Submitted by the consent page with the same parameters as the GET, as a
-        same-origin form post. Stores a single-use authorization code that
-        expires after 60 seconds, bound to the user, the client name and the
-        PKCE code challenge, then redirects the browser to
-        http://127.0.0.1:{port}/callback with code and state query parameters.
-        Only the 127.0.0.1 loopback IP literal is ever used as the redirect host;
-        no token or cookie is placed in the redirect.
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/NativeAuthorizationPayload'
       responses:
         '302':
           description: >-
@@ -230,6 +196,12 @@ paths:
           $ref: '#/components/responses/401'
         '403':
           $ref: '#/components/responses/403'
+        '426':
+          description: Update page; the client's version is below the provider's minimum for that client.
+          content:
+            text/html:
+              schema:
+                type: string
         '500':
           $ref: '#/components/responses/500'
   /api/identity/native/token:
@@ -358,7 +330,7 @@ components:
     nativeClientName:
       name: clientName
       in: query
-      description: Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token.
+      description: Display name of the native client asking to sign in. Used as the name and purpose of the minted token.
       required: true
       schema:
         type: string
@@ -418,7 +390,7 @@ components:
       $ref: ./token.yaml
     NativeAuthorizationPayload:
       type: object
-      description: Consent form fields for approving a native client sign-in.
+      description: Query fields of GET /api/identity/native/authorize. The signed-in session issues the authorization code from these fields.
       required:
       - clientName
       - port
@@ -476,7 +448,7 @@ components:
     NativeAuthorizationCallback:
       type: object
       description: >-
-        Query parameters of the loopback redirect that approveNativeClientAuthorization
+        Query parameters of the loopback redirect that getNativeClientAuthorization
         answers with, http://127.0.0.1:{port}/callback?code=...&state=... The code is
         single-use and expires after 60 seconds; no token is ever placed in the URL.
         The native client compares state with the one it sent before redeeming the code
@@ -493,7 +465,7 @@ components:
           x-order: 1
         state:
           type: string
-          description: The state the native client sent to the consent page, unchanged.
+          description: The state the native client sent on the authorize request, unchanged.
           minLength: 8
           maxLength: 512
           x-order: 2

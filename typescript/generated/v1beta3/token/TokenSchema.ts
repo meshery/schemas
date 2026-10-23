@@ -1284,14 +1284,14 @@ const TokenSchema: Record<string, unknown> = {
         "tags": [
           "tokens"
         ],
-        "summary": "Show native client sign-in consent",
+        "summary": "Authorize native client sign-in",
         "operationId": "getNativeClientAuthorization",
-        "description": "Browser-facing step of the native client sign-in flow (RFC 8252 loopback redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in user, never URL credentials. Validates the request and renders a consent page that asks the user to allow the named local client to act on their behalf. Nothing is issued by this call. When the request names the client application (`client`) and its version (`clientVersion`) and that version is below the provider's minimum for that client, an update page is rendered with status 426 instead of the consent page.",
+        "description": "Browser-facing step of the native client sign-in flow (RFC 8252 loopback redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in user and the Create Token permission. Validates the request. When the request names the client application (`client`) and its version (`clientVersion`) and that version is below the provider minimum, it renders the update page with status 426 and issues nothing. Otherwise it stores a single-use authorization code that expires after 60 seconds, bound to the user, the client name and the PKCE code challenge, and redirects the browser to http://127.0.0.1:{port}/callback with code and state query parameters. Only the 127.0.0.1 loopback IP literal is ever used; no token or cookie is placed in the redirect; no consent page is shown.",
         "parameters": [
           {
             "name": "clientName",
             "in": "query",
-            "description": "Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token.",
+            "description": "Display name of the native client asking to sign in. Used as the name and purpose of the minted token.",
             "required": true,
             "schema": {
               "type": "string",
@@ -1367,113 +1367,6 @@ const TokenSchema: Record<string, unknown> = {
           }
         ],
         "responses": {
-          "200": {
-            "description": "Consent page",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "426": {
-            "description": "Update page; the client's version is below the provider's minimum for that client.",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "tokens"
-        ],
-        "summary": "Approve native client sign-in",
-        "operationId": "approveNativeClientAuthorization",
-        "description": "Submitted by the consent page with the same parameters as the GET, as a same-origin form post. Stores a single-use authorization code that expires after 60 seconds, bound to the user, the client name and the PKCE code challenge, then redirects the browser to http://127.0.0.1:{port}/callback with code and state query parameters. Only the 127.0.0.1 loopback IP literal is ever used as the redirect host; no token or cookie is placed in the redirect.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "type": "object",
-                "description": "Consent form fields for approving a native client sign-in.",
-                "required": [
-                  "clientName",
-                  "port",
-                  "codeChallenge",
-                  "codeChallengeMethod",
-                  "state"
-                ],
-                "properties": {
-                  "clientName": {
-                    "type": "string",
-                    "description": "Display name of the native client.",
-                    "pattern": "^[A-Za-z0-9][A-Za-z0-9 ._-]{0,62}$",
-                    "x-order": 1
-                  },
-                  "port": {
-                    "type": "integer",
-                    "description": "Port on 127.0.0.1 for the callback.",
-                    "minimum": 1024,
-                    "maximum": 65535,
-                    "x-order": 2
-                  },
-                  "codeChallenge": {
-                    "type": "string",
-                    "description": "PKCE S256 code challenge.",
-                    "pattern": "^[A-Za-z0-9_-]{43}$",
-                    "x-order": 3
-                  },
-                  "codeChallengeMethod": {
-                    "type": "string",
-                    "description": "PKCE challenge method.",
-                    "enum": [
-                      "S256"
-                    ],
-                    "x-order": 4
-                  },
-                  "state": {
-                    "type": "string",
-                    "description": "Opaque client state returned on the callback.",
-                    "minLength": 8,
-                    "maxLength": 512,
-                    "x-order": 5
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
           "302": {
             "description": "Redirect to the loopback callback carrying code and state. The callback's query parameters are described by NativeAuthorizationCallback.",
             "headers": {
@@ -1510,6 +1403,16 @@ const TokenSchema: Record<string, unknown> = {
             "description": "Forbidden",
             "content": {
               "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "426": {
+            "description": "Update page; the client's version is below the provider's minimum for that client.",
+            "content": {
+              "text/html": {
                 "schema": {
                   "type": "string"
                 }
@@ -1936,7 +1839,7 @@ const TokenSchema: Record<string, unknown> = {
       "nativeClientName": {
         "name": "clientName",
         "in": "query",
-        "description": "Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token.",
+        "description": "Display name of the native client asking to sign in. Used as the name and purpose of the minted token.",
         "required": true,
         "schema": {
           "type": "string",
@@ -2146,7 +2049,7 @@ const TokenSchema: Record<string, unknown> = {
       },
       "NativeAuthorizationPayload": {
         "type": "object",
-        "description": "Consent form fields for approving a native client sign-in.",
+        "description": "Query fields of GET /api/identity/native/authorize. The signed-in session issues the authorization code from these fields.",
         "required": [
           "clientName",
           "port",
@@ -2217,7 +2120,7 @@ const TokenSchema: Record<string, unknown> = {
       },
       "NativeAuthorizationCallback": {
         "type": "object",
-        "description": "Query parameters of the loopback redirect that approveNativeClientAuthorization answers with, http://127.0.0.1:{port}/callback?code=...&state=... The code is single-use and expires after 60 seconds; no token is ever placed in the URL. The native client compares state with the one it sent before redeeming the code at /api/identity/native/token.",
+        "description": "Query parameters of the loopback redirect that getNativeClientAuthorization answers with, http://127.0.0.1:{port}/callback?code=...&state=... The code is single-use and expires after 60 seconds; no token is ever placed in the URL. The native client compares state with the one it sent before redeeming the code at /api/identity/native/token.",
         "required": [
           "code",
           "state"
@@ -2232,7 +2135,7 @@ const TokenSchema: Record<string, unknown> = {
           },
           "state": {
             "type": "string",
-            "description": "The state the native client sent to the consent page, unchanged.",
+            "description": "The state the native client sent on the authorize request, unchanged.",
             "minLength": 8,
             "maxLength": 512,
             "x-order": 2

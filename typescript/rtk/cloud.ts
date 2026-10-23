@@ -2111,13 +2111,6 @@ const injectedRtkApi = api
         }),
         providesTags: ["token_tokens"],
       }),
-      approveNativeClientAuthorization: build.mutation<
-        ApproveNativeClientAuthorizationApiResponse,
-        ApproveNativeClientAuthorizationApiArg
-      >({
-        query: (queryArg) => ({ url: `/api/identity/native/authorize`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["token_tokens"],
-      }),
       exchangeNativeAuthorizationCode: build.mutation<
         ExchangeNativeAuthorizationCodeApiResponse,
         ExchangeNativeAuthorizationCodeApiArg
@@ -20332,7 +20325,7 @@ export type IssueIndefiniteLifetimeTokenApiArg = {
 };
 export type GetNativeClientAuthorizationApiResponse = unknown;
 export type GetNativeClientAuthorizationApiArg = {
-  /** Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token. */
+  /** Display name of the native client asking to sign in. Used as the name and purpose of the minted token. */
   clientName: string;
   /** Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`. */
   client?: string;
@@ -20346,21 +20339,6 @@ export type GetNativeClientAuthorizationApiArg = {
   codeChallengeMethod: "S256";
   /** Opaque value from the native client, returned unchanged on the callback. */
   state: string;
-};
-export type ApproveNativeClientAuthorizationApiResponse = unknown;
-export type ApproveNativeClientAuthorizationApiArg = {
-  body: {
-    /** Display name of the native client. */
-    clientName: string;
-    /** Port on 127.0.0.1 for the callback. */
-    port: number;
-    /** PKCE S256 code challenge. */
-    codeChallenge: string;
-    /** PKCE challenge method. */
-    codeChallengeMethod: "S256";
-    /** Opaque client state returned on the callback. */
-    state: string;
-  };
 };
 export type ExchangeNativeAuthorizationCodeApiResponse = /** status 201 API token minted for the native client */ {
   /** Unique identifier for the token. */
@@ -22432,7 +22410,6 @@ export const {
   useLazyIssueIndefiniteLifetimeTokenQuery,
   useGetNativeClientAuthorizationQuery,
   useLazyGetNativeClientAuthorizationQuery,
-  useApproveNativeClientAuthorizationMutation,
   useExchangeNativeAuthorizationCodeMutation,
   useGetUsersQuery,
   useLazyGetUsersQuery,

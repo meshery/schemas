@@ -18,7 +18,6 @@ func TestNativeClientAuthContract(t *testing.T) {
 		path, method, operationID string
 	}{
 		{"/api/identity/native/authorize", "get", "getNativeClientAuthorization"},
-		{"/api/identity/native/authorize", "post", "approveNativeClientAuthorization"},
 		{"/api/identity/native/token", "post", "exchangeNativeAuthorizationCode"},
 	}
 	for _, op := range ops {
@@ -45,12 +44,23 @@ func TestNativeClientAuthContract(t *testing.T) {
 	if got := mustLookup(t, exchange, "requestBody", "content", "application/json", "schema", "$ref"); got != "#/components/schemas/NativeCodeExchangePayload" {
 		t.Errorf("exchange requestBody = %v, want NativeCodeExchangePayload", got)
 	}
-	approve := mustLookup(t, doc, "paths", "/api/identity/native/authorize", "post")
-	if got := mustLookup(t, approve, "requestBody", "content", "application/x-www-form-urlencoded", "schema", "$ref"); got != "#/components/schemas/NativeAuthorizationPayload" {
-		t.Errorf("approve requestBody = %v, want NativeAuthorizationPayload", got)
+	authorizePath := mustLookup(t, doc, "paths", "/api/identity/native/authorize")
+	if _, ok := mappingValue(authorizePath, "post"); ok {
+		t.Error("POST /api/identity/native/authorize must be absent; GET issues the code")
 	}
-	if _, ok := mappingValue(mustValue(approve, "responses"), "302"); !ok {
-		t.Errorf("approveNativeClientAuthorization must respond 302")
+	authorize := mustLookup(t, authorizePath, "get")
+	responses := mustValue(authorize, "responses")
+	if _, ok := mappingValue(responses, "200"); ok {
+		t.Error("getNativeClientAuthorization must not respond 200")
+	}
+	redirect := mustLookup(t, responses, "302")
+	if _, ok := mappingValue(mustValue(redirect, "headers"), "Location"); !ok {
+		t.Error("getNativeClientAuthorization 302 must declare a Location header")
+	}
+	for _, code := range []string{"400", "401", "403", "426", "500"} {
+		if _, ok := mappingValue(responses, code); !ok {
+			t.Errorf("getNativeClientAuthorization missing %s", code)
+		}
 	}
 
 	schemas := mustLookup(t, doc, "components", "schemas")
