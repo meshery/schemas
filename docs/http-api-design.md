@@ -313,8 +313,18 @@ when another live connection holds it. The holder is returned as
 `claimedByConnectionId`, a reference to `connections.id`; a claim ends when the
 entry is deleted or the holding connection is deleted.
 
-`GET` and `DELETE /api/ledgers/{ledger}/entries/{entryKey}` read and release a
-key; a key outside that ledger is `404`. Product data such as contacts is a
+`GET`, `PUT` and `DELETE /api/ledgers/{ledger}/entries/{entryKey}` read,
+replace and release a key; a key outside that ledger is `404`. `PUT`
+(`updateLedgerEntry`) replaces `value` wholesale and advances `updatedAt`
+(strictly increasing, so it works as a version token). It never changes
+`entryKey`, `claimedByConnectionId`, `claimedAt`, `createdAt` or `id`, does
+not create a missing key, and does not check who holds a claim. Optional
+`expectedValue` and `expectedUpdatedAt` make the write conditional: JSON
+equality for the value (key order and whitespace do not matter) and exact
+equality for `updatedAt`. Both may be sent, and then both must hold. With
+neither, the update is unconditional. A mismatch is `412` and changes
+nothing. Recording still never changes an existing entry; changing a value
+is this update. Product data such as contacts is a
 ledger with a composite key (for example `platform:handle`) and a JSON value,
 not its own route tree.
 
@@ -325,7 +335,8 @@ parameters and a `LedgerEntryPage` envelope (`page`, `pageSize`, `totalCount`,
 case; `order` takes `entryKey`, `createdAt` or `updatedAt` and defaults to
 `entryKey asc`. An empty ledger is an empty page; a non-member gets `404`.
 
-Ledgers are organization-shared bookkeeping: any organization member may
-record, claim, list, read and delete. A claim is bound to a connection the
-caller owns, so one member cannot claim on behalf of another member's machine;
-a delete is not checked against who holds the key.
+Ledgers are organization-shared bookkeeping: any member of the session
+organization may record, claim, list, read, update and delete. A claim is
+bound to a connection the caller owns, so one member cannot claim on behalf
+of another member's machine; a delete or an update is not checked against
+who holds the key.

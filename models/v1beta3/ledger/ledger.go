@@ -19,7 +19,7 @@ type LedgerClaimPayload struct {
 	Value core.Map `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// LedgerEntry Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Any organization member may read and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization.
+// LedgerEntry Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and never changes that entry, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Change a stored value with updateLedgerEntry, which replaces the value wholesale and advances updatedAt. Any organization member may read, update and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization. An update does not check who holds a claim.
 type LedgerEntry struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID core.Uuid `json:"id" yaml:"id"`
@@ -67,6 +67,18 @@ type LedgerEntryPayload struct {
 
 	// Value Entry value, stored as a JSON object.
 	Value core.Map `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// LedgerEntryUpdatePayload Payload for replacing a ledger entry's value. The ledger and entryKey come from the path. Claim fields, id and timestamps are server-owned and are not accepted here.
+type LedgerEntryUpdatePayload struct {
+	// ExpectedUpdatedAt Optional precondition. When present, the update applies only if the stored entry's updatedAt equals this instant exactly. Clients echo the updatedAt they last read. Omit the property to skip this check.
+	ExpectedUpdatedAt *core.NullTime `json:"expectedUpdatedAt,omitempty" yaml:"expectedUpdatedAt,omitempty"`
+
+	// ExpectedValue Optional precondition. When present, including as an empty object, the update applies only if the stored value equals this object (JSON equality; key order and whitespace do not matter). Omit the property to skip this check. Absence is distinct from an empty object.
+	ExpectedValue core.Map `json:"expectedValue,omitempty" yaml:"expectedValue,omitempty"`
+
+	// Value The new entry value, stored as a JSON object. Replaces the stored value wholesale.
+	Value core.Map `json:"value" yaml:"value"`
 }
 
 // EntryKey defines model for entryKey.

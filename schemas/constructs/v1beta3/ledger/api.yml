@@ -5,18 +5,33 @@ info:
     OpenAPI schema for organization ledgers: named idempotent sets of keyed
     entries that several workers share, so work done once (a record processed,
     a contact reached) is never done twice. Recording is idempotent on
-    (ledger, entryKey), and claim-if-absent hands a key to exactly one
-    claiming connection atomically. Ledgers belong to the organization of the
-    authenticated session; any client-supplied organization is ignored.
+    (ledger, entryKey) and never changes an existing entry. Change a stored
+    value with updateLedgerEntry, which replaces `value` wholesale (not a
+    merge) and advances `updatedAt`. Claim-if-absent hands a key to exactly
+    one claiming connection atomically. Ledgers belong to the organization of
+    the authenticated session; any client-supplied organization is ignored.
 
     Authorization: ledgers are organization-shared bookkeeping. Any member of
-    the organization may record, claim, list, read and delete entries in that
-    organization's ledgers. A claim names the connection that takes the key
-    (`connectionId`), which must be the caller's own live connection in the
-    session organization; any other connection, including one that does not
-    exist, is `404`, the same answer as a missing ledger. A delete never
-    checks who holds the key. A key is scoped to (organization, ledger), so an
-    entry in another ledger is `404`.
+    the session organization may record, claim, list, read, update and delete
+    entries in that organization's ledgers. A claim names the connection that
+    takes the key (`connectionId`), which must be the caller's own live
+    connection in the session organization; any other connection, including
+    one that does not exist, is `404`, the same answer as a missing ledger. A
+    delete or an update never checks who holds the key. A key is scoped to
+    (organization, ledger), so an entry in another ledger is `404`.
+
+    Updating an entry replaces the stored `value` and advances `updatedAt`
+    (strictly increasing, so it works as a version token). It never changes
+    `entryKey`, `claimedByConnectionId`, `claimedAt`, `createdAt` or `id`,
+    and it does not create entries: a key that is not in the ledger is `404`
+    (use POST entries or claims to create). `expectedValue`, when present,
+    applies the update only if the stored value equals it (JSON equality; key
+    order and whitespace do not matter). `expectedUpdatedAt`, when present,
+    applies the update only if the stored entry's `updatedAt` equals it
+    exactly; clients echo the `updatedAt` they last read. Both preconditions
+    may be sent; then both must hold. With neither, the update is
+    unconditional. A precondition that does not match returns `412` and
+    changes nothing.
   version: v1beta3
   contact:
     name: Meshery Maintainers
@@ -76,10 +91,10 @@ paths:
       operationId: recordLedgerEntry
       description: >
         Records `entryKey` in the ledger. A new key creates the entry and
-        returns `201`. An existing key never creates a second entry and is not
-        changed: the stored entry is returned unchanged with `200`, and the
-        supplied `value` is ignored. Recording never changes
-        `claimedByConnectionId` or `claimedAt`.
+        returns `201`. Recording never changes an existing entry: the stored
+        entry is returned unchanged with `200`, and the supplied `value` is
+        ignored. Change a stored value with updateLedgerEntry. Recording never
+        changes `claimedByConnectionId` or `claimedAt`.
       parameters:
         - $ref: "#/components/parameters/ledger"
       requestBody:
@@ -182,6 +197,54 @@ paths:
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - ledgers
+      summary: Update a ledger entry
+      operationId: updateLedgerEntry
+      description: >
+        Replaces the stored `value` wholesale (not a merge) and advances
+        `updatedAt` (strictly increasing, so it works as a version token).
+        Never changes `entryKey`, `claimedByConnectionId`, `claimedAt`,
+        `createdAt` or `id`. Does not create entries: a key that is not in
+        the ledger is `404` (use POST entries or claims to create). Does not
+        check who holds a claim (same as delete). Any member of the session
+        organization may update. `expectedValue`, when present, applies the
+        update only if the stored value equals it (JSON equality; key order
+        and whitespace do not matter). `expectedUpdatedAt`, when present,
+        applies the update only if the stored entry's `updatedAt` equals it
+        exactly; clients echo the `updatedAt` they last read. Both
+        preconditions may be sent; then both must hold. With neither, the
+        update is unconditional. A precondition that does not match returns
+        `412` and changes nothing. A bad ledger name, key, or body (for
+        example a missing `value` or a non-object value) is `400`.
+      parameters:
+        - $ref: "#/components/parameters/ledger"
+        - $ref: "#/components/parameters/entryKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LedgerEntryUpdatePayload"
+      responses:
+        "200":
+          description: The updated ledger entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntry"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "412":
+          $ref: "#/components/responses/412"
+        "500":
+          $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud"]
       tags:
@@ -218,6 +281,12 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
     409:
       description: Conflict - another connection holds the ledger entry
+      content:
+        text/plain:
+          schema:
+            type: string
+    412:
+      description: Precondition Failed - expectedValue or expectedUpdatedAt does not match the stored entry, so nothing was changed
       content:
         text/plain:
           schema:
@@ -311,6 +380,49 @@ components:
             path: github.com/meshery/schemas/models/core
             name: core
           x-go-type-skip-optional-pointer: true
+
+    LedgerEntryUpdatePayload:
+      type: object
+      description: >
+        Payload for replacing a ledger entry's value. The ledger and entryKey
+        come from the path. Claim fields, id and timestamps are server-owned
+        and are not accepted here.
+      required:
+        - value
+      properties:
+        value:
+          type: object
+          description: The new entry value, stored as a JSON object. Replaces the stored value wholesale.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+        expectedValue:
+          type: object
+          description: >
+            Optional precondition. When present, including as an empty object,
+            the update applies only if the stored value equals this object
+            (JSON equality; key order and whitespace do not matter). Omit the
+            property to skip this check. Absence is distinct from an empty
+            object.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+        expectedUpdatedAt:
+          type: string
+          format: date-time
+          description: >
+            Optional precondition. When present, the update applies only if
+            the stored entry's updatedAt equals this instant exactly. Clients
+            echo the updatedAt they last read. Omit the property to skip this
+            check.
+          x-go-type: core.NullTime
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
 
     LedgerClaimPayload:
       type: object

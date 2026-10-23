@@ -1723,6 +1723,14 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}` }),
         providesTags: ["Ledger_ledgers"],
       }),
+      updateLedgerEntry: build.mutation<UpdateLedgerEntryApiResponse, UpdateLedgerEntryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Ledger_ledgers"],
+      }),
       deleteLedgerEntry: build.mutation<DeleteLedgerEntryApiResponse, DeleteLedgerEntryApiArg>({
         query: (queryArg) => ({
           url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}`,
@@ -17363,7 +17371,7 @@ export type ListLedgerEntriesApiResponse = /** status 200 Ledger entries page */
     claimedAt?: string | null;
     /** Timestamp of ledger entry creation. */
     createdAt: string;
-    /** Timestamp of last ledger entry modification. */
+    /** Timestamp of last ledger entry modification; advances on every update. */
     updatedAt: string;
   }[];
 };
@@ -17398,7 +17406,7 @@ export type RecordLedgerEntryApiResponse = /** status 200 The key was already re
       claimedAt?: string | null;
       /** Timestamp of ledger entry creation. */
       createdAt: string;
-      /** Timestamp of last ledger entry modification. */
+      /** Timestamp of last ledger entry modification; advances on every update. */
       updatedAt: string;
     }
   | /** status 201 The key was recorded */ {
@@ -17419,7 +17427,7 @@ export type RecordLedgerEntryApiResponse = /** status 200 The key was already re
       claimedAt?: string | null;
       /** Timestamp of ledger entry creation. */
       createdAt: string;
-      /** Timestamp of last ledger entry modification. */
+      /** Timestamp of last ledger entry modification; advances on every update. */
       updatedAt: string;
     };
 export type RecordLedgerEntryApiArg = {
@@ -17451,7 +17459,7 @@ export type ClaimLedgerEntryApiResponse = /** status 200 The caller's connection
       claimedAt?: string | null;
       /** Timestamp of ledger entry creation. */
       createdAt: string;
-      /** Timestamp of last ledger entry modification. */
+      /** Timestamp of last ledger entry modification; advances on every update. */
       updatedAt: string;
     }
   | /** status 201 The key was absent; it was recorded and claimed */ {
@@ -17472,7 +17480,7 @@ export type ClaimLedgerEntryApiResponse = /** status 200 The caller's connection
       claimedAt?: string | null;
       /** Timestamp of ledger entry creation. */
       createdAt: string;
-      /** Timestamp of last ledger entry modification. */
+      /** Timestamp of last ledger entry modification; advances on every update. */
       updatedAt: string;
     };
 export type ClaimLedgerEntryApiArg = {
@@ -17506,7 +17514,7 @@ export type GetLedgerEntryApiResponse = /** status 200 Ledger entry */ {
   claimedAt?: string | null;
   /** Timestamp of ledger entry creation. */
   createdAt: string;
-  /** Timestamp of last ledger entry modification. */
+  /** Timestamp of last ledger entry modification; advances on every update. */
   updatedAt: string;
 };
 export type GetLedgerEntryApiArg = {
@@ -17514,6 +17522,43 @@ export type GetLedgerEntryApiArg = {
   ledger: string;
   /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
   entryKey: string;
+};
+export type UpdateLedgerEntryApiResponse = /** status 200 The updated ledger entry */ {
+  /** Server-generated ledger entry ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Name of the ledger (the idempotent set) the entry belongs to. */
+  ledger: string;
+  /** Key within the ledger. Unique per (organization, ledger). */
+  entryKey: string;
+  /** Entry value, stored as a JSON blob. */
+  value?: object;
+  /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+   */
+  claimedByConnectionId?: string;
+  /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+  claimedAt?: string | null;
+  /** Timestamp of ledger entry creation. */
+  createdAt: string;
+  /** Timestamp of last ledger entry modification; advances on every update. */
+  updatedAt: string;
+};
+export type UpdateLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
+  entryKey: string;
+  body: {
+    /** The new entry value, stored as a JSON object. Replaces the stored value wholesale. */
+    value: object;
+    /** Optional precondition. When present, including as an empty object, the update applies only if the stored value equals this object (JSON equality; key order and whitespace do not matter). Omit the property to skip this check. Absence is distinct from an empty object.
+     */
+    expectedValue?: object;
+    /** Optional precondition. When present, the update applies only if the stored entry's updatedAt equals this instant exactly. Clients echo the updatedAt they last read. Omit the property to skip this check.
+     */
+    expectedUpdatedAt?: string;
+  };
 };
 export type DeleteLedgerEntryApiResponse = unknown;
 export type DeleteLedgerEntryApiArg = {
@@ -22344,6 +22389,7 @@ export const {
   useClaimLedgerEntryMutation,
   useGetLedgerEntryQuery,
   useLazyGetLedgerEntryQuery,
+  useUpdateLedgerEntryMutation,
   useDeleteLedgerEntryMutation,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
