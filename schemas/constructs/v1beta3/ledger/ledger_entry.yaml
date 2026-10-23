@@ -3,11 +3,13 @@ title: Ledger Entry Schema
 description: >
   Server-returned ledger entry. An organization keeps any number of named
   ledgers, each an idempotent set keyed by entryKey: recording an existing
-  key never creates a second entry and returns the stored entry unchanged,
-  and claim-if-absent gives a key to exactly one claiming connection, so two
-  workers never both act on it. Any organization member may read and delete
-  entries; a claim names the connection that holds it, which must be the
-  caller's own live connection in the organization.
+  key never creates a second entry and never changes that entry, and
+  claim-if-absent gives a key to exactly one claiming connection, so two
+  workers never both act on it. Change a stored value with updateLedgerEntry,
+  which replaces the value wholesale and advances updatedAt. Any organization
+  member may read, update and delete entries; a claim names the connection
+  that holds it, which must be the caller's own live connection in the
+  organization. An update does not check who holds a claim.
 type: object
 additionalProperties: false
 required:
@@ -90,7 +92,7 @@ properties:
     x-order: 8
   updatedAt:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
-    description: Timestamp of last ledger entry modification.
+    description: Timestamp of last ledger entry modification; advances on every update.
     x-oapi-codegen-extra-tags:
       db: updated_at
     x-order: 9

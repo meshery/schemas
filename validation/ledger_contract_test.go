@@ -28,11 +28,74 @@ func TestLedgerContract(t *testing.T) {
 	}
 
 	paths := mustLookup(t, doc, "paths")
-	for _, method := range []string{"get", "delete"} {
+	for _, method := range []string{"get", "put", "delete"} {
 		op := mustLookup(t, paths, "/api/ledgers/{ledger}/entries/{entryKey}", method)
 		if _, ok := mappingValue(op, "operationId"); !ok {
 			t.Errorf("%s on /entries/{entryKey} must declare an operationId", method)
 		}
+	}
+	update := mustLookup(t, paths, "/api/ledgers/{ledger}/entries/{entryKey}", "put")
+	if id, _ := mappingValue(update, "operationId"); id != "updateLedgerEntry" {
+		t.Errorf("PUT /entries/{entryKey} must be updateLedgerEntry, got %v", id)
+	}
+	if got := sequenceStrings(mustLookup(t, update, "x-internal")); len(got) != 1 || got[0] != "cloud" {
+		t.Errorf("updateLedgerEntry x-internal = %v, want [cloud]", got)
+	}
+	if summary, _ := mappingValue(update, "summary"); summary != "Update a ledger entry" {
+		t.Errorf("updateLedgerEntry summary = %v", summary)
+	}
+	tags, _ := mustLookup(t, update, "tags").([]any)
+	if len(tags) != 1 || tags[0] != "ledgers" {
+		t.Errorf("updateLedgerEntry tags = %v, want [ledgers]", tags)
+	}
+	bodyRef, _ := mustLookup(t, update, "requestBody", "content", "application/json", "schema", "$ref").(string)
+	if bodyRef != "#/components/schemas/LedgerEntryUpdatePayload" {
+		t.Errorf("updateLedgerEntry body = %q", bodyRef)
+	}
+	if requiredBody, _ := mappingValue(mustLookup(t, update, "requestBody"), "required"); requiredBody != true {
+		t.Error("updateLedgerEntry request body must be required")
+	}
+	updateResponses := mustLookup(t, update, "responses")
+	for _, code := range []string{"200", "400", "401", "404", "412", "500"} {
+		if _, ok := mappingValue(updateResponses, code); !ok {
+			t.Errorf("updateLedgerEntry must document %s", code)
+		}
+	}
+	if ref, _ := mustLookup(t, updateResponses, "412", "$ref").(string); ref != "#/components/responses/412" {
+		t.Errorf("updateLedgerEntry 412 must use the local response component, got %q", ref)
+	}
+	if _, ok := mappingValue(mustLookup(t, doc, "components", "responses", "412"), "description"); !ok {
+		t.Error("local 412 response must describe the precondition failure")
+	}
+	payload := mustLookup(t, doc, "components", "schemas", "LedgerEntryUpdatePayload")
+	requiredFields, _ := mustLookup(t, payload, "required").([]any)
+	if len(requiredFields) != 1 || requiredFields[0] != "value" {
+		t.Errorf("LedgerEntryUpdatePayload required = %v, want [value]", requiredFields)
+	}
+	props := mustLookup(t, payload, "properties")
+	for _, name := range []string{"value", "expectedValue", "expectedUpdatedAt"} {
+		if _, ok := mappingValue(props, name); !ok {
+			t.Errorf("LedgerEntryUpdatePayload must define %s", name)
+		}
+	}
+	for _, name := range []string{"value", "expectedValue"} {
+		prop := mustLookup(t, props, name)
+		if goType, _ := mappingValue(prop, "x-go-type"); goType != "core.Map" {
+			t.Errorf("%s x-go-type = %v, want core.Map", name, goType)
+		}
+		if skip, _ := mappingValue(prop, "x-go-type-skip-optional-pointer"); skip != true {
+			t.Errorf("%s must skip the optional pointer so the nil map is the absence signal, got %v", name, skip)
+		}
+	}
+	updatedAtPrecondition := mustLookup(t, props, "expectedUpdatedAt")
+	if format, _ := mappingValue(updatedAtPrecondition, "format"); format != "date-time" {
+		t.Errorf("expectedUpdatedAt format = %v", format)
+	}
+	if goType, _ := mappingValue(updatedAtPrecondition, "x-go-type"); goType != "core.NullTime" {
+		t.Errorf("expectedUpdatedAt x-go-type = %v, want core.NullTime", goType)
+	}
+	if _, present := mappingValue(updatedAtPrecondition, "x-go-type-skip-optional-pointer"); present {
+		t.Error("expectedUpdatedAt must stay a pointer NullTime so an omitted instant is nil")
 	}
 	if _, ok := mappingValue(paths, "/api/ledgers/{ledger}/entries/claim"); ok {
 		t.Error("claim must live on /claims so a key named claim cannot collide with /entries/{entryKey}")
