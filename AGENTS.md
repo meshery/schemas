@@ -185,6 +185,7 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/profile-contract.md`](docs/profile-contract.md)** - the profile construct, its workspace assignment, and its permission keys.
 - **[`docs/claim-contract.md`](docs/claim-contract.md)** - the claim construct: connection holders, expiry at read time, kept history, release outcomes, and its permission keys.
 - **[`docs/event-organization-contract.md`](docs/event-organization-contract.md)** - `Event.organizationId` and the `getEvents` `scope` query.
+- **[`docs/connection-design-organization-contract.md`](docs/connection-design-organization-contract.md)** - `Connection.organizationId` and design `organizationId` (`meshery_patterns`), both server-assigned.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
 - **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
 
