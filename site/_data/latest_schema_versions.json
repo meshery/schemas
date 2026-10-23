@@ -94,6 +94,13 @@
     "extension": true
   },
   {
+    "construct": "content_metrics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/content_metrics/content_metrics.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "controllers_config",
     "version": "v1alpha1",
     "href": "/schemas/constructs/v1alpha1/controllers_config/controllers_config.yaml",
@@ -158,6 +165,20 @@
     "href": "/schemas/constructs/v1beta3/filter/filter.yaml",
     "core": false,
     "extension": true
+  },
+  {
+    "construct": "follower_demographics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/follower_demographics/follower_demographics.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "follower_metrics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/follower_metrics/follower_metrics.yaml",
+    "core": false,
+    "extension": false
   },
   {
     "construct": "github",
