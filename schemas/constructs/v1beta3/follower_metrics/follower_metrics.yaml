@@ -1,0 +1,88 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Follower Metrics Schema
+description: |
+  Server-returned daily new-follower figures for one page, as recorded in
+  the `metadata` of an event on the events service (category `blowhorn`,
+  action `follower_metrics`); the event construct carries the envelope and
+  this construct names the metadata's own shape, which Event leaves open.
+  One row is one page on one day, keyed by (organizationId, platform,
+  subject, readingDate): the day's NEW followers split by the source that
+  produced them. The source export's "Total followers" column is a day's
+  total of new followers, not a lifetime count. Every figure is nullable:
+  a blank figure in the source export is not a zero.
+type: object
+additionalProperties: false
+required:
+  - organizationId
+  - platform
+  - subject
+  - readingDate
+properties:
+  organizationId:
+    type: string
+    format: uuid
+    description: Owning organization ID.
+    x-go-type: uuid.UUID
+    x-go-type-import:
+      path: github.com/gofrs/uuid
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 1
+  platform:
+    type: string
+    description: The platform the page belongs to (today only `linkedin` produces these exports).
+    x-oapi-codegen-extra-tags:
+      db: platform
+    x-order: 2
+  subject:
+    type: string
+    description: The page the figures describe, named as the source export names it.
+    x-oapi-codegen-extra-tags:
+      db: subject
+    x-order: 3
+  readingDate:
+    type: string
+    format: date
+    description: The day the figures describe, as an ISO calendar date.
+    x-oapi-codegen-extra-tags:
+      db: reading_date
+    x-order: 4
+  newSponsored:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: New followers that day from sponsored content; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: new_sponsored
+    x-order: 5
+  newOrganic:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: New followers that day from organic content; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: new_organic
+    x-order: 6
+  newAutoInvited:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: New followers that day from auto-invites; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: new_auto_invited
+    x-order: 7
+  newTotal:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: All new followers that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: new_total
+    x-order: 8
+  sourceFile:
+    type: string
+    description: The export file the row was read from; empty when the row did not come from a file export.
+    x-oapi-codegen-extra-tags:
+      db: source_file
+    x-order: 9
