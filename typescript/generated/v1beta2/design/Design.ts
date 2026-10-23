@@ -584,6 +584,11 @@ export interface components {
                          * @description SQL null Timestamp to handle null values of time.
                          */
                         deleted_at?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                         */
+                        organizationId?: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -2047,6 +2052,11 @@ export interface components {
                              * @description SQL null Timestamp to handle null values of time.
                              */
                             deleted_at?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                             */
+                            organizationId?: string;
                             /** @description Associated environments for this connection */
                             environments?: {
                                 /**
@@ -3522,6 +3532,11 @@ export interface components {
                                  * @description SQL null Timestamp to handle null values of time.
                                  */
                                 deleted_at?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                 */
+                                organizationId?: string;
                                 /** @description Associated environments for this connection */
                                 environments?: {
                                     /**
@@ -5006,6 +5021,11 @@ export interface components {
                                  * @description SQL null Timestamp to handle null values of time.
                                  */
                                 deleted_at?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                 */
+                                organizationId?: string;
                                 /** @description Associated environments for this connection */
                                 environments?: {
                                     /**
@@ -6561,6 +6581,11 @@ export interface components {
                                  * @description SQL null Timestamp to handle null values of time.
                                  */
                                 deleted_at?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                 */
+                                organizationId?: string;
                                 /** @description Associated environments for this connection */
                                 environments?: {
                                     /**
@@ -8243,6 +8268,11 @@ export interface operations {
                                              * @description SQL null Timestamp to handle null values of time.
                                              */
                                             deleted_at?: string;
+                                            /**
+                                             * Format: uuid
+                                             * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                             */
+                                            organizationId?: string;
                                             /** @description Associated environments for this connection */
                                             environments?: {
                                                 /**
@@ -9750,6 +9780,11 @@ export interface operations {
                                          * @description SQL null Timestamp to handle null values of time.
                                          */
                                         deleted_at?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                         */
+                                        organizationId?: string;
                                         /** @description Associated environments for this connection */
                                         environments?: {
                                             /**
@@ -11238,6 +11273,11 @@ export interface operations {
                                          * @description SQL null Timestamp to handle null values of time.
                                          */
                                         deleted_at?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                         */
+                                        organizationId?: string;
                                         /** @description Associated environments for this connection */
                                         environments?: {
                                             /**
@@ -12998,6 +13038,11 @@ export interface operations {
                                          * @description SQL null Timestamp to handle null values of time.
                                          */
                                         deleted_at?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                         */
+                                        organizationId?: string;
                                         /** @description Associated environments for this connection */
                                         environments?: {
                                             /**
@@ -14564,6 +14609,11 @@ export interface operations {
                                          * @description SQL null Timestamp to handle null values of time.
                                          */
                                         deleted_at?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                         */
+                                        organizationId?: string;
                                         /** @description Associated environments for this connection */
                                         environments?: {
                                             /**
@@ -16227,6 +16277,11 @@ export interface operations {
                                          * @description SQL null Timestamp to handle null values of time.
                                          */
                                         deleted_at?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                         */
+                                        organizationId?: string;
                                         /** @description Associated environments for this connection */
                                         environments?: {
                                             /**
@@ -17766,6 +17821,11 @@ export interface operations {
                                              * @description SQL null Timestamp to handle null values of time.
                                              */
                                             deleted_at?: string;
+                                            /**
+                                             * Format: uuid
+                                             * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                                             */
+                                            organizationId?: string;
                                             /** @description Associated environments for this connection */
                                             environments?: {
                                                 /**

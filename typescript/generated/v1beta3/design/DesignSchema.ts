@@ -175,7 +175,10 @@ const DesignSchema: Record<string, unknown> = {
                       "items": {
                         "x-go-type": "MesheryPattern",
                         "type": "object",
-                        "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                        "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                        "required": [
+                          "organizationId"
+                        ],
                         "properties": {
                           "id": {
                             "description": "Server-generated design ID.",
@@ -297,6 +300,22 @@ const DesignSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             },
                             "x-go-type-skip-optional-pointer": true
+                          },
+                          "organizationId": {
+                            "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
                           "user": {
                             "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -1219,7 +1238,7 @@ const DesignSchema: Record<string, unknown> = {
         ],
         "summary": "Save design",
         "operationId": "upsertPattern",
-        "description": "Creates or updates an infrastructure design.",
+        "description": "Creates or updates an infrastructure design. The server assigns `organizationId` from the session organization; clients do not send it. On update the organization stays the one assigned at create.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -1431,7 +1450,10 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                  "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                  "required": [
+                    "organizationId"
+                  ],
                   "properties": {
                     "id": {
                       "description": "Server-generated design ID.",
@@ -1553,6 +1575,22 @@ const DesignSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "organizationId": {
+                      "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                      "readOnly": true,
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "user": {
                       "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -2598,7 +2636,10 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                  "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                  "required": [
+                    "organizationId"
+                  ],
                   "properties": {
                     "id": {
                       "description": "Server-generated design ID.",
@@ -2720,6 +2761,22 @@ const DesignSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "organizationId": {
+                      "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                      "readOnly": true,
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "user": {
                       "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -3732,7 +3789,10 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                  "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                  "required": [
+                    "organizationId"
+                  ],
                   "properties": {
                     "id": {
                       "description": "Server-generated design ID.",
@@ -3854,6 +3914,22 @@ const DesignSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "organizationId": {
+                      "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                      "readOnly": true,
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "user": {
                       "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -4973,7 +5049,10 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                  "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                  "required": [
+                    "organizationId"
+                  ],
                   "properties": {
                     "id": {
                       "description": "Server-generated design ID.",
@@ -5095,6 +5174,22 @@ const DesignSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "organizationId": {
+                      "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                      "readOnly": true,
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "user": {
                       "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -6211,7 +6306,10 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                  "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                  "required": [
+                    "organizationId"
+                  ],
                   "properties": {
                     "id": {
                       "description": "Server-generated design ID.",
@@ -6333,6 +6431,22 @@ const DesignSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "organizationId": {
+                      "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                      "readOnly": true,
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "user": {
                       "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -7454,7 +7568,10 @@ const DesignSchema: Record<string, unknown> = {
                   "minItems": 1,
                   "items": {
                     "type": "object",
-                    "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                    "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                    "required": [
+                      "organizationId"
+                    ],
                     "properties": {
                       "id": {
                         "description": "Server-generated design ID.",
@@ -7576,6 +7693,22 @@ const DesignSchema: Record<string, unknown> = {
                           "path": "github.com/gofrs/uuid"
                         },
                         "x-go-type-skip-optional-pointer": true
+                      },
+                      "organizationId": {
+                        "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                        "readOnly": true,
+                        "x-go-name": "OrganizationID",
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "organization_id",
+                          "json": "organizationId"
+                        },
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
                       },
                       "user": {
                         "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -8563,7 +8696,10 @@ const DesignSchema: Record<string, unknown> = {
                       "items": {
                         "x-go-type": "MesheryPattern",
                         "type": "object",
-                        "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                        "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                        "required": [
+                          "organizationId"
+                        ],
                         "properties": {
                           "id": {
                             "description": "Server-generated design ID.",
@@ -8685,6 +8821,22 @@ const DesignSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             },
                             "x-go-type-skip-optional-pointer": true
+                          },
+                          "organizationId": {
+                            "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
                           "user": {
                             "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -9741,7 +9893,10 @@ const DesignSchema: Record<string, unknown> = {
                       "description": "Designs created or updated by this import, with `sourceContent`, `patternFile` and `catalogData` omitted.\n",
                       "items": {
                         "type": "object",
-                        "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                        "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                        "required": [
+                          "organizationId"
+                        ],
                         "properties": {
                           "id": {
                             "description": "Server-generated design ID.",
@@ -9863,6 +10018,22 @@ const DesignSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             },
                             "x-go-type-skip-optional-pointer": true
+                          },
+                          "organizationId": {
+                            "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
                           "user": {
                             "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -11551,7 +11722,10 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                        "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                        "required": [
+                          "organizationId"
+                        ],
                         "properties": {
                           "id": {
                             "description": "Server-generated design ID.",
@@ -11673,6 +11847,22 @@ const DesignSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             },
                             "x-go-type-skip-optional-pointer": true
+                          },
+                          "organizationId": {
+                            "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
                           "user": {
                             "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -17084,6 +17274,22 @@ const DesignSchema: Record<string, unknown> = {
                               "format": "date-time",
                               "x-go-type-skip-optional-pointer": true
                             },
+                            "organizationId": {
+                              "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                              "x-go-name": "OrganizationID",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "organization_id",
+                                "json": "organizationId,omitempty",
+                                "yaml": "organizationId"
+                              },
+                              "x-order": 15,
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
                             "environments": {
                               "type": "array",
                               "description": "Associated environments for this connection",
@@ -21207,7 +21413,10 @@ const DesignSchema: Record<string, unknown> = {
       },
       "MesheryPattern": {
         "type": "object",
-        "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+        "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+        "required": [
+          "organizationId"
+        ],
         "properties": {
           "id": {
             "description": "Server-generated design ID.",
@@ -21329,6 +21538,22 @@ const DesignSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             },
             "x-go-type-skip-optional-pointer": true
+          },
+          "organizationId": {
+            "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+            "readOnly": true,
+            "x-go-name": "OrganizationID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "organization_id",
+              "json": "organizationId"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
           },
           "user": {
             "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -22232,7 +22457,10 @@ const DesignSchema: Record<string, unknown> = {
             "items": {
               "x-go-type": "MesheryPattern",
               "type": "object",
-              "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+              "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+              "required": [
+                "organizationId"
+              ],
               "properties": {
                 "id": {
                   "description": "Server-generated design ID.",
@@ -22354,6 +22582,22 @@ const DesignSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   },
                   "x-go-type-skip-optional-pointer": true
+                },
+                "organizationId": {
+                  "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 },
                 "user": {
                   "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -23276,7 +23520,7 @@ const DesignSchema: Record<string, unknown> = {
       },
       "MesheryPatternPayload": {
         "type": "object",
-        "description": "Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response.\n",
+        "description": "Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (`organizationId`, createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded. The server assigns `organizationId` from the session organization, ignores any client value, and re-projects server-owned fields on the response.\n",
         "properties": {
           "id": {
             "description": "Existing design ID for updates; omit on create.",
@@ -23910,7 +24154,10 @@ const DesignSchema: Record<string, unknown> = {
             "description": "Designs created or updated by this import, with `sourceContent`, `patternFile` and `catalogData` omitted.\n",
             "items": {
               "type": "object",
-              "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+              "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+              "required": [
+                "organizationId"
+              ],
               "properties": {
                 "id": {
                   "description": "Server-generated design ID.",
@@ -24032,6 +24279,22 @@ const DesignSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   },
                   "x-go-type-skip-optional-pointer": true
+                },
+                "organizationId": {
+                  "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 },
                 "user": {
                   "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -25337,7 +25600,10 @@ const DesignSchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "object",
-              "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+              "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+              "required": [
+                "organizationId"
+              ],
               "properties": {
                 "id": {
                   "description": "Server-generated design ID.",
@@ -25459,6 +25725,22 @@ const DesignSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   },
                   "x-go-type-skip-optional-pointer": true
+                },
+                "organizationId": {
+                  "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 },
                 "user": {
                   "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",

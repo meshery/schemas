@@ -3232,7 +3232,7 @@ const UserSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating a connection",
+                "description": "Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.\n",
                 "properties": {
                   "id": {
                     "type": "string",

@@ -506,6 +506,22 @@ const RegistrySchema: Record<string, unknown> = {
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
                                       },
+                                      "organizationId": {
+                                        "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                        "x-go-name": "OrganizationID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "organization_id",
+                                          "json": "organizationId,omitempty",
+                                          "yaml": "organizationId"
+                                        },
+                                        "x-order": 15,
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        }
+                                      },
                                       "environments": {
                                         "type": "array",
                                         "description": "Associated environments for this connection",
@@ -1770,6 +1786,22 @@ const RegistrySchema: Record<string, unknown> = {
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
+                                      },
+                                      "organizationId": {
+                                        "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                        "x-go-name": "OrganizationID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "organization_id",
+                                          "json": "organizationId,omitempty",
+                                          "yaml": "organizationId"
+                                        },
+                                        "x-order": 15,
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        }
                                       },
                                       "environments": {
                                         "type": "array",
@@ -3182,6 +3214,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "type": "string",
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
+                                          },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
                                           },
                                           "environments": {
                                             "type": "array",
@@ -5627,6 +5675,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "type": "string",
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
+                                          },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
                                           },
                                           "environments": {
                                             "type": "array",
@@ -23798,6 +23862,22 @@ const RegistrySchema: Record<string, unknown> = {
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
                                       },
+                                      "organizationId": {
+                                        "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                        "x-go-name": "OrganizationID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "organization_id",
+                                          "json": "organizationId,omitempty",
+                                          "yaml": "organizationId"
+                                        },
+                                        "x-order": 15,
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        }
+                                      },
                                       "environments": {
                                         "type": "array",
                                         "description": "Associated environments for this connection",
@@ -25071,6 +25151,22 @@ const RegistrySchema: Record<string, unknown> = {
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
+                                      },
+                                      "organizationId": {
+                                        "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                        "x-go-name": "OrganizationID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "organization_id",
+                                          "json": "organizationId,omitempty",
+                                          "yaml": "organizationId"
+                                        },
+                                        "x-order": 15,
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        }
                                       },
                                       "environments": {
                                         "type": "array",
@@ -26452,6 +26548,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "type": "string",
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
+                                          },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
                                           },
                                           "environments": {
                                             "type": "array",
@@ -28908,6 +29020,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -31342,6 +31470,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "type": "string",
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
+                                          },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
                                           },
                                           "environments": {
                                             "type": "array",
@@ -33788,6 +33932,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -36214,6 +36374,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
+                                          },
                                           "environments": {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
@@ -38134,7 +38310,8 @@ const RegistrySchema: Record<string, unknown> = {
                       "type",
                       "subType",
                       "kind",
-                      "status"
+                      "status",
+                      "organizationId"
                     ],
                     "properties": {
                       "id": {
@@ -38941,12 +39118,13 @@ const RegistrySchema: Record<string, unknown> = {
                         "x-go-type-skip-optional-pointer": true
                       },
                       "organizationId": {
-                        "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                        "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                        "x-go-name": "OrganizationID",
+                        "x-go-type-skip-optional-pointer": true,
                         "x-oapi-codegen-extra-tags": {
                           "db": "organization_id",
-                          "json": "organizationId,omitempty"
+                          "json": "organizationId"
                         },
-                        "x-go-type-skip-optional-pointer": false,
                         "x-order": 19,
                         "type": "string",
                         "format": "uuid",
@@ -39759,6 +39937,22 @@ const RegistrySchema: Record<string, unknown> = {
                                             "type": "string",
                                             "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
+                                          },
+                                          "organizationId": {
+                                            "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                            "x-go-name": "OrganizationID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "organization_id",
+                                              "json": "organizationId,omitempty",
+                                              "yaml": "organizationId"
+                                            },
+                                            "x-order": 15,
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            }
                                           },
                                           "environments": {
                                             "type": "array",
@@ -49248,7 +49442,8 @@ const RegistrySchema: Record<string, unknown> = {
                       "type",
                       "subType",
                       "kind",
-                      "status"
+                      "status",
+                      "organizationId"
                     ],
                     "properties": {
                       "id": {
@@ -50055,12 +50250,13 @@ const RegistrySchema: Record<string, unknown> = {
                         "x-go-type-skip-optional-pointer": true
                       },
                       "organizationId": {
-                        "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                        "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                        "x-go-name": "OrganizationID",
+                        "x-go-type-skip-optional-pointer": true,
                         "x-oapi-codegen-extra-tags": {
                           "db": "organization_id",
-                          "json": "organizationId,omitempty"
+                          "json": "organizationId"
                         },
-                        "x-go-type-skip-optional-pointer": false,
                         "x-order": 19,
                         "type": "string",
                         "format": "uuid",
@@ -50601,6 +50797,22 @@ const RegistrySchema: Record<string, unknown> = {
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "organizationId": {
+                                    "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                    "x-go-name": "OrganizationID",
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "organization_id",
+                                      "json": "organizationId,omitempty",
+                                      "yaml": "organizationId"
+                                    },
+                                    "x-order": 15,
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
                                   },
                                   "environments": {
                                     "type": "array",
@@ -51589,6 +51801,22 @@ const RegistrySchema: Record<string, unknown> = {
                                       "type": "string",
                                       "format": "date-time",
                                       "x-go-type-skip-optional-pointer": true
+                                    },
+                                    "organizationId": {
+                                      "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                      "x-go-name": "OrganizationID",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "organization_id",
+                                        "json": "organizationId,omitempty",
+                                        "yaml": "organizationId"
+                                      },
+                                      "x-order": 15,
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
                                     },
                                     "environments": {
                                       "type": "array",
@@ -54269,6 +54497,22 @@ const RegistrySchema: Record<string, unknown> = {
                     "format": "date-time",
                     "x-go-type-skip-optional-pointer": true
                   },
+                  "organizationId": {
+                    "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                    "x-go-name": "OrganizationID",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "organization_id",
+                      "json": "organizationId,omitempty",
+                      "yaml": "organizationId"
+                    },
+                    "x-order": 15,
+                    "type": "string",
+                    "format": "uuid",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  },
                   "environments": {
                     "type": "array",
                     "description": "Associated environments for this connection",
@@ -55465,6 +55709,22 @@ const RegistrySchema: Record<string, unknown> = {
                         "type": "string",
                         "format": "date-time",
                         "x-go-type-skip-optional-pointer": true
+                      },
+                      "organizationId": {
+                        "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                        "x-go-name": "OrganizationID",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "organization_id",
+                          "json": "organizationId,omitempty",
+                          "yaml": "organizationId"
+                        },
+                        "x-order": 15,
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
                       },
                       "environments": {
                         "type": "array",
@@ -57661,6 +57921,22 @@ const RegistrySchema: Record<string, unknown> = {
                               "format": "date-time",
                               "x-go-type-skip-optional-pointer": true
                             },
+                            "organizationId": {
+                              "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                              "x-go-name": "OrganizationID",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "organization_id",
+                                "json": "organizationId,omitempty",
+                                "yaml": "organizationId"
+                              },
+                              "x-order": 15,
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
                             "environments": {
                               "type": "array",
                               "description": "Associated environments for this connection",
@@ -58904,6 +59180,22 @@ const RegistrySchema: Record<string, unknown> = {
                                   "type": "string",
                                   "format": "date-time",
                                   "x-go-type-skip-optional-pointer": true
+                                },
+                                "organizationId": {
+                                  "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                                  "x-go-name": "OrganizationID",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "organization_id",
+                                    "json": "organizationId,omitempty",
+                                    "yaml": "organizationId"
+                                  },
+                                  "x-order": 15,
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "x-go-type": "uuid.UUID",
+                                  "x-go-type-import": {
+                                    "path": "github.com/gofrs/uuid"
+                                  }
                                 },
                                 "environments": {
                                   "type": "array",
@@ -68594,6 +68886,22 @@ const RegistrySchema: Record<string, unknown> = {
                 "format": "date-time",
                 "x-go-type-skip-optional-pointer": true
               },
+              "organizationId": {
+                "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                "x-go-name": "OrganizationID",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "organization_id",
+                  "json": "organizationId,omitempty",
+                  "yaml": "organizationId"
+                },
+                "x-order": 15,
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
               "environments": {
                 "type": "array",
                 "description": "Associated environments for this connection",
@@ -69073,6 +69381,22 @@ const RegistrySchema: Record<string, unknown> = {
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
                         },
+                        "organizationId": {
+                          "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                          "x-go-name": "OrganizationID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "organization_id",
+                            "json": "organizationId,omitempty",
+                            "yaml": "organizationId"
+                          },
+                          "x-order": 15,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
                         "environments": {
                           "type": "array",
                           "description": "Associated environments for this connection",
@@ -69344,7 +69668,8 @@ const RegistrySchema: Record<string, unknown> = {
               "type",
               "subType",
               "kind",
-              "status"
+              "status",
+              "organizationId"
             ],
             "properties": {
               "id": {
@@ -70151,12 +70476,13 @@ const RegistrySchema: Record<string, unknown> = {
                 "x-go-type-skip-optional-pointer": true
               },
               "organizationId": {
-                "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                "x-go-name": "OrganizationID",
+                "x-go-type-skip-optional-pointer": true,
                 "x-oapi-codegen-extra-tags": {
                   "db": "organization_id",
-                  "json": "organizationId,omitempty"
+                  "json": "organizationId"
                 },
-                "x-go-type-skip-optional-pointer": false,
                 "x-order": 19,
                 "type": "string",
                 "format": "uuid",
@@ -71020,6 +71346,22 @@ const RegistrySchema: Record<string, unknown> = {
                           "type": "string",
                           "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
+                        },
+                        "organizationId": {
+                          "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                          "x-go-name": "OrganizationID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "organization_id",
+                            "json": "organizationId,omitempty",
+                            "yaml": "organizationId"
+                          },
+                          "x-order": 15,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
                         },
                         "environments": {
                           "type": "array",

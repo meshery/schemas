@@ -3628,6 +3628,9 @@ export type GetMeshModelModelsApiResponse = /** status 200 Model and capabilitie
       updated_at?: string;
       /** SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
+      /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+       */
+      organizationId?: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -9643,9 +9646,9 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
-    /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
      */
-    organizationId?: string;
+    organizationId: string;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -9964,9 +9967,9 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
        */
-      organizationId?: string;
+      organizationId: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -10242,9 +10245,9 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
        */
-      organizationId?: string;
+      organizationId: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -10282,7 +10285,7 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
       schemaVersion: string;
     };
 export type RegisterConnectionApiArg = {
-  /** Organization the connection is registered in. Required for kind `desktop`; ignored for other kinds.
+  /** Session organization. The server assigns `Connection.organizationId` from this header when it is present, and from the caller's selected organization when it is absent. Kind `desktop` requires the header: a desktop registration without it is refused with 400.
    */
   "X-Current-Orgid"?: string;
   body: {
@@ -10706,9 +10709,9 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
    */
-  organizationId?: string;
+  organizationId: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -10988,9 +10991,9 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
    */
-  organizationId?: string;
+  organizationId: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -11237,6 +11240,8 @@ export type GetDesktopConnectionsOfOrganizationApiResponse = /** status 200 Desk
     status: string;
     /** Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one. */
     lastSeenAt?: string | null;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
   }[];
   /** Total number of connections on all pages. */
   totalCount: number;
@@ -11497,9 +11502,9 @@ export type RecordConnectionHeartbeatApiResponse = /** status 200 Connection aft
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
    */
-  organizationId?: string;
+  organizationId: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -12321,6 +12326,9 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -12595,6 +12603,9 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
   };
   /** Owning user ID. */
   userId?: string;
+  /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+   */
+  organizationId: string;
   /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
    */
   user?: {
@@ -12912,6 +12923,9 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
   };
   /** Owning user ID. */
   userId?: string;
+  /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+   */
+  organizationId: string;
   /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
    */
   user?: {
@@ -13170,6 +13184,9 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
   };
   /** Owning user ID. */
   userId?: string;
+  /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+   */
+  organizationId: string;
   /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
    */
   user?: {
@@ -13434,6 +13451,9 @@ export type RefreshPatternFromSourceApiResponse =
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -13687,6 +13707,9 @@ export type UpdatePatternSourceApiResponse =
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -13952,6 +13975,9 @@ export type ImportDesignApiResponse =
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -14224,6 +14250,9 @@ export type GetGithubImportedDesignsApiResponse = /** status 200 Imported design
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -14488,6 +14517,9 @@ export type ImportGithubRepositoryApiResponse =
       };
       /** Owning user ID. */
       userId?: string;
+      /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+       */
+      organizationId: string;
       /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
        */
       user?: {
@@ -14837,6 +14869,9 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -18617,7 +18652,7 @@ export type GetProfileConnectionsApiResponse = /** status 200 Profile connection
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    organizationId?: string;
+    organizationId: string;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -20894,6 +20929,9 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
     };
     created_at?: string;
     user_id?: string;
+    /** The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId?: string;
     location?: {
       [key: string]: string;
     };
@@ -20993,6 +21031,8 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
             updated_at?: string;
             /** SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+            organizationId?: string;
             /** Associated environments for this connection */
             environments?: {
               /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */

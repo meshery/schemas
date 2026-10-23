@@ -2693,6 +2693,21 @@ const WorkspaceSchema: Record<string, unknown> = {
                             },
                             "x-go-type-skip-optional-pointer": true
                           },
+                          "organizationId": {
+                            "description": "The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.\n",
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
                           "location": {
                             "type": "object",
                             "additionalProperties": {
@@ -3241,6 +3256,22 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-type-skip-optional-pointer": true
+                                                },
+                                                "organizationId": {
+                                                  "type": "string",
+                                                  "format": "uuid",
+                                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                                  "x-go-type": "uuid.UUID",
+                                                  "x-go-type-import": {
+                                                    "path": "github.com/gofrs/uuid"
+                                                  },
+                                                  "x-go-name": "OrganizationID",
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "organization_id",
+                                                    "json": "organizationId,omitempty",
+                                                    "yaml": "organizationId"
+                                                  },
+                                                  "x-order": 15
                                                 },
                                                 "environments": {
                                                   "type": "array",
@@ -11158,6 +11189,21 @@ const WorkspaceSchema: Record<string, unknown> = {
                   },
                   "x-go-type-skip-optional-pointer": true
                 },
+                "organizationId": {
+                  "description": "The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.\n",
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
                 "location": {
                   "type": "object",
                   "additionalProperties": {
@@ -11706,6 +11752,22 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
+                                      },
+                                      "organizationId": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        },
+                                        "x-go-name": "OrganizationID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "organization_id",
+                                          "json": "organizationId,omitempty",
+                                          "yaml": "organizationId"
+                                        },
+                                        "x-order": 15
                                       },
                                       "environments": {
                                         "type": "array",

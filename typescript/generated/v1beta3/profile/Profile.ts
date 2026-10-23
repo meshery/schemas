@@ -1330,7 +1330,7 @@ export interface operations {
                              * Format: uuid
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            organizationId?: string;
+                            organizationId: string;
                             /** @description Associated environments for this connection */
                             environments?: {
                                 /**

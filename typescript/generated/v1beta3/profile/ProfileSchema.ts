@@ -1544,7 +1544,8 @@ const ProfileSchema: Record<string, unknown> = {
                           "type",
                           "subType",
                           "kind",
-                          "status"
+                          "status",
+                          "organizationId"
                         ],
                         "properties": {
                           "id": {
@@ -2358,11 +2359,12 @@ const ProfileSchema: Record<string, unknown> = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "organization_id",
-                              "json": "organizationId,omitempty"
+                              "json": "organizationId"
                             },
-                            "x-go-type-skip-optional-pointer": false,
                             "x-order": 19
                           },
                           "environments": {

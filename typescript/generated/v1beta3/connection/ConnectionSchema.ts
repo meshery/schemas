@@ -194,7 +194,8 @@ const ConnectionSchema: Record<string, unknown> = {
                           "type",
                           "subType",
                           "kind",
-                          "status"
+                          "status",
+                          "organizationId"
                         ],
                         "properties": {
                           "id": {
@@ -1001,12 +1002,13 @@ const ConnectionSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           },
                           "organizationId": {
-                            "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                            "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "organization_id",
-                              "json": "organizationId,omitempty"
+                              "json": "organizationId"
                             },
-                            "x-go-type-skip-optional-pointer": false,
                             "x-order": 19,
                             "type": "string",
                             "format": "uuid",
@@ -1316,13 +1318,13 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "registerConnection",
         "summary": "Register a new connection",
-        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.\n\nDesktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.installationId`): registering the same install again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `installationId` is refused with `400`. Installs on one computer share `metadata.computerId`, so a server can group them by computer. The kind names the connection type, never the product that runs on the machine.\n\nA `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.\n",
+        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.\n\nEvery connection belongs to exactly one organization. The server assigns `organizationId` from the session (`X-Current-Orgid`, then the caller's selected organization) and does not accept it in the body.\n\nDesktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.installationId`): registering the same install again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `installationId` is refused with `400`. Installs on one computer share `metadata.computerId`, so a server can group them by computer. The kind names the connection type, never the product that runs on the machine.\n\nA `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.\n",
         "parameters": [
           {
             "name": "X-Current-Orgid",
             "in": "header",
             "required": false,
-            "description": "Organization the connection is registered in. Required for kind `desktop`; ignored for other kinds.\n",
+            "description": "Session organization. The server assigns `Connection.organizationId` from this header when it is present, and from the caller's selected organization when it is absent. Kind `desktop` requires the header: a desktop registration without it is refused with 400.\n",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -1335,7 +1337,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating a connection",
+                "description": "Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.\n",
                 "properties": {
                   "id": {
                     "type": "string",
@@ -1900,7 +1902,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -2707,12 +2710,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "organizationId": {
-                      "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organizationId,omitempty"
+                        "json": "organizationId"
                       },
-                      "x-go-type-skip-optional-pointer": false,
                       "x-order": 19,
                       "type": "string",
                       "format": "uuid",
@@ -2967,7 +2971,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -3774,12 +3779,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "organizationId": {
-                      "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organizationId,omitempty"
+                        "json": "organizationId"
                       },
-                      "x-go-type-skip-optional-pointer": false,
                       "x-order": 19,
                       "type": "string",
                       "format": "uuid",
@@ -4493,7 +4499,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -5300,12 +5307,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "organizationId": {
-                      "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organizationId,omitempty"
+                        "json": "organizationId"
                       },
-                      "x-go-type-skip-optional-pointer": false,
                       "x-order": 19,
                       "type": "string",
                       "format": "uuid",
@@ -5585,7 +5593,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "updateConnection",
         "summary": "Update a connection",
-        "description": "Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct.\n",
+        "description": "Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct. `organizationId` is not in the body. The server keeps the organization assigned at registration.\n",
         "parameters": [
           {
             "name": "connectionId",
@@ -5604,7 +5612,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating a connection",
+                "description": "Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.\n",
                 "properties": {
                   "id": {
                     "type": "string",
@@ -6169,7 +6177,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -6976,12 +6985,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "organizationId": {
-                      "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organizationId,omitempty"
+                        "json": "organizationId"
                       },
-                      "x-go-type-skip-optional-pointer": false,
                       "x-order": 19,
                       "type": "string",
                       "format": "uuid",
@@ -7451,7 +7461,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -8258,12 +8269,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "organizationId": {
-                      "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organizationId,omitempty"
+                        "json": "organizationId"
                       },
-                      "x-go-type-skip-optional-pointer": false,
                       "x-order": 19,
                       "type": "string",
                       "format": "uuid",
@@ -8615,7 +8627,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "getDesktopConnectionsOfOrganization",
         "summary": "List the organization's desktop connections",
-        "description": "Returns every live `desktop` connection in the session organization, whoever registered it, as a summary: `id`, `name`, `kind`, `owner`, `status` and `lastSeenAt` only. Any live member of the organization may read it, so members can see which computers share its work; a guest session cannot. Servers must never include the connection's credential, metadata (beyond `lastSeenAt`), URL or description here: the full connection stays readable only by its owner through `getConnections`. `status` follows the heartbeat rule of `recordConnectionHeartbeat` (a desktop connection silent for 3 minutes reads `disconnected`). A caller who is not a live member of the session organization receives `404`.\n",
+        "description": "Returns every live `desktop` connection in the session organization, whoever registered it, as a summary: `id`, `name`, `kind`, `owner`, `status`, `organizationId` and `lastSeenAt` only. Any live member of the organization may read it, so members can see which computers share its work; a guest session cannot. Servers must never include the connection's credential, metadata (beyond `lastSeenAt`), URL or description here: the full connection stays readable only by its owner through `getConnections`. `status` follows the heartbeat rule of `recordConnectionHeartbeat` (a desktop connection silent for 3 minutes reads `disconnected`). A caller who is not a live member of the session organization receives `404`.\n",
         "parameters": [
           {
             "name": "page",
@@ -8683,7 +8695,8 @@ const ConnectionSchema: Record<string, unknown> = {
                           "id",
                           "name",
                           "kind",
-                          "status"
+                          "status",
+                          "organizationId"
                         ],
                         "properties": {
                           "id": {
@@ -8738,6 +8751,22 @@ const ConnectionSchema: Record<string, unknown> = {
                               "name": "core"
                             },
                             "x-order": 6
+                          },
+                          "organizationId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "organizationId"
+                            },
+                            "x-order": 7
                           }
                         }
                       },
@@ -8912,7 +8941,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -9719,12 +9749,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "organizationId": {
-                      "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organizationId,omitempty"
+                        "json": "organizationId"
                       },
-                      "x-go-type-skip-optional-pointer": false,
                       "x-order": 19,
                       "type": "string",
                       "format": "uuid",
@@ -12620,7 +12651,8 @@ const ConnectionSchema: Record<string, unknown> = {
           "type",
           "subType",
           "kind",
-          "status"
+          "status",
+          "organizationId"
         ],
         "properties": {
           "id": {
@@ -13427,12 +13459,13 @@ const ConnectionSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true
           },
           "organizationId": {
-            "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+            "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+            "x-go-name": "OrganizationID",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "organization_id",
-              "json": "organizationId,omitempty"
+              "json": "organizationId"
             },
-            "x-go-type-skip-optional-pointer": false,
             "x-order": 19,
             "type": "string",
             "format": "uuid",
@@ -14509,7 +14542,8 @@ const ConnectionSchema: Record<string, unknown> = {
           "id",
           "name",
           "kind",
-          "status"
+          "status",
+          "organizationId"
         ],
         "properties": {
           "id": {
@@ -14564,6 +14598,22 @@ const ConnectionSchema: Record<string, unknown> = {
               "name": "core"
             },
             "x-order": 6
+          },
+          "organizationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "readOnly": true,
+            "x-go-name": "OrganizationID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "organizationId"
+            },
+            "x-order": 7
           }
         }
       },
@@ -14590,7 +14640,8 @@ const ConnectionSchema: Record<string, unknown> = {
                 "id",
                 "name",
                 "kind",
-                "status"
+                "status",
+                "organizationId"
               ],
               "properties": {
                 "id": {
@@ -14645,6 +14696,22 @@ const ConnectionSchema: Record<string, unknown> = {
                     "name": "core"
                   },
                   "x-order": 6
+                },
+                "organizationId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "organizationId"
+                  },
+                  "x-order": 7
                 }
               }
             },
@@ -14698,7 +14765,8 @@ const ConnectionSchema: Record<string, unknown> = {
                 "type",
                 "subType",
                 "kind",
-                "status"
+                "status",
+                "organizationId"
               ],
               "properties": {
                 "id": {
@@ -15505,12 +15573,13 @@ const ConnectionSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 },
                 "organizationId": {
-                  "description": "Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.\n",
+                  "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "organization_id",
-                    "json": "organizationId,omitempty"
+                    "json": "organizationId"
                   },
-                  "x-go-type-skip-optional-pointer": false,
                   "x-order": 19,
                   "type": "string",
                   "format": "uuid",
@@ -15938,7 +16007,7 @@ const ConnectionSchema: Record<string, unknown> = {
       },
       "ConnectionPayload": {
         "type": "object",
-        "description": "Payload for creating or updating a connection",
+        "description": "Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.\n",
         "properties": {
           "id": {
             "type": "string",
