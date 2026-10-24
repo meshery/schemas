@@ -1042,6 +1042,8 @@ components:
         text/plain:
           schema:
             type: string
+    MeshKitError403:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/MeshKitError403"
     "404":
       description: Result not found
       content:
