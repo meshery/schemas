@@ -204,7 +204,7 @@ export interface paths {
                              */
                             deletedAt?: string;
                             /** @description Issued certificate for completing the curricula under registration */
-                            certificate: {
+                            certificate?: {
                                 /**
                                  * Format: uuid
                                  * @description Unique identifier for the certificate
@@ -273,7 +273,7 @@ export interface paths {
                                  * @example 24
                                  */
                                 expiresIn?: number;
-                            };
+                            } | null;
                             /** @description Additional metadata about the registration */
                             metadata: {
                                 [key: string]: unknown;
@@ -2861,7 +2861,7 @@ export interface components {
              */
             deletedAt?: string;
             /** @description Issued certificate for completing the curricula under registration */
-            certificate: {
+            certificate?: {
                 /**
                  * Format: uuid
                  * @description Unique identifier for the certificate
@@ -2930,7 +2930,7 @@ export interface components {
                  * @example 24
                  */
                 expiresIn?: number;
-            };
+            } | null;
             /** @description Additional metadata about the registration */
             metadata: {
                 [key: string]: unknown;
@@ -3359,7 +3359,7 @@ export interface components {
                  */
                 deletedAt?: string;
                 /** @description Issued certificate for completing the curricula under registration */
-                certificate: {
+                certificate?: {
                     /**
                      * Format: uuid
                      * @description Unique identifier for the certificate
@@ -3428,7 +3428,7 @@ export interface components {
                      * @example 24
                      */
                     expiresIn?: number;
-                };
+                } | null;
                 /** @description Additional metadata about the registration */
                 metadata: {
                     [key: string]: unknown;
@@ -6183,7 +6183,7 @@ export interface operations {
                          */
                         deletedAt?: string;
                         /** @description Issued certificate for completing the curricula under registration */
-                        certificate: {
+                        certificate?: {
                             /**
                              * Format: uuid
                              * @description Unique identifier for the certificate
@@ -6252,7 +6252,7 @@ export interface operations {
                              * @example 24
                              */
                             expiresIn?: number;
-                        };
+                        } | null;
                         /** @description Additional metadata about the registration */
                         metadata: {
                             [key: string]: unknown;
@@ -6345,7 +6345,7 @@ export interface operations {
                          */
                         deletedAt?: string;
                         /** @description Issued certificate for completing the curricula under registration */
-                        certificate: {
+                        certificate?: {
                             /**
                              * Format: uuid
                              * @description Unique identifier for the certificate
@@ -6414,7 +6414,7 @@ export interface operations {
                              * @example 24
                              */
                             expiresIn?: number;
-                        };
+                        } | null;
                         /** @description Additional metadata about the registration */
                         metadata: {
                             [key: string]: unknown;
@@ -8234,7 +8234,7 @@ export interface operations {
                         attemptedAt: string;
                         /** @description The attempts of the quizevaluationresult. */
                         attempts: number;
-                    }[][];
+                    }[];
                 };
             };
             /** @description Invalid request parameters */
