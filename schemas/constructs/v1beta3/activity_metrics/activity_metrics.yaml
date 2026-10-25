@@ -1,0 +1,218 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Activity Metrics Schema
+description: |
+  Server-returned per-activity reception figures for one post, as recorded
+  in the `metadata` of an event on the events service (category `blowhorn`,
+  action `activity_metrics`); the event construct carries the envelope and
+  this construct names the metadata's own shape, which Event leaves open.
+  One row is one activity as one export read it, keyed by (organizationId,
+  platform, activityRef, readingDate): a later export adds a reading rather
+  than replacing an earlier one, so the rows are a time series and the
+  latest reading is an activity's current figures. The figures come from a
+  LinkedIn page content export's "All posts" sheet, whose header sits under
+  a disclaimer row; readingDate is that export's date, the day the figures
+  were true as of. `matched` records whether the row's link resolved to a
+  stored content activity at import (through `content.promotion_link`,
+  per-profile entries of an `all` row included); an unmatched row is kept,
+  not dropped - the post was made outside Blowhorn and is still the page's
+  reception. Every figure is nullable: a blank figure in the source export
+  is not a zero.
+type: object
+additionalProperties: false
+required:
+  - organizationId
+  - platform
+  - activityRef
+  - readingDate
+properties:
+  organizationId:
+    type: string
+    format: uuid
+    description: Owning organization ID.
+    x-go-type: uuid.UUID
+    x-go-type-import:
+      path: github.com/gofrs/uuid
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 1
+  platform:
+    type: string
+    description: The platform the activity was posted to (today only `linkedin` produces these exports).
+    x-oapi-codegen-extra-tags:
+      db: platform
+    x-order: 2
+  activityRef:
+    type: string
+    description: The activity's platform identifier, normalized to its URN (`urn:li:activity:<id>`, `urn:li:share:<id>` or `urn:li:ugcPost:<id>`), so every spelling of a post's link names one activity.
+    x-oapi-codegen-extra-tags:
+      db: activity_ref
+    x-order: 3
+  readingDate:
+    type: string
+    format: date
+    description: The export's date - the day the figures were read as of, as an ISO calendar date.
+    x-oapi-codegen-extra-tags:
+      db: reading_date
+    x-order: 4
+  subject:
+    type: string
+    description: The page the export belongs to, named as the source export names it.
+    x-oapi-codegen-extra-tags:
+      db: subject
+    x-order: 5
+  link:
+    type: string
+    description: The post link as the export spelled it, before normalization to `activityRef`.
+    x-oapi-codegen-extra-tags:
+      db: link
+    x-order: 6
+  title:
+    type: string
+    nullable: true
+    description: The post's title as the export gives it; null when the export names none.
+    x-oapi-codegen-extra-tags:
+      db: title
+    x-order: 7
+  postType:
+    type: string
+    nullable: true
+    description: The post's type as the export gives it (for example `Organic`); null when the export names none.
+    x-oapi-codegen-extra-tags:
+      db: post_type
+    x-order: 8
+  postedBy:
+    type: string
+    nullable: true
+    description: Who the export says posted the activity; null when the export names none.
+    x-oapi-codegen-extra-tags:
+      db: posted_by
+    x-order: 9
+  createdDate:
+    type: string
+    format: date
+    nullable: true
+    description: The day the activity was created, as an ISO calendar date; null when the export names none.
+    x-oapi-codegen-extra-tags:
+      db: created_date
+    x-order: 10
+  audience:
+    type: string
+    nullable: true
+    description: The audience the export names for the activity; null when it names none.
+    x-oapi-codegen-extra-tags:
+      db: audience
+    x-order: 11
+  contentType:
+    type: string
+    nullable: true
+    description: The content type the export names for the activity; null when it names none.
+    x-oapi-codegen-extra-tags:
+      db: content_type
+    x-order: 12
+  impressions:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Impressions the activity had gathered by the reading date; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: impressions
+    x-order: 13
+  views:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Views the activity had gathered by the reading date; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: views
+    x-order: 14
+  offsiteViews:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Offsite views the activity had gathered by the reading date; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: offsite_views
+    x-order: 15
+  clicks:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Clicks the activity had gathered by the reading date; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: clicks
+    x-order: 16
+  clickThroughRate:
+    type: number
+    nullable: true
+    minimum: 0
+    description: Click-through rate as a fraction (0.05 is 5%); null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: click_through_rate
+    x-order: 17
+  likes:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Likes the activity had gathered by the reading date; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: likes
+    x-order: 18
+  comments:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Comments the activity had gathered by the reading date; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: comments
+    x-order: 19
+  reposts:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Reposts the activity had gathered by the reading date; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: reposts
+    x-order: 20
+  follows:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Follows the activity had produced by the reading date; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: follows
+    x-order: 21
+  engagementRate:
+    type: number
+    nullable: true
+    minimum: 0
+    description: Engagement rate as a fraction (0.05 is 5%); null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: engagement_rate
+    x-order: 22
+  matched:
+    type: boolean
+    description: Whether the activity's link resolved to a stored content activity at import.
+    x-oapi-codegen-extra-tags:
+      db: matched
+    x-order: 23
+  contentRow:
+    type: integer
+    nullable: true
+    description: The content row the activity matched, when it matched; null for an unmatched activity.
+    x-oapi-codegen-extra-tags:
+      db: content_row
+    x-order: 24
+  contentProfile:
+    type: string
+    nullable: true
+    description: The profile whose promotion link matched, for a matched activity shared by several profiles; null when no single profile matched.
+    x-oapi-codegen-extra-tags:
+      db: content_profile
+    x-order: 25
+  sourceFile:
+    type: string
+    description: The export file the row was read from; empty when the row did not come from a file export.
+    x-oapi-codegen-extra-tags:
+      db: source_file
+    x-order: 26
