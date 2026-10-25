@@ -71,11 +71,10 @@ Cloud then attaches the organization, and only then.
   clients' reports undecodable.
 - `compat` carries `requiresSchema` and `contractVersion` as strings, so
   dotted versions and plain numbers both fit.
-- `installId` is optional and deliberately NOT `format: uuid`: the
-  per-install id's format is not fixed to UUID, and a uuid format would
-  reject reports from clients whose id takes another shape. It is a
-  random per-install id, never a hardware id, and it is omitted entirely
-  when the person has opted out of failure reports.
+- `installId` is optional and `format: uuid`: the per-install id is a
+  uuid4 minted once per install (Blowhorn's `installationId`, written
+  beside `cloud.yaml` and reused), never a hardware id, and it is
+  omitted entirely when the person has opted out of failure reports.
 
 ## Authentication on POST /api/diagnostics/failures
 

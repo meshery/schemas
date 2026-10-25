@@ -287,12 +287,11 @@ components:
         installId:
           type: string
           title: Install ID
+          format: uuid
           maxLength: 128
           description: >-
             Optional per-install id, present only when the person has
-            not opted out of failure reports. A random id minted per
-            install, never a hardware id. Deliberately a plain string,
-            not format uuid: the per-install id's format is not fixed
-            to UUID, and a uuid format would reject reports from
-            clients whose id takes another shape. Omitted entirely when
-            opted out.
+            not opted out of failure reports. A random uuid4 minted
+            once per install (Blowhorn's installationId, written beside
+            cloud.yaml and reused), never a hardware id. Omitted
+            entirely when opted out.

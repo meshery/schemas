@@ -225,12 +225,11 @@ func TestFailureDiagnosticExactFieldList(t *testing.T) {
 	if props["count"].(map[string]any)["minimum"] != 1 {
 		t.Errorf("count minimum = %v, want 1", props["count"].(map[string]any)["minimum"])
 	}
-	// installId is optional and deliberately NOT format uuid: the
-	// per-install id's format is not fixed to UUID, and a uuid format
-	// would reject reports from clients whose id takes another shape.
-	install := props["installId"].(map[string]any)
-	if _, hasFormat := install["format"]; hasFormat {
-		t.Errorf("installId must not carry a format constraint, got %v", install["format"])
+	// installId is optional, and it IS format uuid: the per-install id
+	// is a uuid4 minted once per install (Blowhorn's installationId,
+	// written beside cloud.yaml and reused), never a hardware id.
+	if props["installId"].(map[string]any)["format"] != "uuid" {
+		t.Errorf("installId format = %v, want uuid", props["installId"].(map[string]any)["format"])
 	}
 
 	assertKeysEqual(t, "FailureDiagnostic.client", nestedProps(t, props, "client"),
