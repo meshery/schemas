@@ -8,9 +8,30 @@
     "extension": true
   },
   {
+    "construct": "activity_result",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/activity_result/activity_result.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "badge",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/badge/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "blowhorn_health",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/blowhorn_health/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "blowhorn_profile",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/blowhorn_profile/blowhorn_profile.yaml",
     "core": false,
     "extension": true
   },
@@ -36,6 +57,13 @@
     "extension": false
   },
   {
+    "construct": "claim",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/claim/claim.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "component",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/component/component.yaml",
@@ -56,6 +84,20 @@
     "version": "v1beta1",
     "href": "/schemas/constructs/v1beta1/console/api.yml",
     "core": true,
+    "extension": false
+  },
+  {
+    "construct": "content_item",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/content_item/content_item.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "content_metrics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/content_metrics/content_metrics.yaml",
+    "core": false,
     "extension": false
   },
   {
@@ -125,6 +167,27 @@
     "extension": true
   },
   {
+    "construct": "follower_demographics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/follower_demographics/follower_demographics.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "follower_metrics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/follower_metrics/follower_metrics.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "github",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/github/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "invitation",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/invitation/invitation.yaml",
@@ -142,6 +205,13 @@
     "construct": "keychain",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/keychain/keychain.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "ledger",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/ledger/ledger_entry.yaml",
     "core": false,
     "extension": true
   },
@@ -190,6 +260,20 @@
     "extension": true
   },
   {
+    "construct": "profile",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/profile/profile.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "provider_capability",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/provider_capability/provider_capability.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "registry",
     "version": "v1beta1",
     "href": "/schemas/constructs/v1beta1/registry/api.yml",
@@ -213,8 +297,8 @@
   },
   {
     "construct": "schedule",
-    "version": "v1beta2",
-    "href": "/schemas/constructs/v1beta2/schedule/api.yml",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/schedule/schedule.yaml",
     "core": false,
     "extension": true
   },

@@ -67,6 +67,32 @@ type CarouselSlide struct {
 	Title string `json:"title" yaml:"title"`
 }
 
+// ChildOrganization Direct child organization as listed under its parent. A deliberately narrow projection of the organization record: it carries no owner, metadata, invite id, or members, because every holder of View Organizations in the parent can read this list and those fields are not part of what the parent is entitled to see. parentId, when present, is the id of the parent organization named in the request path.
+type ChildOrganization struct {
+	Country     Text `json:"country,omitempty" yaml:"country,omitempty"`
+	CreatedAt   Time `json:"createdAt" yaml:"createdAt"`
+	Description Text `json:"description,omitempty" yaml:"description,omitempty"`
+	Domain      Text `json:"domain,omitempty" yaml:"domain,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID   UUID `json:"id" yaml:"id"`
+	Name Text `json:"name" yaml:"name"`
+
+	// ParentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ParentID  *UUID `json:"parentId,omitempty" yaml:"parentId,omitempty"`
+	Region    Text  `json:"region,omitempty" yaml:"region,omitempty"`
+	UpdatedAt Time  `json:"updatedAt" yaml:"updatedAt"`
+}
+
+// ChildOrganizationsPage Page of the direct child organizations of one parent. Carries only the organizations list and the total count; it is not the OrganizationsPage wrapper, whose AvailableOrganization rows expose owner and metadata.
+type ChildOrganizationsPage struct {
+	// Organizations Direct child organizations in this page.
+	Organizations []ChildOrganization `json:"organizations" yaml:"organizations"`
+
+	// TotalCount Total number of live direct children across all pages.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
 // DashboardPrefs Preferences specific to dashboard behavior.
 type DashboardPrefs map[string]interface{}
 
@@ -199,9 +225,9 @@ type OrganizationPayload struct {
 	// NotifyOrgUpdate Indicates whether organization members should be notified of this update.
 	NotifyOrgUpdate *bool `json:"notifyOrgUpdate,omitempty" yaml:"notifyOrgUpdate,omitempty"`
 
-	// Preferences Organization-level user experience preferences.
-	Preferences *Preferences `json:"preferences,omitempty" yaml:"preferences,omitempty"`
-	Region      Text         `json:"region,omitempty" yaml:"region,omitempty"`
+	// Preferences Client-settable organization preferences. Identical to Preferences except that schedulePause is SchedulePausePayload.
+	Preferences *PreferencesPayload `json:"preferences,omitempty" yaml:"preferences,omitempty"`
+	Region      Text                `json:"region,omitempty" yaml:"region,omitempty"`
 }
 
 // OrganizationsPage Paginated list of organizations.
@@ -230,11 +256,80 @@ type Preferences struct {
 	// Links Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults.
 	Links *Links `json:"links,omitempty" yaml:"links,omitempty"`
 
+	// SchedulePause Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences; there is no pause route. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity.
+	SchedulePause *SchedulePause `json:"schedulePause,omitempty" yaml:"schedulePause,omitempty"`
+
 	// ShowAuthCarousel Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
 	ShowAuthCarousel *bool `json:"showAuthCarousel,omitempty" yaml:"showAuthCarousel,omitempty"`
 
 	// Theme UI theme configured for an organization.
 	Theme Theme `json:"theme" yaml:"theme"`
+}
+
+// PreferencesPatchPayload Partial update of organization preferences (patchOrgPreferences). Every member is optional: a present member replaces that member of the stored preferences as a whole, and an omitted member stays unchanged. Members are those of PreferencesPayload, with the same schemas, and may not be null.
+type PreferencesPatchPayload struct {
+	// AuthBranding Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.
+	AuthBranding *AuthBranding `json:"authBranding,omitempty" yaml:"authBranding,omitempty"`
+
+	// Dashboard Preferences specific to dashboard behavior.
+	Dashboard *DashboardPrefs `json:"dashboard,omitempty" yaml:"dashboard,omitempty"`
+
+	// Links Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults.
+	Links *Links `json:"links,omitempty" yaml:"links,omitempty"`
+
+	// SchedulePause Client-settable organization pause. Carries only `paused` and `reason`; `pausedAt` and `pausedBy` are recorded by the server and refused here. `paused` is required whenever `schedulePause` is sent, so a write can never lift the pause by omission.
+	SchedulePause *SchedulePausePayload `json:"schedulePause,omitempty" yaml:"schedulePause,omitempty"`
+
+	// ShowAuthCarousel Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value.
+	ShowAuthCarousel *bool `json:"showAuthCarousel,omitempty" yaml:"showAuthCarousel,omitempty"`
+
+	// Theme UI theme configured for an organization.
+	Theme *Theme `json:"theme,omitempty" yaml:"theme,omitempty"`
+}
+
+// PreferencesPayload Client-settable organization preferences. Identical to Preferences except that schedulePause is SchedulePausePayload.
+type PreferencesPayload struct {
+	// AuthBranding Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.
+	AuthBranding *AuthBranding `json:"authBranding,omitempty" yaml:"authBranding,omitempty"`
+
+	// Dashboard Preferences specific to dashboard behavior.
+	Dashboard DashboardPrefs `json:"dashboard" yaml:"dashboard"`
+
+	// Links Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults.
+	Links *Links `json:"links,omitempty" yaml:"links,omitempty"`
+
+	// SchedulePause Client-settable organization pause. Carries only `paused` and `reason`; `pausedAt` and `pausedBy` are recorded by the server and refused here. `paused` is required whenever `schedulePause` is sent, so a write can never lift the pause by omission.
+	SchedulePause *SchedulePausePayload `json:"schedulePause,omitempty" yaml:"schedulePause,omitempty"`
+
+	// ShowAuthCarousel Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+	ShowAuthCarousel *bool `json:"showAuthCarousel,omitempty" yaml:"showAuthCarousel,omitempty"`
+
+	// Theme UI theme configured for an organization.
+	Theme Theme `json:"theme" yaml:"theme"`
+}
+
+// SchedulePause Organization-wide pause of scheduled work, stored in organization.metadata.preferences. While `paused` is true no schedule in the organization is claimed. Set or lift it by updating the organization's preferences; there is no pause route. Unset is treated as not paused. Lifting the pause (`paused` false) clears `reason`, `pausedAt` and `pausedBy` on the server, so a stored `paused` false never carries a stale pause time or identity.
+type SchedulePause struct {
+	// Paused Whether every schedule in the organization is paused.
+	Paused *bool `json:"paused,omitempty" yaml:"paused,omitempty"`
+
+	// PausedAt Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+	PausedAt *time.Time `json:"pausedAt,omitempty" yaml:"pausedAt,omitempty"`
+
+	// PausedBy Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted.
+	PausedBy *string `json:"pausedBy,omitempty" yaml:"pausedBy,omitempty"`
+
+	// Reason Reason given for the pause. Cleared when the pause is lifted.
+	Reason *string `json:"reason,omitempty" yaml:"reason,omitempty"`
+}
+
+// SchedulePausePayload Client-settable organization pause. Carries only `paused` and `reason`; `pausedAt` and `pausedBy` are recorded by the server and refused here. `paused` is required whenever `schedulePause` is sent, so a write can never lift the pause by omission.
+type SchedulePausePayload struct {
+	// Paused Whether every schedule in the organization is paused.
+	Paused bool `json:"paused" yaml:"paused"`
+
+	// Reason Reason given for the pause. Cleared when the pause is lifted.
+	Reason *string `json:"reason,omitempty" yaml:"reason,omitempty"`
 }
 
 // Social The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults.
@@ -348,6 +443,9 @@ type UsersOrganizationsMappingPage struct {
 
 // All defines model for all.
 type All = bool
+
+// IfMatch defines model for ifMatch.
+type IfMatch = string
 
 // Order defines model for order.
 type Order = string

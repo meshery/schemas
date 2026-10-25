@@ -818,6 +818,20 @@ components:
           $ref: "../core/api.yml#/components/schemas/Time"
         user_id:
           $ref: "../core/api.yml#/components/schemas/Id"
+        organizationId:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: >
+            The organization the design belongs to. The server sets it from
+            the session organization. Never accepted from clients. Optional
+            on this superseded shape, which workspace design lists still
+            return. v1beta3 MesheryPattern requires it. A client value on the
+            deprecated design write is ignored. A workspace this design is
+            assigned to must belong to this same organization.
+          readOnly: true
+          x-go-name: OrganizationID
+          x-oapi-codegen-extra-tags:
+            db: organization_id
+            json: organizationId,omitempty
         location:
           $ref: "../core/api.yml#/components/schemas/MapObject"
         name:

@@ -11,6 +11,8 @@
   "acceptedBy": [],
   "roles": [],
   "teams": [],
+  "acceptanceOutcome": "direct_membership",
+  "childOrganizationBranding": "parent",
   "status": "",
   "createdAt": "",
   "updatedAt": "",

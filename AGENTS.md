@@ -31,12 +31,13 @@ make validate-schemas  # run repository schema validation rules
 npm run build    # build TypeScript distribution (dist/)
 ```
 
-Generated artifacts (`models/`, `typescript/generated/`) are committed by automation on `master`. The TypeScript distribution in `dist/` is produced by the npm build/publish workflow and is not committed to this repo. Do not edit generated artifacts by hand, and do not manually commit regenerated output in normal PRs unless the change explicitly requires it.
+Generated artifacts (`models/`, `typescript/generated/`, `python/generated/`) are committed by automation on `master`. The TypeScript distribution in `dist/` is produced by the npm build/publish workflow and is not committed to this repo. Do not edit generated artifacts by hand, and do not manually commit regenerated output in normal PRs unless the change explicitly requires it (a PR that alters a bundled Python pilot spec must commit regenerated `python/generated/` output; see [`docs/schema-tooling.md`](docs/schema-tooling.md#python-client-generation-pilot-issue-1240)).
 
 **Never hand-edit generated output:**
 
 - ❌ Generated Go code in `models/`
 - ❌ Generated TypeScript in `typescript/generated/`
+- ❌ Generated Python client in `python/generated/` (`pyproject.toml` and `src/meshery_schemas/__init__.py` are hand-maintained scaffolding, not generator output)
 - ❌ Built files in `dist/`
 
 The Go generators (`build/generate-golang.js`, `build/generate-permission-golang.js`)
@@ -181,6 +182,10 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/release-procedure.md`](docs/release-procedure.md)** - full release flow, What NOT to Do, and versioning policy.
 - **[`docs/release-procedure-skill.md`](docs/release-procedure-skill.md)** - using the `meshery-schemas-release` skill, verification commands, troubleshooting.
 - **[`docs/environment-purpose-contract.md`](docs/environment-purpose-contract.md)** - what `Environment.purpose` means, why it is not client-settable, and what each consumer must enforce for that to hold.
+- **[`docs/profile-contract.md`](docs/profile-contract.md)** - the profile construct, its workspace assignment, and its permission keys.
+- **[`docs/claim-contract.md`](docs/claim-contract.md)** - the claim construct: connection holders, expiry at read time, kept history, release outcomes, and its permission keys.
+- **[`docs/event-organization-contract.md`](docs/event-organization-contract.md)** - `Event.organizationId` and the `getEvents` `scope` query.
+- **[`docs/connection-design-organization-contract.md`](docs/connection-design-organization-contract.md)** - `Connection.organizationId` and design `organizationId` (`meshery_patterns`), both server-assigned.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
 - **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
 

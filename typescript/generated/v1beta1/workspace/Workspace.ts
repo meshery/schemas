@@ -651,6 +651,11 @@ export interface components {
                 created_at?: string;
                 /** Format: uuid */
                 user_id?: string;
+                /**
+                 * Format: uuid
+                 * @description The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.
+                 */
+                readonly organizationId?: string;
                 location?: {
                     [key: string]: string;
                 };
@@ -838,6 +843,11 @@ export interface components {
                                  * @description SQL null Timestamp to handle null values of time.
                                  */
                                 deleted_at?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                organizationId?: string;
                                 /** @description Associated environments for this connection */
                                 environments?: {
                                     /**
@@ -3302,6 +3312,11 @@ export interface operations {
                             created_at?: string;
                             /** Format: uuid */
                             user_id?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.
+                             */
+                            readonly organizationId?: string;
                             location?: {
                                 [key: string]: string;
                             };
@@ -3489,6 +3504,11 @@ export interface operations {
                                              * @description SQL null Timestamp to handle null values of time.
                                              */
                                             deleted_at?: string;
+                                            /**
+                                             * Format: uuid
+                                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                             */
+                                            organizationId?: string;
                                             /** @description Associated environments for this connection */
                                             environments?: {
                                                 /**

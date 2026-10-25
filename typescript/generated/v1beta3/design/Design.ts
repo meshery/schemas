@@ -19,7 +19,7 @@ export interface paths {
         put?: never;
         /**
          * Save design
-         * @description Creates or updates an infrastructure design.
+         * @description Creates or updates an infrastructure design. The server assigns `organizationId` from the session organization; clients do not send it. On update the organization stays the one assigned at create.
          */
         post: operations["upsertPattern"];
         delete?: never;
@@ -135,6 +135,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/content/patterns/refresh/{designId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refresh design from its source
+         * @description Re-fetches the source file recorded in the design's `location` (`type: github`, `host: github.com/<owner>/<repo>`, `path`, optional `branch`; an empty branch means the repository's default branch), re-identifies it, and rewrites the design's content in place under the same design ID. A Meshery Design source replaces `patternFile`; any other source type (Helm Chart, Kubernetes Manifest, Docker Compose) replaces `sourceContent` and clears `patternFile`, so Meshery reconverts it the next time the design is opened - exactly the state a first import leaves. Only the design's owner may refresh it. No request body. Denials: `404` answers both "no such design" and "not the caller's design" with the same body by design, so the route is not an existence oracle; `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A distinct `403` whose MeshKit error asks for re-authorization means the caller's GitHub connection predates verification; re-authorize it (see `startGithubAuthorization`) before use; `409` means the design has no refreshable source (`location.type` is not `github`, or `host`/`path` is missing) or its source path no longer resolves to an importable file; `502` means GitHub could not be reached or rejected the request. The server resolves the tracked ref to a commit, reads the file at that commit, and records it in `location.commitSha`.
+         */
+        post: operations["refreshPatternFromSource"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/patterns/{designId}/source": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Remap a design's GitHub source
+         * @description Re-points the design's source binding - the GitHub file its `location` records and `refreshPatternFromSource` re-reads - at another repository, path or ref. The design's content is not changed: call `refreshPatternFromSource` afterwards to replace it from the new source. The server resolves `ref` to a commit and confirms that `path` names an importable file at that commit before it writes anything, so a binding that a refresh could not read is never stored. It writes `location` as `type: github`, `host`, `path` and `branch` (= `ref`). When the binding changes, `location.commitSha` is removed, because the stored content was not read from the new source; it is kept when the request names the binding the design already has. A design with no GitHub source (an upload or URL import) may be bound to one; it becomes refreshable. Only the design's owner may remap it. Denials: `404` answers "no such design", "not the caller's design" and "connectionId is not the caller's own live GitHub connection" with the same body, so the route is not an existence oracle; `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A distinct `403` whose MeshKit error asks for re-authorization means the caller's GitHub connection predates verification; re-authorize it (see `startGithubAuthorization`) before use; `409` means `ref` does not resolve to a commit, or `path` does not name an importable file at it (missing, a directory, or not a supported format); `502` means GitHub could not be reached or rejected the request.
+         */
+        patch: operations["updatePatternSource"];
+        trace?: never;
+    };
     "/api/pattern/import": {
         parameters: {
             query?: never;
@@ -146,6 +186,66 @@ export interface paths {
         put?: never;
         /** Import Design */
         post: operations["importDesign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integrations/github/designs/{connectionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List designs imported from GitHub
+         * @description Returns the designs owned by the GitHub connection's owner whose `location.type` is `github` - every design imported (or refreshed) from GitHub - newest first. The inventory is owner-wide, not scoped to the connection: Meshery Cloud keeps one GitHub App connection per user, and the connection only authorizes the read. Use `repository` to narrow it. `location` carries `host` (github.com/<owner>/<repo>), `path` and `branch` (empty = the repository's default branch). `patternFile` and `sourceContent` are not projected. Only the connection's owner may list it, as only a design's owner may refresh it: a caller who does not own the connection gets 404 regardless of any all-organizations scope, with the same body as "no such connection", so private designs are never listed to another user.
+         */
+        get: operations["getGithubImportedDesigns"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integrations/github/import/{connectionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import files from a GitHub repository as designs
+         * @description Imports the selected files (a selected directory is walked recursively) from one repository reachable through the caller's GitHub App connection. Matching is idempotent: a file whose (owner, location.type, location.host, location.path, location.branch) already identifies one of the caller's designs is handled per `onExisting`. `connectionId` must name the caller's own live GitHub connection (404 otherwise). `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A distinct `403` whose MeshKit error asks for re-authorization means the caller's GitHub connection predates verification; re-authorize it (see `startGithubAuthorization`) before use; `502` means GitHub could not be reached or rejected the request. Each imported or updated design records the commit its file was read at in `location.commitSha`.
+         */
+        post: operations["importGithubRepository"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integrations/github/branches/{connectionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List a repository's branches
+         * @description Lists the branches of one repository reachable through the caller's GitHub App connection, with the repository's default branch, so a client can offer the refs a design's source can track. Branch order is GitHub's. `connectionId` must name the caller's own live GitHub connection (404 otherwise, with the same body as "no such connection"). `403` means the repository is not reachable through one of the caller's verified GitHub App installations - the installations GitHub lists for the caller's own GitHub account when they authorize the App. The refusal is deliberately uniform: the App not being installed on the repository's account and its being installed there for someone else answer the same body, so the route does not reveal where the App is installed. A distinct `403` whose MeshKit error asks for re-authorization means the caller's GitHub connection predates verification; re-authorize it (see `startGithubAuthorization`) before use; `502` means GitHub could not be reached or rejected the request.
+         */
+        get: operations["getGithubRepositoryBranches"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -518,6 +618,11 @@ export interface components {
                          * @description SQL null Timestamp to handle null values of time.
                          */
                         deleted_at?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                         */
+                        organizationId?: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -1756,7 +1861,7 @@ export interface components {
                 }[];
             }[];
         };
-        /** @description Server-returned design (pattern) resource as persisted by meshery-cloud. */
+        /** @description Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it. */
         MesheryPattern: {
             /**
              * Format: uuid
@@ -1801,6 +1906,11 @@ export interface components {
              * @description Owning user ID.
              */
             userId?: string;
+            /**
+             * Format: uuid
+             * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+             */
+            readonly organizationId: string;
             /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
             user?: {
                 /**
@@ -1978,7 +2088,7 @@ export interface components {
                 roleNames?: string[];
                 /** @description Teams the user belongs to with role information */
                 teams?: {
-                    /** @description Team memberships for the user with their assigned roles. */
+                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                     teamsWithRoles?: {
                         /**
                          * Format: uuid
@@ -2015,13 +2125,13 @@ export interface components {
                         deletedAt?: string | null;
                         /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                         roleNames: string[];
-                    }[];
-                    /** @description Total number of team memberships returned for the user. */
-                    totalCount?: number;
+                    }[] | null;
+                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                    totalCount?: number | null;
                 };
                 /** @description Organizations the user belongs to with role information */
                 organizations?: {
-                    /** @description Organization memberships for the user with their assigned roles. */
+                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                     organizationsWithRoles?: {
                         /**
                          * Format: uuid
@@ -2058,12 +2168,12 @@ export interface components {
                         deletedAt?: string | null;
                         /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                         roleNames: string[];
-                    }[];
-                    /** @description Total number of organization memberships returned for the user. */
-                    totalCount?: number;
+                    }[] | null;
+                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                    totalCount?: number | null;
                 };
             } | null;
-            /** @description Optional structured location metadata (branch, host, path, ...). */
+            /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
             location?: {
                 [key: string]: string;
             };
@@ -2173,6 +2283,11 @@ export interface components {
                  * @description Owning user ID.
                  */
                 userId?: string;
+                /**
+                 * Format: uuid
+                 * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                 */
+                readonly organizationId: string;
                 /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                 user?: {
                     /**
@@ -2350,7 +2465,7 @@ export interface components {
                     roleNames?: string[];
                     /** @description Teams the user belongs to with role information */
                     teams?: {
-                        /** @description Team memberships for the user with their assigned roles. */
+                        /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                         teamsWithRoles?: {
                             /**
                              * Format: uuid
@@ -2387,13 +2502,13 @@ export interface components {
                             deletedAt?: string | null;
                             /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                             roleNames: string[];
-                        }[];
-                        /** @description Total number of team memberships returned for the user. */
-                        totalCount?: number;
+                        }[] | null;
+                        /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
                     };
                     /** @description Organizations the user belongs to with role information */
                     organizations?: {
-                        /** @description Organization memberships for the user with their assigned roles. */
+                        /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                         organizationsWithRoles?: {
                             /**
                              * Format: uuid
@@ -2430,12 +2545,12 @@ export interface components {
                             deletedAt?: string | null;
                             /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                             roleNames: string[];
-                        }[];
-                        /** @description Total number of organization memberships returned for the user. */
-                        totalCount?: number;
+                        }[] | null;
+                        /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
                     };
                 } | null;
-                /** @description Optional structured location metadata (branch, host, path, ...). */
+                /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                 location?: {
                     [key: string]: string;
                 };
@@ -2508,7 +2623,7 @@ export interface components {
                 name?: string;
             }[];
         };
-        /** @description Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response. */
+        /** @description Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (`organizationId`, createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded. The server assigns `organizationId` from the session organization, ignores any client value, and re-projects server-owned fields on the response. */
         MesheryPatternPayload: {
             /**
              * Format: uuid
@@ -2730,23 +2845,55 @@ export interface components {
              */
             url?: string;
         };
-        /** @description Design-level preferences */
-        DesignPreferences: {
-            /** @description Map of available layers, where keys are layer names. */
-            layers: Record<string, never>;
+        /** @description Files to import from one repository and how to treat files that were imported before. */
+        GithubImportPayload: {
+            /** @description Repository as `<owner>/<repo>`. */
+            name: string;
+            /** @description Selected tree items, as served by `GET /api/integrations/github/scan`. The server reads only `type` and `entry.path`; the remaining scan fields are accepted and ignored. */
+            paths: ({
+                /**
+                 * @description Tree item kind; a directory is imported recursively.
+                 * @enum {string}
+                 */
+                type: "file" | "dir";
+                /** @description The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored. */
+                entry: {
+                    /** @description Repository-relative path of the file or directory. */
+                    path: string;
+                };
+            } & {
+                [key: string]: unknown;
+            })[];
+            /**
+             * @description What to do with a selected file that already identifies one of the caller's designs. `skip` (the default, "import new only") leaves it untouched and reports it in `skippedPaths`, so a request that omits `onExisting` never overwrites an existing design; `update` refreshes that design in place under the same ID (idempotent import); `new` imports it again as an additional design.
+             * @default skip
+             * @enum {string}
+             */
+            onExisting: "update" | "skip" | "new";
         };
-        CatalogContentItem: {
+        /** @description One selected file or directory in the repository tree. */
+        GithubImportPath: {
+            /**
+             * @description Tree item kind; a directory is imported recursively.
+             * @enum {string}
+             */
+            type: "file" | "dir";
+            /** @description The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored. */
+            entry: {
+                /** @description Repository-relative path of the file or directory. */
+                path: string;
+            };
+        } & {
             [key: string]: unknown;
         };
-        /** @description Paginated catalog content listing (designs, filters, aggregate counts). */
-        CatalogContentPage: {
-            /** @description Current page number of the result set. */
-            page?: number;
-            /** @description Number of items per page. */
-            pageSize?: number;
-            /** @description Total number of items available. */
-            totalCount?: number;
-            /** @description Published designs included on this page. */
+        /** @description The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored. */
+        GithubImportPathEntry: {
+            /** @description Repository-relative path of the file or directory. */
+            path: string;
+        };
+        /** @description Outcome of a GitHub repository import. */
+        GithubImportResponse: {
+            /** @description Designs created or updated by this import, with `sourceContent`, `patternFile` and `catalogData` omitted. */
             patterns?: {
                 /**
                  * Format: uuid
@@ -2791,6 +2938,11 @@ export interface components {
                  * @description Owning user ID.
                  */
                 userId?: string;
+                /**
+                 * Format: uuid
+                 * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                 */
+                readonly organizationId: string;
                 /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                 user?: {
                     /**
@@ -2968,7 +3120,7 @@ export interface components {
                     roleNames?: string[];
                     /** @description Teams the user belongs to with role information */
                     teams?: {
-                        /** @description Team memberships for the user with their assigned roles. */
+                        /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                         teamsWithRoles?: {
                             /**
                              * Format: uuid
@@ -3005,13 +3157,13 @@ export interface components {
                             deletedAt?: string | null;
                             /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                             roleNames: string[];
-                        }[];
-                        /** @description Total number of team memberships returned for the user. */
-                        totalCount?: number;
+                        }[] | null;
+                        /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
                     };
                     /** @description Organizations the user belongs to with role information */
                     organizations?: {
-                        /** @description Organization memberships for the user with their assigned roles. */
+                        /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                         organizationsWithRoles?: {
                             /**
                              * Format: uuid
@@ -3048,12 +3200,517 @@ export interface components {
                             deletedAt?: string | null;
                             /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                             roleNames: string[];
-                        }[];
-                        /** @description Total number of organization memberships returned for the user. */
-                        totalCount?: number;
+                        }[] | null;
+                        /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
                     };
                 } | null;
-                /** @description Optional structured location metadata (branch, host, path, ...). */
+                /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
+                location?: {
+                    [key: string]: string;
+                };
+                /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                patternFile?: string;
+                /**
+                 * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+                 * @enum {string}
+                 */
+                visibility?: "private" | "public" | "published";
+                /**
+                 * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                 * @enum {string|null}
+                 */
+                designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                /**
+                 * Format: byte
+                 * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                 */
+                sourceContent?: string | null;
+                /**
+                 * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                 * @default 0
+                 */
+                viewCount: number;
+                /**
+                 * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                 * @default 0
+                 */
+                downloadCount: number;
+                /**
+                 * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                 * @default 0
+                 */
+                cloneCount: number;
+                /**
+                 * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                 * @default 0
+                 */
+                deploymentCount: number;
+                /**
+                 * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                 * @default 0
+                 */
+                shareCount: number;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of design creation.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of last design modification.
+                 */
+                updatedAt?: string;
+            }[];
+            /** @description IDs (all also present in `patterns`) of designs updated in place rather than created. */
+            updatedIds?: string[];
+            /** @description Repository-relative paths left untouched because `onExisting` was `skip` and a design already imports them. */
+            skippedPaths?: string[];
+            /** @description One Error-severity import event per selected path that failed. */
+            errors?: {
+                /**
+                 * Format: uuid
+                 * @description Event ID.
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the entity on which the event was performed.
+                 */
+                actedUpon: string;
+                /** @description Action taken on the resource, for example `import`. */
+                action: string;
+                /** @description Resource kind the operation was invoked on, for example `pattern`. */
+                category: string;
+                /** @description Human-readable summary of what happened. */
+                description: string;
+                /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. */
+                metadata: {
+                    [key: string]: unknown;
+                } | null;
+                /**
+                 * Format: uuid
+                 * @description ID correlating the events one operation emitted.
+                 */
+                operationId: string;
+                /** @description Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values. */
+                severity: string;
+                /** @description Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values. */
+                status: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+                 */
+                systemId: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                owner?: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                readonly organizationId: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the event was recorded.
+                 */
+                createdAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the event was last updated.
+                 */
+                updatedAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the event was soft-deleted; omitted when it was not.
+                 */
+                deletedAt?: string | null;
+            }[];
+        };
+        /** @description The GitHub file a design is bound to - what `refreshPatternFromSource` re-reads. */
+        DesignSourceBindingPayload: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            connectionId: string;
+            /** @description Repository as `github.com/<owner>/<repo>` - the same form `location.host` stores. */
+            host: string;
+            /** @description Repository-relative path of a file (not a directory), with no leading slash. */
+            path: string;
+            /** @description Branch or tag the binding tracks, stored as `location.branch`. Empty or omitted means the repository's default branch. */
+            ref?: string;
+        };
+        /** @description The keys of a design's `location` (a MapObject on MesheryPattern) when the design is bound to a GitHub source. Written by `importGithubRepository`, `refreshPatternFromSource` and `updatePatternSource`. A design created by an upload or a URL import retains no source - it carries no `github` location and cannot be refreshed until it is bound to one. */
+        DesignSourceLocation: {
+            /** @description Source kind; `github` for a design bound to a GitHub file. */
+            type?: string;
+            /** @description Repository as `github.com/<owner>/<repo>`. */
+            host?: string;
+            /** @description Repository-relative path of the source file. */
+            path?: string;
+            /** @description Ref the binding tracks (a branch or tag name). Empty means the repository's default branch. */
+            branch?: string;
+            /** @description The commit the design's stored content was last read from, by an import or a refresh. Absent when the content was not read from the current binding - after a remap without a refresh, or for a design imported before commits were recorded. Compare it with the head of `branch` to tell whether the source has drifted. */
+            commitSha?: string;
+        } & {
+            [key: string]: unknown;
+        };
+        /** @description One branch of a GitHub repository. */
+        GithubBranch: {
+            /** @description Branch name. */
+            name: string;
+            /** @description Commit at the head of the branch. */
+            commitSha: string;
+        };
+        /** @description A page of a repository's branches. GitHub does not report a total, so the page says whether another follows instead of carrying a count. */
+        GithubBranchPage: {
+            /** @description The repository's default branch. */
+            defaultBranch: string;
+            branches: {
+                /** @description Branch name. */
+                name: string;
+                /** @description Commit at the head of the branch. */
+                commitSha: string;
+            }[];
+            /** @description Zero-based page index served. */
+            page: number;
+            /** @description Page size served. */
+            pageSize: number;
+            /** @description True when another page of branches follows. */
+            hasMore: boolean;
+        };
+        /** @description Design-level preferences */
+        DesignPreferences: {
+            /** @description Map of available layers, where keys are layer names. */
+            layers: Record<string, never>;
+        };
+        CatalogContentItem: {
+            [key: string]: unknown;
+        };
+        /** @description Paginated catalog content listing (designs, filters, aggregate counts). */
+        CatalogContentPage: {
+            /** @description Current page number of the result set. */
+            page?: number;
+            /** @description Number of items per page. */
+            pageSize?: number;
+            /** @description Total number of items available. */
+            totalCount?: number;
+            /** @description Published designs included on this page. */
+            patterns?: {
+                /**
+                 * Format: uuid
+                 * @description Server-generated design ID.
+                 */
+                id?: string;
+                /** @description Human-readable design name. */
+                name?: string;
+                /** @description Catalog metadata attached to the design when published. */
+                catalogData?: {
+                    /** @description Tracks the specific content version that has been made available in the Catalog. */
+                    publishedVersion?: string;
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                    class?: string & ("official" | "verified" | "reference architecture");
+                    /**
+                     * Model
+                     * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                     */
+                    compatibility: "kubernetes"[];
+                    /**
+                     * Caveats and Considerations
+                     * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                     */
+                    patternCaveats: string;
+                    /**
+                     * Description
+                     * @description Purpose of the design along with its intended and unintended uses.
+                     */
+                    patternInfo: string;
+                    /**
+                     * Type
+                     * @description Categorization of the type of design or operational flow depicted in this design.
+                     * @default Deployment
+                     * @enum {string}
+                     */
+                    type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                    /** @description Contains reference to the dark and light mode snapshots of the design. */
+                    snapshotURL?: string[];
+                };
+                /**
+                 * Format: uuid
+                 * @description Owning user ID.
+                 */
+                userId?: string;
+                /**
+                 * Format: uuid
+                 * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                 */
+                readonly organizationId: string;
+                /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                user?: {
+                    /**
+                     * Format: uuid
+                     * @description Unique identifier for the user
+                     */
+                    id: string;
+                    /**
+                     * @deprecated
+                     * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                     */
+                    userId: string;
+                    /**
+                     * @description Authentication provider (e.g., Google, Github)
+                     * @example [
+                     *       "local",
+                     *       "github",
+                     *       "google",
+                     *       "twitter"
+                     *     ]
+                     */
+                    provider: string;
+                    /**
+                     * Format: email
+                     * @description User's email address
+                     */
+                    email: string;
+                    /** @description User's first name */
+                    firstName: string;
+                    /** @description User's last name */
+                    lastName: string;
+                    /**
+                     * Format: uri
+                     * @description URL to user's avatar image
+                     */
+                    avatarUrl?: string;
+                    /**
+                     * @description User account status
+                     * @enum {string}
+                     */
+                    status: "active" | "inactive" | "pending" | "anonymous";
+                    /**
+                     * @description User's biography or description
+                     * @default
+                     */
+                    bio: string;
+                    /** @description User's country information stored as JSONB */
+                    country?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description User's region information stored as JSONB */
+                    region?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description User preferences stored as JSONB */
+                    preferences?: {
+                        /** @description The mesh adapters of the preference. */
+                        meshAdapters?: Record<string, never>[];
+                        grafana?: {
+                            /** @description Grafana URL for the user configuration. */
+                            grafanaUrl?: string;
+                            /** @description Grafana API key for the user configuration. */
+                            grafanaApiKey?: string;
+                            /** @description Selected Grafana board configurations for the user. */
+                            selectedBoardsConfigs?: {
+                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                board?: Record<string, never>;
+                                /** @description Panels selected for the Grafana board configuration. */
+                                panels?: Record<string, never>[];
+                                /** @description Template variables applied to the selected Grafana board configuration. */
+                                templateVars?: string[];
+                            }[];
+                        };
+                        prometheus?: {
+                            /** @description The prometheus URL of the prometheus. */
+                            prometheusUrl?: string;
+                            /** @description The selected prometheus boards configs of the prometheus. */
+                            selectedPrometheusBoardsConfigs?: {
+                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                board?: Record<string, never>;
+                                /** @description Panels selected for the Grafana board configuration. */
+                                panels?: Record<string, never>[];
+                                /** @description Template variables applied to the selected Grafana board configuration. */
+                                templateVars?: string[];
+                            }[];
+                        };
+                        loadTestPrefs?: {
+                            /** @description Concurrent requests */
+                            c?: number;
+                            /** @description Queries per second */
+                            qps?: number;
+                            /** @description Duration */
+                            t?: string;
+                            /** @description Load generator */
+                            gen?: string;
+                        };
+                        /** @description The anonymous usage stats of the preference. */
+                        anonymousUsageStats: boolean;
+                        /** @description The anonymous perf results of the preference. */
+                        anonymousPerfResults: boolean;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of when the resource was last updated.
+                         */
+                        updatedAt: string;
+                        /** @description The dashboard preferences of the preference. */
+                        dashboardPreferences: {
+                            [key: string]: unknown;
+                        };
+                        /**
+                         * Format: uuid
+                         * @description ID of the associated selectedOrganization.
+                         */
+                        selectedOrganizationId: string;
+                        /** @description The selected workspace for organizations of the preference. */
+                        selectedWorkspaceForOrganizations: {
+                            [key: string]: string;
+                        };
+                        /** @description The users extension preferences of the preference. */
+                        usersExtensionPreferences: {
+                            [key: string]: unknown;
+                        };
+                        /** @description The remote provider preferences of the preference. */
+                        remoteProviderPreferences: {
+                            [key: string]: unknown;
+                        };
+                    };
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when user accepted terms and conditions
+                     */
+                    acceptedTermsAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of user's first login
+                     */
+                    firstLoginTime?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of user's most recent login
+                     */
+                    lastLoginTime: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the user record was created
+                     */
+                    createdAt: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the user record was last updated
+                     */
+                    updatedAt: string;
+                    /** @description Various online profiles associated with the user account */
+                    socials?: {
+                        /** @description The site of the social. */
+                        site: string;
+                        /**
+                         * Format: uri
+                         * @description The link of the social.
+                         */
+                        link: string;
+                    }[];
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                     */
+                    deletedAt: string | null;
+                    /**
+                     * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+                     * @example [
+                     *       "organization admin",
+                     *       "user"
+                     *     ]
+                     */
+                    roleNames?: string[];
+                    /** @description Teams the user belongs to with role information */
+                    teams?: {
+                        /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+                        teamsWithRoles?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier of the team.
+                             */
+                            id: string;
+                            /** @description Name of the team. */
+                            name: string;
+                            /** @description Human readable description of the team. */
+                            description?: string;
+                            /**
+                             * Format: uuid
+                             * @description Identifier of the team owner.
+                             */
+                            owner?: string;
+                            /** @description Free-form metadata associated with the team. */
+                            metadata?: {
+                                [key: string]: unknown;
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was soft-deleted (null if not deleted).
+                             */
+                            deletedAt?: string | null;
+                            /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                            roleNames: string[];
+                        }[] | null;
+                        /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
+                    };
+                    /** @description Organizations the user belongs to with role information */
+                    organizations?: {
+                        /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+                        organizationsWithRoles?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier of the organization.
+                             */
+                            id: string;
+                            /** @description Name of the organization. */
+                            name: string;
+                            /** @description Human readable description of the organization. */
+                            description?: string;
+                            /** @description Country associated with the organization. */
+                            country?: string;
+                            /** @description Region associated with the organization. */
+                            region?: string;
+                            /**
+                             * Format: uuid
+                             * @description Identifier of the organization owner.
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                             */
+                            deletedAt?: string | null;
+                            /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                            roleNames: string[];
+                        }[] | null;
+                        /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
+                    };
+                } | null;
+                /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                 location?: {
                     [key: string]: string;
                 };
@@ -3429,7 +4086,7 @@ export interface components {
                 roleNames?: string[];
                 /** @description Teams the user belongs to with role information */
                 teams?: {
-                    /** @description Team memberships for the user with their assigned roles. */
+                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                     teamsWithRoles?: {
                         /**
                          * Format: uuid
@@ -3466,13 +4123,13 @@ export interface components {
                         deletedAt?: string | null;
                         /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                         roleNames: string[];
-                    }[];
-                    /** @description Total number of team memberships returned for the user. */
-                    totalCount?: number;
+                    }[] | null;
+                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                    totalCount?: number | null;
                 };
                 /** @description Organizations the user belongs to with role information */
                 organizations?: {
-                    /** @description Organization memberships for the user with their assigned roles. */
+                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                     organizationsWithRoles?: {
                         /**
                          * Format: uuid
@@ -3509,9 +4166,9 @@ export interface components {
                         deletedAt?: string | null;
                         /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                         roleNames: string[];
-                    }[];
-                    /** @description Total number of organization memberships returned for the user. */
-                    totalCount?: number;
+                    }[] | null;
+                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                    totalCount?: number | null;
                 };
             } | null;
             /**
@@ -3750,7 +4407,7 @@ export interface components {
                     roleNames?: string[];
                     /** @description Teams the user belongs to with role information */
                     teams?: {
-                        /** @description Team memberships for the user with their assigned roles. */
+                        /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                         teamsWithRoles?: {
                             /**
                              * Format: uuid
@@ -3787,13 +4444,13 @@ export interface components {
                             deletedAt?: string | null;
                             /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                             roleNames: string[];
-                        }[];
-                        /** @description Total number of team memberships returned for the user. */
-                        totalCount?: number;
+                        }[] | null;
+                        /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
                     };
                     /** @description Organizations the user belongs to with role information */
                     organizations?: {
-                        /** @description Organization memberships for the user with their assigned roles. */
+                        /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                         organizationsWithRoles?: {
                             /**
                              * Format: uuid
@@ -3830,9 +4487,9 @@ export interface components {
                             deletedAt?: string | null;
                             /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                             roleNames: string[];
-                        }[];
-                        /** @description Total number of organization memberships returned for the user. */
-                        totalCount?: number;
+                        }[] | null;
+                        /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                        totalCount?: number | null;
                     };
                 } | null;
                 /**
@@ -3970,6 +4627,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Publish request already exists */
+        409: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Internal server error */
         500: {
             headers: {
@@ -3979,10 +4645,58 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Forbidden */
+        MeshkitError403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Bad gateway - an upstream service the operation depends on could not be reached or rejected the request */
+        MeshkitError502: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
     };
     parameters: {
         /** @description Design (Pattern) ID */
         designId: string;
+        /** @description ID of a GitHub App connection. */
+        connectionId: string;
         /** @description Get responses by page */
         page: number;
         /** @description Number of items per page (canonical camelCase form). */
@@ -4158,6 +4872,11 @@ export interface operations {
                              * @description Owning user ID.
                              */
                             userId?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                             */
+                            readonly organizationId: string;
                             /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                             user?: {
                                 /**
@@ -4335,7 +5054,7 @@ export interface operations {
                                 roleNames?: string[];
                                 /** @description Teams the user belongs to with role information */
                                 teams?: {
-                                    /** @description Team memberships for the user with their assigned roles. */
+                                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                     teamsWithRoles?: {
                                         /**
                                          * Format: uuid
@@ -4372,13 +5091,13 @@ export interface operations {
                                         deletedAt?: string | null;
                                         /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                         roleNames: string[];
-                                    }[];
-                                    /** @description Total number of team memberships returned for the user. */
-                                    totalCount?: number;
+                                    }[] | null;
+                                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
                                 };
                                 /** @description Organizations the user belongs to with role information */
                                 organizations?: {
-                                    /** @description Organization memberships for the user with their assigned roles. */
+                                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                     organizationsWithRoles?: {
                                         /**
                                          * Format: uuid
@@ -4415,12 +5134,12 @@ export interface operations {
                                         deletedAt?: string | null;
                                         /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                         roleNames: string[];
-                                    }[];
-                                    /** @description Total number of organization memberships returned for the user. */
-                                    totalCount?: number;
+                                    }[] | null;
+                                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
                                 };
                             } | null;
-                            /** @description Optional structured location metadata (branch, host, path, ...). */
+                            /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                             location?: {
                                 [key: string]: string;
                             };
@@ -4639,6 +5358,11 @@ export interface operations {
                          * @description Owning user ID.
                          */
                         userId?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                         */
+                        readonly organizationId: string;
                         /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
@@ -4816,7 +5540,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -4853,13 +5577,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -4896,12 +5620,12 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         } | null;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                         location?: {
                             [key: string]: string;
                         };
@@ -5114,6 +5838,11 @@ export interface operations {
                          * @description Owning user ID.
                          */
                         userId?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                         */
+                        readonly organizationId: string;
                         /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
@@ -5291,7 +6020,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -5328,13 +6057,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -5371,12 +6100,12 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         } | null;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                         location?: {
                             [key: string]: string;
                         };
@@ -5574,6 +6303,11 @@ export interface operations {
                          * @description Owning user ID.
                          */
                         userId?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                         */
+                        readonly organizationId: string;
                         /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
@@ -5751,7 +6485,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -5788,13 +6522,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -5831,12 +6565,12 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         } | null;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                         location?: {
                             [key: string]: string;
                         };
@@ -6044,44 +6778,19 @@ export interface operations {
             };
         };
     };
-    importDesign: {
+    refreshPatternFromSource: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                /** @description Design (Pattern) ID */
+                designId: string;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * Format: byte
-                     * @description Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
-                     */
-                    file: string;
-                    /** @description The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
-                    fileName: string;
-                    /**
-                     * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
-                     * @default Untitled Design
-                     */
-                    name?: string;
-                } | {
-                    /**
-                     * Format: uri
-                     * @description A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
-                     */
-                    url: string;
-                    /**
-                     * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
-                     * @default Untitled Design
-                     */
-                    name?: string;
-                };
-            };
-        };
+        requestBody?: never;
         responses: {
-            /** @description Successful import. The response body is a JSON array of the saved designs, not a message envelope. The import path saves exactly one design, so the array carries a single element and consumers read the imported design as the first element. */
+            /** @description Design refreshed. `sourceContent` and `patternFile` are omitted from the response body (they can be megabytes), as on import. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -6131,6 +6840,11 @@ export interface operations {
                          * @description Owning user ID.
                          */
                         userId?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                         */
+                        readonly organizationId: string;
                         /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
@@ -6308,7 +7022,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -6345,13 +7059,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -6388,12 +7102,1015 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         } | null;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
+                        location?: {
+                            [key: string]: string;
+                        };
+                        /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                        patternFile?: string;
+                        /**
+                         * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+                         * @enum {string}
+                         */
+                        visibility?: "private" | "public" | "published";
+                        /**
+                         * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                         * @enum {string|null}
+                         */
+                        designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                        /**
+                         * Format: byte
+                         * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                         */
+                        sourceContent?: string | null;
+                        /**
+                         * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        viewCount: number;
+                        /**
+                         * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        downloadCount: number;
+                        /**
+                         * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        cloneCount: number;
+                        /**
+                         * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        deploymentCount: number;
+                        /**
+                         * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        shareCount: number;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of design creation.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of last design modification.
+                         */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Publish request already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Bad gateway - an upstream service the operation depends on could not be reached or rejected the request */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+        };
+    };
+    updatePatternSource: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Design (Pattern) ID */
+                designId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    connectionId: string;
+                    /** @description Repository as `github.com/<owner>/<repo>` - the same form `location.host` stores. */
+                    host: string;
+                    /** @description Repository-relative path of a file (not a directory), with no leading slash. */
+                    path: string;
+                    /** @description Branch or tag the binding tracks, stored as `location.branch`. Empty or omitted means the repository's default branch. */
+                    ref?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Source binding updated. `sourceContent` and `patternFile` are omitted from the response body, as on refresh and import. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Server-generated design ID.
+                         */
+                        id?: string;
+                        /** @description Human-readable design name. */
+                        name?: string;
+                        /** @description Catalog metadata attached to the design when published. */
+                        catalogData?: {
+                            /** @description Tracks the specific content version that has been made available in the Catalog. */
+                            publishedVersion?: string;
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                            class?: string & ("official" | "verified" | "reference architecture");
+                            /**
+                             * Model
+                             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                             */
+                            compatibility: "kubernetes"[];
+                            /**
+                             * Caveats and Considerations
+                             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                             */
+                            patternCaveats: string;
+                            /**
+                             * Description
+                             * @description Purpose of the design along with its intended and unintended uses.
+                             */
+                            patternInfo: string;
+                            /**
+                             * Type
+                             * @description Categorization of the type of design or operational flow depicted in this design.
+                             * @default Deployment
+                             * @enum {string}
+                             */
+                            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                            /** @description Contains reference to the dark and light mode snapshots of the design. */
+                            snapshotURL?: string[];
+                        };
+                        /**
+                         * Format: uuid
+                         * @description Owning user ID.
+                         */
+                        userId?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                         */
+                        readonly organizationId: string;
+                        /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                        user?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /**
+                             * @deprecated
+                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             */
+                            userId: string;
+                            /**
+                             * @description Authentication provider (e.g., Google, Github)
+                             * @example [
+                             *       "local",
+                             *       "github",
+                             *       "google",
+                             *       "twitter"
+                             *     ]
+                             */
+                            provider: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email: string;
+                            /** @description User's first name */
+                            firstName: string;
+                            /** @description User's last name */
+                            lastName: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatarUrl?: string;
+                            /**
+                             * @description User account status
+                             * @enum {string}
+                             */
+                            status: "active" | "inactive" | "pending" | "anonymous";
+                            /**
+                             * @description User's biography or description
+                             * @default
+                             */
+                            bio: string;
+                            /** @description User's country information stored as JSONB */
+                            country?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User's region information stored as JSONB */
+                            region?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User preferences stored as JSONB */
+                            preferences?: {
+                                /** @description The mesh adapters of the preference. */
+                                meshAdapters?: Record<string, never>[];
+                                grafana?: {
+                                    /** @description Grafana URL for the user configuration. */
+                                    grafanaUrl?: string;
+                                    /** @description Grafana API key for the user configuration. */
+                                    grafanaApiKey?: string;
+                                    /** @description Selected Grafana board configurations for the user. */
+                                    selectedBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                prometheus?: {
+                                    /** @description The prometheus URL of the prometheus. */
+                                    prometheusUrl?: string;
+                                    /** @description The selected prometheus boards configs of the prometheus. */
+                                    selectedPrometheusBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                loadTestPrefs?: {
+                                    /** @description Concurrent requests */
+                                    c?: number;
+                                    /** @description Queries per second */
+                                    qps?: number;
+                                    /** @description Duration */
+                                    t?: string;
+                                    /** @description Load generator */
+                                    gen?: string;
+                                };
+                                /** @description The anonymous usage stats of the preference. */
+                                anonymousUsageStats: boolean;
+                                /** @description The anonymous perf results of the preference. */
+                                anonymousPerfResults: boolean;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of when the resource was last updated.
+                                 */
+                                updatedAt: string;
+                                /** @description The dashboard preferences of the preference. */
+                                dashboardPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: uuid
+                                 * @description ID of the associated selectedOrganization.
+                                 */
+                                selectedOrganizationId: string;
+                                /** @description The selected workspace for organizations of the preference. */
+                                selectedWorkspaceForOrganizations: {
+                                    [key: string]: string;
+                                };
+                                /** @description The users extension preferences of the preference. */
+                                usersExtensionPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The remote provider preferences of the preference. */
+                                remoteProviderPreferences: {
+                                    [key: string]: unknown;
+                                };
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when user accepted terms and conditions
+                             */
+                            acceptedTermsAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's first login
+                             */
+                            firstLoginTime?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's most recent login
+                             */
+                            lastLoginTime: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was last updated
+                             */
+                            updatedAt: string;
+                            /** @description Various online profiles associated with the user account */
+                            socials?: {
+                                /** @description The site of the social. */
+                                site: string;
+                                /**
+                                 * Format: uri
+                                 * @description The link of the social.
+                                 */
+                                link: string;
+                            }[];
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deletedAt: string | null;
+                            /**
+                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+                             * @example [
+                             *       "organization admin",
+                             *       "user"
+                             *     ]
+                             */
+                            roleNames?: string[];
+                            /** @description Teams the user belongs to with role information */
+                            teams?: {
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+                                teamsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the team.
+                                     */
+                                    id: string;
+                                    /** @description Name of the team. */
+                                    name: string;
+                                    /** @description Human readable description of the team. */
+                                    description?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the team owner.
+                                     */
+                                    owner?: string;
+                                    /** @description Free-form metadata associated with the team. */
+                                    metadata?: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
+                            };
+                            /** @description Organizations the user belongs to with role information */
+                            organizations?: {
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+                                organizationsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the organization.
+                                     */
+                                    id: string;
+                                    /** @description Name of the organization. */
+                                    name: string;
+                                    /** @description Human readable description of the organization. */
+                                    description?: string;
+                                    /** @description Country associated with the organization. */
+                                    country?: string;
+                                    /** @description Region associated with the organization. */
+                                    region?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the organization owner.
+                                     */
+                                    owner?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
+                            };
+                        } | null;
+                        /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
+                        location?: {
+                            [key: string]: string;
+                        };
+                        /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                        patternFile?: string;
+                        /**
+                         * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+                         * @enum {string}
+                         */
+                        visibility?: "private" | "public" | "published";
+                        /**
+                         * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                         * @enum {string|null}
+                         */
+                        designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                        /**
+                         * Format: byte
+                         * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                         */
+                        sourceContent?: string | null;
+                        /**
+                         * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        viewCount: number;
+                        /**
+                         * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        downloadCount: number;
+                        /**
+                         * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        cloneCount: number;
+                        /**
+                         * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        deploymentCount: number;
+                        /**
+                         * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        shareCount: number;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of design creation.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of last design modification.
+                         */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Publish request already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Bad gateway - an upstream service the operation depends on could not be reached or rejected the request */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+        };
+    };
+    importDesign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: byte
+                     * @description Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
+                     */
+                    file: string;
+                    /** @description The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
+                    fileName: string;
+                    /**
+                     * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+                     * @default Untitled Design
+                     */
+                    name?: string;
+                } | {
+                    /**
+                     * Format: uri
+                     * @description A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
+                     */
+                    url: string;
+                    /**
+                     * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+                     * @default Untitled Design
+                     */
+                    name?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful import. The response body is a JSON array of the saved designs, not a message envelope. The import path saves exactly one design, so the array carries a single element and consumers read the imported design as the first element. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Server-generated design ID.
+                         */
+                        id?: string;
+                        /** @description Human-readable design name. */
+                        name?: string;
+                        /** @description Catalog metadata attached to the design when published. */
+                        catalogData?: {
+                            /** @description Tracks the specific content version that has been made available in the Catalog. */
+                            publishedVersion?: string;
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                            class?: string & ("official" | "verified" | "reference architecture");
+                            /**
+                             * Model
+                             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                             */
+                            compatibility: "kubernetes"[];
+                            /**
+                             * Caveats and Considerations
+                             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                             */
+                            patternCaveats: string;
+                            /**
+                             * Description
+                             * @description Purpose of the design along with its intended and unintended uses.
+                             */
+                            patternInfo: string;
+                            /**
+                             * Type
+                             * @description Categorization of the type of design or operational flow depicted in this design.
+                             * @default Deployment
+                             * @enum {string}
+                             */
+                            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                            /** @description Contains reference to the dark and light mode snapshots of the design. */
+                            snapshotURL?: string[];
+                        };
+                        /**
+                         * Format: uuid
+                         * @description Owning user ID.
+                         */
+                        userId?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                         */
+                        readonly organizationId: string;
+                        /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                        user?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /**
+                             * @deprecated
+                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             */
+                            userId: string;
+                            /**
+                             * @description Authentication provider (e.g., Google, Github)
+                             * @example [
+                             *       "local",
+                             *       "github",
+                             *       "google",
+                             *       "twitter"
+                             *     ]
+                             */
+                            provider: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email: string;
+                            /** @description User's first name */
+                            firstName: string;
+                            /** @description User's last name */
+                            lastName: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatarUrl?: string;
+                            /**
+                             * @description User account status
+                             * @enum {string}
+                             */
+                            status: "active" | "inactive" | "pending" | "anonymous";
+                            /**
+                             * @description User's biography or description
+                             * @default
+                             */
+                            bio: string;
+                            /** @description User's country information stored as JSONB */
+                            country?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User's region information stored as JSONB */
+                            region?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User preferences stored as JSONB */
+                            preferences?: {
+                                /** @description The mesh adapters of the preference. */
+                                meshAdapters?: Record<string, never>[];
+                                grafana?: {
+                                    /** @description Grafana URL for the user configuration. */
+                                    grafanaUrl?: string;
+                                    /** @description Grafana API key for the user configuration. */
+                                    grafanaApiKey?: string;
+                                    /** @description Selected Grafana board configurations for the user. */
+                                    selectedBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                prometheus?: {
+                                    /** @description The prometheus URL of the prometheus. */
+                                    prometheusUrl?: string;
+                                    /** @description The selected prometheus boards configs of the prometheus. */
+                                    selectedPrometheusBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                loadTestPrefs?: {
+                                    /** @description Concurrent requests */
+                                    c?: number;
+                                    /** @description Queries per second */
+                                    qps?: number;
+                                    /** @description Duration */
+                                    t?: string;
+                                    /** @description Load generator */
+                                    gen?: string;
+                                };
+                                /** @description The anonymous usage stats of the preference. */
+                                anonymousUsageStats: boolean;
+                                /** @description The anonymous perf results of the preference. */
+                                anonymousPerfResults: boolean;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of when the resource was last updated.
+                                 */
+                                updatedAt: string;
+                                /** @description The dashboard preferences of the preference. */
+                                dashboardPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: uuid
+                                 * @description ID of the associated selectedOrganization.
+                                 */
+                                selectedOrganizationId: string;
+                                /** @description The selected workspace for organizations of the preference. */
+                                selectedWorkspaceForOrganizations: {
+                                    [key: string]: string;
+                                };
+                                /** @description The users extension preferences of the preference. */
+                                usersExtensionPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The remote provider preferences of the preference. */
+                                remoteProviderPreferences: {
+                                    [key: string]: unknown;
+                                };
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when user accepted terms and conditions
+                             */
+                            acceptedTermsAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's first login
+                             */
+                            firstLoginTime?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's most recent login
+                             */
+                            lastLoginTime: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was last updated
+                             */
+                            updatedAt: string;
+                            /** @description Various online profiles associated with the user account */
+                            socials?: {
+                                /** @description The site of the social. */
+                                site: string;
+                                /**
+                                 * Format: uri
+                                 * @description The link of the social.
+                                 */
+                                link: string;
+                            }[];
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deletedAt: string | null;
+                            /**
+                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+                             * @example [
+                             *       "organization admin",
+                             *       "user"
+                             *     ]
+                             */
+                            roleNames?: string[];
+                            /** @description Teams the user belongs to with role information */
+                            teams?: {
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+                                teamsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the team.
+                                     */
+                                    id: string;
+                                    /** @description Name of the team. */
+                                    name: string;
+                                    /** @description Human readable description of the team. */
+                                    description?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the team owner.
+                                     */
+                                    owner?: string;
+                                    /** @description Free-form metadata associated with the team. */
+                                    metadata?: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
+                            };
+                            /** @description Organizations the user belongs to with role information */
+                            organizations?: {
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+                                organizationsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the organization.
+                                     */
+                                    id: string;
+                                    /** @description Name of the organization. */
+                                    name: string;
+                                    /** @description Human readable description of the organization. */
+                                    description?: string;
+                                    /** @description Country associated with the organization. */
+                                    country?: string;
+                                    /** @description Region associated with the organization. */
+                                    region?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the organization owner.
+                                     */
+                                    owner?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
+                            };
+                        } | null;
+                        /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                         location?: {
                             [key: string]: string;
                         };
@@ -6477,36 +8194,26 @@ export interface operations {
             };
         };
     };
-    getCatalogContent: {
+    getGithubImportedDesigns: {
         parameters: {
             query?: {
+                /** @description Restrict to one repository, as `<owner>/<repo>` (case-insensitive). */
+                repository?: string;
                 /** @description Get responses by page */
                 page?: number;
                 /** @description Number of items per page (canonical camelCase form). */
                 pageSize?: number;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-                type?: string;
-                technology?: string;
-                metrics?: boolean;
-                class?: string;
-                userId?: string;
-                orgId?: string;
-                workspaceId?: string;
-                teamId?: string;
-                populate?: boolean;
             };
             header?: never;
             path: {
-                type: string;
+                /** @description ID of a GitHub App connection. */
+                connectionId: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Catalog content page */
+            /** @description Imported designs page. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -6519,7 +8226,7 @@ export interface operations {
                         pageSize?: number;
                         /** @description Total number of items available. */
                         totalCount?: number;
-                        /** @description Published designs included on this page. */
+                        /** @description Designs included on this page of results. */
                         patterns?: {
                             /**
                              * Format: uuid
@@ -6564,6 +8271,11 @@ export interface operations {
                              * @description Owning user ID.
                              */
                             userId?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                             */
+                            readonly organizationId: string;
                             /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                             user?: {
                                 /**
@@ -6741,7 +8453,7 @@ export interface operations {
                                 roleNames?: string[];
                                 /** @description Teams the user belongs to with role information */
                                 teams?: {
-                                    /** @description Team memberships for the user with their assigned roles. */
+                                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                     teamsWithRoles?: {
                                         /**
                                          * Format: uuid
@@ -6778,13 +8490,13 @@ export interface operations {
                                         deletedAt?: string | null;
                                         /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                         roleNames: string[];
-                                    }[];
-                                    /** @description Total number of team memberships returned for the user. */
-                                    totalCount?: number;
+                                    }[] | null;
+                                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
                                 };
                                 /** @description Organizations the user belongs to with role information */
                                 organizations?: {
-                                    /** @description Organization memberships for the user with their assigned roles. */
+                                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                     organizationsWithRoles?: {
                                         /**
                                          * Format: uuid
@@ -6821,12 +8533,1162 @@ export interface operations {
                                         deletedAt?: string | null;
                                         /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                         roleNames: string[];
-                                    }[];
-                                    /** @description Total number of organization memberships returned for the user. */
-                                    totalCount?: number;
+                                    }[] | null;
+                                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
                                 };
                             } | null;
-                            /** @description Optional structured location metadata (branch, host, path, ...). */
+                            /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
+                            location?: {
+                                [key: string]: string;
+                            };
+                            /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                            patternFile?: string;
+                            /**
+                             * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+                             * @enum {string}
+                             */
+                            visibility?: "private" | "public" | "published";
+                            /**
+                             * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                             * @enum {string|null}
+                             */
+                            designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                            /**
+                             * Format: byte
+                             * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                             */
+                            sourceContent?: string | null;
+                            /**
+                             * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            viewCount: number;
+                            /**
+                             * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            downloadCount: number;
+                            /**
+                             * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            cloneCount: number;
+                            /**
+                             * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            deploymentCount: number;
+                            /**
+                             * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            shareCount: number;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of design creation.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of last design modification.
+                             */
+                            updatedAt?: string;
+                        }[];
+                        /** @description Optional discriminator describing which collection the page represents. */
+                        resultType?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    importGithubRepository: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of a GitHub App connection. */
+                connectionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Repository as `<owner>/<repo>`. */
+                    name: string;
+                    /** @description Selected tree items, as served by `GET /api/integrations/github/scan`. The server reads only `type` and `entry.path`; the remaining scan fields are accepted and ignored. */
+                    paths: ({
+                        /**
+                         * @description Tree item kind; a directory is imported recursively.
+                         * @enum {string}
+                         */
+                        type: "file" | "dir";
+                        /** @description The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored. */
+                        entry: {
+                            /** @description Repository-relative path of the file or directory. */
+                            path: string;
+                        };
+                    } & {
+                        [key: string]: unknown;
+                    })[];
+                    /**
+                     * @description What to do with a selected file that already identifies one of the caller's designs. `skip` (the default, "import new only") leaves it untouched and reports it in `skippedPaths`, so a request that omits `onExisting` never overwrites an existing design; `update` refreshes that design in place under the same ID (idempotent import); `new` imports it again as an additional design.
+                     * @default skip
+                     * @enum {string}
+                     */
+                    onExisting?: "update" | "skip" | "new";
+                };
+            };
+        };
+        responses: {
+            /** @description Import outcome. Per-file failures are reported in `errors`, not as a non-2xx status. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Designs created or updated by this import, with `sourceContent`, `patternFile` and `catalogData` omitted. */
+                        patterns?: {
+                            /**
+                             * Format: uuid
+                             * @description Server-generated design ID.
+                             */
+                            id?: string;
+                            /** @description Human-readable design name. */
+                            name?: string;
+                            /** @description Catalog metadata attached to the design when published. */
+                            catalogData?: {
+                                /** @description Tracks the specific content version that has been made available in the Catalog. */
+                                publishedVersion?: string;
+                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                                class?: string & ("official" | "verified" | "reference architecture");
+                                /**
+                                 * Model
+                                 * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                                 */
+                                compatibility: "kubernetes"[];
+                                /**
+                                 * Caveats and Considerations
+                                 * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                                 */
+                                patternCaveats: string;
+                                /**
+                                 * Description
+                                 * @description Purpose of the design along with its intended and unintended uses.
+                                 */
+                                patternInfo: string;
+                                /**
+                                 * Type
+                                 * @description Categorization of the type of design or operational flow depicted in this design.
+                                 * @default Deployment
+                                 * @enum {string}
+                                 */
+                                type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                                /** @description Contains reference to the dark and light mode snapshots of the design. */
+                                snapshotURL?: string[];
+                            };
+                            /**
+                             * Format: uuid
+                             * @description Owning user ID.
+                             */
+                            userId?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                             */
+                            readonly organizationId: string;
+                            /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                            user?: {
+                                /**
+                                 * Format: uuid
+                                 * @description Unique identifier for the user
+                                 */
+                                id: string;
+                                /**
+                                 * @deprecated
+                                 * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                                 */
+                                userId: string;
+                                /**
+                                 * @description Authentication provider (e.g., Google, Github)
+                                 * @example [
+                                 *       "local",
+                                 *       "github",
+                                 *       "google",
+                                 *       "twitter"
+                                 *     ]
+                                 */
+                                provider: string;
+                                /**
+                                 * Format: email
+                                 * @description User's email address
+                                 */
+                                email: string;
+                                /** @description User's first name */
+                                firstName: string;
+                                /** @description User's last name */
+                                lastName: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL to user's avatar image
+                                 */
+                                avatarUrl?: string;
+                                /**
+                                 * @description User account status
+                                 * @enum {string}
+                                 */
+                                status: "active" | "inactive" | "pending" | "anonymous";
+                                /**
+                                 * @description User's biography or description
+                                 * @default
+                                 */
+                                bio: string;
+                                /** @description User's country information stored as JSONB */
+                                country?: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description User's region information stored as JSONB */
+                                region?: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description User preferences stored as JSONB */
+                                preferences?: {
+                                    /** @description The mesh adapters of the preference. */
+                                    meshAdapters?: Record<string, never>[];
+                                    grafana?: {
+                                        /** @description Grafana URL for the user configuration. */
+                                        grafanaUrl?: string;
+                                        /** @description Grafana API key for the user configuration. */
+                                        grafanaApiKey?: string;
+                                        /** @description Selected Grafana board configurations for the user. */
+                                        selectedBoardsConfigs?: {
+                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                            board?: Record<string, never>;
+                                            /** @description Panels selected for the Grafana board configuration. */
+                                            panels?: Record<string, never>[];
+                                            /** @description Template variables applied to the selected Grafana board configuration. */
+                                            templateVars?: string[];
+                                        }[];
+                                    };
+                                    prometheus?: {
+                                        /** @description The prometheus URL of the prometheus. */
+                                        prometheusUrl?: string;
+                                        /** @description The selected prometheus boards configs of the prometheus. */
+                                        selectedPrometheusBoardsConfigs?: {
+                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                            board?: Record<string, never>;
+                                            /** @description Panels selected for the Grafana board configuration. */
+                                            panels?: Record<string, never>[];
+                                            /** @description Template variables applied to the selected Grafana board configuration. */
+                                            templateVars?: string[];
+                                        }[];
+                                    };
+                                    loadTestPrefs?: {
+                                        /** @description Concurrent requests */
+                                        c?: number;
+                                        /** @description Queries per second */
+                                        qps?: number;
+                                        /** @description Duration */
+                                        t?: string;
+                                        /** @description Load generator */
+                                        gen?: string;
+                                    };
+                                    /** @description The anonymous usage stats of the preference. */
+                                    anonymousUsageStats: boolean;
+                                    /** @description The anonymous perf results of the preference. */
+                                    anonymousPerfResults: boolean;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp of when the resource was last updated.
+                                     */
+                                    updatedAt: string;
+                                    /** @description The dashboard preferences of the preference. */
+                                    dashboardPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: uuid
+                                     * @description ID of the associated selectedOrganization.
+                                     */
+                                    selectedOrganizationId: string;
+                                    /** @description The selected workspace for organizations of the preference. */
+                                    selectedWorkspaceForOrganizations: {
+                                        [key: string]: string;
+                                    };
+                                    /** @description The users extension preferences of the preference. */
+                                    usersExtensionPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                    /** @description The remote provider preferences of the preference. */
+                                    remoteProviderPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                };
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when user accepted terms and conditions
+                                 */
+                                acceptedTermsAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of user's first login
+                                 */
+                                firstLoginTime?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of user's most recent login
+                                 */
+                                lastLoginTime: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was created
+                                 */
+                                createdAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was last updated
+                                 */
+                                updatedAt: string;
+                                /** @description Various online profiles associated with the user account */
+                                socials?: {
+                                    /** @description The site of the social. */
+                                    site: string;
+                                    /**
+                                     * Format: uri
+                                     * @description The link of the social.
+                                     */
+                                    link: string;
+                                }[];
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                                 */
+                                deletedAt: string | null;
+                                /**
+                                 * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+                                 * @example [
+                                 *       "organization admin",
+                                 *       "user"
+                                 *     ]
+                                 */
+                                roleNames?: string[];
+                                /** @description Teams the user belongs to with role information */
+                                teams?: {
+                                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+                                    teamsWithRoles?: {
+                                        /**
+                                         * Format: uuid
+                                         * @description Unique identifier of the team.
+                                         */
+                                        id: string;
+                                        /** @description Name of the team. */
+                                        name: string;
+                                        /** @description Human readable description of the team. */
+                                        description?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description Identifier of the team owner.
+                                         */
+                                        owner?: string;
+                                        /** @description Free-form metadata associated with the team. */
+                                        metadata?: {
+                                            [key: string]: unknown;
+                                        };
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was created.
+                                         */
+                                        createdAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was last updated.
+                                         */
+                                        updatedAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                         */
+                                        deletedAt?: string | null;
+                                        /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                        roleNames: string[];
+                                    }[] | null;
+                                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
+                                };
+                                /** @description Organizations the user belongs to with role information */
+                                organizations?: {
+                                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+                                    organizationsWithRoles?: {
+                                        /**
+                                         * Format: uuid
+                                         * @description Unique identifier of the organization.
+                                         */
+                                        id: string;
+                                        /** @description Name of the organization. */
+                                        name: string;
+                                        /** @description Human readable description of the organization. */
+                                        description?: string;
+                                        /** @description Country associated with the organization. */
+                                        country?: string;
+                                        /** @description Region associated with the organization. */
+                                        region?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description Identifier of the organization owner.
+                                         */
+                                        owner?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was created.
+                                         */
+                                        createdAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was last updated.
+                                         */
+                                        updatedAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                         */
+                                        deletedAt?: string | null;
+                                        /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                        roleNames: string[];
+                                    }[] | null;
+                                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
+                                };
+                            } | null;
+                            /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
+                            location?: {
+                                [key: string]: string;
+                            };
+                            /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                            patternFile?: string;
+                            /**
+                             * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+                             * @enum {string}
+                             */
+                            visibility?: "private" | "public" | "published";
+                            /**
+                             * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                             * @enum {string|null}
+                             */
+                            designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                            /**
+                             * Format: byte
+                             * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                             */
+                            sourceContent?: string | null;
+                            /**
+                             * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            viewCount: number;
+                            /**
+                             * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            downloadCount: number;
+                            /**
+                             * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            cloneCount: number;
+                            /**
+                             * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            deploymentCount: number;
+                            /**
+                             * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            shareCount: number;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of design creation.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of last design modification.
+                             */
+                            updatedAt?: string;
+                        }[];
+                        /** @description IDs (all also present in `patterns`) of designs updated in place rather than created. */
+                        updatedIds?: string[];
+                        /** @description Repository-relative paths left untouched because `onExisting` was `skip` and a design already imports them. */
+                        skippedPaths?: string[];
+                        /** @description One Error-severity import event per selected path that failed. */
+                        errors?: {
+                            /**
+                             * Format: uuid
+                             * @description Event ID.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the entity on which the event was performed.
+                             */
+                            actedUpon: string;
+                            /** @description Action taken on the resource, for example `import`. */
+                            action: string;
+                            /** @description Resource kind the operation was invoked on, for example `pattern`. */
+                            category: string;
+                            /** @description Human-readable summary of what happened. */
+                            description: string;
+                            /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. */
+                            metadata: {
+                                [key: string]: unknown;
+                            } | null;
+                            /**
+                             * Format: uuid
+                             * @description ID correlating the events one operation emitted.
+                             */
+                            operationId: string;
+                            /** @description Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values. */
+                            severity: string;
+                            /** @description Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values. */
+                            status: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+                             */
+                            systemId: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            owner?: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            readonly organizationId: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the event was recorded.
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the event was last updated.
+                             */
+                            updatedAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the event was soft-deleted; omitted when it was not.
+                             */
+                            deletedAt?: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Bad gateway - an upstream service the operation depends on could not be reached or rejected the request */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+        };
+    };
+    getGithubRepositoryBranches: {
+        parameters: {
+            query: {
+                /** @description Repository as `<owner>/<repo>` (case-insensitive). */
+                repository: string;
+                /** @description Get responses by page */
+                page?: number;
+                /** @description Number of items per page (canonical camelCase form). */
+                pageSize?: number;
+            };
+            header?: never;
+            path: {
+                /** @description ID of a GitHub App connection. */
+                connectionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Repository branches page. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The repository's default branch. */
+                        defaultBranch: string;
+                        branches: {
+                            /** @description Branch name. */
+                            name: string;
+                            /** @description Commit at the head of the branch. */
+                            commitSha: string;
+                        }[];
+                        /** @description Zero-based page index served. */
+                        page: number;
+                        /** @description Page size served. */
+                        pageSize: number;
+                        /** @description True when another page of branches follows. */
+                        hasMore: boolean;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Bad gateway - an upstream service the operation depends on could not be reached or rejected the request */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+        };
+    };
+    getCatalogContent: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: number;
+                /** @description Number of items per page (canonical camelCase form). */
+                pageSize?: number;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                type?: string;
+                technology?: string;
+                metrics?: boolean;
+                class?: string;
+                userId?: string;
+                orgId?: string;
+                workspaceId?: string;
+                teamId?: string;
+                populate?: boolean;
+            };
+            header?: never;
+            path: {
+                type: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Catalog content page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
+                        /** @description Published designs included on this page. */
+                        patterns?: {
+                            /**
+                             * Format: uuid
+                             * @description Server-generated design ID.
+                             */
+                            id?: string;
+                            /** @description Human-readable design name. */
+                            name?: string;
+                            /** @description Catalog metadata attached to the design when published. */
+                            catalogData?: {
+                                /** @description Tracks the specific content version that has been made available in the Catalog. */
+                                publishedVersion?: string;
+                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                                class?: string & ("official" | "verified" | "reference architecture");
+                                /**
+                                 * Model
+                                 * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                                 */
+                                compatibility: "kubernetes"[];
+                                /**
+                                 * Caveats and Considerations
+                                 * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                                 */
+                                patternCaveats: string;
+                                /**
+                                 * Description
+                                 * @description Purpose of the design along with its intended and unintended uses.
+                                 */
+                                patternInfo: string;
+                                /**
+                                 * Type
+                                 * @description Categorization of the type of design or operational flow depicted in this design.
+                                 * @default Deployment
+                                 * @enum {string}
+                                 */
+                                type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                                /** @description Contains reference to the dark and light mode snapshots of the design. */
+                                snapshotURL?: string[];
+                            };
+                            /**
+                             * Format: uuid
+                             * @description Owning user ID.
+                             */
+                            userId?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                             */
+                            readonly organizationId: string;
+                            /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                            user?: {
+                                /**
+                                 * Format: uuid
+                                 * @description Unique identifier for the user
+                                 */
+                                id: string;
+                                /**
+                                 * @deprecated
+                                 * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                                 */
+                                userId: string;
+                                /**
+                                 * @description Authentication provider (e.g., Google, Github)
+                                 * @example [
+                                 *       "local",
+                                 *       "github",
+                                 *       "google",
+                                 *       "twitter"
+                                 *     ]
+                                 */
+                                provider: string;
+                                /**
+                                 * Format: email
+                                 * @description User's email address
+                                 */
+                                email: string;
+                                /** @description User's first name */
+                                firstName: string;
+                                /** @description User's last name */
+                                lastName: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL to user's avatar image
+                                 */
+                                avatarUrl?: string;
+                                /**
+                                 * @description User account status
+                                 * @enum {string}
+                                 */
+                                status: "active" | "inactive" | "pending" | "anonymous";
+                                /**
+                                 * @description User's biography or description
+                                 * @default
+                                 */
+                                bio: string;
+                                /** @description User's country information stored as JSONB */
+                                country?: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description User's region information stored as JSONB */
+                                region?: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description User preferences stored as JSONB */
+                                preferences?: {
+                                    /** @description The mesh adapters of the preference. */
+                                    meshAdapters?: Record<string, never>[];
+                                    grafana?: {
+                                        /** @description Grafana URL for the user configuration. */
+                                        grafanaUrl?: string;
+                                        /** @description Grafana API key for the user configuration. */
+                                        grafanaApiKey?: string;
+                                        /** @description Selected Grafana board configurations for the user. */
+                                        selectedBoardsConfigs?: {
+                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                            board?: Record<string, never>;
+                                            /** @description Panels selected for the Grafana board configuration. */
+                                            panels?: Record<string, never>[];
+                                            /** @description Template variables applied to the selected Grafana board configuration. */
+                                            templateVars?: string[];
+                                        }[];
+                                    };
+                                    prometheus?: {
+                                        /** @description The prometheus URL of the prometheus. */
+                                        prometheusUrl?: string;
+                                        /** @description The selected prometheus boards configs of the prometheus. */
+                                        selectedPrometheusBoardsConfigs?: {
+                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                            board?: Record<string, never>;
+                                            /** @description Panels selected for the Grafana board configuration. */
+                                            panels?: Record<string, never>[];
+                                            /** @description Template variables applied to the selected Grafana board configuration. */
+                                            templateVars?: string[];
+                                        }[];
+                                    };
+                                    loadTestPrefs?: {
+                                        /** @description Concurrent requests */
+                                        c?: number;
+                                        /** @description Queries per second */
+                                        qps?: number;
+                                        /** @description Duration */
+                                        t?: string;
+                                        /** @description Load generator */
+                                        gen?: string;
+                                    };
+                                    /** @description The anonymous usage stats of the preference. */
+                                    anonymousUsageStats: boolean;
+                                    /** @description The anonymous perf results of the preference. */
+                                    anonymousPerfResults: boolean;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp of when the resource was last updated.
+                                     */
+                                    updatedAt: string;
+                                    /** @description The dashboard preferences of the preference. */
+                                    dashboardPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: uuid
+                                     * @description ID of the associated selectedOrganization.
+                                     */
+                                    selectedOrganizationId: string;
+                                    /** @description The selected workspace for organizations of the preference. */
+                                    selectedWorkspaceForOrganizations: {
+                                        [key: string]: string;
+                                    };
+                                    /** @description The users extension preferences of the preference. */
+                                    usersExtensionPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                    /** @description The remote provider preferences of the preference. */
+                                    remoteProviderPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                };
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when user accepted terms and conditions
+                                 */
+                                acceptedTermsAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of user's first login
+                                 */
+                                firstLoginTime?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of user's most recent login
+                                 */
+                                lastLoginTime: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was created
+                                 */
+                                createdAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was last updated
+                                 */
+                                updatedAt: string;
+                                /** @description Various online profiles associated with the user account */
+                                socials?: {
+                                    /** @description The site of the social. */
+                                    site: string;
+                                    /**
+                                     * Format: uri
+                                     * @description The link of the social.
+                                     */
+                                    link: string;
+                                }[];
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                                 */
+                                deletedAt: string | null;
+                                /**
+                                 * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+                                 * @example [
+                                 *       "organization admin",
+                                 *       "user"
+                                 *     ]
+                                 */
+                                roleNames?: string[];
+                                /** @description Teams the user belongs to with role information */
+                                teams?: {
+                                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+                                    teamsWithRoles?: {
+                                        /**
+                                         * Format: uuid
+                                         * @description Unique identifier of the team.
+                                         */
+                                        id: string;
+                                        /** @description Name of the team. */
+                                        name: string;
+                                        /** @description Human readable description of the team. */
+                                        description?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description Identifier of the team owner.
+                                         */
+                                        owner?: string;
+                                        /** @description Free-form metadata associated with the team. */
+                                        metadata?: {
+                                            [key: string]: unknown;
+                                        };
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was created.
+                                         */
+                                        createdAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was last updated.
+                                         */
+                                        updatedAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                         */
+                                        deletedAt?: string | null;
+                                        /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                        roleNames: string[];
+                                    }[] | null;
+                                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
+                                };
+                                /** @description Organizations the user belongs to with role information */
+                                organizations?: {
+                                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+                                    organizationsWithRoles?: {
+                                        /**
+                                         * Format: uuid
+                                         * @description Unique identifier of the organization.
+                                         */
+                                        id: string;
+                                        /** @description Name of the organization. */
+                                        name: string;
+                                        /** @description Human readable description of the organization. */
+                                        description?: string;
+                                        /** @description Country associated with the organization. */
+                                        country?: string;
+                                        /** @description Region associated with the organization. */
+                                        region?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description Identifier of the organization owner.
+                                         */
+                                        owner?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was created.
+                                         */
+                                        createdAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was last updated.
+                                         */
+                                        updatedAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                         */
+                                        deletedAt?: string | null;
+                                        /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                        roleNames: string[];
+                                    }[] | null;
+                                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
+                                };
+                            } | null;
+                            /** @description Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha. */
                             location?: {
                                 [key: string]: string;
                             };
@@ -7225,7 +10087,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -7262,13 +10124,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -7305,9 +10167,9 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         } | null;
                         /**
@@ -7607,7 +10469,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -7644,13 +10506,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -7687,9 +10549,9 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         } | null;
                         /**
@@ -8409,7 +11271,7 @@ export interface operations {
                                 roleNames?: string[];
                                 /** @description Teams the user belongs to with role information */
                                 teams?: {
-                                    /** @description Team memberships for the user with their assigned roles. */
+                                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                     teamsWithRoles?: {
                                         /**
                                          * Format: uuid
@@ -8446,13 +11308,13 @@ export interface operations {
                                         deletedAt?: string | null;
                                         /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                         roleNames: string[];
-                                    }[];
-                                    /** @description Total number of team memberships returned for the user. */
-                                    totalCount?: number;
+                                    }[] | null;
+                                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
                                 };
                                 /** @description Organizations the user belongs to with role information */
                                 organizations?: {
-                                    /** @description Organization memberships for the user with their assigned roles. */
+                                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                     organizationsWithRoles?: {
                                         /**
                                          * Format: uuid
@@ -8489,9 +11351,9 @@ export interface operations {
                                         deletedAt?: string | null;
                                         /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                         roleNames: string[];
-                                    }[];
-                                    /** @description Total number of organization memberships returned for the user. */
-                                    totalCount?: number;
+                                    }[] | null;
+                                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                    totalCount?: number | null;
                                 };
                             } | null;
                             /**

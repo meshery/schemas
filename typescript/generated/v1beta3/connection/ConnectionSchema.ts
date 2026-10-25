@@ -194,7 +194,8 @@ const ConnectionSchema: Record<string, unknown> = {
                           "type",
                           "subType",
                           "kind",
-                          "status"
+                          "status",
+                          "organizationId"
                         ],
                         "properties": {
                           "id": {
@@ -224,7 +225,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "description": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "description",
-                              "json": "description"
+                              "json": "description,omitempty"
                             },
                             "x-order": 3,
                             "type": "string",
@@ -234,7 +235,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "url": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "url",
-                              "json": "url"
+                              "json": "url,omitempty"
                             },
                             "x-order": 4,
                             "type": "string",
@@ -285,7 +286,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             },
                             "x-order": 8,
                             "type": "string",
-                            "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+                            "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
                             "maxLength": 255
                           },
                           "modelReference": {
@@ -1000,6 +1001,22 @@ const ConnectionSchema: Record<string, unknown> = {
                             "nullable": true,
                             "x-go-type-skip-optional-pointer": true
                           },
+                          "organizationId": {
+                            "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "x-order": 19,
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
                           "environments": {
                             "type": "array",
                             "description": "Associated environments for this connection",
@@ -1177,7 +1194,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                 },
                                 "purpose": {
                                   "type": "string",
-                                  "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                                  "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                                   "enum": [
                                     "user",
                                     "administrative"
@@ -1301,14 +1318,26 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "registerConnection",
         "summary": "Register a new connection",
-        "description": "Register a new connection with credentials",
+        "description": "Register a new connection with credentials. Meshery Cloud reserves the GitHub App connection's identity (name `GitHub App`, sub_type `git`): only its GitHub authorization flow creates that connection, so a request naming it is refused with a `409` MeshKit error that names the reserved GitHub App connection identity.\n\nEvery connection belongs to exactly one organization. The server assigns `organizationId` from the session (`X-Current-Orgid`, then the caller's selected organization) and does not accept it in the body.\n\nDesktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`, sub_type `management`, status `connected`, and `metadata` matching `DesktopConnectionMetadata`. Servers implementing this contract must take the organization from the `X-Current-Orgid` header, refuse a `desktop` registration without it with `400`, and refuse a caller who is not a live member of that organization with `403`. They must deduplicate on (organization, owner, `metadata.installationId`): registering the same install again updates that connection and returns `200`, while a new connection returns `201`. A `desktop` body whose metadata lacks `installationId` is refused with `400`. Installs on one computer share `metadata.computerId`, so a server can group them by computer. The kind names the connection type, never the product that runs on the machine.\n\nA `desktop` registration whose `metadata.clientName` and `metadata.appVersion` fall below the server's minimum version for that client is refused with `426` and a `ClientUpgradeRequiredError` body; the connection, when it exists, is set to `maintenance`. Servers must link the API token that authenticated the registration to the connection (`metadata.tokenId`, server-written) and revoke that token when the connection is deregistered or deleted. When a later registration of the same connection authenticates with a different token, the server revokes the token previously linked to it. Registrations beyond the organization's device limit are accepted; the organization is flagged through the capabilities document's `session.deviceUsage` instead.\n",
+        "parameters": [
+          {
+            "name": "X-Current-Orgid",
+            "in": "header",
+            "required": false,
+            "description": "Session organization. The server assigns `Connection.organizationId` from this header when it is present, and from the caller's selected organization when it is absent. Kind `desktop` requires the header: a desktop registration without it is refused with 400.\n",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating a connection",
+                "description": "Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.\n",
                 "properties": {
                   "id": {
                     "type": "string",
@@ -1856,8 +1885,8 @@ const ConnectionSchema: Record<string, unknown> = {
           }
         },
         "responses": {
-          "201": {
-            "description": "Connection registered",
+          "200": {
+            "description": "Existing desktop connection for this machine updated",
             "content": {
               "application/json": {
                 "schema": {
@@ -1873,7 +1902,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -1903,7 +1933,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "description": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description",
-                        "json": "description"
+                        "json": "description,omitempty"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -1913,7 +1943,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "url": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "url",
-                        "json": "url"
+                        "json": "url,omitempty"
                       },
                       "x-order": 4,
                       "type": "string",
@@ -1964,7 +1994,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "x-order": 8,
                       "type": "string",
-                      "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+                      "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
                       "maxLength": 255
                     },
                     "modelReference": {
@@ -2679,6 +2709,22 @@ const ConnectionSchema: Record<string, unknown> = {
                       "nullable": true,
                       "x-go-type-skip-optional-pointer": true
                     },
+                    "organizationId": {
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "x-order": 19,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
                     "environments": {
                       "type": "array",
                       "description": "Associated environments for this connection",
@@ -2856,7 +2902,1076 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "enum": [
+                              "user",
+                              "administrative"
+                            ],
+                            "x-enum-varnames": [
+                              "EnvironmentPurposeUser",
+                              "EnvironmentPurposeAdministrative"
+                            ],
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "purpose",
+                              "gorm": "not null;default:user",
+                              "json": "purpose,omitempty"
+                            },
+                            "x-order": 11
+                          }
+                        }
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "-",
+                        "gorm": "-"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-order": 15
+                    },
+                    "schemaVersion": {
+                      "description": "Specifies the version of the schema used for the definition.",
+                      "x-order": 16,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "-",
+                        "gorm": "-"
+                      },
+                      "default": "connections.meshery.io/v1beta3",
+                      "type": "string",
+                      "minLength": 2,
+                      "maxLength": 100,
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
+                      "example": [
+                        "v1",
+                        "v1alpha1",
+                        "v2beta3",
+                        "v1.custom-suffix",
+                        "models.meshery.io/v1beta1",
+                        "capability.meshery.io/v1alpha1"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Connection registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$id": "https://schemas.meshery.io/connection.yaml",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "schemaVersion",
+                    "name",
+                    "type",
+                    "subType",
+                    "kind",
+                    "status",
+                    "organizationId"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "Connection ID",
+                      "x-order": 1,
+                      "x-go-name": "ID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "name": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "name"
+                      },
+                      "x-order": 2,
+                      "type": "string",
+                      "description": "Connection Name",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "description": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description",
+                        "json": "description,omitempty"
+                      },
+                      "x-order": 3,
+                      "type": "string",
+                      "description": "Human-readable description of the connection and its purpose.",
+                      "maxLength": 1000
+                    },
+                    "url": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "url",
+                        "json": "url,omitempty"
+                      },
+                      "x-order": 4,
+                      "type": "string",
+                      "format": "uri",
+                      "description": "URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).",
+                      "maxLength": 2048
+                    },
+                    "credentialId": {
+                      "x-go-name": "CredentialID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "credential_id",
+                        "json": "credentialId"
+                      },
+                      "x-order": 5,
+                      "description": "Associated Credential ID",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "type": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "type",
+                        "json": "type",
+                        "yaml": "type"
+                      },
+                      "x-go-name": "ConnectionType",
+                      "x-order": 6,
+                      "type": "string",
+                      "description": "Connection Type (platform, telemetry, collaboration)",
+                      "maxLength": 255
+                    },
+                    "subType": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "sub_type",
+                        "json": "subType"
+                      },
+                      "x-order": 7,
+                      "type": "string",
+                      "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)",
+                      "maxLength": 255
+                    },
+                    "kind": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "kind"
+                      },
+                      "x-order": 8,
+                      "type": "string",
+                      "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
+                      "maxLength": 255
+                    },
+                    "modelReference": {
+                      "x-go-type": "modelv1beta1.ModelReference",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                        "name": "modelv1beta1"
+                      },
+                      "x-order": 8,
+                      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                      "x-oapi-codegen-extra-tags": {
+                        "gorm": "model_reference",
+                        "db": "model_reference",
+                        "json": "modelReference",
+                        "yaml": "modelReference"
+                      },
+                      "x-generate-db-helpers": true,
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "name",
+                        "version",
+                        "displayName",
+                        "model",
+                        "registrant"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "The unique name for the model within the scope of a registrant.",
+                          "pattern": "^[a-z0-9-]+$",
+                          "examples": [
+                            "cert-manager"
+                          ]
+                        },
+                        "version": {
+                          "description": "Version of the model definition.",
+                          "type": "string",
+                          "minLength": 5,
+                          "maxLength": 100,
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                        },
+                        "displayName": {
+                          "type": "string",
+                          "description": "Human-readable name for the model.",
+                          "minLength": 1,
+                          "maxLength": 100,
+                          "pattern": "^[a-zA-Z0-9 ]+$",
+                          "examples": [
+                            "Cert Manager"
+                          ]
+                        },
+                        "model": {
+                          "type": "object",
+                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
+                          "required": [
+                            "version"
+                          ],
+                          "properties": {
+                            "version": {
+                              "description": "Version of the model as defined by the registrant.",
+                              "x-oapi-codegen-extra-tags": {
+                                "json": "version"
+                              },
+                              "x-order": 1,
+                              "type": "string",
+                              "minLength": 5,
+                              "maxLength": 100,
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                            }
+                          }
+                        },
+                        "registrant": {
+                          "x-go-type": "RegistrantReference",
+                          "x-oapi-codegen-extra-tags": {
+                            "json": "registrant"
+                          },
+                          "type": "object",
+                          "required": [
+                            "kind"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "description": "Kind of the registrant.",
+                              "maxLength": 255
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "metadata": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "metadata"
+                      },
+                      "x-order": 9,
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "type": "object",
+                      "description": "Additional connection metadata"
+                    },
+                    "credentialSchema": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "credential_schema"
+                      },
+                      "x-order": 9,
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "type": "object",
+                      "description": "Schema for the credential Associated with the connection"
+                    },
+                    "connectionSchema": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "connection_schema"
+                      },
+                      "x-order": 9,
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "type": "object",
+                      "description": "Schema for the connection"
+                    },
+                    "styles": {
+                      "x-oapi-codegen-extra-tags": {
+                        "gorm": "type:bytes;serializer:json",
+                        "db": "-",
+                        "yaml": "styles",
+                        "json": "styles"
+                      },
+                      "x-go-type": "core.ComponentStyles",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
+                      },
+                      "x-order": 17,
+                      "description": "Visualization styles for the connection, including svgColor and svgWhite used for UI representation.",
+                      "type": "object",
+                      "required": [
+                        "shape",
+                        "primaryColor",
+                        "svgColor",
+                        "svgWhite",
+                        "svgComplete"
+                      ],
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "description": "Common styles for all entities",
+                          "additionalProperties": true,
+                          "required": [
+                            "primaryColor",
+                            "svgColor",
+                            "svgWhite",
+                            "svgComplete"
+                          ],
+                          "properties": {
+                            "primaryColor": {
+                              "type": "string",
+                              "description": "Primary color of the component used for UI representation.",
+                              "maxLength": 500
+                            },
+                            "secondaryColor": {
+                              "type": "string",
+                              "description": "Secondary color of the entity used for UI representation.",
+                              "maxLength": 500
+                            },
+                            "svgWhite": {
+                              "type": "string",
+                              "description": "White SVG of the entity used for UI representation on dark background.",
+                              "maxLength": 500
+                            },
+                            "svgColor": {
+                              "type": "string",
+                              "description": "Colored SVG of the entity used for UI representation on light background.",
+                              "maxLength": 500
+                            },
+                            "svgComplete": {
+                              "type": "string",
+                              "description": "Complete SVG of the entity used for UI representation, often inclusive of background.",
+                              "maxLength": 500
+                            },
+                            "color": {
+                              "type": "string",
+                              "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 500
+                            },
+                            "textOpacity": {
+                              "type": "number",
+                              "description": "The opacity of the label text, including its outline.",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "fontFamily": {
+                              "type": "string",
+                              "description": "A comma-separated list of font names to use on the label text.",
+                              "maxLength": 500
+                            },
+                            "fontSize": {
+                              "type": "string",
+                              "description": "The size of the label text.",
+                              "maxLength": 500
+                            },
+                            "fontStyle": {
+                              "type": "string",
+                              "description": "A CSS font style to be applied to the label text.",
+                              "maxLength": 500
+                            },
+                            "fontWeight": {
+                              "type": "string",
+                              "description": "A CSS font weight to be applied to the label text.",
+                              "maxLength": 500
+                            },
+                            "textTransform": {
+                              "type": "string",
+                              "description": "A transformation to apply to the label text",
+                              "enum": [
+                                "none",
+                                "uppercase",
+                                "lowercase"
+                              ]
+                            },
+                            "opacity": {
+                              "type": "number",
+                              "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "zIndex": {
+                              "type": "integer",
+                              "description": "An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.",
+                              "minimum": 0
+                            },
+                            "label": {
+                              "type": "string",
+                              "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id",
+                              "maxLength": 500
+                            },
+                            "animation": {
+                              "type": "object",
+                              "description": "The animation to apply to the element. example ripple,bounce,etc"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "shape": {
+                              "type": "string",
+                              "description": "The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
+                              "enum": [
+                                "ellipse",
+                                "triangle",
+                                "round-triangle",
+                                "rectangle",
+                                "round-rectangle",
+                                "bottom-round-rectangle",
+                                "cut-rectangle",
+                                "barrel",
+                                "rhomboid",
+                                "diamond",
+                                "round-diamond",
+                                "pentagon",
+                                "round-pentagon",
+                                "hexagon",
+                                "round-hexagon",
+                                "concave-hexagon",
+                                "heptagon",
+                                "round-heptagon",
+                                "octagon",
+                                "round-octagon",
+                                "star",
+                                "tag",
+                                "round-tag",
+                                "vee",
+                                "polygon"
+                              ]
+                            },
+                            "position": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "description": "The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.",
+                              "properties": {
+                                "x": {
+                                  "type": "number",
+                                  "description": "The x-coordinate of the node.",
+                                  "minimum": -1000000,
+                                  "maximum": 1000000,
+                                  "x-go-type": "float64"
+                                },
+                                "y": {
+                                  "type": "number",
+                                  "description": "The y-coordinate of the node.",
+                                  "minimum": -1000000,
+                                  "maximum": 1000000,
+                                  "x-go-type": "float64"
+                                }
+                              }
+                            },
+                            "bodyText": {
+                              "type": "string",
+                              "description": "The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id",
+                              "maxLength": 500
+                            },
+                            "bodyTextWrap": {
+                              "type": "string",
+                              "description": "How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.",
+                              "enum": [
+                                "none",
+                                "wrap",
+                                "ellipsis"
+                              ]
+                            },
+                            "bodyTextMaxWidth": {
+                              "type": "string",
+                              "description": "The maximum width for wrapping text in the node.",
+                              "maxLength": 50
+                            },
+                            "bodyTextOpacity": {
+                              "type": "number",
+                              "description": "The opacity of the node's body text, including its outline.",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "bodyTextBackgroundColor": {
+                              "type": "string",
+                              "description": "The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "bodyTextFontSize": {
+                              "type": "number",
+                              "description": "The size of the node's body text.",
+                              "minimum": 0
+                            },
+                            "bodyTextColor": {
+                              "type": "string",
+                              "description": "The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "bodyTextFontWeight": {
+                              "type": "string",
+                              "description": "A CSS font weight to be applied to the node's body text.",
+                              "maxLength": 50
+                            },
+                            "bodyTextHorizontalAlign": {
+                              "type": "string",
+                              "description": "A CSS horizontal alignment to be applied to the node's body text.",
+                              "maxLength": 50
+                            },
+                            "bodyTextDecoration": {
+                              "type": "string",
+                              "description": "A CSS text decoration to be applied to the node's body text.",
+                              "maxLength": 100
+                            },
+                            "bodyTextVerticalAlign": {
+                              "type": "string",
+                              "description": "A CSS vertical alignment to be applied to the node's body text.",
+                              "maxLength": 50
+                            },
+                            "width": {
+                              "type": "number",
+                              "description": "The width of the node's body or the width of an edge's line.",
+                              "minimum": 0
+                            },
+                            "height": {
+                              "type": "number",
+                              "description": "The height of the node's body",
+                              "minimum": 0
+                            },
+                            "backgroundImage": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "The URL that points to the image to show in the node.",
+                              "maxLength": 2048
+                            },
+                            "backgroundColor": {
+                              "type": "string",
+                              "description": "The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "backgroundBlacken": {
+                              "type": "number",
+                              "description": "Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1.",
+                              "maximum": 1,
+                              "minimum": -1
+                            },
+                            "backgroundOpacity": {
+                              "type": "number",
+                              "description": "The opacity level of the node's background colour",
+                              "maximum": 1,
+                              "minimum": 0
+                            },
+                            "backgroundPositionX": {
+                              "type": "string",
+                              "description": "The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)",
+                              "maxLength": 50
+                            },
+                            "backgroundPositionY": {
+                              "type": "string",
+                              "description": "The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)",
+                              "maxLength": 50
+                            },
+                            "backgroundOffsetX": {
+                              "type": "string",
+                              "description": "The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)",
+                              "maxLength": 50
+                            },
+                            "backgroundOffsetY": {
+                              "type": "string",
+                              "description": "The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)",
+                              "maxLength": 50
+                            },
+                            "backgroundFit": {
+                              "type": "string",
+                              "description": "How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.",
+                              "enum": [
+                                "none",
+                                "contain",
+                                "cover"
+                              ]
+                            },
+                            "backgroundClip": {
+                              "type": "string",
+                              "description": "How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.",
+                              "enum": [
+                                "none",
+                                "node",
+                                "node-border"
+                              ]
+                            },
+                            "backgroundWidthRelativeTo": {
+                              "type": "string",
+                              "description": "How the background image's width is determined. Can be 'none', 'inner', or 'outer'.",
+                              "enum": [
+                                "none",
+                                "inner",
+                                "outer"
+                              ]
+                            },
+                            "backgroundHeightRelativeTo": {
+                              "type": "string",
+                              "description": "How the background image's height is determined. Can be 'none', 'inner', or 'outer'.",
+                              "enum": [
+                                "none",
+                                "inner",
+                                "outer"
+                              ]
+                            },
+                            "borderWidth": {
+                              "type": "number",
+                              "description": "The size of the node's border.",
+                              "minimum": 0
+                            },
+                            "borderStyle": {
+                              "type": "string",
+                              "description": "The style of the node's border",
+                              "enum": [
+                                "solid",
+                                "dotted",
+                                "dashed",
+                                "double"
+                              ]
+                            },
+                            "borderColor": {
+                              "type": "string",
+                              "description": "The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "borderOpacity": {
+                              "type": "number",
+                              "description": "The opacity of the node's border",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "padding": {
+                              "type": "number",
+                              "description": "The amount of padding around all sides of the node.",
+                              "minimum": 0
+                            },
+                            "textHalign": {
+                              "type": "string",
+                              "description": "The horizontal alignment of a node's label",
+                              "enum": [
+                                "left",
+                                "center",
+                                "right"
+                              ]
+                            },
+                            "textValign": {
+                              "type": "string",
+                              "description": "The vertical alignment of a node's label",
+                              "enum": [
+                                "top",
+                                "center",
+                                "bottom"
+                              ]
+                            },
+                            "ghost": {
+                              "type": "string",
+                              "description": "Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.",
+                              "default": "no",
+                              "enum": [
+                                "yes",
+                                "no"
+                              ]
+                            },
+                            "activeBgColor": {
+                              "type": "string",
+                              "description": "The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "activeBgOpacity": {
+                              "type": "string",
+                              "description": "The opacity of the active background indicator. Selector needs to be *core*.",
+                              "maxLength": 50
+                            },
+                            "activeBgSize": {
+                              "type": "string",
+                              "description": "The opacity of the active background indicator. Selector needs to be *core*.",
+                              "maxLength": 50
+                            },
+                            "selectionBoxColor": {
+                              "type": "string",
+                              "description": "The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "selectionBoxBorderWidth": {
+                              "type": "number",
+                              "description": "The size of the border on the selection box. Selector needs to be *core*",
+                              "minimum": 0
+                            },
+                            "selectionBoxOpacity": {
+                              "type": "number",
+                              "description": "The opacity of the selection box. Selector needs to be *core*",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "outsideTextureBgColor": {
+                              "type": "string",
+                              "description": "The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "outsideTextureBgOpacity": {
+                              "type": "number",
+                              "description": "The opacity of the area outside the viewport texture. Selector needs to be *core*",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "shapePolygonPoints": {
+                              "type": "string",
+                              "description": "An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 )",
+                              "maxLength": 2000
+                            },
+                            "menuBackgroundColor": {
+                              "type": "string",
+                              "description": "The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "menuBackgroundOpacity": {
+                              "type": "number",
+                              "description": "The opacity of the background of the component menu.",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "menuForgroundColor": {
+                              "type": "string",
+                              "description": "The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "status": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "status"
+                      },
+                      "x-order": 10,
+                      "description": "Connection Status",
+                      "type": "string",
+                      "enum": [
+                        "discovered",
+                        "registered",
+                        "connected",
+                        "ignored",
+                        "maintenance",
+                        "disconnected",
+                        "deleted",
+                        "not found"
+                      ]
+                    },
+                    "transitionMap": {
+                      "type": "object",
+                      "description": "Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition.",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "description": "A single permissible state transition for a connection, describing the next reachable state and the meaning of that transition.",
+                          "required": [
+                            "nextState"
+                          ],
+                          "properties": {
+                            "nextState": {
+                              "type": "string",
+                              "description": "Connection Status Value",
+                              "x-go-name": "ConnectionStatusValue",
+                              "enum": [
+                                "discovered",
+                                "registered",
+                                "connected",
+                                "ignored",
+                                "maintenance",
+                                "disconnected",
+                                "deleted",
+                                "not found"
+                              ],
+                              "x-order": 1
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Human-readable explanation of when or why this transition occurs.",
+                              "maxLength": 1000,
+                              "x-oapi-codegen-extra-tags": {
+                                "json": "description,omitempty"
+                              },
+                              "x-order": 2
+                            }
+                          }
+                        }
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "gorm": "type:bytes;serializer:json",
+                        "db": "-",
+                        "json": "transitionMap,omitempty"
+                      },
+                      "x-order": 18
+                    },
+                    "owner": {
+                      "x-go-name": "Owner",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner",
+                        "json": "owner"
+                      },
+                      "x-order": 11,
+                      "description": "User ID who owns this connection",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "createdAt": {
+                      "description": "Timestamp when the connection was created.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "createdAt"
+                      },
+                      "x-order": 12,
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "Timestamp when the connection was last updated.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updatedAt"
+                      },
+                      "x-order": 13,
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "deletedAt": {
+                      "description": "Timestamp when the connection was soft-deleted, if applicable.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "json": "deletedAt"
+                      },
+                      "x-order": 14,
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true,
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "organizationId": {
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "x-order": 19,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "environments": {
+                      "type": "array",
+                      "description": "Associated environments for this connection",
+                      "items": {
+                        "x-go-type": "*environmentv1beta3.Environment",
+                        "x-go-type-import": {
+                          "path": "github.com/meshery/schemas/models/v1beta3/environment",
+                          "name": "environmentv1beta3"
+                        },
+                        "$id": "https://schemas.meshery.io/environment.yaml",
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "title": "Environment",
+                        "description": "Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments",
+                        "additionalProperties": false,
+                        "type": "object",
+                        "example": {
+                          "id": "00000000-0000-0000-0000-000000000000",
+                          "schemaVersion": "environments.meshery.io/v1beta3",
+                          "name": "Production Environment",
+                          "description": "Connections and credentials for the production cluster.",
+                          "purpose": "user",
+                          "organizationId": "00000000-0000-0000-0000-000000000000",
+                          "owner": "00000000-0000-0000-0000-000000000000",
+                          "createdAt": "0001-01-01T00:00:00Z",
+                          "metadata": {},
+                          "updatedAt": "0001-01-01T00:00:00Z",
+                          "deletedAt": null
+                        },
+                        "required": [
+                          "id",
+                          "schemaVersion",
+                          "name",
+                          "description",
+                          "organizationId"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "ID",
+                            "x-order": 1,
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "schemaVersion": {
+                            "description": "Specifies the version of the schema to which the environment conforms.",
+                            "x-order": 2,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "schemaVersion",
+                              "db": "-",
+                              "gorm": "-"
+                            },
+                            "default": "environments.meshery.io/v1beta3",
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 100,
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
+                            "example": [
+                              "v1",
+                              "v1alpha1",
+                              "v2beta3",
+                              "v1.custom-suffix",
+                              "models.meshery.io/v1beta1",
+                              "capability.meshery.io/v1alpha1"
+                            ]
+                          },
+                          "name": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name"
+                            },
+                            "x-order": 3,
+                            "type": "string",
+                            "maxLength": 100,
+                            "description": "Environment name"
+                          },
+                          "description": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "description",
+                              "json": "description"
+                            },
+                            "x-order": 4,
+                            "type": "string",
+                            "maxLength": 1000,
+                            "description": "Environment description"
+                          },
+                          "organizationId": {
+                            "x-go-name": "OrganizationID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "x-order": 5,
+                            "description": "Environment organization ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "owner": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner",
+                              "json": "owner"
+                            },
+                            "x-order": 6,
+                            "description": "Environment owner",
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "createdAt": {
+                            "description": "Timestamp when the environment was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at",
+                              "json": "createdAt"
+                            },
+                            "x-order": 7,
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "CreatedAt",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "metadata": {
+                            "description": "Additional metadata associated with the environment.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "metadata",
+                              "json": "metadata"
+                            },
+                            "x-order": 8,
+                            "x-go-type": "core.Map",
+                            "x-go-type-skip-optional-pointer": true,
+                            "type": "object"
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp when the environment was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at",
+                              "json": "updatedAt"
+                            },
+                            "x-order": 9,
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "UpdatedAt",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deletedAt": {
+                            "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
+                            "nullable": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deletedAt"
+                            },
+                            "x-go-type": "core.NullTime",
+                            "x-go-import": "database/sql",
+                            "x-order": 10,
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "purpose": {
+                            "type": "string",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
                               "administrative"
@@ -2924,6 +4039,133 @@ const ConnectionSchema: Record<string, unknown> = {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "426": {
+            "description": "The client's version is below the provider's minimum for that client. The client must update before it can register or keep a connection alive; the body names the minimum and where to get an update.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Body of a 426 answer: a MeshKit error sentence plus the client's compatibility, so the client can show the minimum and where to update.\n",
+                  "additionalProperties": false,
+                  "required": [
+                    "error",
+                    "compatibility"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code allocated by the emitting service; not a stable part of this contract."
+                    },
+                    "compatibility": {
+                      "type": "object",
+                      "description": "Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`.\n",
+                      "additionalProperties": false,
+                      "required": [
+                        "clientName",
+                        "clientVersion",
+                        "compatible"
+                      ],
+                      "properties": {
+                        "clientName": {
+                          "type": "string",
+                          "description": "Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.\n",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "pattern": "^[a-z0-9][a-z0-9-]*$"
+                        },
+                        "clientVersion": {
+                          "type": "string",
+                          "description": "The client's version as it reported it, as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Versions are ordered by their numeric parts, so `v1.9.0` is older than `v1.25.0`.",
+                          "maxLength": 64
+                        },
+                        "minimumVersion": {
+                          "type": "string",
+                          "description": "Oldest client version the provider accepts for this client. Absent when the provider sets no minimum.",
+                          "maxLength": 64
+                        },
+                        "compatible": {
+                          "type": "boolean",
+                          "description": "True when `clientVersion` is at or above `minimumVersion`, or when there is no minimum."
+                        },
+                        "upgradeUrl": {
+                          "type": "string",
+                          "description": "Where the client can get an update, when the provider knows one.",
+                          "maxLength": 2048
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -3257,7 +4499,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -3287,7 +4530,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "description": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description",
-                        "json": "description"
+                        "json": "description,omitempty"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -3297,7 +4540,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "url": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "url",
-                        "json": "url"
+                        "json": "url,omitempty"
                       },
                       "x-order": 4,
                       "type": "string",
@@ -3348,7 +4591,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "x-order": 8,
                       "type": "string",
-                      "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+                      "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
                       "maxLength": 255
                     },
                     "modelReference": {
@@ -4063,6 +5306,22 @@ const ConnectionSchema: Record<string, unknown> = {
                       "nullable": true,
                       "x-go-type-skip-optional-pointer": true
                     },
+                    "organizationId": {
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "x-order": 19,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
                     "environments": {
                       "type": "array",
                       "description": "Associated environments for this connection",
@@ -4240,7 +5499,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
                               "administrative"
@@ -4334,7 +5593,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "updateConnection",
         "summary": "Update a connection",
-        "description": "Update an existing connection",
+        "description": "Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit error naming the reserved identity, an edit that would give a connection the GitHub App connection's identity (name `GitHub App`, sub_type `git`). On the GitHub App connection itself, the server-written metadata keys `installations`, `installationId` and `installationsVerifiedAt` are carried forward from the stored row: a client edit can neither set nor erase them (other metadata keys are written as sent). Their shape is `GithubConnectionMetadata` in the v1beta3 `github` construct. `organizationId` is not in the body. The server keeps the organization assigned at registration.\n",
         "parameters": [
           {
             "name": "connectionId",
@@ -4353,7 +5612,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating a connection",
+                "description": "Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.\n",
                 "properties": {
                   "id": {
                     "type": "string",
@@ -4918,7 +6177,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -4948,7 +6208,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "description": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description",
-                        "json": "description"
+                        "json": "description,omitempty"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -4958,7 +6218,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "url": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "url",
-                        "json": "url"
+                        "json": "url,omitempty"
                       },
                       "x-order": 4,
                       "type": "string",
@@ -5009,7 +6269,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "x-order": 8,
                       "type": "string",
-                      "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+                      "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
                       "maxLength": 255
                     },
                     "modelReference": {
@@ -5724,6 +6984,22 @@ const ConnectionSchema: Record<string, unknown> = {
                       "nullable": true,
                       "x-go-type-skip-optional-pointer": true
                     },
+                    "organizationId": {
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "x-order": 19,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
                     "environments": {
                       "type": "array",
                       "description": "Associated environments for this connection",
@@ -5901,7 +7177,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
                               "administrative"
@@ -5983,6 +7259,57 @@ const ConnectionSchema: Record<string, unknown> = {
               }
             }
           },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -6005,7 +7332,7 @@ const ConnectionSchema: Record<string, unknown> = {
         ],
         "operationId": "deleteConnection",
         "summary": "Delete a connection",
-        "description": "Delete a specific connection",
+        "description": "Delete a specific connection. Deleting a connection that has a `metadata.tokenId` revokes that token.",
         "parameters": [
           {
             "name": "connectionId",
@@ -6134,7 +7461,8 @@ const ConnectionSchema: Record<string, unknown> = {
                     "type",
                     "subType",
                     "kind",
-                    "status"
+                    "status",
+                    "organizationId"
                   ],
                   "properties": {
                     "id": {
@@ -6164,7 +7492,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "description": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description",
-                        "json": "description"
+                        "json": "description,omitempty"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -6174,7 +7502,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "url": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "url",
-                        "json": "url"
+                        "json": "url,omitempty"
                       },
                       "x-order": 4,
                       "type": "string",
@@ -6225,7 +7553,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "x-order": 8,
                       "type": "string",
-                      "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+                      "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
                       "maxLength": 255
                     },
                     "modelReference": {
@@ -6940,6 +8268,22 @@ const ConnectionSchema: Record<string, unknown> = {
                       "nullable": true,
                       "x-go-type-skip-optional-pointer": true
                     },
+                    "organizationId": {
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "x-order": 19,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
                     "environments": {
                       "type": "array",
                       "description": "Associated environments for this connection",
@@ -7117,7 +8461,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "purpose": {
                             "type": "string",
-                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                             "enum": [
                               "user",
                               "administrative"
@@ -7256,6 +8600,1481 @@ const ConnectionSchema: Record<string, unknown> = {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/connections/desktop": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Connections"
+        ],
+        "operationId": "getDesktopConnectionsOfOrganization",
+        "summary": "List the organization's desktop connections",
+        "description": "Returns every live `desktop` connection in the session organization, whoever registered it, as a summary: `id`, `name`, `kind`, `owner`, `status`, `organizationId` and `lastSeenAt` only. Any live member of the organization may read it, so members can see which computers share its work; a guest session cannot. Servers must never include the connection's credential, metadata (beyond `lastSeenAt`), URL or description here: the full connection stays readable only by its owner through `getConnections`. `status` follows the heartbeat rule of `recordConnectionHeartbeat` (a desktop connection silent for 3 minutes reads `disconnected`). A caller who is not a live member of the session organization receives `404`.\n",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items per page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 10
+            }
+          },
+          {
+            "name": "owner",
+            "in": "query",
+            "required": false,
+            "description": "Only connections registered by this user.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Desktop connections of the organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Page of connection summaries.",
+                  "additionalProperties": false,
+                  "required": [
+                    "connections",
+                    "totalCount",
+                    "page",
+                    "pageSize"
+                  ],
+                  "properties": {
+                    "connections": {
+                      "type": "array",
+                      "description": "Connection summaries on this page.",
+                      "items": {
+                        "x-go-type": "ConnectionSummary",
+                        "type": "object",
+                        "description": "Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`.\n",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "name",
+                          "kind",
+                          "status",
+                          "organizationId"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-order": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Connection name.",
+                            "maxLength": 255,
+                            "x-order": 2
+                          },
+                          "kind": {
+                            "type": "string",
+                            "description": "Connection kind, for example `desktop`.",
+                            "maxLength": 255,
+                            "x-order": 3
+                          },
+                          "owner": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "owner,omitempty"
+                            },
+                            "x-order": 4
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Connection status as read, for example `connected` or `disconnected`.",
+                            "maxLength": 255,
+                            "x-order": 5
+                          },
+                          "lastSeenAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.",
+                            "nullable": true,
+                            "x-go-type": "core.NullTime",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core",
+                              "name": "core"
+                            },
+                            "x-order": 6
+                          },
+                          "organizationId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "organizationId"
+                            },
+                            "x-order": 7
+                          }
+                        }
+                      },
+                      "x-order": 1
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of connections on all pages.",
+                      "minimum": 0,
+                      "x-order": 2
+                    },
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number.",
+                      "minimum": 0,
+                      "x-order": 3
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of elements per page.",
+                      "minimum": 1,
+                      "x-order": 4
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/connections/desktop/{installationId}": {
+      "delete": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Connections"
+        ],
+        "operationId": "deregisterDesktopConnection",
+        "summary": "Deregister a desktop app install",
+        "description": "Delete the caller's `desktop` connection whose `metadata.installationId` matches, as a desktop app install does on sign-out or uninstall. Servers implementing this contract must scope the deletion to the caller: a connection registered by another user is not found. Servers must revoke the API token linked to each deleted connection (`metadata.tokenId`).\n",
+        "parameters": [
+          {
+            "name": "installationId",
+            "in": "path",
+            "description": "Installation identifier from `metadata.installationId`.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
+              "minLength": 1,
+              "maxLength": 255
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Desktop connection deleted"
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/connections/{connectionId}/heartbeat": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Connections"
+        ],
+        "operationId": "recordConnectionHeartbeat",
+        "summary": "Record a connection heartbeat",
+        "description": "Mark the caller's connection as alive. Servers implementing this contract must set `metadata.lastSeenAt` to the current time and, when the connection is `disconnected`, set its status back to `connected`. Servers must report a connection whose `metadata.lastSeenAt` is older than 3 minutes as `disconnected` until its next heartbeat. The request has no body, so a heartbeat cannot change anything else about the connection. When the connection's `metadata.clientName` and `metadata.appVersion`, as stored by the latest registration (which every connect makes before its first heartbeat), fall below the server's minimum version for that client, servers must answer `426` with a `ClientUpgradeRequiredError` body and set the connection to `maintenance` instead of recording the heartbeat.\n",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "description": "Connection ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connection after the heartbeat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$id": "https://schemas.meshery.io/connection.yaml",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "schemaVersion",
+                    "name",
+                    "type",
+                    "subType",
+                    "kind",
+                    "status",
+                    "organizationId"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "Connection ID",
+                      "x-order": 1,
+                      "x-go-name": "ID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "name": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "name"
+                      },
+                      "x-order": 2,
+                      "type": "string",
+                      "description": "Connection Name",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "description": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description",
+                        "json": "description,omitempty"
+                      },
+                      "x-order": 3,
+                      "type": "string",
+                      "description": "Human-readable description of the connection and its purpose.",
+                      "maxLength": 1000
+                    },
+                    "url": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "url",
+                        "json": "url,omitempty"
+                      },
+                      "x-order": 4,
+                      "type": "string",
+                      "format": "uri",
+                      "description": "URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).",
+                      "maxLength": 2048
+                    },
+                    "credentialId": {
+                      "x-go-name": "CredentialID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "credential_id",
+                        "json": "credentialId"
+                      },
+                      "x-order": 5,
+                      "description": "Associated Credential ID",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "type": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "type",
+                        "json": "type",
+                        "yaml": "type"
+                      },
+                      "x-go-name": "ConnectionType",
+                      "x-order": 6,
+                      "type": "string",
+                      "description": "Connection Type (platform, telemetry, collaboration)",
+                      "maxLength": 255
+                    },
+                    "subType": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "sub_type",
+                        "json": "subType"
+                      },
+                      "x-order": 7,
+                      "type": "string",
+                      "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)",
+                      "maxLength": 255
+                    },
+                    "kind": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "kind"
+                      },
+                      "x-order": 8,
+                      "type": "string",
+                      "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
+                      "maxLength": 255
+                    },
+                    "modelReference": {
+                      "x-go-type": "modelv1beta1.ModelReference",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                        "name": "modelv1beta1"
+                      },
+                      "x-order": 8,
+                      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                      "x-oapi-codegen-extra-tags": {
+                        "gorm": "model_reference",
+                        "db": "model_reference",
+                        "json": "modelReference",
+                        "yaml": "modelReference"
+                      },
+                      "x-generate-db-helpers": true,
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "name",
+                        "version",
+                        "displayName",
+                        "model",
+                        "registrant"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "The unique name for the model within the scope of a registrant.",
+                          "pattern": "^[a-z0-9-]+$",
+                          "examples": [
+                            "cert-manager"
+                          ]
+                        },
+                        "version": {
+                          "description": "Version of the model definition.",
+                          "type": "string",
+                          "minLength": 5,
+                          "maxLength": 100,
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                        },
+                        "displayName": {
+                          "type": "string",
+                          "description": "Human-readable name for the model.",
+                          "minLength": 1,
+                          "maxLength": 100,
+                          "pattern": "^[a-zA-Z0-9 ]+$",
+                          "examples": [
+                            "Cert Manager"
+                          ]
+                        },
+                        "model": {
+                          "type": "object",
+                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
+                          "required": [
+                            "version"
+                          ],
+                          "properties": {
+                            "version": {
+                              "description": "Version of the model as defined by the registrant.",
+                              "x-oapi-codegen-extra-tags": {
+                                "json": "version"
+                              },
+                              "x-order": 1,
+                              "type": "string",
+                              "minLength": 5,
+                              "maxLength": 100,
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                            }
+                          }
+                        },
+                        "registrant": {
+                          "x-go-type": "RegistrantReference",
+                          "x-oapi-codegen-extra-tags": {
+                            "json": "registrant"
+                          },
+                          "type": "object",
+                          "required": [
+                            "kind"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "description": "Kind of the registrant.",
+                              "maxLength": 255
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "metadata": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "metadata"
+                      },
+                      "x-order": 9,
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "type": "object",
+                      "description": "Additional connection metadata"
+                    },
+                    "credentialSchema": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "credential_schema"
+                      },
+                      "x-order": 9,
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "type": "object",
+                      "description": "Schema for the credential Associated with the connection"
+                    },
+                    "connectionSchema": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "connection_schema"
+                      },
+                      "x-order": 9,
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "type": "object",
+                      "description": "Schema for the connection"
+                    },
+                    "styles": {
+                      "x-oapi-codegen-extra-tags": {
+                        "gorm": "type:bytes;serializer:json",
+                        "db": "-",
+                        "yaml": "styles",
+                        "json": "styles"
+                      },
+                      "x-go-type": "core.ComponentStyles",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
+                      },
+                      "x-order": 17,
+                      "description": "Visualization styles for the connection, including svgColor and svgWhite used for UI representation.",
+                      "type": "object",
+                      "required": [
+                        "shape",
+                        "primaryColor",
+                        "svgColor",
+                        "svgWhite",
+                        "svgComplete"
+                      ],
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "description": "Common styles for all entities",
+                          "additionalProperties": true,
+                          "required": [
+                            "primaryColor",
+                            "svgColor",
+                            "svgWhite",
+                            "svgComplete"
+                          ],
+                          "properties": {
+                            "primaryColor": {
+                              "type": "string",
+                              "description": "Primary color of the component used for UI representation.",
+                              "maxLength": 500
+                            },
+                            "secondaryColor": {
+                              "type": "string",
+                              "description": "Secondary color of the entity used for UI representation.",
+                              "maxLength": 500
+                            },
+                            "svgWhite": {
+                              "type": "string",
+                              "description": "White SVG of the entity used for UI representation on dark background.",
+                              "maxLength": 500
+                            },
+                            "svgColor": {
+                              "type": "string",
+                              "description": "Colored SVG of the entity used for UI representation on light background.",
+                              "maxLength": 500
+                            },
+                            "svgComplete": {
+                              "type": "string",
+                              "description": "Complete SVG of the entity used for UI representation, often inclusive of background.",
+                              "maxLength": 500
+                            },
+                            "color": {
+                              "type": "string",
+                              "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 500
+                            },
+                            "textOpacity": {
+                              "type": "number",
+                              "description": "The opacity of the label text, including its outline.",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "fontFamily": {
+                              "type": "string",
+                              "description": "A comma-separated list of font names to use on the label text.",
+                              "maxLength": 500
+                            },
+                            "fontSize": {
+                              "type": "string",
+                              "description": "The size of the label text.",
+                              "maxLength": 500
+                            },
+                            "fontStyle": {
+                              "type": "string",
+                              "description": "A CSS font style to be applied to the label text.",
+                              "maxLength": 500
+                            },
+                            "fontWeight": {
+                              "type": "string",
+                              "description": "A CSS font weight to be applied to the label text.",
+                              "maxLength": 500
+                            },
+                            "textTransform": {
+                              "type": "string",
+                              "description": "A transformation to apply to the label text",
+                              "enum": [
+                                "none",
+                                "uppercase",
+                                "lowercase"
+                              ]
+                            },
+                            "opacity": {
+                              "type": "number",
+                              "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "zIndex": {
+                              "type": "integer",
+                              "description": "An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.",
+                              "minimum": 0
+                            },
+                            "label": {
+                              "type": "string",
+                              "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id",
+                              "maxLength": 500
+                            },
+                            "animation": {
+                              "type": "object",
+                              "description": "The animation to apply to the element. example ripple,bounce,etc"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "shape": {
+                              "type": "string",
+                              "description": "The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
+                              "enum": [
+                                "ellipse",
+                                "triangle",
+                                "round-triangle",
+                                "rectangle",
+                                "round-rectangle",
+                                "bottom-round-rectangle",
+                                "cut-rectangle",
+                                "barrel",
+                                "rhomboid",
+                                "diamond",
+                                "round-diamond",
+                                "pentagon",
+                                "round-pentagon",
+                                "hexagon",
+                                "round-hexagon",
+                                "concave-hexagon",
+                                "heptagon",
+                                "round-heptagon",
+                                "octagon",
+                                "round-octagon",
+                                "star",
+                                "tag",
+                                "round-tag",
+                                "vee",
+                                "polygon"
+                              ]
+                            },
+                            "position": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "x",
+                                "y"
+                              ],
+                              "description": "The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.",
+                              "properties": {
+                                "x": {
+                                  "type": "number",
+                                  "description": "The x-coordinate of the node.",
+                                  "minimum": -1000000,
+                                  "maximum": 1000000,
+                                  "x-go-type": "float64"
+                                },
+                                "y": {
+                                  "type": "number",
+                                  "description": "The y-coordinate of the node.",
+                                  "minimum": -1000000,
+                                  "maximum": 1000000,
+                                  "x-go-type": "float64"
+                                }
+                              }
+                            },
+                            "bodyText": {
+                              "type": "string",
+                              "description": "The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id",
+                              "maxLength": 500
+                            },
+                            "bodyTextWrap": {
+                              "type": "string",
+                              "description": "How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.",
+                              "enum": [
+                                "none",
+                                "wrap",
+                                "ellipsis"
+                              ]
+                            },
+                            "bodyTextMaxWidth": {
+                              "type": "string",
+                              "description": "The maximum width for wrapping text in the node.",
+                              "maxLength": 50
+                            },
+                            "bodyTextOpacity": {
+                              "type": "number",
+                              "description": "The opacity of the node's body text, including its outline.",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "bodyTextBackgroundColor": {
+                              "type": "string",
+                              "description": "The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "bodyTextFontSize": {
+                              "type": "number",
+                              "description": "The size of the node's body text.",
+                              "minimum": 0
+                            },
+                            "bodyTextColor": {
+                              "type": "string",
+                              "description": "The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "bodyTextFontWeight": {
+                              "type": "string",
+                              "description": "A CSS font weight to be applied to the node's body text.",
+                              "maxLength": 50
+                            },
+                            "bodyTextHorizontalAlign": {
+                              "type": "string",
+                              "description": "A CSS horizontal alignment to be applied to the node's body text.",
+                              "maxLength": 50
+                            },
+                            "bodyTextDecoration": {
+                              "type": "string",
+                              "description": "A CSS text decoration to be applied to the node's body text.",
+                              "maxLength": 100
+                            },
+                            "bodyTextVerticalAlign": {
+                              "type": "string",
+                              "description": "A CSS vertical alignment to be applied to the node's body text.",
+                              "maxLength": 50
+                            },
+                            "width": {
+                              "type": "number",
+                              "description": "The width of the node's body or the width of an edge's line.",
+                              "minimum": 0
+                            },
+                            "height": {
+                              "type": "number",
+                              "description": "The height of the node's body",
+                              "minimum": 0
+                            },
+                            "backgroundImage": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "The URL that points to the image to show in the node.",
+                              "maxLength": 2048
+                            },
+                            "backgroundColor": {
+                              "type": "string",
+                              "description": "The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "backgroundBlacken": {
+                              "type": "number",
+                              "description": "Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1.",
+                              "maximum": 1,
+                              "minimum": -1
+                            },
+                            "backgroundOpacity": {
+                              "type": "number",
+                              "description": "The opacity level of the node's background colour",
+                              "maximum": 1,
+                              "minimum": 0
+                            },
+                            "backgroundPositionX": {
+                              "type": "string",
+                              "description": "The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)",
+                              "maxLength": 50
+                            },
+                            "backgroundPositionY": {
+                              "type": "string",
+                              "description": "The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)",
+                              "maxLength": 50
+                            },
+                            "backgroundOffsetX": {
+                              "type": "string",
+                              "description": "The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)",
+                              "maxLength": 50
+                            },
+                            "backgroundOffsetY": {
+                              "type": "string",
+                              "description": "The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)",
+                              "maxLength": 50
+                            },
+                            "backgroundFit": {
+                              "type": "string",
+                              "description": "How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.",
+                              "enum": [
+                                "none",
+                                "contain",
+                                "cover"
+                              ]
+                            },
+                            "backgroundClip": {
+                              "type": "string",
+                              "description": "How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.",
+                              "enum": [
+                                "none",
+                                "node",
+                                "node-border"
+                              ]
+                            },
+                            "backgroundWidthRelativeTo": {
+                              "type": "string",
+                              "description": "How the background image's width is determined. Can be 'none', 'inner', or 'outer'.",
+                              "enum": [
+                                "none",
+                                "inner",
+                                "outer"
+                              ]
+                            },
+                            "backgroundHeightRelativeTo": {
+                              "type": "string",
+                              "description": "How the background image's height is determined. Can be 'none', 'inner', or 'outer'.",
+                              "enum": [
+                                "none",
+                                "inner",
+                                "outer"
+                              ]
+                            },
+                            "borderWidth": {
+                              "type": "number",
+                              "description": "The size of the node's border.",
+                              "minimum": 0
+                            },
+                            "borderStyle": {
+                              "type": "string",
+                              "description": "The style of the node's border",
+                              "enum": [
+                                "solid",
+                                "dotted",
+                                "dashed",
+                                "double"
+                              ]
+                            },
+                            "borderColor": {
+                              "type": "string",
+                              "description": "The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "borderOpacity": {
+                              "type": "number",
+                              "description": "The opacity of the node's border",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "padding": {
+                              "type": "number",
+                              "description": "The amount of padding around all sides of the node.",
+                              "minimum": 0
+                            },
+                            "textHalign": {
+                              "type": "string",
+                              "description": "The horizontal alignment of a node's label",
+                              "enum": [
+                                "left",
+                                "center",
+                                "right"
+                              ]
+                            },
+                            "textValign": {
+                              "type": "string",
+                              "description": "The vertical alignment of a node's label",
+                              "enum": [
+                                "top",
+                                "center",
+                                "bottom"
+                              ]
+                            },
+                            "ghost": {
+                              "type": "string",
+                              "description": "Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.",
+                              "default": "no",
+                              "enum": [
+                                "yes",
+                                "no"
+                              ]
+                            },
+                            "activeBgColor": {
+                              "type": "string",
+                              "description": "The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "activeBgOpacity": {
+                              "type": "string",
+                              "description": "The opacity of the active background indicator. Selector needs to be *core*.",
+                              "maxLength": 50
+                            },
+                            "activeBgSize": {
+                              "type": "string",
+                              "description": "The opacity of the active background indicator. Selector needs to be *core*.",
+                              "maxLength": 50
+                            },
+                            "selectionBoxColor": {
+                              "type": "string",
+                              "description": "The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "selectionBoxBorderWidth": {
+                              "type": "number",
+                              "description": "The size of the border on the selection box. Selector needs to be *core*",
+                              "minimum": 0
+                            },
+                            "selectionBoxOpacity": {
+                              "type": "number",
+                              "description": "The opacity of the selection box. Selector needs to be *core*",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "outsideTextureBgColor": {
+                              "type": "string",
+                              "description": "The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "outsideTextureBgOpacity": {
+                              "type": "number",
+                              "description": "The opacity of the area outside the viewport texture. Selector needs to be *core*",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "shapePolygonPoints": {
+                              "type": "string",
+                              "description": "An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 )",
+                              "maxLength": 2000
+                            },
+                            "menuBackgroundColor": {
+                              "type": "string",
+                              "description": "The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            },
+                            "menuBackgroundOpacity": {
+                              "type": "number",
+                              "description": "The opacity of the background of the component menu.",
+                              "minimum": 0,
+                              "maximum": 1
+                            },
+                            "menuForgroundColor": {
+                              "type": "string",
+                              "description": "The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g.",
+                              "maxLength": 100
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "status": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "status"
+                      },
+                      "x-order": 10,
+                      "description": "Connection Status",
+                      "type": "string",
+                      "enum": [
+                        "discovered",
+                        "registered",
+                        "connected",
+                        "ignored",
+                        "maintenance",
+                        "disconnected",
+                        "deleted",
+                        "not found"
+                      ]
+                    },
+                    "transitionMap": {
+                      "type": "object",
+                      "description": "Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition.",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "description": "A single permissible state transition for a connection, describing the next reachable state and the meaning of that transition.",
+                          "required": [
+                            "nextState"
+                          ],
+                          "properties": {
+                            "nextState": {
+                              "type": "string",
+                              "description": "Connection Status Value",
+                              "x-go-name": "ConnectionStatusValue",
+                              "enum": [
+                                "discovered",
+                                "registered",
+                                "connected",
+                                "ignored",
+                                "maintenance",
+                                "disconnected",
+                                "deleted",
+                                "not found"
+                              ],
+                              "x-order": 1
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Human-readable explanation of when or why this transition occurs.",
+                              "maxLength": 1000,
+                              "x-oapi-codegen-extra-tags": {
+                                "json": "description,omitempty"
+                              },
+                              "x-order": 2
+                            }
+                          }
+                        }
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "gorm": "type:bytes;serializer:json",
+                        "db": "-",
+                        "json": "transitionMap,omitempty"
+                      },
+                      "x-order": 18
+                    },
+                    "owner": {
+                      "x-go-name": "Owner",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner",
+                        "json": "owner"
+                      },
+                      "x-order": 11,
+                      "description": "User ID who owns this connection",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "createdAt": {
+                      "description": "Timestamp when the connection was created.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "createdAt"
+                      },
+                      "x-order": 12,
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "Timestamp when the connection was last updated.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updatedAt"
+                      },
+                      "x-order": 13,
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "deletedAt": {
+                      "description": "Timestamp when the connection was soft-deleted, if applicable.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "json": "deletedAt"
+                      },
+                      "x-order": 14,
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true,
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "organizationId": {
+                      "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "x-order": 19,
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "environments": {
+                      "type": "array",
+                      "description": "Associated environments for this connection",
+                      "items": {
+                        "x-go-type": "*environmentv1beta3.Environment",
+                        "x-go-type-import": {
+                          "path": "github.com/meshery/schemas/models/v1beta3/environment",
+                          "name": "environmentv1beta3"
+                        },
+                        "$id": "https://schemas.meshery.io/environment.yaml",
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "title": "Environment",
+                        "description": "Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments",
+                        "additionalProperties": false,
+                        "type": "object",
+                        "example": {
+                          "id": "00000000-0000-0000-0000-000000000000",
+                          "schemaVersion": "environments.meshery.io/v1beta3",
+                          "name": "Production Environment",
+                          "description": "Connections and credentials for the production cluster.",
+                          "purpose": "user",
+                          "organizationId": "00000000-0000-0000-0000-000000000000",
+                          "owner": "00000000-0000-0000-0000-000000000000",
+                          "createdAt": "0001-01-01T00:00:00Z",
+                          "metadata": {},
+                          "updatedAt": "0001-01-01T00:00:00Z",
+                          "deletedAt": null
+                        },
+                        "required": [
+                          "id",
+                          "schemaVersion",
+                          "name",
+                          "description",
+                          "organizationId"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "ID",
+                            "x-order": 1,
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "schemaVersion": {
+                            "description": "Specifies the version of the schema to which the environment conforms.",
+                            "x-order": 2,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "schemaVersion",
+                              "db": "-",
+                              "gorm": "-"
+                            },
+                            "default": "environments.meshery.io/v1beta3",
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 100,
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
+                            "example": [
+                              "v1",
+                              "v1alpha1",
+                              "v2beta3",
+                              "v1.custom-suffix",
+                              "models.meshery.io/v1beta1",
+                              "capability.meshery.io/v1alpha1"
+                            ]
+                          },
+                          "name": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name"
+                            },
+                            "x-order": 3,
+                            "type": "string",
+                            "maxLength": 100,
+                            "description": "Environment name"
+                          },
+                          "description": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "description",
+                              "json": "description"
+                            },
+                            "x-order": 4,
+                            "type": "string",
+                            "maxLength": 1000,
+                            "description": "Environment description"
+                          },
+                          "organizationId": {
+                            "x-go-name": "OrganizationID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "x-order": 5,
+                            "description": "Environment organization ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "owner": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner",
+                              "json": "owner"
+                            },
+                            "x-order": 6,
+                            "description": "Environment owner",
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "createdAt": {
+                            "description": "Timestamp when the environment was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at",
+                              "json": "createdAt"
+                            },
+                            "x-order": 7,
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "CreatedAt",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "metadata": {
+                            "description": "Additional metadata associated with the environment.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "metadata",
+                              "json": "metadata"
+                            },
+                            "x-order": 8,
+                            "x-go-type": "core.Map",
+                            "x-go-type-skip-optional-pointer": true,
+                            "type": "object"
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp when the environment was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at",
+                              "json": "updatedAt"
+                            },
+                            "x-order": 9,
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "UpdatedAt",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deletedAt": {
+                            "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
+                            "nullable": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deletedAt"
+                            },
+                            "x-go-type": "core.NullTime",
+                            "x-go-import": "database/sql",
+                            "x-order": 10,
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "purpose": {
+                            "type": "string",
+                            "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                            "enum": [
+                              "user",
+                              "administrative"
+                            ],
+                            "x-enum-varnames": [
+                              "EnvironmentPurposeUser",
+                              "EnvironmentPurposeAdministrative"
+                            ],
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "purpose",
+                              "gorm": "not null;default:user",
+                              "json": "purpose,omitempty"
+                            },
+                            "x-order": 11
+                          }
+                        }
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "-",
+                        "gorm": "-"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-order": 15
+                    },
+                    "schemaVersion": {
+                      "description": "Specifies the version of the schema used for the definition.",
+                      "x-order": 16,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "-",
+                        "gorm": "-"
+                      },
+                      "default": "connections.meshery.io/v1beta3",
+                      "type": "string",
+                      "minLength": 2,
+                      "maxLength": 100,
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
+                      "example": [
+                        "v1",
+                        "v1alpha1",
+                        "v2beta3",
+                        "v1.custom-suffix",
+                        "models.meshery.io/v1beta1",
+                        "capability.meshery.io/v1alpha1"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "426": {
+            "description": "The client's version is below the provider's minimum for that client. The client must update before it can register or keep a connection alive; the body names the minimum and where to get an update.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Body of a 426 answer: a MeshKit error sentence plus the client's compatibility, so the client can show the minimum and where to update.\n",
+                  "additionalProperties": false,
+                  "required": [
+                    "error",
+                    "compatibility"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code allocated by the emitting service; not a stable part of this contract."
+                    },
+                    "compatibility": {
+                      "type": "object",
+                      "description": "Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`.\n",
+                      "additionalProperties": false,
+                      "required": [
+                        "clientName",
+                        "clientVersion",
+                        "compatible"
+                      ],
+                      "properties": {
+                        "clientName": {
+                          "type": "string",
+                          "description": "Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.\n",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "pattern": "^[a-z0-9][a-z0-9-]*$"
+                        },
+                        "clientVersion": {
+                          "type": "string",
+                          "description": "The client's version as it reported it, as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Versions are ordered by their numeric parts, so `v1.9.0` is older than `v1.25.0`.",
+                          "maxLength": 64
+                        },
+                        "minimumVersion": {
+                          "type": "string",
+                          "description": "Oldest client version the provider accepts for this client. Absent when the provider sets no minimum.",
+                          "maxLength": 64
+                        },
+                        "compatible": {
+                          "type": "boolean",
+                          "description": "True when `clientVersion` is at or above `minimumVersion`, or when there is no minimum."
+                        },
+                        "upgradeUrl": {
+                          "type": "string",
+                          "description": "Where the client can get an update, when the provider knows one.",
+                          "maxLength": 2048
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -9642,6 +12461,57 @@ const ConnectionSchema: Record<string, unknown> = {
             }
           }
         }
+      },
+      "MeshkitError409": {
+        "description": "Conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "required": [
+                "error"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                  "enum": [
+                    "emergency",
+                    "alert",
+                    "critical",
+                    "fatal"
+                  ]
+                },
+                "probableCause": {
+                  "type": "array",
+                  "description": "MeshKit's probable causes of the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "description": "MeshKit's suggested remediations for the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -9744,6 +12614,18 @@ const ConnectionSchema: Record<string, unknown> = {
           "maxLength": 500
         }
       },
+      "installationId": {
+        "name": "installationId",
+        "in": "path",
+        "description": "Installation identifier from `metadata.installationId`.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
+          "minLength": 1,
+          "maxLength": 255
+        }
+      },
       "orgIdQuery": {
         "name": "orgId",
         "in": "query",
@@ -9769,7 +12651,8 @@ const ConnectionSchema: Record<string, unknown> = {
           "type",
           "subType",
           "kind",
-          "status"
+          "status",
+          "organizationId"
         ],
         "properties": {
           "id": {
@@ -9799,7 +12682,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "description": {
             "x-oapi-codegen-extra-tags": {
               "db": "description",
-              "json": "description"
+              "json": "description,omitempty"
             },
             "x-order": 3,
             "type": "string",
@@ -9809,7 +12692,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "url": {
             "x-oapi-codegen-extra-tags": {
               "db": "url",
-              "json": "url"
+              "json": "url,omitempty"
             },
             "x-order": 4,
             "type": "string",
@@ -9860,7 +12743,7 @@ const ConnectionSchema: Record<string, unknown> = {
             },
             "x-order": 8,
             "type": "string",
-            "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+            "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
             "maxLength": 255
           },
           "modelReference": {
@@ -10575,6 +13458,22 @@ const ConnectionSchema: Record<string, unknown> = {
             "nullable": true,
             "x-go-type-skip-optional-pointer": true
           },
+          "organizationId": {
+            "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+            "x-go-name": "OrganizationID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "organization_id",
+              "json": "organizationId"
+            },
+            "x-order": 19,
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
           "environments": {
             "type": "array",
             "description": "Associated environments for this connection",
@@ -10752,7 +13651,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 },
                 "purpose": {
                   "type": "string",
-                  "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                  "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                   "enum": [
                     "user",
                     "administrative"
@@ -10820,6 +13719,33 @@ const ConnectionSchema: Record<string, unknown> = {
           "CoreKindPrometheus",
           "CoreKindGrafana",
           "CoreKindGithub"
+        ]
+      },
+      "DestinationKind": {
+        "type": "string",
+        "description": "A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.",
+        "x-go-name": "DestinationKind",
+        "x-ts-const": "DestinationConnectionKinds",
+        "x-ts-type": "DestinationConnectionKind",
+        "enum": [
+          "linkedin",
+          "x",
+          "reddit",
+          "hn",
+          "slack",
+          "bluesky",
+          "github",
+          "blog"
+        ],
+        "x-enum-varnames": [
+          "DestinationKindLinkedin",
+          "DestinationKindX",
+          "DestinationKindReddit",
+          "DestinationKindHn",
+          "DestinationKindSlack",
+          "DestinationKindBluesky",
+          "DestinationKindGithub",
+          "DestinationKindBlog"
         ]
       },
       "ConnectionDefinition": {
@@ -11608,6 +14534,209 @@ const ConnectionSchema: Record<string, unknown> = {
           }
         }
       },
+      "ConnectionSummary": {
+        "type": "object",
+        "description": "Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`.\n",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "status",
+          "organizationId"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-order": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Connection name.",
+            "maxLength": 255,
+            "x-order": 2
+          },
+          "kind": {
+            "type": "string",
+            "description": "Connection kind, for example `desktop`.",
+            "maxLength": 255,
+            "x-order": 3
+          },
+          "owner": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "json": "owner,omitempty"
+            },
+            "x-order": 4
+          },
+          "status": {
+            "type": "string",
+            "description": "Connection status as read, for example `connected` or `disconnected`.",
+            "maxLength": 255,
+            "x-order": 5
+          },
+          "lastSeenAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.",
+            "nullable": true,
+            "x-go-type": "core.NullTime",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
+            },
+            "x-order": 6
+          },
+          "organizationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "readOnly": true,
+            "x-go-name": "OrganizationID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "organizationId"
+            },
+            "x-order": 7
+          }
+        }
+      },
+      "ConnectionSummaryPage": {
+        "type": "object",
+        "description": "Page of connection summaries.",
+        "additionalProperties": false,
+        "required": [
+          "connections",
+          "totalCount",
+          "page",
+          "pageSize"
+        ],
+        "properties": {
+          "connections": {
+            "type": "array",
+            "description": "Connection summaries on this page.",
+            "items": {
+              "x-go-type": "ConnectionSummary",
+              "type": "object",
+              "description": "Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`.\n",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "name",
+                "kind",
+                "status",
+                "organizationId"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-order": 1
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Connection name.",
+                  "maxLength": 255,
+                  "x-order": 2
+                },
+                "kind": {
+                  "type": "string",
+                  "description": "Connection kind, for example `desktop`.",
+                  "maxLength": 255,
+                  "x-order": 3
+                },
+                "owner": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "owner,omitempty"
+                  },
+                  "x-order": 4
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Connection status as read, for example `connected` or `disconnected`.",
+                  "maxLength": 255,
+                  "x-order": 5
+                },
+                "lastSeenAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.",
+                  "nullable": true,
+                  "x-go-type": "core.NullTime",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core",
+                    "name": "core"
+                  },
+                  "x-order": 6
+                },
+                "organizationId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "organizationId"
+                  },
+                  "x-order": 7
+                }
+              }
+            },
+            "x-order": 1
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of connections on all pages.",
+            "minimum": 0,
+            "x-order": 2
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number.",
+            "minimum": 0,
+            "x-order": 3
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of elements per page.",
+            "minimum": 1,
+            "x-order": 4
+          }
+        }
+      },
       "ConnectionPage": {
         "description": "Represents a page of connections with meta information about connections count",
         "additionalProperties": false,
@@ -11636,7 +14765,8 @@ const ConnectionSchema: Record<string, unknown> = {
                 "type",
                 "subType",
                 "kind",
-                "status"
+                "status",
+                "organizationId"
               ],
               "properties": {
                 "id": {
@@ -11666,7 +14796,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "description": {
                   "x-oapi-codegen-extra-tags": {
                     "db": "description",
-                    "json": "description"
+                    "json": "description,omitempty"
                   },
                   "x-order": 3,
                   "type": "string",
@@ -11676,7 +14806,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "url": {
                   "x-oapi-codegen-extra-tags": {
                     "db": "url",
-                    "json": "url"
+                    "json": "url,omitempty"
                   },
                   "x-order": 4,
                   "type": "string",
@@ -11727,7 +14857,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   },
                   "x-order": 8,
                   "type": "string",
-                  "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
+                  "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)",
                   "maxLength": 255
                 },
                 "modelReference": {
@@ -12442,6 +15572,22 @@ const ConnectionSchema: Record<string, unknown> = {
                   "nullable": true,
                   "x-go-type-skip-optional-pointer": true
                 },
+                "organizationId": {
+                  "description": "The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.\n",
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId"
+                  },
+                  "x-order": 19,
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
                 "environments": {
                   "type": "array",
                   "description": "Associated environments for this connection",
@@ -12619,7 +15765,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "purpose": {
                         "type": "string",
-                        "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nServer-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
+                        "description": "What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).\n\nAbsent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for \"not user\", so the property fails closed.\n\nAt most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a \"not `user`\" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.\n\nPrivileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.\n\nThe database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.",
                         "enum": [
                           "user",
                           "administrative"
@@ -12708,6 +15854,76 @@ const ConnectionSchema: Record<string, unknown> = {
           }
         }
       },
+      "DesktopInstallationId": {
+        "type": "string",
+        "description": "Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.",
+        "minLength": 1,
+        "maxLength": 255
+      },
+      "DesktopConnectionMetadata": {
+        "type": "object",
+        "description": "Metadata of a `desktop` connection: a desktop app install that registered itself on every connect to Cloud. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `installationId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins.\n",
+        "required": [
+          "installationId"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "installationId": {
+            "type": "string",
+            "description": "Stable identifier of a desktop app install: generated once on the install's first launch (a UUID is recommended), kept with the app's local state, and never derived from the host name, a process id or a hardware identifier. A reinstall that discards local state is a new install. It is the install part of the deduplication key.\n",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "computerId": {
+            "type": "string",
+            "description": "Stable identifier of the computer the install runs on, shared by every install on that computer whoever signs in: the lowercase hex SHA-256 digest of a fixed, client-defined salt followed by the operating system's hardware identifier (for example the platform UUID on macOS). Clients must send only this digest, never the raw hardware identifier or a serial number. Absent when the client cannot read a hardware identifier.\n",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "hostname": {
+            "type": "string",
+            "description": "Host name of the machine.",
+            "maxLength": 255
+          },
+          "os": {
+            "type": "string",
+            "description": "Operating system, for example `macos`.",
+            "maxLength": 64
+          },
+          "appVersion": {
+            "type": "string",
+            "description": "Version of the desktop app as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Compared with the server's minimum for `clientName`.",
+            "maxLength": 64,
+            "pattern": "^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+          },
+          "clientName": {
+            "type": "string",
+            "description": "Identifier of the desktop app, for example its product name, lowercase. A value, never a kind: it selects the server's minimum version for this client.\n",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "buildSha": {
+            "type": "string",
+            "description": "Source revision the desktop app was built from.",
+            "maxLength": 64
+          },
+          "osVersion": {
+            "type": "string",
+            "description": "Operating system version, for example `26.0.1`.",
+            "maxLength": 64
+          },
+          "tokenId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token. A value sent by the client is ignored.\n"
+          },
+          "lastSeenAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Server time of the last registration or heartbeat."
+          }
+        }
+      },
       "ConnectionStatusValue": {
         "type": "string",
         "description": "Connection Status Value",
@@ -12791,7 +16007,7 @@ const ConnectionSchema: Record<string, unknown> = {
       },
       "ConnectionPayload": {
         "type": "object",
-        "description": "Payload for creating or updating a connection",
+        "description": "Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.\n",
         "properties": {
           "id": {
             "type": "string",

@@ -188,6 +188,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/workspaces/{workspaceId}/profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get profiles assigned to a workspace
+         * @description Gets profiles assigned to or available for a workspace depending on the filter. A profile can be assigned to many workspaces; members of each one can read it, as can its owner and organization admins.
+         */
+        get: operations["getProfilesOfWorkspace"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/workspaces/{workspaceId}/profiles/{profileId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign a profile to a workspace
+         * @description Assigns a profile to a workspace, granting the workspace's members read access to it (not to its linked connections). The profile and the workspace must belong to the same organization, and a profile can be assigned to many workspaces.
+         */
+        post: operations["assignProfileToWorkspace"];
+        /**
+         * Unassign a profile from a workspace
+         * @description Removes a profile from a workspace. The profile itself is left intact.
+         */
+        delete: operations["unassignProfileFromWorkspace"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/workspaces/{workspaceId}/views": {
         parameters: {
             query?: never;
@@ -616,6 +660,81 @@ export interface components {
                 deletedAt?: string;
             }[];
         };
+        /** @description Junction record linking a workspace to a profile. */
+        WorkspacesProfilesMapping: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            workspaceId: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            profileId: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was created.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was last updated.
+             */
+            updatedAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was soft-deleted.
+             */
+            deletedAt?: string | null;
+        };
+        /** @description Paginated list of workspace-profile mappings. */
+        WorkspacesProfilesMappingPage: {
+            /** @description Zero-based page index returned in this response. */
+            page?: number;
+            /** @description Maximum number of items returned on each page. */
+            pageSize?: number;
+            /** @description Total number of items across all pages. */
+            totalCount?: number;
+            /** @description Workspace-profile mapping entries. */
+            workspacesProfilesMapping?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                workspaceId: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                profileId: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was last updated.
+                 */
+                updatedAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was soft-deleted.
+                 */
+                deletedAt?: string | null;
+            }[];
+        };
         /** @description Junction record linking a workspace to a view. */
         WorkspacesViewsMapping: {
             /** Format: uuid */
@@ -729,6 +848,11 @@ export interface components {
                 created_at?: string;
                 /** Format: uuid */
                 user_id?: string;
+                /**
+                 * Format: uuid
+                 * @description The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.
+                 */
+                readonly organizationId?: string;
                 location?: {
                     [key: string]: string;
                 };
@@ -916,6 +1040,11 @@ export interface components {
                                  * @description SQL null Timestamp to handle null values of time.
                                  */
                                 deleted_at?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                organizationId?: string;
                                 /** @description Associated environments for this connection */
                                 environments?: {
                                     /**
@@ -2276,6 +2405,8 @@ export interface components {
         environmentId: string;
         /** @description Design ID */
         designId: string;
+        /** @description Profile ID */
+        profileId: string;
         /** @description View ID */
         viewId: string;
         /** @description Organization ID used to scope the workspace listing. */
@@ -2854,9 +2985,12 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
+                        /** @description Current page number of the result set. */
                         page?: number;
-                        page_size?: number;
-                        total_count?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
                         /** @description The teams of the teampage. */
                         teams?: {
                             /**
@@ -2875,15 +3009,21 @@ export interface operations {
                             owner?: string;
                             /** @description Additional metadata for the team */
                             metadata?: Record<string, never>;
-                            /** Format: date-time */
-                            created_at?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
                             /**
                              * Format: date-time
-                             * @description SQL null Timestamp to handle null values of time.
+                             * @description Timestamp when the team was created.
                              */
-                            deleted_at?: string;
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was last updated.
+                             */
+                            updatedAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was soft-deleted, if applicable.
+                             */
+                            deletedAt?: string;
                         }[];
                     };
                 };
@@ -3176,13 +3316,13 @@ export interface operations {
                              */
                             deletedAt?: string | null;
                             /**
-                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+                             * @description What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
                              *
                              *     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
                              *
                              *     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
                              *
-                             *     Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+                             *     Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
                              *
                              *     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md.
                              * @enum {string}
@@ -3464,6 +3604,11 @@ export interface operations {
                             created_at?: string;
                             /** Format: uuid */
                             user_id?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.
+                             */
+                            readonly organizationId?: string;
                             location?: {
                                 [key: string]: string;
                             };
@@ -3651,6 +3796,11 @@ export interface operations {
                                              * @description SQL null Timestamp to handle null values of time.
                                              */
                                             deleted_at?: string;
+                                            /**
+                                             * Format: uuid
+                                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                             */
+                                            organizationId?: string;
                                             /** @description Associated environments for this connection */
                                             environments?: {
                                                 /**
@@ -5007,6 +5157,305 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Workspace design mapping removed */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getProfilesOfWorkspace: {
+        parameters: {
+            query?: {
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get responses by page */
+                page?: number;
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
+                pagesize?: number;
+                /** @description JSON-encoded filter string used for assignment and soft-delete filters. */
+                filter?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Workspace ID */
+                workspaceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Profiles */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Zero-based page index returned in this response. */
+                        page: number;
+                        /** @description Maximum number of items returned on each page. */
+                        pageSize: number;
+                        /** @description Total number of items across all pages. */
+                        totalCount: number;
+                        /** @description Profiles in this page. */
+                        profiles: {
+                            /**
+                             * Format: uuid
+                             * @description Server-generated profile ID.
+                             */
+                            id: string;
+                            /**
+                             * @description Specifies the version of the schema to which the profile conforms.
+                             * @default profiles.meshery.io/v1beta3
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
+                            /** @description Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+                            name: string;
+                            /** @description Description of the profile. */
+                            description?: string;
+                            /**
+                             * Format: uuid
+                             * @description Owning organization ID. Fixed at creation.
+                             */
+                            organizationId: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs.
+                             */
+                            owner: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile.
+                             */
+                            userId?: string;
+                            /** @description Free-form settings of the profile, stored as a JSON blob. */
+                            metadata?: Record<string, never>;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the profile was created.
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the profile was last updated.
+                             */
+                            updatedAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the profile was soft-deleted. Null while the profile remains active.
+                             */
+                            deletedAt?: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    assignProfileToWorkspace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Workspace ID */
+                workspaceId: string;
+                /** @description Profile ID */
+                profileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Workspace profile mappings */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Zero-based page index returned in this response. */
+                        page?: number;
+                        /** @description Maximum number of items returned on each page. */
+                        pageSize?: number;
+                        /** @description Total number of items across all pages. */
+                        totalCount?: number;
+                        /** @description Workspace-profile mapping entries. */
+                        workspacesProfilesMapping?: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            workspaceId: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            profileId: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the mapping was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the mapping was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the mapping was soft-deleted.
+                             */
+                            deletedAt?: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    unassignProfileFromWorkspace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Workspace ID */
+                workspaceId: string;
+                /** @description Profile ID */
+                profileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Workspace profile mapping removed */
             204: {
                 headers: {
                     [name: string]: unknown;

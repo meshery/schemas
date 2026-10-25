@@ -1,0 +1,455 @@
+openapi: 3.0.0
+info:
+  title: Ledger
+  description: |
+    OpenAPI schema for organization ledgers: named idempotent sets of keyed
+    entries that several workers share, so work done once (a record processed,
+    a contact reached) is never done twice. Recording is idempotent on
+    (ledger, entryKey) and never changes an existing entry. Change a stored
+    value with updateLedgerEntry, which replaces `value` wholesale (not a
+    merge) and advances `updatedAt`. Claim-if-absent hands a key to exactly
+    one claiming connection atomically. Ledgers belong to the organization of
+    the authenticated session; any client-supplied organization is ignored.
+
+    Authorization: ledgers are organization-shared bookkeeping. Any member of
+    the session organization may record, claim, list, read, update and delete
+    entries in that organization's ledgers. A claim names the connection that
+    takes the key (`connectionId`), which must be the caller's own live
+    connection in the session organization; any other connection, including
+    one that does not exist, is `404`, the same answer as a missing ledger. A
+    delete or an update never checks who holds the key. A key is scoped to
+    (organization, ledger), so an entry in another ledger is `404`.
+
+    Updating an entry replaces the stored `value` and advances `updatedAt`
+    (strictly increasing, so it works as a version token). It never changes
+    `entryKey`, `claimedByConnectionId`, `claimedAt`, `createdAt` or `id`,
+    and it does not create entries: a key that is not in the ledger is `404`
+    (use POST entries or claims to create). `expectedValue`, when present,
+    applies the update only if the stored value equals it (JSON equality; key
+    order and whitespace do not matter). `expectedUpdatedAt`, when present,
+    applies the update only if the stored entry's `updatedAt` equals it
+    exactly; clients echo the `updatedAt` they last read. Both preconditions
+    may be sent; then both must hold. With neither, the update is
+    unconditional. A precondition that does not match returns `412` and
+    changes nothing.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: ledgers
+    description: Operations related to organization ledgers and their entries.
+
+paths:
+  /api/ledgers/{ledger}/entries:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - ledgers
+      summary: List ledger entries
+      operationId: listLedgerEntries
+      description: >
+        Returns a paginated list of the entries in the ledger, in the
+        organization of the authenticated session. `search` matches entry keys
+        that contain the term, ignoring case. `order` sorts by `entryKey`,
+        `createdAt` or `updatedAt` (`asc` or `desc`); the default is
+        `entryKey asc`. A ledger with no entries returns an empty page, and a
+        caller who is not a member of the session organization gets `404`.
+      parameters:
+        - $ref: "#/components/parameters/ledger"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Ledger entries page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntryPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - ledgers
+      summary: Record a ledger entry
+      operationId: recordLedgerEntry
+      description: >
+        Records `entryKey` in the ledger. A new key creates the entry and
+        returns `201`. Recording never changes an existing entry: the stored
+        entry is returned unchanged with `200`, and the supplied `value` is
+        ignored. Change a stored value with updateLedgerEntry. Recording never
+        changes `claimedByConnectionId` or `claimedAt`.
+      parameters:
+        - $ref: "#/components/parameters/ledger"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LedgerEntryPayload"
+      responses:
+        "200":
+          description: The key was already recorded; the stored entry, unchanged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntry"
+        "201":
+          description: The key was recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntry"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/ledgers/{ledger}/claims:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - ledgers
+      summary: Claim a ledger key if absent
+      operationId: claimLedgerEntry
+      description: >
+        Atomically gives `entryKey` to the connection `connectionId`, which
+        must be the caller's own live connection in the session organization;
+        any other connection is `404`. When the key is not in the ledger, the
+        entry is created already claimed and returned with `201`. When it is
+        recorded but unclaimed, it is claimed and returned with `200`. When
+        `connectionId` already holds it, the call is a replay and returns the
+        entry with `200`. When another live connection holds it, the call is
+        refused with `409` and nothing changes. A claim ends when the entry is
+        deleted or when the holding connection is deleted; a key whose holder
+        was deleted can be claimed again.
+      parameters:
+        - $ref: "#/components/parameters/ledger"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LedgerClaimPayload"
+      responses:
+        "200":
+          description: The caller's connection now holds the existing entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntry"
+        "201":
+          description: The key was absent; it was recorded and claimed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntry"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/ledgers/{ledger}/entries/{entryKey}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - ledgers
+      summary: Get a ledger entry
+      operationId: getLedgerEntry
+      description: Returns the entry recorded under `entryKey` in the ledger, or `404` when the key is not in this ledger.
+      parameters:
+        - $ref: "#/components/parameters/ledger"
+        - $ref: "#/components/parameters/entryKey"
+      responses:
+        "200":
+          description: Ledger entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntry"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - ledgers
+      summary: Update a ledger entry
+      operationId: updateLedgerEntry
+      description: >
+        Replaces the stored `value` wholesale (not a merge) and advances
+        `updatedAt` (strictly increasing, so it works as a version token).
+        Never changes `entryKey`, `claimedByConnectionId`, `claimedAt`,
+        `createdAt` or `id`. Does not create entries: a key that is not in
+        the ledger is `404` (use POST entries or claims to create). Does not
+        check who holds a claim (same as delete). Any member of the session
+        organization may update. `expectedValue`, when present, applies the
+        update only if the stored value equals it (JSON equality; key order
+        and whitespace do not matter). `expectedUpdatedAt`, when present,
+        applies the update only if the stored entry's `updatedAt` equals it
+        exactly; clients echo the `updatedAt` they last read. Both
+        preconditions may be sent; then both must hold. With neither, the
+        update is unconditional. A precondition that does not match returns
+        `412` and changes nothing. A bad ledger name, key, or body (for
+        example a missing `value` or a non-object value) is `400`.
+      parameters:
+        - $ref: "#/components/parameters/ledger"
+        - $ref: "#/components/parameters/entryKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LedgerEntryUpdatePayload"
+      responses:
+        "200":
+          description: The updated ledger entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerEntry"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "412":
+          $ref: "#/components/responses/412"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - ledgers
+      summary: Delete a ledger entry
+      operationId: deleteLedgerEntry
+      description: Removes the entry, and with it any claim, so its key can be recorded or claimed again. Returns `404` when the key is not in this ledger.
+      parameters:
+        - $ref: "#/components/parameters/ledger"
+        - $ref: "#/components/parameters/entryKey"
+      responses:
+        "204":
+          description: Ledger entry deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    409:
+      description: Conflict - another connection holds the ledger entry
+      content:
+        text/plain:
+          schema:
+            type: string
+    412:
+      description: Precondition Failed - expectedValue or expectedUpdatedAt does not match the stored entry, so nothing was changed
+      content:
+        text/plain:
+          schema:
+            type: string
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/pageSize"
+    search:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
+    ledger:
+      name: ledger
+      in: path
+      description: Name of the ledger, for example `processed-profiles`.
+      required: true
+      schema:
+        type: string
+        pattern: '^[a-z0-9][a-z0-9._-]*$'
+        minLength: 1
+        maxLength: 255
+    entryKey:
+      name: entryKey
+      in: path
+      description: Key within the ledger. URL-encode keys that contain reserved characters such as `/`.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 1024
+        not:
+          enum: [".", ".."]
+
+  schemas:
+    LedgerEntry:
+      $ref: "./ledger_entry.yaml"
+
+    LedgerEntryPage:
+      type: object
+      description: Paginated collection of ledger entries.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - ledgerEntries
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        ledgerEntries:
+          type: array
+          items:
+            $ref: "#/components/schemas/LedgerEntry"
+            x-go-type: LedgerEntry
+          description: Ledger entries included on this page of results.
+
+    LedgerEntryPayload:
+      type: object
+      description: >
+        Payload for recording a ledger entry. The ledger comes from the path
+        and the organization from the session; claim fields and timestamps are
+        server-owned.
+      required:
+        - entryKey
+      properties:
+        entryKey:
+          type: string
+          description: Key within the ledger.
+          minLength: 1
+          maxLength: 1024
+          x-go-name: EntryKey
+        value:
+          type: object
+          description: Entry value, stored as a JSON object.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+
+    LedgerEntryUpdatePayload:
+      type: object
+      description: >
+        Payload for replacing a ledger entry's value. The ledger and entryKey
+        come from the path. Claim fields, id and timestamps are server-owned
+        and are not accepted here.
+      required:
+        - value
+      properties:
+        value:
+          type: object
+          description: The new entry value, stored as a JSON object. Replaces the stored value wholesale.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+        expectedValue:
+          type: object
+          description: >
+            Optional precondition. When present, including as an empty object,
+            the update applies only if the stored value equals this object
+            (JSON equality; key order and whitespace do not matter). Omit the
+            property to skip this check. Absence is distinct from an empty
+            object.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+        expectedUpdatedAt:
+          type: string
+          format: date-time
+          description: >
+            Optional precondition. When present, the update applies only if
+            the stored entry's updatedAt equals this instant exactly. Clients
+            echo the updatedAt they last read. Omit the property to skip this
+            check.
+          x-go-type: core.NullTime
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+
+    LedgerClaimPayload:
+      type: object
+      description: Claim-if-absent payload giving a key to one connection.
+      required:
+        - entryKey
+        - connectionId
+      properties:
+        entryKey:
+          type: string
+          description: Key to claim.
+          minLength: 1
+          maxLength: 1024
+          x-go-name: EntryKey
+        connectionId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: >
+            ID of the connection taking the key: the caller's own live
+            connection in the session organization (for example the
+            connection a desktop client registered for its machine).
+          x-go-name: ConnectionID
+          x-go-type-skip-optional-pointer: true
+        value:
+          type: object
+          description: Value stored when the claim creates the entry; ignored when the entry already exists.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true

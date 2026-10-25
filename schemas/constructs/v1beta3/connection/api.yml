@@ -86,7 +86,59 @@ paths:
         - Connections
       operationId: registerConnection
       summary: Register a new connection
-      description: Register a new connection with credentials
+      description: >
+        Register a new connection with credentials. Meshery Cloud reserves the
+        GitHub App connection's identity (name `GitHub App`, sub_type `git`):
+        only its GitHub authorization flow creates that connection, so a
+        request naming it is refused with a `409` MeshKit error that names the
+        reserved GitHub App connection identity.
+
+
+        Every connection belongs to exactly one organization. The server assigns
+        `organizationId` from the session (`X-Current-Orgid`, then the caller's
+        selected organization) and does not accept it in the body.
+
+
+        Desktop registration uses this shared operation, but kind `desktop` is implemented by Cloud: a server that does not support it rejects a `desktop` body with `400`. The heartbeat and deregistration routes are Cloud-only. A client desktop app install
+        registers itself on every connect to Cloud, sign-in included, with kind `desktop`, type `platform`,
+        sub_type `management`, status `connected`, and `metadata` matching
+        `DesktopConnectionMetadata`. Servers implementing this contract must
+        take the organization from the `X-Current-Orgid` header, refuse a
+        `desktop` registration without it with `400`, and refuse a caller who
+        is not a live member of that organization with `403`. They must
+        deduplicate on (organization, owner, `metadata.installationId`):
+        registering the same install again updates that connection and returns
+        `200`, while a new connection returns `201`. A `desktop` body whose
+        metadata lacks `installationId` is refused with `400`. Installs on one
+        computer share `metadata.computerId`, so a server can group them by
+        computer. The kind names the connection type,
+        never the product that runs on the machine.
+
+
+        A `desktop` registration whose `metadata.clientName` and
+        `metadata.appVersion` fall below the server's minimum version for
+        that client is refused with `426` and a `ClientUpgradeRequiredError`
+        body; the connection, when it exists, is set to `maintenance`.
+        Servers must link the API token that authenticated the registration
+        to the connection (`metadata.tokenId`, server-written) and revoke
+        that token when the connection is deregistered or deleted. When a
+        later registration of the same connection authenticates with a
+        different token, the server revokes the token previously linked to it.
+        Registrations beyond the organization's device limit are accepted;
+        the organization is flagged through the capabilities document's
+        `session.deviceUsage` instead.
+      parameters:
+        - name: X-Current-Orgid
+          in: header
+          required: false
+          description: >
+            Session organization. The server assigns `Connection.organizationId`
+            from this header when it is present, and from the caller's selected
+            organization when it is absent. Kind `desktop` requires the header:
+            a desktop registration without it is refused with 400.
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -94,6 +146,12 @@ paths:
             schema:
               $ref: "#/components/schemas/ConnectionPayload"
       responses:
+        "200":
+          description: Existing desktop connection for this machine updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
         "201":
           description: Connection registered
           content:
@@ -104,6 +162,12 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/403"
+        "409":
+          $ref: "#/components/responses/MeshkitError409"
+        "426":
+          $ref: "../provider_capability/api.yml#/components/responses/ClientUpgradeRequired"
         "500":
           $ref: "#/components/responses/500"
 
@@ -202,7 +266,17 @@ paths:
         - Connections
       operationId: updateConnection
       summary: Update a connection
-      description: Update an existing connection
+      description: >
+        Update an existing connection. Meshery Cloud refuses, with a `409` MeshKit
+        error naming the reserved identity, an edit that would give a connection the GitHub
+        App connection's identity (name `GitHub App`, sub_type `git`). On the
+        GitHub App connection itself, the server-written metadata keys
+        `installations`, `installationId` and `installationsVerifiedAt` are
+        carried forward from the stored row: a client edit can neither set nor
+        erase them (other metadata keys are written as sent). Their shape is
+        `GithubConnectionMetadata` in the v1beta3 `github` construct.
+        `organizationId` is not in the body. The server keeps the organization
+        assigned at registration.
       parameters:
         - $ref: "#/components/parameters/connectionId"
       requestBody:
@@ -224,6 +298,8 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/MeshkitError409"
         "500":
           $ref: "#/components/responses/500"
 
@@ -233,7 +309,7 @@ paths:
         - Connections
       operationId: deleteConnection
       summary: Delete a connection
-      description: Delete a specific connection
+      description: Delete a specific connection. Deleting a connection that has a `metadata.tokenId` revokes that token.
       parameters:
         - $ref: "#/components/parameters/connectionId"
       responses:
@@ -301,6 +377,115 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/desktop:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Connections
+      operationId: getDesktopConnectionsOfOrganization
+      summary: List the organization's desktop connections
+      description: >
+        Returns every live `desktop` connection in the session organization,
+        whoever registered it, as a summary: `id`, `name`, `kind`, `owner`,
+        `status`, `organizationId` and `lastSeenAt` only. Any live member of the organization
+        may read it, so members can see which computers share its work; a
+        guest session cannot. Servers must never include the connection's
+        credential, metadata (beyond `lastSeenAt`), URL or description here:
+        the full connection stays readable only by its owner through
+        `getConnections`. `status` follows the heartbeat rule of
+        `recordConnectionHeartbeat` (a desktop connection silent for 3 minutes
+        reads `disconnected`). A caller who is not a live member of the
+        session organization receives `404`.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - name: owner
+          in: query
+          required: false
+          description: Only connections registered by this user.
+          schema:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+      responses:
+        "200":
+          description: Desktop connections of the organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionSummaryPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "../../v1beta2/core/api.yml#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/desktop/{installationId}:
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - Connections
+      operationId: deregisterDesktopConnection
+      summary: Deregister a desktop app install
+      description: >
+        Delete the caller's `desktop` connection whose
+        `metadata.installationId` matches, as a desktop app install does on
+        sign-out or uninstall.
+        Servers implementing this contract must scope the deletion to the
+        caller: a connection registered by another user is not found.
+        Servers must revoke the API token linked to each deleted connection
+        (`metadata.tokenId`).
+      parameters:
+        - $ref: "#/components/parameters/installationId"
+      responses:
+        "204":
+          description: Desktop connection deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{connectionId}/heartbeat:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - Connections
+      operationId: recordConnectionHeartbeat
+      summary: Record a connection heartbeat
+      description: >
+        Mark the caller's connection as alive. Servers implementing this
+        contract must set `metadata.lastSeenAt` to the current time and, when
+        the connection is `disconnected`, set its status back to `connected`.
+        Servers must report a connection whose `metadata.lastSeenAt` is older
+        than 3 minutes as `disconnected` until its next heartbeat. The request
+        has no body, so a heartbeat cannot change anything else about the
+        connection. When the connection's `metadata.clientName` and
+        `metadata.appVersion`, as stored by the latest registration (which
+        every connect makes before its first heartbeat), fall below the
+        server's minimum version for that client, servers must answer `426` with a
+        `ClientUpgradeRequiredError` body and set the connection to
+        `maintenance` instead of recording the heartbeat.
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "200":
+          description: Connection after the heartbeat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "426":
+          $ref: "../provider_capability/api.yml#/components/responses/ClientUpgradeRequired"
         "500":
           $ref: "#/components/responses/500"
 
@@ -523,6 +708,8 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
     500:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+    MeshkitError409:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError409"
 
   securitySchemes:
     jwt:
@@ -614,6 +801,13 @@ components:
         type: string
         maxLength: 500
 
+    installationId:
+      name: installationId
+      in: path
+      description: Installation identifier from `metadata.installationId`.
+      required: true
+      schema:
+        $ref: "#/components/schemas/DesktopInstallationId"
     orgIdQuery:
       name: orgId
       in: query
@@ -665,6 +859,40 @@ components:
         - CoreKindPrometheus
         - CoreKindGrafana
         - CoreKindGithub
+
+    # Publishing-destination kinds: a connection of one of these kinds is a
+    # place content is published to; clients read their destinations as
+    # connections filtered by these kinds, so there is no separate destination
+    # construct. Like CoreKind this names kinds, it does not close the open
+    # `kind` set and is referenced by no `kind` field. A destination
+    # connection carries the public URL of the target (profile, page,
+    # channel, repository, blog) in `metadata.url`, an absolute https URL; its
+    # secret stays in the credential named by `credentialId` and never
+    # appears in the connection.
+    DestinationKind:
+      type: string
+      description: A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.
+      x-go-name: DestinationKind
+      x-ts-const: DestinationConnectionKinds
+      x-ts-type: DestinationConnectionKind
+      enum:
+        - linkedin
+        - x
+        - reddit
+        - hn
+        - slack
+        - bluesky
+        - github
+        - blog
+      x-enum-varnames:
+        - DestinationKindLinkedin
+        - DestinationKindX
+        - DestinationKindReddit
+        - DestinationKindHn
+        - DestinationKindSlack
+        - DestinationKindBluesky
+        - DestinationKindGithub
+        - DestinationKindBlog
 
     ConnectionDefinition:
       description: A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.
@@ -839,6 +1067,99 @@ components:
           x-oapi-codegen-extra-tags:
             json: "transitionMap,omitempty"
 
+    ConnectionSummary:
+      type: object
+      description: >
+        Member-visible summary of a connection. Carries no credential, URL,
+        description or metadata other than `lastSeenAt`.
+      additionalProperties: false
+      required:
+        - id
+        - name
+        - kind
+        - status
+        - organizationId
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Connection ID.
+          x-order: 1
+        name:
+          type: string
+          description: Connection name.
+          maxLength: 255
+          x-order: 2
+        kind:
+          type: string
+          description: Connection kind, for example `desktop`.
+          maxLength: 255
+          x-order: 3
+        owner:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: ID of the user who registered the connection.
+          x-oapi-codegen-extra-tags:
+            json: "owner,omitempty"
+          x-order: 4
+        status:
+          type: string
+          description: Connection status as read, for example `connected` or `disconnected`.
+          maxLength: 255
+          x-order: 5
+        lastSeenAt:
+          type: string
+          format: date-time
+          description: Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.
+          nullable: true
+          x-go-type: core.NullTime
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-order: 6
+        organizationId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: >
+            The organization the connection belongs to. The server sets it
+            from the session organization. Never accepted from clients.
+          readOnly: true
+          x-go-name: OrganizationID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: organizationId
+          x-order: 7
+
+    ConnectionSummaryPage:
+      type: object
+      description: Page of connection summaries.
+      additionalProperties: false
+      required:
+        - connections
+        - totalCount
+        - page
+        - pageSize
+      properties:
+        connections:
+          type: array
+          description: Connection summaries on this page.
+          items:
+            $ref: "#/components/schemas/ConnectionSummary"
+            x-go-type: ConnectionSummary
+          x-order: 1
+        totalCount:
+          type: integer
+          description: Total number of connections on all pages.
+          minimum: 0
+          x-order: 2
+        page:
+          type: integer
+          description: Current page number.
+          minimum: 0
+          x-order: 3
+        pageSize:
+          type: integer
+          description: Number of elements per page.
+          minimum: 1
+          x-order: 4
+
     ConnectionPage:
       description: Represents a page of connections with meta information about connections count
       additionalProperties: false
@@ -884,6 +1205,91 @@ components:
           x-oapi-codegen-extra-tags:
             json: "statusSummary,omitempty"
           x-order: 5
+
+    DesktopInstallationId:
+      type: string
+      description: Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.
+      minLength: 1
+      maxLength: 255
+
+    DesktopConnectionMetadata:
+      type: object
+      description: >
+        Metadata of a `desktop` connection: a desktop app install that
+        registered itself on every connect to Cloud. Servers implementing this contract must
+        validate `metadata` against this schema when a registration has kind
+        `desktop`. The deduplication key is (organization, owner,
+        `installationId`).
+        `lastSeenAt` is set by the server on registration and on each
+        heartbeat. Servers must show this metadata in organization listings
+        only to the connection's owner and to organization admins.
+      required:
+        - installationId
+      additionalProperties: false
+      properties:
+        installationId:
+          type: string
+          description: >
+            Stable identifier of a desktop app install: generated once on the
+            install's first launch (a UUID is recommended), kept with the
+            app's local state, and never derived from the host name, a
+            process id or a hardware identifier. A reinstall that discards
+            local state is a new install. It is the install part of the
+            deduplication key.
+          minLength: 1
+          maxLength: 255
+        computerId:
+          type: string
+          description: >
+            Stable identifier of the computer the install runs on, shared by
+            every install on that computer whoever signs in: the lowercase
+            hex SHA-256 digest of a fixed, client-defined salt followed by the
+            operating system's hardware identifier (for example the platform
+            UUID on macOS). Clients must send only this digest, never the raw
+            hardware identifier or a serial number. Absent when the client
+            cannot read a hardware identifier.
+          pattern: '^[0-9a-f]{64}$'
+        hostname:
+          type: string
+          description: Host name of the machine.
+          maxLength: 255
+        os:
+          type: string
+          description: Operating system, for example `macos`.
+          maxLength: 64
+        appVersion:
+          type: string
+          description: Version of the desktop app as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Compared with the server's minimum for `clientName`.
+          maxLength: 64
+          pattern: '^v?[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
+        clientName:
+          type: string
+          description: >
+            Identifier of the desktop app, for example its product name,
+            lowercase. A value, never a kind: it selects the server's minimum
+            version for this client.
+          minLength: 1
+          maxLength: 64
+          pattern: '^[a-z0-9][a-z0-9-]*$'
+        buildSha:
+          type: string
+          description: Source revision the desktop app was built from.
+          maxLength: 64
+        osVersion:
+          type: string
+          description: Operating system version, for example `26.0.1`.
+          maxLength: 64
+        tokenId:
+          type: string
+          format: uuid
+          description: >
+            Server-written id of the API token that authenticated the latest
+            registration. Deregistering or deleting the connection revokes
+            this token. A value sent by the client is ignored.
+        lastSeenAt:
+          type: string
+          format: date-time
+          description: Server time of the last registration or heartbeat.
 
     ConnectionStatusValue:
       type: string
@@ -952,7 +1358,10 @@ components:
 
     ConnectionPayload:
       type: object
-      description: Payload for creating or updating a connection
+      description: >
+        Payload for creating or updating a connection. `organizationId` is
+        not a client field. The server assigns it from the session
+        organization.
       properties:
         id:
           type: string

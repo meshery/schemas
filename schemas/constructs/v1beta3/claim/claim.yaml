@@ -1,0 +1,188 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Claim Schema
+description: |
+  Server-returned claim: a time-bound hold that one connection takes on one
+  resource so that competing workers never act on it twice. A claim is
+  generic: it names the resource it holds by type and ID, and any construct
+  can be claimed. A claim is held by a connection (`claimantConnectionId`,
+  for example the connection a desktop client registered for its machine)
+  on behalf of the user whose session took it (`claimantUserId`). At most
+  one claim per resource is `active` in an organization. A claim whose
+  `expiresAt` has passed reads as `expired` and the resource may be claimed
+  again, so a holder that disappears never strands the resource. Released
+  and expired claims are kept as history: a handoff is an `expired` claim
+  followed by an `active` claim on the same resource. The holder reports
+  what happened (`outcome`) when it releases the claim. The race between
+  claimants is decided server-side in a single statement.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - resourceType
+  - resourceId
+  - status
+  - claimedAt
+  - expiresAt
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated claim ID.
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the authenticated session, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  resourceType:
+    type: string
+    description: Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`.
+    minLength: 1
+    maxLength: 64
+    x-oapi-codegen-extra-tags:
+      db: resource_type
+    x-order: 3
+  resourceId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: ID of the claimed resource.
+    x-oapi-codegen-extra-tags:
+      db: resource_id
+    x-order: 4
+  claimantConnectionId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      ID of the connection that holds the claim (`connections.id`): the
+      claiming user's own live connection in the organization, for example
+      the connection a desktop client registered for its machine. Always set
+      when the claim is taken; omitted only on a history row whose connection
+      was later purged.
+    x-go-name: ClaimantConnectionID
+    x-oapi-codegen-extra-tags:
+      db: claimant_connection_id
+      json: "claimantConnectionId,omitempty"
+    x-order: 5
+  claimantUserId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      ID of the user whose session took the claim. Derived from the
+      authenticated session, never client-settable. Omitted only on a history
+      row whose user was later purged.
+    x-go-name: ClaimantUserID
+    x-oapi-codegen-extra-tags:
+      db: claimant_user_id
+      json: "claimantUserId,omitempty"
+    x-order: 6
+  status:
+    type: string
+    description: >
+      Lifecycle of the claim. `active` while held, `released` once the holder
+      (or a member allowed to release it) lets it go, `expired` once
+      `expiresAt` passed without a renewal or the holding connection was
+      deleted. Expiry is evaluated when the claim is read, so a claim never
+      reads `active` past its `expiresAt`.
+    enum:
+      - active
+      - released
+      - expired
+    x-oapi-codegen-extra-tags:
+      db: status
+    x-order: 7
+  claimedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Time the claim was taken.
+    x-oapi-codegen-extra-tags:
+      db: claimed_at
+    x-order: 8
+  expiresAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale.
+    x-oapi-codegen-extra-tags:
+      db: expires_at
+    x-order: 9
+  renewedAt:
+    type: string
+    format: date-time
+    description: Time of the last renewal. Null until the claim is first renewed.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: renewed_at
+    x-order: 10
+  releasedAt:
+    type: string
+    format: date-time
+    description: Time the claim was released. Null while the claim is active or after it expired.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: released_at
+    x-order: 11
+  outcome:
+    type: string
+    description: >
+      What the releaser reported when the claim was released: `completed`
+      when the work behind it finished, `failed` when it was attempted and
+      did not succeed, `cancelled` when it was let go without the work being
+      done (including a release by another member). Omitted while the claim is
+      active and on an expired claim.
+    enum:
+      - completed
+      - failed
+      - cancelled
+    x-oapi-codegen-extra-tags:
+      db: outcome
+      json: "outcome,omitempty"
+    x-order: 12
+  outcomeError:
+    type: string
+    description: Error reported with a `failed` outcome. Omitted otherwise.
+    maxLength: 5000
+    x-oapi-codegen-extra-tags:
+      db: outcome_error
+      json: "outcomeError,omitempty"
+    x-order: 13
+  outcomeEventId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      ID of the event that records the run behind the outcome (see the
+      event construct). Omitted when none was reported, or when that event
+      was later deleted.
+    x-go-name: OutcomeEventID
+    x-oapi-codegen-extra-tags:
+      db: outcome_event_id
+      json: "outcomeEventId,omitempty"
+    x-order: 14
+  releasedBy:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      ID of the user who released the claim. Equal to `claimantUserId` when
+      the holder released it; another member's ID when an authorized member
+      released someone else's hold. Derived from the session; omitted while
+      the claim is not released.
+    x-go-name: ReleasedBy
+    x-oapi-codegen-extra-tags:
+      db: released_by
+      json: "releasedBy,omitempty"
+    x-order: 15
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of claim creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 16
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last claim modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 17

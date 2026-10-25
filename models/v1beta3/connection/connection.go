@@ -70,6 +70,18 @@ const (
 	CoreKindPrometheus CoreKind = "prometheus"
 )
 
+// Defines values for DestinationKind.
+const (
+	DestinationKindBlog     DestinationKind = "blog"
+	DestinationKindBluesky  DestinationKind = "bluesky"
+	DestinationKindGithub   DestinationKind = "github"
+	DestinationKindHn       DestinationKind = "hn"
+	DestinationKindLinkedin DestinationKind = "linkedin"
+	DestinationKindReddit   DestinationKind = "reddit"
+	DestinationKindSlack    DestinationKind = "slack"
+	DestinationKindX        DestinationKind = "x"
+)
+
 // Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 type Connection struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -79,10 +91,10 @@ type Connection struct {
 	Name string `db:"name" json:"name" yaml:"name"`
 
 	// Description Human-readable description of the connection and its purpose.
-	Description *string `db:"description" json:"description" yaml:"description"`
+	Description *string `db:"description" json:"description,omitempty" yaml:"description,omitempty"`
 
 	// Url URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).
-	Url *string `db:"url" json:"url" yaml:"url"`
+	Url *string `db:"url" json:"url,omitempty" yaml:"url,omitempty"`
 
 	// CredentialId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	CredentialID *core.Uuid `db:"credential_id" json:"credentialId" yaml:"credentialId,omitempty"`
@@ -93,7 +105,7 @@ type Connection struct {
 	// SubType Connection Subtype (cloud, identity, metrics, chat, git, orchestration)
 	SubType string `db:"sub_type" json:"subType" yaml:"subType"`
 
-	// Kind Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)
+	// Kind Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop)
 	Kind string `db:"kind" json:"kind" yaml:"kind"`
 
 	// ModelReference Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
@@ -130,6 +142,9 @@ type Connection struct {
 
 	// TransitionMap Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition.
 	TransitionMap map[string][]ConnectionStateTransition `db:"-" gorm:"type:bytes;serializer:json" json:"transitionMap,omitempty" yaml:"transitionMap,omitempty"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID core.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`
 }
 
 // ConnectionStatus Connection Status
@@ -233,7 +248,7 @@ type ConnectionPage struct {
 	StatusSummary *map[ConnectionStatusValue]int `json:"statusSummary,omitempty" yaml:"statusSummary,omitempty"`
 }
 
-// ConnectionPayload Payload for creating or updating a connection
+// ConnectionPayload Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.
 type ConnectionPayload struct {
 	// CredentialID Associated credential ID
 	CredentialID *uuid.UUID `json:"credentialId,omitempty" yaml:"credentialId,omitempty"`
@@ -341,6 +356,45 @@ type ConnectionStatusInfo struct {
 // ConnectionStatusValue Connection Status Value
 type ConnectionStatusValue string
 
+// ConnectionSummary Member-visible summary of a connection. Carries no credential, URL, description or metadata other than `lastSeenAt`.
+type ConnectionSummary struct {
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `json:"id" yaml:"id"`
+
+	// Name Connection name.
+	Name string `json:"name" yaml:"name"`
+
+	// Kind Connection kind, for example `desktop`.
+	Kind string `json:"kind" yaml:"kind"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// Status Connection status as read, for example `connected` or `disconnected`.
+	Status string `json:"status" yaml:"status"`
+
+	// LastSeenAt Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.
+	LastSeenAt *core.NullTime `json:"lastSeenAt" yaml:"lastSeenAt"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID core.Uuid `json:"organizationId" yaml:"organizationId"`
+}
+
+// ConnectionSummaryPage Page of connection summaries.
+type ConnectionSummaryPage struct {
+	// Connections Connection summaries on this page.
+	Connections []ConnectionSummary `json:"connections" yaml:"connections"`
+
+	// TotalCount Total number of connections on all pages.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+
+	// Page Current page number.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Number of elements per page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+}
+
 // ConnectionsStatusPage Paginated list of connection status counts
 type ConnectionsStatusPage struct {
 	// ConnectionsStatus List of status counts
@@ -358,6 +412,42 @@ type ConnectionsStatusPage struct {
 
 // CoreKind A core connection kind that receives bespoke, kind-specific handling in Meshery. The `kind` field itself remains an open-ended string; this names only the kinds with special behavior.
 type CoreKind string
+
+// DesktopConnectionMetadata Metadata of a `desktop` connection: a desktop app install that registered itself on every connect to Cloud. Servers implementing this contract must validate `metadata` against this schema when a registration has kind `desktop`. The deduplication key is (organization, owner, `installationId`). `lastSeenAt` is set by the server on registration and on each heartbeat. Servers must show this metadata in organization listings only to the connection's owner and to organization admins.
+type DesktopConnectionMetadata struct {
+	// AppVersion Version of the desktop app as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Compared with the server's minimum for `clientName`.
+	AppVersion *string `json:"appVersion,omitempty" yaml:"appVersion,omitempty"`
+
+	// BuildSha Source revision the desktop app was built from.
+	BuildSha *string `json:"buildSha,omitempty" yaml:"buildSha,omitempty"`
+
+	// ClientName Identifier of the desktop app, for example its product name, lowercase. A value, never a kind: it selects the server's minimum version for this client.
+	ClientName *string `json:"clientName,omitempty" yaml:"clientName,omitempty"`
+
+	// ComputerId Stable identifier of the computer the install runs on, shared by every install on that computer whoever signs in: the lowercase hex SHA-256 digest of a fixed, client-defined salt followed by the operating system's hardware identifier (for example the platform UUID on macOS). Clients must send only this digest, never the raw hardware identifier or a serial number. Absent when the client cannot read a hardware identifier.
+	ComputerId *string `json:"computerId,omitempty" yaml:"computerId,omitempty"`
+
+	// Hostname Host name of the machine.
+	Hostname *string `json:"hostname,omitempty" yaml:"hostname,omitempty"`
+
+	// InstallationId Stable identifier of a desktop app install: generated once on the install's first launch (a UUID is recommended), kept with the app's local state, and never derived from the host name, a process id or a hardware identifier. A reinstall that discards local state is a new install. It is the install part of the deduplication key.
+	InstallationId string `json:"installationId" yaml:"installationId"`
+
+	// LastSeenAt Server time of the last registration or heartbeat.
+	LastSeenAt *time.Time `json:"lastSeenAt,omitempty" yaml:"lastSeenAt,omitempty"`
+
+	// Os Operating system, for example `macos`.
+	Os *string `json:"os,omitempty" yaml:"os,omitempty"`
+
+	// OsVersion Operating system version, for example `26.0.1`.
+	OsVersion *string `json:"osVersion,omitempty" yaml:"osVersion,omitempty"`
+
+	// TokenId Server-written id of the API token that authenticated the latest registration. Deregistering or deleting the connection revokes this token. A value sent by the client is ignored.
+	TokenId *uuid.UUID `json:"tokenId,omitempty" yaml:"tokenId,omitempty"`
+}
+
+// DestinationKind A connection kind that names a publishing destination. A connection of this kind carries the destination's absolute https URL in `metadata.url` and references its secret through `credentialId`. The `kind` field itself remains an open-ended string.
+type DestinationKind string
 
 // K8sContext Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.
 type K8sContext struct {
@@ -488,6 +578,10 @@ type ConnectionKind = string
 // EnvironmentId defines model for environmentId.
 type EnvironmentId = uuid.UUID
 
+// InstallationId Stable identifier of a desktop app install, generated once per install. It is the install part of the deduplication key and the `installationId` path parameter.
+// InstallationId defines model for installationId.
+type InstallationId = string
+
 // MesheryServerId defines model for mesheryServerId.
 type MesheryServerId = uuid.UUID
 
@@ -505,3 +599,6 @@ type PageSize = int
 
 // Search defines model for search.
 type Search = string
+
+// CoreMeshkitError409 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError409 = core.MeshkitError
