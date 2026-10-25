@@ -1,0 +1,32 @@
+openapi: 3.0.0
+info:
+  title: Schedule Risk Profile
+  description: |
+    OpenAPI schema for the per-schedule Risk Profile override consumed by
+    Blowhorn (#1009). The component has no endpoints of its own: it is
+    proposed as the type of an optional `riskProfile` property on the
+    schedule construct's `Schedule` (read) and `SchedulePayload` (create
+    and update) components, so the paths stay with the schedule construct.
+    A schedule that omits `riskProfile` inherits the preset its profile
+    and platform resolve to, exactly as schedules behave today.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+paths: {}
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ScheduleRiskProfile:
+      $ref: "./schedule_risk_profile.yaml"
