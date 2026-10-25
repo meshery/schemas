@@ -48,6 +48,45 @@ paths:
           $ref: "#/components/responses/401"
         "500":
           description: Internal server error
+  /api/support/anonymous:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - Support
+      summary: Submit an anonymous support request
+      description: >-
+        Accepts a support request without requiring a signed-in user, so a
+        desktop client can offer a "Contact support" action whether or not
+        the person is signed in. A signed-in caller may additionally send
+        its bearer token; Cloud then attaches the organization, and only
+        then. The email address is only ever sent when the person types
+        it in, and diagnosticId links this report to the automatic failure
+        diagnostic submitted for the same incident, when one exists.
+        Served by Layer5 Cloud; see Blowhorn issue #771.
+      operationId: submitAnonymousSupportRequest
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnonymousSupportRequest"
+      responses:
+        "201":
+          description: Anonymous support request submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          description: Invalid request format
+        "429":
+          description: Rate limit exceeded; retry after the Retry-After interval
+        "500":
+          description: Internal server error
 
 components:
   responses:
@@ -84,3 +123,52 @@ components:
           title: Scope
           enum: ["Support", "Community", "Account", "Commercial"]
           description: "Category that best represents the nature of the inquiry."
+    AnonymousSupportRequest:
+      type: object
+      description: >-
+        Payload for submitting a help-and-support request without signing
+        in. It carries the same subject, message, and scope as
+        SupportRequest, plus two optional fields: an email address the
+        person typed in for a follow-up, and the diagnosticId of the
+        automatic failure diagnostic for the same incident, when one was
+        submitted. The fields are spelled out here rather than composed
+        with allOf so generated clients expose them flat, exactly like
+        SupportRequest.
+      required:
+        - subject
+        - message
+      properties:
+        subject:
+          type: string
+          title: Subject
+          minLength: 1
+          maxLength: 255
+          description: "Concise and descriptive title for the support request."
+        message:
+          type: string
+          title: Description
+          minLength: 10
+          description: "Detailed description of the issue or question."
+        scope:
+          type: string
+          title: Scope
+          enum: ["Support", "Community", "Account", "Commercial"]
+          description: "Category that best represents the nature of the inquiry."
+        email:
+          type: string
+          title: Email
+          format: email
+          maxLength: 254
+          description: >-
+            Optional email address the person typed in for a follow-up.
+            Absent when they did not ask to be contacted; never inferred
+            from an account, because this request may come from a
+            signed-out client.
+        diagnosticId:
+          type: string
+          title: Diagnostic ID
+          format: uuid
+          description: >-
+            Optional id of the FailureDiagnostic submitted for the same
+            incident (schemas/constructs/v1beta1/diagnostics/api.yml),
+            linking the human report to the automatic diagnostic.
