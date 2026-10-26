@@ -9394,9 +9394,9 @@ export type RegisterRegistryComponentApiArg = {
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Every connection a server registers under this contract carries it. Absent only on connections registered before servers recorded an organization and whose owner belongs to several, so none can be assigned without guessing; those are scoped by their owner. A server may backfill a legacy connection whose organization is unambiguous. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
        */
-      organizationId: string;
+      organizationId?: string | null;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -10258,9 +10258,9 @@ export type RegisterRegistryRelationshipApiArg = {
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Every connection a server registers under this contract carries it. Absent only on connections registered before servers recorded an organization and whose owner belongs to several, so none can be assigned without guessing; those are scoped by their owner. A server may backfill a legacy connection whose organization is unambiguous. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
        */
-      organizationId: string;
+      organizationId?: string | null;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -13890,9 +13890,9 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
-    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Every connection a server registers under this contract carries it. Absent only on connections registered before servers recorded an organization and whose owner belongs to several, so none can be assigned without guessing; those are scoped by their owner. A server may backfill a legacy connection whose organization is unambiguous. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
      */
-    organizationId: string;
+    organizationId?: string | null;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -14211,9 +14211,9 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Every connection a server registers under this contract carries it. Absent only on connections registered before servers recorded an organization and whose owner belongs to several, so none can be assigned without guessing; those are scoped by their owner. A server may backfill a legacy connection whose organization is unambiguous. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
        */
-      organizationId: string;
+      organizationId?: string | null;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -14489,9 +14489,9 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Every connection a server registers under this contract carries it. Absent only on connections registered before servers recorded an organization and whose owner belongs to several, so none can be assigned without guessing; those are scoped by their owner. A server may backfill a legacy connection whose organization is unambiguous. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
        */
-      organizationId: string;
+      organizationId?: string | null;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -15003,9 +15003,9 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Every connection a server registers under this contract carries it. Absent only on connections registered before servers recorded an organization and whose owner belongs to several, so none can be assigned without guessing; those are scoped by their owner. A server may backfill a legacy connection whose organization is unambiguous. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
    */
-  organizationId: string;
+  organizationId?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -15285,9 +15285,9 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Every connection a server registers under this contract carries it. Absent only on connections registered before servers recorded an organization and whose owner belongs to several, so none can be assigned without guessing; those are scoped by their owner. A server may backfill a legacy connection whose organization is unambiguous. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
    */
-  organizationId: string;
+  organizationId?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -15754,9 +15754,9 @@ export type PerformConnectionActionApiResponse =
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
-    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Every connection a server registers under this contract carries it. Absent only on connections registered before servers recorded an organization and whose owner belongs to several, so none can be assigned without guessing; those are scoped by their owner. A server may backfill a legacy connection whose organization is unambiguous. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
      */
-    organizationId: string;
+    organizationId?: string | null;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
