@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Risk Profiles
+  title: Risk Profile
   description: |
     OpenAPI schema for Risk Profiles: the named presets that decide how a
     workload runs - its pace, its share of each built-in cap, its quiet
@@ -31,4 +31,4 @@ components:
 
   schemas:
     RiskProfile:
-      $ref: "./risk_profiles.yaml"
+      $ref: "./risk_profile.yaml"

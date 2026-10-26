@@ -9,9 +9,10 @@ description: |
   omitting the value inherits that resolution unchanged. The value is a
   preset name, never `custom`: custom is a reported state of a profile
   whose dials sit outside its preset, not a choice anything can make.
-  First referencing consumer: the optional `riskProfile` property on the
-  schedule construct's `Schedule` and `SchedulePayload` components
-  (meshery/schemas `v1beta3/schedule`).
+  Referenced by the optional `riskProfile` property on the schedule
+  construct's `Schedule` and `SchedulePayload` components
+  (`v1beta3/schedule`). A new carrier references this component rather
+  than restating the enum.
 type: string
 enum:
   - cautious
