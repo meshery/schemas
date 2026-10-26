@@ -144,7 +144,7 @@ type Connection struct {
 	TransitionMap map[string][]ConnectionStateTransition `db:"-" gorm:"type:bytes;serializer:json" json:"transitionMap,omitempty" yaml:"transitionMap,omitempty"`
 
 	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrganizationID *core.Uuid `db:"organization_id" json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
+	OrganizationID core.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`
 }
 
 // ConnectionStatus Connection Status
