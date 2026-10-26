@@ -14,17 +14,22 @@ func TestConnectionOrganizationIDIsServerAssigned(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/connection/api.yml"))
 	entity := loadYAMLMap(t, "schemas/constructs/v1beta3/connection/connection.yaml")
 
-	if got := sequenceStrings(entity["required"]); !containsString(got, "organizationId") {
-		t.Errorf("Connection.required = %v, want organizationId", got)
+	// Required on write (the server always assigns it), nullable on read:
+	// connections registered before servers recorded an organization have
+	// none, and their owner may belong to several organizations, so none can
+	// be assigned after the fact. A required non-pointer field made every
+	// connection read fail on those rows (gofrs uuid cannot Scan NULL).
+	if got := sequenceStrings(entity["required"]); containsString(got, "organizationId") {
+		t.Errorf("Connection.required = %v, want organizationId optional: legacy connections have none", got)
 	}
 
 	prop := mustLookup(t, entity, "properties", "organizationId")
 	// readOnly is omitted on purpose. RegistrantData inlines Connection into
 	// registry registration requests, and readOnly there drops the connection
 	// field from the generated RTK client.
-	assertServerOrganizationID(t, "Connection.organizationId", prop, false)
+	assertServerOrganizationIDShape(t, "Connection.organizationId", prop, false, true)
 	orgDesc, _ := mustValue(prop, "description").(string)
-	for _, phrase := range []string{"organization the connection belongs to", "session organization", "Never accepted from clients", "Not marked readOnly", "ignored"} {
+	for _, phrase := range []string{"organization the connection belongs to", "session organization", "Never accepted from clients", "Not marked readOnly", "ignored", "Absent only on connections registered before", "backfill"} {
 		if !strings.Contains(orgDesc, phrase) {
 			t.Errorf("Connection.organizationId description = %q, want it to mention %q", orgDesc, phrase)
 		}
@@ -192,6 +197,14 @@ func TestSupersededConnectionAndDesignShapes(t *testing.T) {
 
 func assertServerOrganizationID(t *testing.T, name string, prop any, readOnly bool) {
 	t.Helper()
+	assertServerOrganizationIDShape(t, name, prop, readOnly, false)
+}
+
+// assertServerOrganizationIDShape pins the server-assigned organization field.
+// nullable selects the read shape: a required non-pointer UUID, or (for
+// Connection, whose legacy rows have none) nullable, a pointer and omitempty.
+func assertServerOrganizationIDShape(t *testing.T, name string, prop any, readOnly, nullable bool) {
+	t.Helper()
 	if got := mustValue(prop, "$ref"); got != "../../v1beta2/core/api.yml#/components/schemas/Uuid" {
 		t.Errorf("%s $ref = %v, want the v1beta2 Uuid schema", name, got)
 	}
@@ -205,10 +218,22 @@ func assertServerOrganizationID(t *testing.T, name string, prop any, readOnly bo
 	if got := mustValue(prop, "x-go-name"); got != "OrganizationID" {
 		t.Errorf("%s x-go-name = %v, want OrganizationID", name, got)
 	}
+	tags := mustLookup(t, prop, "x-oapi-codegen-extra-tags")
+	if nullable {
+		if got := mustValue(prop, "nullable"); got != true {
+			t.Errorf("%s nullable = %v, want true", name, got)
+		}
+		if _, has := mappingValue(prop, "x-go-type-skip-optional-pointer"); has {
+			t.Errorf("%s must generate a pointer, so a NULL column scans as nil", name)
+		}
+		if got := mustValue(tags, "json"); got != "organizationId,omitempty" {
+			t.Errorf("%s json = %v, want organizationId,omitempty", name, got)
+		}
+		return
+	}
 	if got := mustValue(prop, "x-go-type-skip-optional-pointer"); got != true {
 		t.Errorf("%s x-go-type-skip-optional-pointer = %v, want true", name, got)
 	}
-	tags := mustLookup(t, prop, "x-oapi-codegen-extra-tags")
 	if got := mustValue(tags, "json"); got != "organizationId" {
 		t.Errorf("%s json = %v, want organizationId", name, got)
 	}

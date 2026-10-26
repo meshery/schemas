@@ -1,7 +1,8 @@
 # Connection and design organization contract
 
-Every connection and every design belongs to exactly one organization. The
-server assigns that organization. Clients do not send it.
+Every connection and every design a server creates belongs to exactly one
+organization. The server assigns that organization. Clients do not send it.
+Connections that predate this rule may have none (see below).
 
 `schemas/constructs/v1beta3/connection` is the connection wire contract Meshery
 Cloud returns. `schemas/constructs/v1beta3/design` `MesheryPattern` is the
@@ -18,10 +19,34 @@ they are unchanged.
 The wire name is `organizationId`. The database column is `organization_id`.
 The value is a UUID.
 
-On v1beta3 `Connection` and v1beta3 `MesheryPattern` the field is required.
-Generated Go uses a non-pointer UUID (`x-go-name: OrganizationID`,
+On v1beta3 `MesheryPattern` the field is required, and generated Go uses a
+non-pointer UUID (`x-go-name: OrganizationID`,
 `x-go-type-skip-optional-pointer: true`, `$ref` to the v1beta2 core `Uuid`
-schema). The server sets it from the session organization: the
+schema).
+
+On v1beta3 `Connection` the field is required on write and nullable on read.
+Every connection a server registers gets the session organization. Meshery
+Cloud recorded no organization for connections before 2026-10-20 (migration
+`20261020090000_connections_organization_id` keeps them NULL: "their owner,
+not an organization, scopes them"). Measured in production on 2026-10-26,
+that was 71,645 of 71,669 connections, 41,839 of them live. A server may
+backfill a legacy connection whose organization is unambiguous (Cloud filled
+17,414 live rows: a single environment organization, else the owner's only
+organization). About 24,000 live rows belong to owners in more than one
+organization and stay without one, because assigning one would be a guess
+between tenants. The field is therefore not required and `nullable: true`;
+the generated Go field `OrganizationID` has type `*core.Uuid` with
+`json:"organizationId,omitempty"`. A non-pointer UUID cannot scan a NULL
+column, and made every connection read that reached one of those rows fail.
+On the wire such a connection omits `organizationId` (Go servers never send
+`null` for it); a client treats absent and `null` alike: "registered before
+organizations were recorded; scoped by its owner", never "no organization
+yet".
+
+When the session names no organization, a server may assign the caller's
+only organization, and must not guess between several (Cloud answers 400).
+
+The server sets it from the session organization: the
 `X-Current-Orgid` header when the client sends it, otherwise the caller's
 selected organization. It is absent from `ConnectionPayload`,
 `ConnectionRegistrationEvent`, `ConnectionActionRequest`,
@@ -49,7 +74,7 @@ the caller has a selected organization.
 read-only `organizationId`, so that closed listing can return the
 connection's organization. The summary is not a request body, so `readOnly`
 is safe there. `ConnectionPage` items are the full `Connection`, so they
-carry it too.
+carry it too, except a legacy connection that has none (it omits the key).
 
 `MesheryPatternPage`, catalog pattern items, and `GithubImportResponse`
 patterns are `MesheryPattern`, so each of those reads carries
@@ -86,7 +111,9 @@ reason above. v1beta1 `ConnectionPayload` does not accept it.
 registry registration. The server ignores a client-supplied `organizationId`
 on that object and uses the session organization when it creates a
 connection, or the connection's stored organization when the object only
-identifies an existing registrant. The field stays on that object:
+identifies an existing registrant. A legacy registrant has no stored
+organization; the server then uses the session organization, as on create,
+and never records the new entity without one. The field stays on that object:
 registration sends the connection, and splitting a second connection schema
 just to drop one field would be a breaking change for that request. No
 connection or design write payload had an `organizationId` property to
