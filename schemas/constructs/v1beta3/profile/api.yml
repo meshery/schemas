@@ -132,9 +132,13 @@ paths:
       summary: Get the connection links of every visible profile
       description: >-
         Gets, in one paged read, the live profile-to-connection links of every
-        live profile of the organization the caller can see under getProfiles'
-        rules, so a client can learn which connections each profile acts
-        through without one getProfileConnections call per profile. Items are
+        live profile of the organization whose connections the caller may
+        list under getProfileConnections' rules: the profiles the caller can
+        see, with View Profiles; without it, only the profiles the caller
+        owns. A profile that only represents the caller (`userId`) contributes
+        no links, as its read-only grant does not cover its connections. A
+        client learns which connections each profile acts through without one
+        getProfileConnections call per profile. Items are
         ProfileConnectionMapping records; they carry ids only, and the
         connections themselves keep their own access rules. Ordered by
         profile, then connection.
@@ -395,6 +399,7 @@ components:
         Strong entity tag of the profile. It changes whenever the profile
         changes; send it back as `If-Match` to make updateProfile
         conditional.
+      required: true
       schema:
         type: string
 

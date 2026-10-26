@@ -57,7 +57,7 @@ There is no uniqueness constraint on any client field.
 | Category (API Endpoints sheet) | Route | Operations |
 | --- | --- | --- |
 | Integrations / Profiles | `/api/profiles` | `getProfiles` (filters: `search`, `name` (exact, case-insensitive), `orgId`, `userId`), `createProfile` |
-| Integrations / Profiles | `/api/profiles/connections` | `getProfileConnectionMappings` (paged links of every visible profile; static segment, routed before `{profileId}`) |
+| Integrations / Profiles | `/api/profiles/connections` | `getProfileConnectionMappings` (paged links of every profile whose connections the caller may list, as `getProfileConnections`; a profile that only represents the caller contributes none; static segment, routed before `{profileId}`) |
 | Integrations / Profiles | `/api/profiles/{profileId}` | `getProfileById`, `updateProfile`, `deleteProfile` |
 | Integrations / Profiles | `/api/profiles/{profileId}/connections` | `getProfileConnections` (filter: repeatable `kind`) |
 | Integrations / Profiles | `/api/profiles/{profileId}/connections/{connectionId}` | `addConnectionToProfile`, `removeConnectionFromProfile` |
