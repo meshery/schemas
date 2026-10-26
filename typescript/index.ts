@@ -72,13 +72,14 @@ import ModelDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/model/Model
 // import EvaluationDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/evaluation/EvaluationSchema";
 import EnvironmentDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/environment/EnvironmentSchema";
 import WorkspaceDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/workspace/WorkspaceSchema";
-import InvitationSchema from "./generated/v1beta1/invitation/InvitationSchema";
-import BadgeSchema from "./generated/v1beta1/badge/BadgeSchema";
+import InvitationDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/invitation/InvitationSchema";
+import BadgeDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/badge/BadgeSchema";
 // v1beta2
 import ComponentDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/component/ComponentSchema";
 import ConnectionDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/connection/ConnectionSchema";
 import DesignDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/design/DesignSchema";
 import InvitationDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/invitation/InvitationSchema";
+import BadgeDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/badge/BadgeSchema";
 import RelationshipDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/relationship/RelationshipSchema";
 // import AcademyDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/academy/AcademySchema";
 // import CatalogDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/catalog/CatalogSchema";
@@ -86,6 +87,9 @@ import RelationshipDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/rela
 // import PlanDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/plan/PlanSchema";
 // import SubscriptionDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/subscription/SubscriptionSchema";
 // import TokenDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/token/TokenSchema";
+
+// v1beta3
+import InvitationDefinitionV1Beta3OpenApiSchema from "./generated/v1beta3/invitation/InvitationSchema";
 
 // v1alpha3
 import RelationshipDefinitionV1Alpha3OpenApiSchema from "./generated/v1alpha3/relationship/RelationshipSchema";
@@ -101,6 +105,25 @@ import type * as core from "./generated/v1alpha1/core/Core";
 // open-ended string; that enum only names the kinds with bespoke handling.
 export * from "./constants";
 
+/**
+ * @deprecated Version-ambiguous. Resolves to the retired v1beta1 badge
+ * construct, which still carries the snake_case identifiers (`image_url`,
+ * `org_id`). Reading it while addressing the live camelCase names fails
+ * silently - property lookups just return nothing. Use
+ * `BadgeDefinitionV1Beta2OpenApiSchema`, or import the construct subpath
+ * directly. See meshery/schemas#1154.
+ */
+const BadgeSchema = BadgeDefinitionV1Beta1OpenApiSchema;
+
+/**
+ * @deprecated Version-ambiguous. Resolves to the retired v1beta1 invitation
+ * construct, which still carries the snake_case identifiers (`owner_id`,
+ * `is_default`, `expires_at`). Use
+ * `InvitationDefinitionV1Beta3OpenApiSchema`, or import the construct subpath
+ * directly. See meshery/schemas#1154.
+ */
+const InvitationSchema = InvitationDefinitionV1Beta1OpenApiSchema;
+
 // Export schemas
 export {
   core,
@@ -112,16 +135,22 @@ export {
   ModelDefinitionV1Beta1OpenApiSchema,
   CategoryDefinitionV1Beta1OpenApiSchema,
   SubCategoryDefinitionV1Beta1OpenApiSchema,
-  InvitationSchema,
-  BadgeSchema,
+  InvitationDefinitionV1Beta1OpenApiSchema,
+  BadgeDefinitionV1Beta1OpenApiSchema,
   // v1beta2
   ComponentDefinitionV1Beta2OpenApiSchema,
   ConnectionDefinitionV1Beta2OpenApiSchema,
   DesignDefinitionV1Beta2OpenApiSchema,
   InvitationDefinitionV1Beta2OpenApiSchema,
+  BadgeDefinitionV1Beta2OpenApiSchema,
   RelationshipDefinitionV1Beta2OpenApiSchema,
+  // v1beta3
+  InvitationDefinitionV1Beta3OpenApiSchema,
   // v1alpha3
   RelationshipDefinitionV1Alpha3OpenApiSchema,
+  // Deprecated aliases - see the declarations above.
+  BadgeSchema,
+  InvitationSchema,
 };
 
 // Constructs
