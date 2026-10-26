@@ -24,6 +24,7 @@ required:
   - platform
   - activityRef
   - readingDate
+  - matched
 properties:
   organizationId:
     type: string

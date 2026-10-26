@@ -50,6 +50,31 @@ properties:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
 ```
 
+### Event-metadata constructs have no server-generated fields
+
+Some constructs name the shape of an `Event`'s `metadata` rather than a table
+row the server owns: `follower_metrics`, `follower_demographics`,
+`content_metrics`, `activity_metrics`. They have no endpoints (`paths: {}`).
+A producer records a row with a create-event call, and the events service
+stores and returns `metadata` verbatim. The `Event` envelope carries `id`,
+`created_at` and the actor; the metadata itself has no server-generated
+fields. So, for this class only:
+
+- The entity `.yaml` declares no `id`, `created_at`, `updated_at` or
+  `deleted_at`. Adding them would invent fields no server ever writes.
+- The `{Construct}Payload` carries the same field set as the entity, because
+  nothing is server-owned. It is still a separate schema, so the two can
+  diverge if the construct ever gains endpoints.
+- Every field the description promises on every row belongs in `required` on
+  both. An optional field that the row "always records" lets a producer
+  omit it, and the reader cannot tell "false" from "not recorded".
+- The row's natural key (for example organization, platform, subject and
+  reading date) is what makes readings a time series, so state it in the
+  description.
+
+A construct with its own endpoints is not in this class, even if its rows
+are also mirrored into events. It follows Rule 1 as written.
+
 ### Rule 2 example: `{Construct}Payload` schema in `api.yml`
 
 ```yaml
