@@ -135,8 +135,8 @@ type ContentMetricsPayload struct {
 	// ImpressionsSponsored Sponsored impressions that day; null when the export's cell is blank.
 	ImpressionsSponsored *int `json:"impressionsSponsored" yaml:"impressionsSponsored"`
 
-	// OrganizationId Owning organization ID.
-	OrganizationId uuid.UUID `json:"organizationId" yaml:"organizationId"`
+	// OrganizationID Owning organization ID.
+	OrganizationID uuid.UUID `json:"organizationId" yaml:"organizationId"`
 
 	// Platform The platform the page belongs to (today only `linkedin` produces these exports).
 	Platform string `json:"platform" yaml:"platform"`

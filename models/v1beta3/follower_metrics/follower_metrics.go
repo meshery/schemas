@@ -65,8 +65,8 @@ type FollowerMetricsPayload struct {
 	// NewTotal All new followers that day; null when the export's cell is blank.
 	NewTotal *int `json:"newTotal" yaml:"newTotal"`
 
-	// OrganizationId Owning organization ID.
-	OrganizationId uuid.UUID `json:"organizationId" yaml:"organizationId"`
+	// OrganizationID Owning organization ID.
+	OrganizationID uuid.UUID `json:"organizationId" yaml:"organizationId"`
 
 	// Platform The platform the page belongs to (today only `linkedin` produces these exports).
 	Platform string `json:"platform" yaml:"platform"`

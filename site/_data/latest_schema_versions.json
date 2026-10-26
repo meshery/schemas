@@ -8,6 +8,13 @@
     "extension": true
   },
   {
+    "construct": "activity_metrics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/activity_metrics/activity_metrics.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "activity_result",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/activity_result/activity_result.yaml",

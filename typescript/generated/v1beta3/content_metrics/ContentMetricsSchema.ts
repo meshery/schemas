@@ -299,7 +299,8 @@ const ContentMetricsSchema: Record<string, unknown> = {
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            }
+            },
+            "x-go-name": "OrganizationID"
           },
           "platform": {
             "type": "string",
