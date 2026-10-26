@@ -168,6 +168,8 @@ paths:
           $ref: "#/components/responses/MeshkitError409"
         "426":
           $ref: "../provider_capability/api.yml#/components/responses/ClientUpgradeRequired"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
 
@@ -448,6 +450,8 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
 
@@ -486,6 +490,8 @@ paths:
           $ref: "#/components/responses/404"
         "426":
           $ref: "../provider_capability/api.yml#/components/responses/ClientUpgradeRequired"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
 
@@ -706,6 +712,8 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/401"
     404:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    MeshkitError429:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
     500:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
     MeshkitError409:

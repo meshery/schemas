@@ -81,6 +81,8 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
     post:
@@ -120,6 +122,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
 
@@ -170,6 +174,8 @@ paths:
           $ref: "#/components/responses/404"
         "409":
           $ref: "#/components/responses/409"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
 
@@ -195,6 +201,8 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
     put:
@@ -243,6 +251,8 @@ paths:
           $ref: "#/components/responses/404"
         "412":
           $ref: "#/components/responses/412"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
     delete:
@@ -262,6 +272,8 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
 
@@ -291,6 +303,8 @@ components:
         text/plain:
           schema:
             type: string
+    MeshkitError429:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
     500:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
 

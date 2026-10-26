@@ -90,6 +90,20 @@ are the emitting service's internal allocation and are renumbered. Two generator
 
 `validation/github_integration_contract_test.go` (`TestMeshkitErrorContract`) pins both.
 
+### Rate limiting (429)
+
+`MeshkitError429` in `v1beta2/core` is the shared rate-limit response: the `MeshkitError` JSON
+body plus a required `Retry-After` header carrying the integer number of seconds the caller must
+wait before retrying. Reference it, through a `MeshkitError429` alias under the construct's own
+`components/responses`, from every operation whose server applies a per-user rate limit. Layer5
+Cloud rate-limits the Blowhorn route families per user, so every operation of the v1beta3
+`claim`, `schedule`, `ledger`, `content_item`, `event`, `profile`, `provider_capability` and
+`blowhorn_health` constructs declares it, as do the desktop `registerConnection`,
+`recordConnectionHeartbeat` and `deregisterDesktopConnection` connection operations. A client
+that receives `429` waits `Retry-After` seconds and retries; it does not treat the response as a
+refusal of the request itself. `validation/rate_limit_contract_test.go` pins the response and its
+references.
+
 ## Resource grouping and path structure
 
 Endpoints are grouped into logical categories under `/api`:

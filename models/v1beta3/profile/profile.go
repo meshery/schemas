@@ -119,3 +119,6 @@ type Search = string
 
 // UserIdQuery defines model for userIdQuery.
 type UserIdQuery = uuid.UUID
+
+// CoreMeshkitError429 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError429 = core.MeshkitError
