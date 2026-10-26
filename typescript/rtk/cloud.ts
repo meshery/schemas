@@ -1844,6 +1844,7 @@ const injectedRtkApi = api
           url: `/api/profiles`,
           params: {
             search: queryArg?.search,
+            name: queryArg?.name,
             order: queryArg?.order,
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -1854,12 +1855,33 @@ const injectedRtkApi = api
         }),
         providesTags: ["Profile_profiles"],
       }),
+      getProfileConnectionMappings: build.query<
+        GetProfileConnectionMappingsApiResponse,
+        GetProfileConnectionMappingsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/profiles/connections`,
+          params: {
+            orgId: queryArg?.orgId,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Profile_profiles"],
+      }),
       getProfileById: build.query<GetProfileByIdApiResponse, GetProfileByIdApiArg>({
         query: (queryArg) => ({ url: `/api/profiles/${queryArg.profileId}` }),
         providesTags: ["Profile_profiles"],
       }),
       updateProfile: build.mutation<UpdateProfileApiResponse, UpdateProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/profiles/${queryArg.profileId}`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/profiles/${queryArg.profileId}`,
+          method: "PUT",
+          body: queryArg.body,
+          headers: {
+            "If-Match": queryArg["If-Match"],
+          },
+        }),
         invalidatesTags: ["Profile_profiles"],
       }),
       deleteProfile: build.mutation<DeleteProfileApiResponse, DeleteProfileApiArg>({
@@ -1870,6 +1892,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/profiles/${queryArg.profileId}/connections`,
           params: {
+            kind: queryArg?.kind,
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
@@ -18249,6 +18272,8 @@ export type GetProfilesApiResponse = /** status 200 Profiles */ {
 export type GetProfilesApiArg = {
   /** Get responses that match search param value */
   search?: string;
+  /** Return only live profiles whose name equals this value, ignoring case. */
+  name?: string;
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
@@ -18261,6 +18286,37 @@ export type GetProfilesApiArg = {
   orgId?: string;
   /** Return only the profile that represents this user. */
   userId?: string;
+};
+export type GetProfileConnectionMappingsApiResponse = /** status 200 Profile connection links */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of items across all pages. */
+  totalCount: number;
+  /** Profile-to-connection links in this page. */
+  mappings: {
+    /** Mapping record ID. */
+    id: string;
+    /** ID of the linked profile. */
+    profileId: string;
+    /** ID of the linked connection. */
+    connectionId: string;
+    /** Timestamp when the mapping was created. */
+    createdAt?: string;
+    /** Timestamp when the mapping was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the mapping was soft-deleted. Null while the mapping remains active. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetProfileConnectionMappingsApiArg = {
+  /** Organization ID used to scope the listing. Defaults to the organization the session resolved to. */
+  orgId?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
 };
 export type GetProfileByIdApiResponse = /** status 200 Profile */ {
   /** Server-generated profile ID. */
@@ -18317,6 +18373,8 @@ export type UpdateProfileApiResponse = /** status 200 Updated profile */ {
 export type UpdateProfileApiArg = {
   /** Profile ID */
   profileId: string;
+  /** Entity tag of the profile as last read, from the `ETag` header of getProfileById or updateProfile. When present the write applies only if it still matches; otherwise 412. */
+  "If-Match"?: string;
   /** Body for creating or updating a profile */
   body: {
     /** Name of the profile, typically its short handle. Not unique. */
@@ -18633,6 +18691,8 @@ export type GetProfileConnectionsApiResponse = /** status 200 Profile connection
 export type GetProfileConnectionsApiArg = {
   /** Profile ID */
   profileId: string;
+  /** Return only connections of these kinds (repeatable), as getConnections does. */
+  kind?: string[];
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -18645,11 +18705,11 @@ export type GetProfileConnectionsApiArg = {
   pagesize?: number;
 };
 export type AddConnectionToProfileApiResponse = /** status 201 Connection linked to profile */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  /** Mapping record ID. */
   id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  /** ID of the linked profile. */
   profileId: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  /** ID of the linked connection. */
   connectionId: string;
   /** Timestamp when the mapping was created. */
   createdAt?: string;
@@ -22458,6 +22518,8 @@ export const {
   useCreateProfileMutation,
   useGetProfilesQuery,
   useLazyGetProfilesQuery,
+  useGetProfileConnectionMappingsQuery,
+  useLazyGetProfileConnectionMappingsQuery,
   useGetProfileByIdQuery,
   useLazyGetProfileByIdQuery,
   useUpdateProfileMutation,

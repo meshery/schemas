@@ -57,6 +57,21 @@ type ProfileConnectionMapping struct {
 	UpdatedAt core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 }
 
+// ProfileConnectionMappingPage Paginated list of profile-to-connection links.
+type ProfileConnectionMappingPage struct {
+	// Mappings Profile-to-connection links in this page.
+	Mappings []ProfileConnectionMapping `json:"mappings" yaml:"mappings"`
+
+	// Page Zero-based page index returned in this response.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Maximum number of items returned on each page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of items across all pages.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
 // ProfilePage Paginated list of profiles.
 type ProfilePage struct {
 	// Page Zero-based page index returned in this response.
@@ -95,6 +110,15 @@ type ProfilePayload struct {
 
 // ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type ConnectionId = core.Uuid
+
+// ConnectionKindQuery defines model for connectionKindQuery.
+type ConnectionKindQuery = []string
+
+// IfMatch defines model for ifMatch.
+type IfMatch = string
+
+// NameQuery defines model for nameQuery.
+type NameQuery = string
 
 // Order defines model for order.
 type Order = string
