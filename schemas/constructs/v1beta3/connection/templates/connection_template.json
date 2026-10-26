@@ -38,7 +38,6 @@
   "createdAt": "0001-01-01T00:00:00Z",
   "updatedAt": "0001-01-01T00:00:00Z",
   "deletedAt": null,
-  "organizationId": null,
   "environments": [],
   "schemaVersion": "connections.meshery.io/v1beta3"
 }

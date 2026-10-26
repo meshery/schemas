@@ -29,14 +29,22 @@ Every connection a server registers gets the session organization. Meshery
 Cloud recorded no organization for connections before 2026-10-20 (migration
 `20261020090000_connections_organization_id` keeps them NULL: "their owner,
 not an organization, scopes them"). Measured in production on 2026-10-26,
-that was 71,645 of 71,669 connections, 41,839 of them live. About 24,000 of
-those live rows belong to owners in more than one organization, so no
-organization can be assigned to them after the fact. The field is therefore
-`nullable: true` and generates `*OrganizationID` with `omitempty`; a
-non-pointer UUID cannot scan a NULL column, and made every connection read
-that reached one of those rows fail. A null means "registered before
+that was 71,645 of 71,669 connections, 41,839 of them live. A server may
+backfill a legacy connection whose organization is unambiguous (Cloud filled
+17,414 live rows: a single environment organization, else the owner's only
+organization). About 24,000 live rows belong to owners in more than one
+organization and stay without one, because assigning one would be a guess
+between tenants. The field is therefore not required and `nullable: true`;
+the generated Go field `OrganizationID` has type `*core.Uuid` with
+`json:"organizationId,omitempty"`. A non-pointer UUID cannot scan a NULL
+column, and made every connection read that reached one of those rows fail.
+On the wire such a connection omits `organizationId` (Go servers never send
+`null` for it); a client treats absent and `null` alike: "registered before
 organizations were recorded; scoped by its owner", never "no organization
 yet".
+
+When the session names no organization, a server may assign the caller's
+only organization, and must not guess between several (Cloud answers 400).
 
 The server sets it from the session organization: the
 `X-Current-Orgid` header when the client sends it, otherwise the caller's
@@ -66,7 +74,7 @@ the caller has a selected organization.
 read-only `organizationId`, so that closed listing can return the
 connection's organization. The summary is not a request body, so `readOnly`
 is safe there. `ConnectionPage` items are the full `Connection`, so they
-carry it too.
+carry it too, except a legacy connection that has none (it omits the key).
 
 `MesheryPatternPage`, catalog pattern items, and `GithubImportResponse`
 patterns are `MesheryPattern`, so each of those reads carries
@@ -103,7 +111,9 @@ reason above. v1beta1 `ConnectionPayload` does not accept it.
 registry registration. The server ignores a client-supplied `organizationId`
 on that object and uses the session organization when it creates a
 connection, or the connection's stored organization when the object only
-identifies an existing registrant. The field stays on that object:
+identifies an existing registrant. A legacy registrant has no stored
+organization; the server then uses the session organization, as on create,
+and never records the new entity without one. The field stays on that object:
 registration sends the connection, and splitting a second connection schema
 just to drop one field would be a breaking change for that request. No
 connection or design write payload had an `organizationId` property to
