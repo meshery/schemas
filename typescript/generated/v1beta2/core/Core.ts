@@ -651,7 +651,7 @@ export interface components {
          * @enum {string}
          */
         IaCFileTypes: "meshery-design" | "helm-chart" | "k8s-manifest" | "docker-compose" | "k8s-kustomize";
-        /** @description A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way. */
+        /** @description A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way. */
         MeshkitError: {
             /** @description The sentence the caller is shown. */
             error: string;
@@ -844,6 +844,31 @@ export interface components {
         /** @description Internal server error */
         MeshkitError500: {
             headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+        MeshkitError429: {
+            headers: {
+                /** @description Number of seconds the caller must wait before retrying. */
+                "Retry-After": number;
                 [name: string]: unknown;
             };
             content: {

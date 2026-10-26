@@ -75,6 +75,8 @@ paths:
           $ref: "#/components/responses/401"
         "403":
           $ref: "#/components/responses/403"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
     get:
@@ -109,6 +111,8 @@ paths:
           $ref: "#/components/responses/401"
         "403":
           $ref: "#/components/responses/403"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
 
@@ -143,6 +147,8 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
     put:
@@ -175,6 +181,8 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
     delete:
@@ -199,6 +207,8 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
 
@@ -240,6 +250,8 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
 
@@ -269,6 +281,8 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
     delete:
@@ -292,6 +306,8 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
 
@@ -305,6 +321,8 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/403"
     "404":
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    MeshkitError429:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
     "500":
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
 

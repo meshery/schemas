@@ -32,6 +32,8 @@ paths:
           $ref: '#/components/responses/401'
         '404':
           $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           $ref: '#/components/responses/500'
   /api/events/delete:
@@ -58,6 +60,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           $ref: '#/components/responses/500'
   /api/events/status:
@@ -84,6 +88,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           $ref: '#/components/responses/500'
   /api/events/{eventId}/status:
@@ -114,6 +120,8 @@ paths:
           $ref: '#/components/responses/401'
         '404':
           $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           $ref: '#/components/responses/500'
   /api/workspaces/{workspaceId}/events:
@@ -151,6 +159,8 @@ paths:
           description: Unauthorized
         '404':
           description: Workspace not found
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           description: Server error
   /api/events:
@@ -180,6 +190,8 @@ paths:
             text/plain:
               schema:
                 type: string
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           description: Server error
     post:
@@ -219,6 +231,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           $ref: '#/components/responses/500'
   /api/events/list:
@@ -249,6 +263,8 @@ paths:
           $ref: '#/components/responses/MeshkitError403'
         '404':
           description: Not found
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           description: Server error
   /api/events/summary:
@@ -276,6 +292,8 @@ paths:
           description: Unauthorized
         '404':
           description: Not found
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           description: Server error
   /api/events/types:
@@ -303,6 +321,8 @@ paths:
           description: Unauthorized
         '404':
           description: Not found
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           description: Server error
 components:
@@ -313,6 +333,8 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/responses/401
     404:
       $ref: ../../v1beta2/core/api.yml#/components/responses/404
+    MeshkitError429:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
     500:
       $ref: ../../v1beta2/core/api.yml#/components/responses/500
     MeshkitError403:
