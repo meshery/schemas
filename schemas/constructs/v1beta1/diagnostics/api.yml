@@ -61,6 +61,12 @@ paths:
           $ref: "#/components/responses/401"
         "429":
           description: Rate limit exceeded; retry after the Retry-After interval
+          headers:
+            Retry-After:
+              description: Seconds to wait before retrying; always a whole number of at least 1.
+              schema:
+                type: integer
+                minimum: 1
         "500":
           description: Internal server error
 

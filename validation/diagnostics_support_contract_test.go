@@ -190,10 +190,49 @@ func TestAnonymousSupportRequestIsSupportRequestPlusTwo(t *testing.T) {
 	if op["operationId"] != "submitAnonymousSupportRequest" {
 		t.Errorf("anonymous operation operationId = %v, want submitAnonymousSupportRequest", op["operationId"])
 	}
-	// security: [] means no auth is required for this operation.
+	// "Anonymous" means no signed-in user, not no credential: Cloud serves
+	// this route behind the client key or a session (meshery-cloud
+	// AuthWithClientKeyOrSessionMiddleware), and a request with neither is
+	// a 401.
+	assertClientKeyOrJWT(t, "anonymous support operation", op)
+	assertRetryAfterOn429(t, "anonymous support operation", op)
+	if _, ok := op["responses"].(map[string]any)["401"]; !ok {
+		t.Errorf("anonymous support operation declares no 401, but a request without a client key or session is refused")
+	}
+}
+
+// assertClientKeyOrJWT asserts an operation's security is exactly two
+// alternatives: the X-Client-Key pre-shared key or a bearer token.
+func assertClientKeyOrJWT(t *testing.T, label string, op map[string]any) {
+	t.Helper()
 	security, ok := op["security"].([]any)
-	if !ok || len(security) != 0 {
-		t.Errorf("anonymous operation security = %v, want an empty list (anonymous)", op["security"])
+	if !ok || len(security) != 2 {
+		t.Fatalf("%s security = %v, want clientKey and jwt alternatives", label, op["security"])
+	}
+	var schemes []string
+	for _, entry := range security {
+		for scheme := range entry.(map[string]any) {
+			schemes = append(schemes, scheme)
+		}
+	}
+	assertStringSliceEqual(t, label+" security schemes", schemes, "clientKey", "jwt")
+}
+
+// assertRetryAfterOn429 asserts the 429 response declares the Retry-After
+// header Cloud sets on every rate-limit refusal (writeRateLimited).
+func assertRetryAfterOn429(t *testing.T, label string, op map[string]any) {
+	t.Helper()
+	resp, ok := op["responses"].(map[string]any)["429"].(map[string]any)
+	if !ok {
+		t.Fatalf("%s declares no 429", label)
+	}
+	headers, _ := resp["headers"].(map[string]any)
+	header, ok := headers["Retry-After"].(map[string]any)
+	if !ok {
+		t.Fatalf("%s 429 does not declare a Retry-After header", label)
+	}
+	if schema, _ := header["schema"].(map[string]any); schema["type"] != "integer" {
+		t.Errorf("%s Retry-After schema = %v, want integer seconds", label, header["schema"])
 	}
 }
 
@@ -280,15 +319,6 @@ func TestFailureDiagnosticExactFieldList(t *testing.T) {
 		t.Errorf("diagnostics operation operationId = %v, want submitFailureDiagnostic", op["operationId"])
 	}
 	// Either the client key or a bearer token authenticates the call.
-	security, ok := op["security"].([]any)
-	if !ok || len(security) != 2 {
-		t.Fatalf("diagnostics operation security = %v, want clientKey and jwt alternatives", op["security"])
-	}
-	var schemes []string
-	for _, entry := range security {
-		for scheme := range entry.(map[string]any) {
-			schemes = append(schemes, scheme)
-		}
-	}
-	assertStringSliceEqual(t, "diagnostics operation security schemes", schemes, "clientKey", "jwt")
+	assertClientKeyOrJWT(t, "diagnostics operation", op)
+	assertRetryAfterOn429(t, "diagnostics operation", op)
 }

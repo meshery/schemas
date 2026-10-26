@@ -41,9 +41,18 @@ expose the fields exactly like `SupportRequest`:
 - `diagnosticId` (`format: uuid`): links the human report to the
   automatic `FailureDiagnostic` for the same incident, when one exists.
 
-`POST /api/support/anonymous` carries `security: []`: no auth is
-required. A signed-in caller may additionally send its bearer token;
-Cloud then attaches the organization, and only then.
+"Anonymous" means no signed-in user, not no credential.
+`POST /api/support/anonymous` declares the same two alternatives as the
+diagnostics route (below): the `X-Client-Key` pre-shared key for a
+signed-out client, or a bearer token for a signed-in caller, in which
+case Cloud attaches the organization, and only then. A request carrying
+neither is a 401. That is what Cloud serves: both routes sit behind
+`AuthWithClientKeyOrSessionMiddleware`. An earlier draft declared
+`security: []`, which would have produced clients that send no key and
+get a 401.
+
+Both operations answer a rate-limit refusal with 429 and a `Retry-After`
+header of whole seconds (at least 1), which is declared on the response.
 
 ## FailureDiagnostic
 
@@ -88,10 +97,9 @@ server-side re-redaction, and 90-day retention are server-side
 behaviour owned by the Cloud step, described in the operation text but
 not enforceable from this repo.
 
-## Schema-first status
+## Serving status
 
-Both new operations are declared before Cloud serves them, by design:
-the issue sequences schemas first, Cloud second. Until the Cloud step
-lands, these operations have no live server; generated clients built
-from this schema will 404 against Cloud until then. Do not read
-declaration as availability.
+The schema was declared first, then Cloud implemented it:
+layer5io/meshery-cloud#6330 serves both operations
+(`server/handlers/diagnostics.go`). Where this contract and the handler
+disagree, the handler's wire wins, and the schema is corrected to match.

@@ -57,14 +57,17 @@ paths:
       description: >-
         Accepts a support request without requiring a signed-in user, so a
         desktop client can offer a "Contact support" action whether or not
-        the person is signed in. A signed-in caller may additionally send
-        its bearer token; Cloud then attaches the organization, and only
-        then. The email address is only ever sent when the person types
+        the person is signed in. A signed-out client authenticates with the
+        same per-client-kind `X-Client-Key` as submitFailureDiagnostic; a
+        signed-in caller may use its bearer token instead, and only then is
+        the organization attached. A request carrying neither is a 401. The email address is only ever sent when the person types
         it in, and diagnosticId links this report to the automatic failure
         diagnostic submitted for the same incident, when one exists.
         Served by Layer5 Cloud; see Blowhorn issue #771.
       operationId: submitAnonymousSupportRequest
-      security: []
+      security:
+        - clientKey: []
+        - jwt: []
       requestBody:
         required: true
         content:
@@ -83,8 +86,16 @@ paths:
                     type: string
         "400":
           description: Invalid request format
+        "401":
+          $ref: "#/components/responses/401"
         "429":
           description: Rate limit exceeded; retry after the Retry-After interval
+          headers:
+            Retry-After:
+              description: Seconds to wait before retrying; always a whole number of at least 1.
+              schema:
+                type: integer
+                minimum: 1
         "500":
           description: Internal server error
 
@@ -94,6 +105,14 @@ components:
       $ref: "../core/api.yml#/components/responses/401"
 
   securitySchemes:
+    clientKey:
+      type: apiKey
+      in: header
+      name: X-Client-Key
+      description: >-
+        Per-client-kind, per-release-channel pre-shared key, of the form
+        `<key id>.<secret>`. The same key authenticates
+        submitFailureDiagnostic (v1beta1/diagnostics).
     jwt:
       type: http
       scheme: bearer
