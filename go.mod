@@ -11,7 +11,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rodaine/table v1.3.1
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/oauth2 v0.36.0
+	golang.org/x/oauth2 v0.37.0
 	google.golang.org/api v0.295.0
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/gorm v1.31.2
