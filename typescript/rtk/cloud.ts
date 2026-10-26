@@ -18875,6 +18875,14 @@ export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
     updatedAt: string;
     /** Timestamp when the schedule was soft-deleted. Null while live. */
     deletedAt?: string | null;
+    /** Optional Risk Profile this schedule runs under, resolved above the
+        profile x platform resolution and below an explicit per-run flag.
+        Omitted when the schedule has no override: it then runs under whatever
+        profile x platform, configuration, environment, account or default
+        resolves to, exactly as before. Any value outside the Risk Profile
+        enum is refused with 400.
+         */
+    riskProfile?: "cautious" | "standard" | "brisk";
   }[];
 };
 export type ListSchedulesApiArg = {
@@ -19027,6 +19035,14 @@ export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
   updatedAt: string;
   /** Timestamp when the schedule was soft-deleted. Null while live. */
   deletedAt?: string | null;
+  /** Optional Risk Profile this schedule runs under, resolved above the
+    profile x platform resolution and below an explicit per-run flag.
+    Omitted when the schedule has no override: it then runs under whatever
+    profile x platform, configuration, environment, account or default
+    resolves to, exactly as before. Any value outside the Risk Profile
+    enum is refused with 400.
+     */
+  riskProfile?: "cautious" | "standard" | "brisk";
 };
 export type CreateScheduleApiArg = {
   body: {
@@ -19104,6 +19120,13 @@ export type CreateScheduleApiArg = {
     paused?: boolean;
     /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
     pauseReason?: string;
+    /** Optional Risk Profile this schedule runs under, resolved above
+        the profile x platform resolution and below an explicit per-run
+        flag. Omit to inherit: the schedule then runs under whatever
+        profile x platform, configuration, environment, account or
+        default resolves to, exactly as before.
+         */
+    riskProfile?: "cautious" | "standard" | "brisk";
   };
 };
 export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
@@ -19233,6 +19256,14 @@ export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
   updatedAt: string;
   /** Timestamp when the schedule was soft-deleted. Null while live. */
   deletedAt?: string | null;
+  /** Optional Risk Profile this schedule runs under, resolved above the
+    profile x platform resolution and below an explicit per-run flag.
+    Omitted when the schedule has no override: it then runs under whatever
+    profile x platform, configuration, environment, account or default
+    resolves to, exactly as before. Any value outside the Risk Profile
+    enum is refused with 400.
+     */
+  riskProfile?: "cautious" | "standard" | "brisk";
 };
 export type GetScheduleByIdApiArg = {
   /** Schedule ID */
@@ -19365,6 +19396,14 @@ export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
   updatedAt: string;
   /** Timestamp when the schedule was soft-deleted. Null while live. */
   deletedAt?: string | null;
+  /** Optional Risk Profile this schedule runs under, resolved above the
+    profile x platform resolution and below an explicit per-run flag.
+    Omitted when the schedule has no override: it then runs under whatever
+    profile x platform, configuration, environment, account or default
+    resolves to, exactly as before. Any value outside the Risk Profile
+    enum is refused with 400.
+     */
+  riskProfile?: "cautious" | "standard" | "brisk";
 };
 export type UpdateScheduleApiArg = {
   /** Schedule ID */
@@ -19446,6 +19485,13 @@ export type UpdateScheduleApiArg = {
     paused?: boolean;
     /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
     pauseReason?: string;
+    /** Optional Risk Profile this schedule runs under, resolved above
+        the profile x platform resolution and below an explicit per-run
+        flag. Omit to inherit: the schedule then runs under whatever
+        profile x platform, configuration, environment, account or
+        default resolves to, exactly as before.
+         */
+    riskProfile?: "cautious" | "standard" | "brisk";
   };
 };
 export type DeleteScheduleByIdApiResponse = unknown;
@@ -19588,6 +19634,14 @@ export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page *
     updatedAt: string;
     /** Timestamp when the schedule was soft-deleted. Null while live. */
     deletedAt?: string | null;
+    /** Optional Risk Profile this schedule runs under, resolved above the
+        profile x platform resolution and below an explicit per-run flag.
+        Omitted when the schedule has no override: it then runs under whatever
+        profile x platform, configuration, environment, account or default
+        resolves to, exactly as before. Any value outside the Risk Profile
+        enum is refused with 400.
+         */
+    riskProfile?: "cautious" | "standard" | "brisk";
   }[];
 };
 export type GetSchedulesOfWorkspaceApiArg = {
@@ -19740,6 +19794,14 @@ export type AssignScheduleToWorkspaceApiResponse = /** status 200 The linked sch
   updatedAt: string;
   /** Timestamp when the schedule was soft-deleted. Null while live. */
   deletedAt?: string | null;
+  /** Optional Risk Profile this schedule runs under, resolved above the
+    profile x platform resolution and below an explicit per-run flag.
+    Omitted when the schedule has no override: it then runs under whatever
+    profile x platform, configuration, environment, account or default
+    resolves to, exactly as before. Any value outside the Risk Profile
+    enum is refused with 400.
+     */
+  riskProfile?: "cautious" | "standard" | "brisk";
 };
 export type AssignScheduleToWorkspaceApiArg = {
   /** Workspace ID */

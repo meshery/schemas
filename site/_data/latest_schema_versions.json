@@ -282,6 +282,13 @@
     "extension": false
   },
   {
+    "construct": "risk_profile",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/risk_profile/risk_profile.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "role",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/role/api.yml",

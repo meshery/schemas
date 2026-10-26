@@ -742,6 +742,27 @@ const ScheduleSchema: Record<string, unknown> = {
                               "db": "deleted_at"
                             },
                             "x-order": 27
+                          },
+                          "riskProfile": {
+                            "x-go-type": "*risk_profilev1beta3.RiskProfile",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1beta3/risk_profile",
+                              "name": "risk_profilev1beta3"
+                            },
+                            "description": "Optional Risk Profile this schedule runs under, resolved above the\nprofile x platform resolution and below an explicit per-run flag.\nOmitted when the schedule has no override: it then runs under whatever\nprofile x platform, configuration, environment, account or default\nresolves to, exactly as before. Any value outside the Risk Profile\nenum is refused with 400.\n",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "risk_profile",
+                              "json": "riskProfile,omitempty"
+                            },
+                            "x-order": 28,
+                            "$schema": "http://json-schema.org/draft-07/schema#",
+                            "title": "Risk Profile Schema",
+                            "type": "string",
+                            "enum": [
+                              "cautious",
+                              "standard",
+                              "brisk"
+                            ]
                           }
                         }
                       },
@@ -968,6 +989,25 @@ const ScheduleSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "Reason for pausing; stored only while `paused` is true and cleared on resume.",
                     "maxLength": 1000
+                  },
+                  "riskProfile": {
+                    "x-go-type": "*risk_profilev1beta3.RiskProfile",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/v1beta3/risk_profile",
+                      "name": "risk_profilev1beta3"
+                    },
+                    "description": "Optional Risk Profile this schedule runs under, resolved above\nthe profile x platform resolution and below an explicit per-run\nflag. Omit to inherit: the schedule then runs under whatever\nprofile x platform, configuration, environment, account or\ndefault resolves to, exactly as before.\n",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "riskProfile,omitempty"
+                    },
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "title": "Risk Profile Schema",
+                    "type": "string",
+                    "enum": [
+                      "cautious",
+                      "standard",
+                      "brisk"
+                    ]
                   }
                 }
               }
@@ -1582,6 +1622,27 @@ const ScheduleSchema: Record<string, unknown> = {
                         "db": "deleted_at"
                       },
                       "x-order": 27
+                    },
+                    "riskProfile": {
+                      "x-go-type": "*risk_profilev1beta3.RiskProfile",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta3/risk_profile",
+                        "name": "risk_profilev1beta3"
+                      },
+                      "description": "Optional Risk Profile this schedule runs under, resolved above the\nprofile x platform resolution and below an explicit per-run flag.\nOmitted when the schedule has no override: it then runs under whatever\nprofile x platform, configuration, environment, account or default\nresolves to, exactly as before. Any value outside the Risk Profile\nenum is refused with 400.\n",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "risk_profile",
+                        "json": "riskProfile,omitempty"
+                      },
+                      "x-order": 28,
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "title": "Risk Profile Schema",
+                      "type": "string",
+                      "enum": [
+                        "cautious",
+                        "standard",
+                        "brisk"
+                      ]
                     }
                   }
                 }
@@ -2267,6 +2328,27 @@ const ScheduleSchema: Record<string, unknown> = {
                         "db": "deleted_at"
                       },
                       "x-order": 27
+                    },
+                    "riskProfile": {
+                      "x-go-type": "*risk_profilev1beta3.RiskProfile",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta3/risk_profile",
+                        "name": "risk_profilev1beta3"
+                      },
+                      "description": "Optional Risk Profile this schedule runs under, resolved above the\nprofile x platform resolution and below an explicit per-run flag.\nOmitted when the schedule has no override: it then runs under whatever\nprofile x platform, configuration, environment, account or default\nresolves to, exactly as before. Any value outside the Risk Profile\nenum is refused with 400.\n",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "risk_profile",
+                        "json": "riskProfile,omitempty"
+                      },
+                      "x-order": 28,
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "title": "Risk Profile Schema",
+                      "type": "string",
+                      "enum": [
+                        "cautious",
+                        "standard",
+                        "brisk"
+                      ]
                     }
                   }
                 }
@@ -2506,6 +2588,25 @@ const ScheduleSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "Reason for pausing; stored only while `paused` is true and cleared on resume.",
                     "maxLength": 1000
+                  },
+                  "riskProfile": {
+                    "x-go-type": "*risk_profilev1beta3.RiskProfile",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/v1beta3/risk_profile",
+                      "name": "risk_profilev1beta3"
+                    },
+                    "description": "Optional Risk Profile this schedule runs under, resolved above\nthe profile x platform resolution and below an explicit per-run\nflag. Omit to inherit: the schedule then runs under whatever\nprofile x platform, configuration, environment, account or\ndefault resolves to, exactly as before.\n",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "riskProfile,omitempty"
+                    },
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "title": "Risk Profile Schema",
+                    "type": "string",
+                    "enum": [
+                      "cautious",
+                      "standard",
+                      "brisk"
+                    ]
                   }
                 }
               }
@@ -3120,6 +3221,27 @@ const ScheduleSchema: Record<string, unknown> = {
                         "db": "deleted_at"
                       },
                       "x-order": 27
+                    },
+                    "riskProfile": {
+                      "x-go-type": "*risk_profilev1beta3.RiskProfile",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta3/risk_profile",
+                        "name": "risk_profilev1beta3"
+                      },
+                      "description": "Optional Risk Profile this schedule runs under, resolved above the\nprofile x platform resolution and below an explicit per-run flag.\nOmitted when the schedule has no override: it then runs under whatever\nprofile x platform, configuration, environment, account or default\nresolves to, exactly as before. Any value outside the Risk Profile\nenum is refused with 400.\n",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "risk_profile",
+                        "json": "riskProfile,omitempty"
+                      },
+                      "x-order": 28,
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "title": "Risk Profile Schema",
+                      "type": "string",
+                      "enum": [
+                        "cautious",
+                        "standard",
+                        "brisk"
+                      ]
                     }
                   }
                 }
@@ -3946,6 +4068,27 @@ const ScheduleSchema: Record<string, unknown> = {
                               "db": "deleted_at"
                             },
                             "x-order": 27
+                          },
+                          "riskProfile": {
+                            "x-go-type": "*risk_profilev1beta3.RiskProfile",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1beta3/risk_profile",
+                              "name": "risk_profilev1beta3"
+                            },
+                            "description": "Optional Risk Profile this schedule runs under, resolved above the\nprofile x platform resolution and below an explicit per-run flag.\nOmitted when the schedule has no override: it then runs under whatever\nprofile x platform, configuration, environment, account or default\nresolves to, exactly as before. Any value outside the Risk Profile\nenum is refused with 400.\n",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "risk_profile",
+                              "json": "riskProfile,omitempty"
+                            },
+                            "x-order": 28,
+                            "$schema": "http://json-schema.org/draft-07/schema#",
+                            "title": "Risk Profile Schema",
+                            "type": "string",
+                            "enum": [
+                              "cautious",
+                              "standard",
+                              "brisk"
+                            ]
                           }
                         }
                       },
@@ -4642,6 +4785,27 @@ const ScheduleSchema: Record<string, unknown> = {
                         "db": "deleted_at"
                       },
                       "x-order": 27
+                    },
+                    "riskProfile": {
+                      "x-go-type": "*risk_profilev1beta3.RiskProfile",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta3/risk_profile",
+                        "name": "risk_profilev1beta3"
+                      },
+                      "description": "Optional Risk Profile this schedule runs under, resolved above the\nprofile x platform resolution and below an explicit per-run flag.\nOmitted when the schedule has no override: it then runs under whatever\nprofile x platform, configuration, environment, account or default\nresolves to, exactly as before. Any value outside the Risk Profile\nenum is refused with 400.\n",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "risk_profile",
+                        "json": "riskProfile,omitempty"
+                      },
+                      "x-order": 28,
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "title": "Risk Profile Schema",
+                      "type": "string",
+                      "enum": [
+                        "cautious",
+                        "standard",
+                        "brisk"
+                      ]
                     }
                   }
                 }
@@ -5536,6 +5700,27 @@ const ScheduleSchema: Record<string, unknown> = {
               "db": "deleted_at"
             },
             "x-order": 27
+          },
+          "riskProfile": {
+            "x-go-type": "*risk_profilev1beta3.RiskProfile",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/v1beta3/risk_profile",
+              "name": "risk_profilev1beta3"
+            },
+            "description": "Optional Risk Profile this schedule runs under, resolved above the\nprofile x platform resolution and below an explicit per-run flag.\nOmitted when the schedule has no override: it then runs under whatever\nprofile x platform, configuration, environment, account or default\nresolves to, exactly as before. Any value outside the Risk Profile\nenum is refused with 400.\n",
+            "x-oapi-codegen-extra-tags": {
+              "db": "risk_profile",
+              "json": "riskProfile,omitempty"
+            },
+            "x-order": 28,
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "title": "Risk Profile Schema",
+            "type": "string",
+            "enum": [
+              "cautious",
+              "standard",
+              "brisk"
+            ]
           }
         }
       },
@@ -5736,6 +5921,25 @@ const ScheduleSchema: Record<string, unknown> = {
             "type": "string",
             "description": "Reason for pausing; stored only while `paused` is true and cleared on resume.",
             "maxLength": 1000
+          },
+          "riskProfile": {
+            "x-go-type": "*risk_profilev1beta3.RiskProfile",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/v1beta3/risk_profile",
+              "name": "risk_profilev1beta3"
+            },
+            "description": "Optional Risk Profile this schedule runs under, resolved above\nthe profile x platform resolution and below an explicit per-run\nflag. Omit to inherit: the schedule then runs under whatever\nprofile x platform, configuration, environment, account or\ndefault resolves to, exactly as before.\n",
+            "x-oapi-codegen-extra-tags": {
+              "json": "riskProfile,omitempty"
+            },
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "title": "Risk Profile Schema",
+            "type": "string",
+            "enum": [
+              "cautious",
+              "standard",
+              "brisk"
+            ]
           }
         }
       },
@@ -6362,6 +6566,27 @@ const ScheduleSchema: Record<string, unknown> = {
                     "db": "deleted_at"
                   },
                   "x-order": 27
+                },
+                "riskProfile": {
+                  "x-go-type": "*risk_profilev1beta3.RiskProfile",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/v1beta3/risk_profile",
+                    "name": "risk_profilev1beta3"
+                  },
+                  "description": "Optional Risk Profile this schedule runs under, resolved above the\nprofile x platform resolution and below an explicit per-run flag.\nOmitted when the schedule has no override: it then runs under whatever\nprofile x platform, configuration, environment, account or default\nresolves to, exactly as before. Any value outside the Risk Profile\nenum is refused with 400.\n",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "risk_profile",
+                    "json": "riskProfile,omitempty"
+                  },
+                  "x-order": 28,
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "title": "Risk Profile Schema",
+                  "type": "string",
+                  "enum": [
+                    "cautious",
+                    "standard",
+                    "brisk"
+                  ]
                 }
               }
             },
