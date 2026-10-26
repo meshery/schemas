@@ -69,6 +69,8 @@ paths:
             application/json:
               schema:
                 $ref: ../../v1beta3/environment/api.yml#/components/schemas/Environment
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "403":
@@ -91,13 +93,15 @@ paths:
         Idempotent, and deliberately declares no 404: removing an absent
         configuration succeeds with the same 204 as removing a present one, so
         "not found" is not an outcome this operation has. An unknown or
-        unauthorized organization is answered by the permission middleware
-        before the handler runs.
+        unauthorized organization is answered by the permission middleware,
+        while a malformed organization ID is answered with 400 by the handler.
       parameters:
         - $ref: "#/components/parameters/orgId"
       responses:
         "204":
           description: The configuration was removed.
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "403":
@@ -125,6 +129,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OrganizationSmtpConfiguration"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "403":
@@ -353,6 +359,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OrganizationSmtpDomainChallenge"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "403":
