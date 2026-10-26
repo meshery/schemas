@@ -201,11 +201,10 @@ properties:
       the session organization (`X-Current-Orgid`, or the caller's selected
       organization when that header is absent) when the connection is
       registered, and keeps it on later updates. Every connection a server
-      registers under this contract carries it. Absent only on connections
-      registered before servers recorded an organization and whose owner
-      belongs to several, so none can be assigned without guessing; those
-      are scoped by their owner. A server may backfill a legacy connection
-      whose organization is unambiguous. Never accepted from
+      registers under this contract carries it. Null only on connections
+      registered before servers recorded an organization: those are scoped
+      by their owner, and no organization can be assigned to them after the
+      fact because their owner may belong to several. Never accepted from
       clients on connection write payloads. Not marked readOnly:
       `RegistrantData` inlines this entity into registry registration
       requests, and readOnly there drops the connection field from the
