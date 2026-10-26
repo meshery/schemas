@@ -296,6 +296,13 @@
     "extension": true
   },
   {
+    "construct": "schedule_stop",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/schedule_stop/schedule_stop.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "subcategory",
     "version": "v1beta1",
     "href": "/schemas/constructs/v1beta1/subcategory/subcategory.yaml",

@@ -18,7 +18,6 @@ export const addTagTypes = [
   "View_views",
   "Academy_API_Academy",
   "BlowhornHealth_blowhornHealth",
-  "BlowhornProfile_blowhornProfiles",
   "Claim_claims",
   "Connection_API_Connections",
   "Connection_API_ConnectionDefinitions",
@@ -878,39 +877,6 @@ const injectedRtkApi = api
       getBlowhornHealth: build.query<GetBlowhornHealthApiResponse, GetBlowhornHealthApiArg>({
         query: () => ({ url: `/api/blowhorn/health` }),
         providesTags: ["BlowhornHealth_blowhornHealth"],
-      }),
-      listBlowhornProfiles: build.query<ListBlowhornProfilesApiResponse, ListBlowhornProfilesApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/profiles`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-          },
-        }),
-        providesTags: ["BlowhornProfile_blowhornProfiles"],
-      }),
-      upsertBlowhornProfile: build.mutation<UpsertBlowhornProfileApiResponse, UpsertBlowhornProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/profiles`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
-      }),
-      getBlowhornProfile: build.query<GetBlowhornProfileApiResponse, GetBlowhornProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}` }),
-        providesTags: ["BlowhornProfile_blowhornProfiles"],
-      }),
-      updateBlowhornProfile: build.mutation<UpdateBlowhornProfileApiResponse, UpdateBlowhornProfileApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}`,
-          method: "PUT",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
-      }),
-      deleteBlowhornProfile: build.mutation<DeleteBlowhornProfileApiResponse, DeleteBlowhornProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}`, method: "DELETE" }),
-        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
       }),
       listClaims: build.query<ListClaimsApiResponse, ListClaimsApiArg>({
         query: (queryArg) => ({
@@ -8975,136 +8941,6 @@ export type GetBlowhornHealthApiResponse = /** status 200 Blowhorn health respon
   checkedAt?: string;
 };
 export type GetBlowhornHealthApiArg = void;
-export type ListBlowhornProfilesApiResponse = /** status 200 Blowhorn profiles page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** Blowhorn profiles included on this page of results. */
-  blowhornProfiles?: {
-    /** Server-generated Blowhorn profile ID. */
-    id: string;
-    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-    organizationId: string;
-    /** ID of the existing Layer5 user the profile settings belong to. */
-    userId: string;
-    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-    slug: string;
-    /** Free-form profile attributes, stored as a JSON blob. */
-    attributes?: object;
-    /** Timestamp of Blowhorn profile creation. */
-    createdAt: string;
-    /** Timestamp of last Blowhorn profile modification. */
-    updatedAt: string;
-    /** Timestamp when the Blowhorn profile was soft-deleted. */
-    deletedAt?: string | null;
-  }[];
-};
-export type ListBlowhornProfilesApiArg = {
-  /** Get responses by page */
-  page?: number;
-  /** Number of items per page (canonical camelCase form). */
-  pageSize?: number;
-  /** Number of items per page. Deprecated alias of pageSize;
-    canonical `pageSize` wins when both are present.
-     */
-  pagesize?: number;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-};
-export type UpsertBlowhornProfileApiResponse = /** status 200 Blowhorn profile saved */ {
-  /** Server-generated Blowhorn profile ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** ID of the existing Layer5 user the profile settings belong to. */
-  userId: string;
-  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-  slug: string;
-  /** Free-form profile attributes, stored as a JSON blob. */
-  attributes?: object;
-  /** Timestamp of Blowhorn profile creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn profile modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn profile was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type UpsertBlowhornProfileApiArg = {
-  body: {
-    /** Existing Blowhorn profile ID for updates; omit on create. */
-    id?: string;
-    /** ID of the existing Layer5 user the profile settings belong to. */
-    userId: string;
-    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-    slug: string;
-    /** Free-form profile attributes, stored as a JSON blob. */
-    attributes?: object;
-  };
-};
-export type GetBlowhornProfileApiResponse = /** status 200 Blowhorn profile response */ {
-  /** Server-generated Blowhorn profile ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** ID of the existing Layer5 user the profile settings belong to. */
-  userId: string;
-  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-  slug: string;
-  /** Free-form profile attributes, stored as a JSON blob. */
-  attributes?: object;
-  /** Timestamp of Blowhorn profile creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn profile modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn profile was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type GetBlowhornProfileApiArg = {
-  /** Blowhorn profile ID */
-  blowhornProfileId: string;
-};
-export type UpdateBlowhornProfileApiResponse = /** status 200 Blowhorn profile updated */ {
-  /** Server-generated Blowhorn profile ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** ID of the existing Layer5 user the profile settings belong to. */
-  userId: string;
-  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-  slug: string;
-  /** Free-form profile attributes, stored as a JSON blob. */
-  attributes?: object;
-  /** Timestamp of Blowhorn profile creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn profile modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn profile was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type UpdateBlowhornProfileApiArg = {
-  /** Blowhorn profile ID */
-  blowhornProfileId: string;
-  body: {
-    /** Existing Blowhorn profile ID for updates; omit on create. */
-    id?: string;
-    /** ID of the existing Layer5 user the profile settings belong to. */
-    userId: string;
-    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-    slug: string;
-    /** Free-form profile attributes, stored as a JSON blob. */
-    attributes?: object;
-  };
-};
-export type DeleteBlowhornProfileApiResponse = unknown;
-export type DeleteBlowhornProfileApiArg = {
-  /** Blowhorn profile ID */
-  blowhornProfileId: string;
-};
 export type ListClaimsApiResponse = /** status 200 Claims page */ {
   /** Current page number of the result set. */
   page: number;
@@ -22299,13 +22135,6 @@ export const {
   useLazyGetCertificateByIdQuery,
   useGetBlowhornHealthQuery,
   useLazyGetBlowhornHealthQuery,
-  useListBlowhornProfilesQuery,
-  useLazyListBlowhornProfilesQuery,
-  useUpsertBlowhornProfileMutation,
-  useGetBlowhornProfileQuery,
-  useLazyGetBlowhornProfileQuery,
-  useUpdateBlowhornProfileMutation,
-  useDeleteBlowhornProfileMutation,
   useListClaimsQuery,
   useLazyListClaimsQuery,
   useCreateClaimMutation,
