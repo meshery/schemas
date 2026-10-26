@@ -95,6 +95,8 @@ The YAML file for an entity represents the **full server-side object** as return
 - All server-generated fields defined in `properties`: `id`, `created_at`, `updated_at`, `deleted_at`
 - Server-generated fields that are always present belong in `required`
 
+Exception: an **event-metadata construct** (no endpoints; recorded and read back verbatim as an `Event`'s `metadata`) has no server-generated fields, so it declares none and its `*Payload` carries the same field set. See [the authoring reference](docs/schema-authoring-reference.md#event-metadata-constructs-have-no-server-generated-fields).
+
 ### Rule 2: Every writable entity needs a `*Payload` schema in `api.yml`
 
 For any entity that has `POST` or `PUT` operations, define a `{Construct}Payload` schema in `api.yml` that:

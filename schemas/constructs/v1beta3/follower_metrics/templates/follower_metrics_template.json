@@ -3,9 +3,9 @@
   "platform": "",
   "subject": "",
   "readingDate": "0001-01-01",
-  "newSponsored": 0,
-  "newOrganic": 0,
-  "newAutoInvited": 0,
-  "newTotal": 0,
+  "newSponsored": null,
+  "newOrganic": null,
+  "newAutoInvited": null,
+  "newTotal": null,
   "sourceFile": ""
 }
