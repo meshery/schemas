@@ -2618,6 +2618,11 @@ export interface components {
                 name?: string;
             }[];
         };
+        /** @description Payload for cloning a design. The optional name is applied to the cloned design; the server derives ownership and visibility from the request context. */
+        MesheryPatternClonePayload: {
+            /** @description Optional name to apply to the cloned design. */
+            name?: string;
+        };
         /** @description Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (`organizationId`, createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded. The server assigns `organizationId` from the session organization, ignores any client value, and re-projects server-owned fields on the response. */
         MesheryPatternPayload: {
             /**
@@ -6174,7 +6179,14 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Optional name to apply to the cloned design. */
+                    name?: string;
+                };
+            };
+        };
         responses: {
             /** @description Design cloned */
             200: {

@@ -408,6 +408,12 @@ type MesheryPatternDesignType string
 // MesheryPatternVisibility Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
 type MesheryPatternVisibility string
 
+// MesheryPatternClonePayload Payload for cloning a design. The optional name is applied to the cloned design; the server derives ownership and visibility from the request context.
+type MesheryPatternClonePayload struct {
+	// Name Optional name to apply to the cloned design.
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
 // MesheryPatternDeleteRequestBody Payload for bulk deleting designs by ID.
 type MesheryPatternDeleteRequestBody struct {
 	// Patterns Designs targeted for deletion.

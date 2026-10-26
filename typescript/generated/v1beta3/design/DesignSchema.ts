@@ -3782,6 +3782,25 @@ const DesignSchema: Record<string, unknown> = {
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Payload for cloning a design. The optional name is applied to the cloned design; the server derives ownership and visibility from the request context.\n",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Optional name to apply to the cloned design.",
+                    "minLength": 1,
+                    "maxLength": 255
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Design cloned",
@@ -23515,6 +23534,18 @@ const DesignSchema: Record<string, unknown> = {
               }
             },
             "description": "Designs targeted for deletion."
+          }
+        }
+      },
+      "MesheryPatternClonePayload": {
+        "type": "object",
+        "description": "Payload for cloning a design. The optional name is applied to the cloned design; the server derives ownership and visibility from the request context.\n",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Optional name to apply to the cloned design.",
+            "minLength": 1,
+            "maxLength": 255
           }
         }
       },
