@@ -13,7 +13,10 @@ required:
   - platform
   - activityRef
   - readingDate
+  - subject
+  - link
   - matched
+  - sourceFile
 properties:
   organizationId:
     type: string
@@ -22,32 +25,40 @@ properties:
     x-go-type: uuid.UUID
     x-go-type-import:
       path: github.com/gofrs/uuid
+    x-go-name: OrganizationID
   platform:
     type: string
+    maxLength: 64
     description: The platform the activity was posted to (today only `linkedin` produces these exports).
   activityRef:
     type: string
-    description: The activity's platform identifier, normalized to its URN (`urn:li:activity:<id>`, `urn:li:share:<id>` or `urn:li:ugcPost:<id>`), so every spelling of a post's link names one activity.
+    maxLength: 255
+    description: The activity's platform identifier, normalized to its URN (`urn:li:activity:<id>`, `urn:li:share:<id>` or `urn:li:ugcPost:<id>`) so the encoded and plain spellings of one link agree. The URN kind is kept, so one post reached as both an activity URN and a share URN is two activityRefs; the exports name each post by one link, so readings of the same post line up across exports.
   readingDate:
     type: string
     format: date
     description: The export's date - the day the figures were read as of, as an ISO calendar date.
   subject:
     type: string
+    maxLength: 255
     description: The page the export belongs to, named as the source export names it.
   link:
     type: string
+    maxLength: 2048
     description: The post link as the export spelled it, before normalization to `activityRef`.
   title:
     type: string
+    maxLength: 3000
     nullable: true
     description: The post's title as the export gives it; null when the export names none.
   postType:
     type: string
+    maxLength: 64
     nullable: true
     description: The post's type as the export gives it (for example `Organic`); null when the export names none.
   postedBy:
     type: string
+    maxLength: 255
     nullable: true
     description: Who the export says posted the activity; null when the export names none.
   createdDate:
@@ -57,10 +68,12 @@ properties:
     description: The day the activity was created, as an ISO calendar date; null when the export names none.
   audience:
     type: string
+    maxLength: 255
     nullable: true
     description: The audience the export names for the activity; null when it names none.
   contentType:
     type: string
+    maxLength: 64
     nullable: true
     description: The content type the export names for the activity; null when it names none.
   impressions:
@@ -85,6 +98,7 @@ properties:
     description: Clicks the activity had gathered by the reading date; null when the export's cell is blank.
   clickThroughRate:
     type: number
+    format: double
     nullable: true
     minimum: 0
     description: Click-through rate as a fraction (0.05 is 5%); null when the export's cell is blank.
@@ -110,6 +124,7 @@ properties:
     description: Follows the activity had produced by the reading date; null when the export's cell is blank.
   engagementRate:
     type: number
+    format: double
     nullable: true
     minimum: 0
     description: Engagement rate as a fraction (0.05 is 5%); null when the export's cell is blank.
@@ -119,11 +134,14 @@ properties:
   contentRow:
     type: integer
     nullable: true
+    minimum: 0
     description: The content row the activity matched, when it matched; null for an unmatched activity.
   contentProfile:
     type: string
+    maxLength: 255
     nullable: true
     description: The profile whose promotion link matched, for a matched activity shared by several profiles; null when no single profile matched.
   sourceFile:
     type: string
+    maxLength: 1024
     description: The export file the row was read from; empty when the row did not come from a file export.

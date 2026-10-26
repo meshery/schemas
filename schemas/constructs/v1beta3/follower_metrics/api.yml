@@ -53,6 +53,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
+          x-go-name: OrganizationID
         platform:
           type: string
           description: The platform the page belongs to (today only `linkedin` produces these exports).

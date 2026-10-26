@@ -5,10 +5,13 @@ description: |
   in the `metadata` of an event on the events service (category `blowhorn`,
   action `activity_metrics`); the event construct carries the envelope and
   this construct names the metadata's own shape, which Event leaves open.
-  One row is one activity as one export read it, keyed by (organizationId,
-  platform, activityRef, readingDate): a later export adds a reading rather
-  than replacing an earlier one, so the rows are a time series and the
-  latest reading is an activity's current figures. The figures come from a
+  One row is one activity as one export read it, identified by
+  (organizationId, platform, activityRef, readingDate): a later export adds a
+  reading rather than replacing an earlier one, so the rows are a time series
+  and the reading with the latest readingDate is an activity's current
+  figures. The events service appends and enforces no uniqueness, so
+  re-importing an export records the same key twice: readers take, for each
+  key, the most recently recorded event and must not sum duplicates. The figures come from a
   LinkedIn page content export's "All posts" sheet, whose header sits under
   a disclaimer row; readingDate is that export's date, the day the figures
   were true as of. `matched` records whether the row's link resolved to a
@@ -24,7 +27,10 @@ required:
   - platform
   - activityRef
   - readingDate
+  - subject
+  - link
   - matched
+  - sourceFile
 properties:
   organizationId:
     type: string
@@ -39,13 +45,15 @@ properties:
     x-order: 1
   platform:
     type: string
+    maxLength: 64
     description: The platform the activity was posted to (today only `linkedin` produces these exports).
     x-oapi-codegen-extra-tags:
       db: platform
     x-order: 2
   activityRef:
     type: string
-    description: The activity's platform identifier, normalized to its URN (`urn:li:activity:<id>`, `urn:li:share:<id>` or `urn:li:ugcPost:<id>`), so every spelling of a post's link names one activity.
+    maxLength: 255
+    description: The activity's platform identifier, normalized to its URN (`urn:li:activity:<id>`, `urn:li:share:<id>` or `urn:li:ugcPost:<id>`) so the encoded and plain spellings of one link agree. The URN kind is kept, so one post reached as both an activity URN and a share URN is two activityRefs; the exports name each post by one link, so readings of the same post line up across exports.
     x-oapi-codegen-extra-tags:
       db: activity_ref
     x-order: 3
@@ -58,18 +66,21 @@ properties:
     x-order: 4
   subject:
     type: string
+    maxLength: 255
     description: The page the export belongs to, named as the source export names it.
     x-oapi-codegen-extra-tags:
       db: subject
     x-order: 5
   link:
     type: string
+    maxLength: 2048
     description: The post link as the export spelled it, before normalization to `activityRef`.
     x-oapi-codegen-extra-tags:
       db: link
     x-order: 6
   title:
     type: string
+    maxLength: 3000
     nullable: true
     description: The post's title as the export gives it; null when the export names none.
     x-oapi-codegen-extra-tags:
@@ -77,6 +88,7 @@ properties:
     x-order: 7
   postType:
     type: string
+    maxLength: 64
     nullable: true
     description: The post's type as the export gives it (for example `Organic`); null when the export names none.
     x-oapi-codegen-extra-tags:
@@ -84,6 +96,7 @@ properties:
     x-order: 8
   postedBy:
     type: string
+    maxLength: 255
     nullable: true
     description: Who the export says posted the activity; null when the export names none.
     x-oapi-codegen-extra-tags:
@@ -99,6 +112,7 @@ properties:
     x-order: 10
   audience:
     type: string
+    maxLength: 255
     nullable: true
     description: The audience the export names for the activity; null when it names none.
     x-oapi-codegen-extra-tags:
@@ -106,6 +120,7 @@ properties:
     x-order: 11
   contentType:
     type: string
+    maxLength: 64
     nullable: true
     description: The content type the export names for the activity; null when it names none.
     x-oapi-codegen-extra-tags:
@@ -145,6 +160,7 @@ properties:
     x-order: 16
   clickThroughRate:
     type: number
+    format: double
     nullable: true
     minimum: 0
     description: Click-through rate as a fraction (0.05 is 5%); null when the export's cell is blank.
@@ -185,6 +201,7 @@ properties:
     x-order: 21
   engagementRate:
     type: number
+    format: double
     nullable: true
     minimum: 0
     description: Engagement rate as a fraction (0.05 is 5%); null when the export's cell is blank.
@@ -200,12 +217,14 @@ properties:
   contentRow:
     type: integer
     nullable: true
+    minimum: 0
     description: The content row the activity matched, when it matched; null for an unmatched activity.
     x-oapi-codegen-extra-tags:
       db: content_row
     x-order: 24
   contentProfile:
     type: string
+    maxLength: 255
     nullable: true
     description: The profile whose promotion link matched, for a matched activity shared by several profiles; null when no single profile matched.
     x-oapi-codegen-extra-tags:
@@ -213,6 +232,7 @@ properties:
     x-order: 25
   sourceFile:
     type: string
+    maxLength: 1024
     description: The export file the row was read from; empty when the row did not come from a file export.
     x-oapi-codegen-extra-tags:
       db: source_file
