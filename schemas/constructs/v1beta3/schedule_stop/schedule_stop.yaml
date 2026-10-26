@@ -1,0 +1,53 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Schedule Stop Schema
+description: |
+  The organization-wide stop of scheduled work - the kill switch beside
+  the schedule pause - stored in organization.metadata.preferences under
+  `scheduleStop`. While `stopped` is true, every acting process in the
+  organization stops at its next safe point, and the pause the stop raised
+  holds new claims; a pause alone only holds claims and lets the work in
+  flight finish, which is why the stop is a record of its own and not a
+  member of SchedulePause. Set or lift it by updating the organization's
+  preferences; there is no stop route. Unset is treated as not stopped.
+  Lifting the stop (`stopped` false) clears `reason`, `raisedPause`,
+  `stoppedAt` and `stoppedBy` on the server, so a stored `stopped` false
+  never carries a stale stop time or identity. `raisedPause` records
+  whether this stop raised the organization pause: the client that lifts
+  the stop reads it to lift only the pause the stop itself set, never one
+  that predates the stop or was re-set while the stop stood.
+type: object
+additionalProperties: false
+required:
+  - stopped
+properties:
+  stopped:
+    type: boolean
+    description: Whether every acting process in the organization is stopped.
+    x-order: 1
+  reason:
+    type: string
+    maxLength: 1000
+    description: Reason given for the stop. Cleared when the stop is lifted.
+    x-oapi-codegen-extra-tags:
+      db: stop_reason
+    x-order: 2
+  raisedPause:
+    type: boolean
+    description: Whether this stop raised the organization-wide schedule pause. Recorded by the client that set the stop; cleared when the stop is lifted.
+    x-oapi-codegen-extra-tags:
+      db: stop_raised_pause
+    x-order: 3
+  stoppedAt:
+    type: string
+    format: date-time
+    description: Time the stop was set. Server-managed; recorded when `stopped` turns true and cleared when it is lifted.
+    x-oapi-codegen-extra-tags:
+      db: stopped_at
+    x-order: 4
+  stoppedBy:
+    type: string
+    maxLength: 255
+    description: Identity that set the stop. Server-managed; recorded when `stopped` turns true and cleared when it is lifted.
+    x-oapi-codegen-extra-tags:
+      db: stopped_by
+    x-order: 5
