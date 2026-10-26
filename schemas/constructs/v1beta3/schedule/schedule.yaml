@@ -264,3 +264,20 @@ properties:
     x-oapi-codegen-extra-tags:
       db: deleted_at
     x-order: 27
+  riskProfile:
+    $ref: ../risk_profile/api.yml#/components/schemas/RiskProfile
+    x-go-type: "*risk_profilev1beta3.RiskProfile"
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/v1beta3/risk_profile
+      name: risk_profilev1beta3
+    description: |
+      Optional Risk Profile this schedule runs under, resolved above the
+      profile x platform resolution and below an explicit per-run flag.
+      Omitted when the schedule has no override: it then runs under whatever
+      profile x platform, configuration, environment, account or default
+      resolves to, exactly as before. Any value outside the Risk Profile
+      enum is refused with 400.
+    x-oapi-codegen-extra-tags:
+      db: risk_profile
+      json: "riskProfile,omitempty"
+    x-order: 28

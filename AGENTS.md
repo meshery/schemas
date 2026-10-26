@@ -47,6 +47,10 @@ Any new emitter of Go source must do the same. Hand-written Go in `models/`
 (`*_helper.go`, `const.go`, `import.go`, `*_conversion.go`, `models/core/`) is not
 covered by that step.
 
+Removing a construct removes its generated output in the same PR. The generators prune
+output directories whose construct is gone, and `make test-generated-outputs` fails while
+one is committed. See [`docs/superseded-construct-consumer-verification.md`](docs/superseded-construct-consumer-verification.md#removing-a-construct-removes-its-generated-output).
+
 ## Required on Every PR
 
 - **Tests accompany every behavioral change.** Run every locally-runnable test

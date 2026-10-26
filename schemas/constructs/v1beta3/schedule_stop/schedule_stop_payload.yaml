@@ -1,0 +1,30 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Schedule Stop Payload Schema
+description: |
+  Client-settable organization stop: the member a client sends under
+  `scheduleStop` in an organization preferences patch. Carries only
+  `stopped`, `reason` and `raisedPause`; `stoppedAt` and `stoppedBy` are
+  recorded by the server and refused here. `stopped` is required whenever
+  `scheduleStop` is sent, so a write can never lift the stop by omission.
+type: object
+additionalProperties: false
+required:
+  - stopped
+properties:
+  stopped:
+    type: boolean
+    description: Whether every acting process in the organization is stopped.
+    x-order: 1
+  reason:
+    type: string
+    maxLength: 1000
+    description: Reason given for the stop. Cleared when the stop is lifted.
+    x-oapi-codegen-extra-tags:
+      db: stop_reason
+    x-order: 2
+  raisedPause:
+    type: boolean
+    description: Whether this stop raised the organization-wide schedule pause. Recorded by the client that set the stop; cleared when the stop is lifted.
+    x-oapi-codegen-extra-tags:
+      db: stop_raised_pause
+    x-order: 3

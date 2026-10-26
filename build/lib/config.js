@@ -290,6 +290,33 @@ function getGoOutputPath(pkg) {
 }
 
 /**
+ * Output keys ("version/packageName") for every construct directory that
+ * still has an api.yml, INCLUDING packages in excludePackages. A generated
+ * output directory whose key is absent belongs to a construct that has been
+ * removed. Excluded packages keep their output (it is published and may be
+ * consumed), so they must not count as removed.
+ *
+ * @param {string} [projectRoot] - Root to scan (defaults to this checkout)
+ * @returns {Set<string>}
+ */
+function getConstructOutputKeys(projectRoot = getProjectRoot()) {
+  const schemasRoot = path.join(projectRoot, paths.schemasDir);
+  const keys = new Set();
+  if (!fs.existsSync(schemasRoot)) return keys;
+
+  for (const version of fs.readdirSync(schemasRoot)) {
+    const versionPath = path.join(schemasRoot, version);
+    if (!fs.statSync(versionPath).isDirectory()) continue;
+    for (const dirName of fs.readdirSync(versionPath)) {
+      if (!fs.existsSync(path.join(versionPath, dirName, "api.yml"))) continue;
+      const packageKey = `${version}/${dirName}`;
+      keys.add(`${version}/${packageNameOverrides[packageKey] || dirName}`);
+    }
+  }
+  return keys;
+}
+
+/**
  * Clear the cached packages (useful for testing)
  */
 function clearCache() {
@@ -324,6 +351,7 @@ module.exports = {
   getInputSchemaPath,
   getBundledOutputPath,
   getGoOutputPath,
+  getConstructOutputKeys,
   clearCache,
   printDiscoveredPackages,
 };
