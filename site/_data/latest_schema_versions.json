@@ -124,6 +124,13 @@
     "extension": true
   },
   {
+    "construct": "diagnostics",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/diagnostics/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "environment",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/environment/environment.yaml",
