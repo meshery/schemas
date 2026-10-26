@@ -75,34 +75,82 @@ paths:
             schema:
               $ref: "#/components/schemas/AnonymousSupportRequest"
       responses:
-        "201":
-          description: Anonymous support request submitted
+        "200":
+          description: Support request received and forwarded
           content:
             application/json:
               schema:
                 type: object
+                additionalProperties: false
+                required:
+                  - status
                 properties:
-                  message:
+                  status:
                     type: string
+                    enum:
+                      - received
+                    description: Always `received`.
+                  diagnosticId:
+                    type: string
+                    format: uuid
+                    description: Echoes the request's diagnosticId; omitted when the request linked none.
         "400":
-          description: Invalid request format
+          $ref: "#/components/responses/MeshkitError400"
         "401":
-          $ref: "#/components/responses/401"
+          $ref: "#/components/responses/ClientKeyUnauthorized"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
         "429":
-          description: Rate limit exceeded; retry after the Retry-After interval
-          headers:
-            Retry-After:
-              description: Seconds to wait before retrying; always a whole number of at least 1.
-              schema:
-                type: integer
-                minimum: 1
+          $ref: "#/components/responses/RateLimited"
         "500":
-          description: Internal server error
+          $ref: "#/components/responses/MeshkitError500"
+        "502":
+          $ref: "#/components/responses/MeshkitError502"
 
 components:
   responses:
     401:
       $ref: "../core/api.yml#/components/responses/401"
+    MeshkitError400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError400"
+    MeshkitError500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError500"
+    ClientKeyUnauthorized:
+      description: >-
+        Neither a signed-in session nor a valid X-Client-Key. A missing,
+        revoked, expired, not-yet-valid or unknown key all answer alike, so
+        key existence is not an oracle. Rotate the client key; this is not
+        an expired session.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                description: The refusal, for example "Client key required for operation is invalid or missing".
+    PayloadTooLarge:
+      description: The request body exceeds the 16 KB cap. Do not retry the same body.
+      content:
+        application/json:
+          schema:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/MeshkitError"
+    RateLimited:
+      description: Rate limit exceeded; retry after the Retry-After interval.
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying; always a whole number of at least 1.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/MeshkitError"
+    MeshkitError502:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError502"
 
   securitySchemes:
     clientKey:
@@ -152,7 +200,9 @@ components:
         automatic failure diagnostic for the same incident, when one was
         submitted. The fields are spelled out here rather than composed
         with allOf so generated clients expose them flat, exactly like
-        SupportRequest.
+        SupportRequest. The object is closed: Cloud decodes it strictly
+        and refuses an unknown field with a 400.
+      additionalProperties: false
       required:
         - subject
         - message

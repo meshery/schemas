@@ -7,9 +7,9 @@ document is updated.
 
 ## Constructs
 
-- `schemas/constructs/v1beta1/support/api.yml` — `SupportRequest`
+- `schemas/constructs/v1beta1/support/api.yml` - `SupportRequest`
   (unchanged), `AnonymousSupportRequest`, `POST /api/support/anonymous`.
-- `schemas/constructs/v1beta1/diagnostics/api.yml` — `FailureDiagnostic`,
+- `schemas/constructs/v1beta1/diagnostics/api.yml` - `FailureDiagnostic`,
   `POST /api/diagnostics/failures`.
 
 ## The support drift decision
@@ -96,6 +96,25 @@ in the app and can be extracted. Body cap, strict decode, rate limits,
 server-side re-redaction, and 90-day retention are server-side
 behaviour owned by the Cloud step, described in the operation text but
 not enforceable from this repo.
+
+## Responses
+
+Both operations declare exactly what Cloud's handlers send
+(`server/handlers/diagnostics.go`); the contract test pins each code set.
+
+| Code | `submitFailureDiagnostic` | `submitAnonymousSupportRequest` |
+| --- | --- | --- |
+| Success | `201 {diagnosticId}` - the client's id, or one the server generated | `200 {status: "received", diagnosticId?}` |
+| 400 | MeshKit error: invalid or unknown field, wrong client kind | MeshKit error |
+| 401 | `{message}`: no session and no valid client key - rotate the key, this is not an expired session | same |
+| 413 | MeshKit error: body over 16 KB - do not retry the same body | same |
+| 429 | MeshKit error plus `Retry-After` (whole seconds, at least 1) | same |
+| 500 | MeshKit error | MeshKit error |
+| 502 | - | MeshKit error: the support webhook forward failed - retry later |
+| 503 | MeshKit error: diagnostics store not configured - retry later | - |
+
+`AnonymousSupportRequest` is closed (`additionalProperties: false`), like
+`FailureDiagnostic`, because the same strict decoder serves both.
 
 ## Serving status
 
