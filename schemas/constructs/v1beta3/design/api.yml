@@ -191,6 +191,12 @@ paths:
       description: Creates a copy of an existing design.
       parameters:
         - $ref: "#/components/parameters/designId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryPatternClonePayload"
       responses:
         "200":
           description: Design cloned
@@ -1254,6 +1260,19 @@ components:
             $ref: "#/components/schemas/DeletePatternModel"
             x-go-type: DeletePatternModel
           description: Designs targeted for deletion.
+
+    MesheryPatternClonePayload:
+      type: object
+      description: >
+        Payload for cloning a design. The optional name is applied to the
+        cloned design; the server derives ownership and visibility from the
+        request context.
+      properties:
+        name:
+          type: string
+          description: Optional name to apply to the cloned design.
+          minLength: 1
+          maxLength: 255
 
     MesheryPatternPayload:
       type: object

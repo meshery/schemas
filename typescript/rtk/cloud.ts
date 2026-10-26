@@ -1159,7 +1159,11 @@ const injectedRtkApi = api
         invalidatesTags: ["Design_designs"],
       }),
       clonePattern: build.mutation<ClonePatternApiResponse, ClonePatternApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns/clone/${queryArg.designId}`, method: "POST" }),
+        query: (queryArg) => ({
+          url: `/api/content/patterns/clone/${queryArg.designId}`,
+          method: "POST",
+          body: queryArg.body,
+        }),
         invalidatesTags: ["Design_designs"],
       }),
       getDesignPatternFile: build.query<GetDesignPatternFileApiResponse, GetDesignPatternFileApiArg>({
@@ -13327,6 +13331,10 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
 export type ClonePatternApiArg = {
   /** Design (Pattern) ID */
   designId: string;
+  body: {
+    /** Optional name to apply to the cloned design. */
+    name?: string;
+  };
 };
 export type GetDesignPatternFileApiResponse = unknown;
 export type GetDesignPatternFileApiArg = {
