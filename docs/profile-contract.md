@@ -38,7 +38,9 @@ There is no uniqueness constraint on any client field.
 
 ## Access
 
-- **Read:** the owner, organization admins, and members of any workspace the
+- **Read:** the owner, the user the profile represents (`userId`, read only,
+  without View Profiles, while a member of its organization), organization
+  admins, and members of any workspace the
   profile is assigned to. The owner sees their own profile whether or not it
   is assigned to any workspace. Organization admins and workspace members
   also need View Profiles. Provider admins do not see profiles
@@ -54,12 +56,17 @@ There is no uniqueness constraint on any client field.
 
 | Category (API Endpoints sheet) | Route | Operations |
 | --- | --- | --- |
-| Integrations / Profiles | `/api/profiles` | `getProfiles` (filters: `search`, `orgId`, `userId`), `createProfile` |
+| Integrations / Profiles | `/api/profiles` | `getProfiles` (filters: `search`, `name` (exact, case-insensitive), `orgId`, `userId`), `createProfile` |
+| Integrations / Profiles | `/api/profiles/connections` | `getProfileConnectionMappings` (paged links of every visible profile; static segment, routed before `{profileId}`) |
 | Integrations / Profiles | `/api/profiles/{profileId}` | `getProfileById`, `updateProfile`, `deleteProfile` |
-| Integrations / Profiles | `/api/profiles/{profileId}/connections` | `getProfileConnections` |
+| Integrations / Profiles | `/api/profiles/{profileId}/connections` | `getProfileConnections` (filter: repeatable `kind`) |
 | Integrations / Profiles | `/api/profiles/{profileId}/connections/{connectionId}` | `addConnectionToProfile`, `removeConnectionFromProfile` |
 | Workspaces / Workspaces | `/api/workspaces/{workspaceId}/profiles` | `getProfilesOfWorkspace` |
 | Workspaces / Workspaces | `/api/workspaces/{workspaceId}/profiles/{profileId}` | `assignProfileToWorkspace`, `unassignProfileFromWorkspace` |
+
+`getProfileById` and `updateProfile` answer an `ETag` header; `updateProfile`
+accepts an optional `If-Match` and answers 412 when it is stale. Without
+`If-Match` the write is unconditional.
 
 All operations are `x-internal: ["cloud"]`; Meshery Server does not serve
 profiles. Connection links reuse the existing Connection construct through
@@ -69,7 +76,7 @@ profiles. Connection links reuse the existing Connection construct through
 
 | Key | Key ID | Moniker | Guards |
 | --- | --- | --- | --- |
-| View Profiles | `77f8a444-f9ac-4cb5-bb26-832b53addf01` | `WorkspaceManagementViewProfiles` | `getProfiles`, `getProfileById`, `getProfileConnections` |
+| View Profiles | `77f8a444-f9ac-4cb5-bb26-832b53addf01` | `WorkspaceManagementViewProfiles` | `getProfiles`, `getProfileById`, `getProfileConnections`, `getProfileConnectionMappings` |
 | Create Profile | `b71221e9-3247-4510-9175-14b9de4fb06e` | `WorkspaceManagementCreateProfile` | `createProfile` |
 | Edit Profile | `b8f0c75c-39f6-488f-92c0-ab6add761266` | `WorkspaceManagementEditProfile` | `updateProfile`, `addConnectionToProfile`, `removeConnectionFromProfile` |
 | Delete Profile | `cad76a9d-5718-4503-8293-570b495d82bc` | `WorkspaceManagementDeleteProfile` | `deleteProfile` |
