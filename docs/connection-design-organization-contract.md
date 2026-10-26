@@ -1,7 +1,8 @@
 # Connection and design organization contract
 
-Every connection and every design belongs to exactly one organization. The
-server assigns that organization. Clients do not send it.
+Every connection and every design a server creates belongs to exactly one
+organization. The server assigns that organization. Clients do not send it.
+Connections that predate this rule may have none (see below).
 
 `schemas/constructs/v1beta3/connection` is the connection wire contract Meshery
 Cloud returns. `schemas/constructs/v1beta3/design` `MesheryPattern` is the
@@ -18,10 +19,26 @@ they are unchanged.
 The wire name is `organizationId`. The database column is `organization_id`.
 The value is a UUID.
 
-On v1beta3 `Connection` and v1beta3 `MesheryPattern` the field is required.
-Generated Go uses a non-pointer UUID (`x-go-name: OrganizationID`,
+On v1beta3 `MesheryPattern` the field is required, and generated Go uses a
+non-pointer UUID (`x-go-name: OrganizationID`,
 `x-go-type-skip-optional-pointer: true`, `$ref` to the v1beta2 core `Uuid`
-schema). The server sets it from the session organization: the
+schema).
+
+On v1beta3 `Connection` the field is required on write and nullable on read.
+Every connection a server registers gets the session organization. Meshery
+Cloud recorded no organization for connections before 2026-10-20 (migration
+`20261020090000_connections_organization_id` keeps them NULL: "their owner,
+not an organization, scopes them"). Measured in production on 2026-10-26,
+that was 71,645 of 71,669 connections, 41,839 of them live. About 24,000 of
+those live rows belong to owners in more than one organization, so no
+organization can be assigned to them after the fact. The field is therefore
+`nullable: true` and generates `*OrganizationID` with `omitempty`; a
+non-pointer UUID cannot scan a NULL column, and made every connection read
+that reached one of those rows fail. A null means "registered before
+organizations were recorded; scoped by its owner", never "no organization
+yet".
+
+The server sets it from the session organization: the
 `X-Current-Orgid` header when the client sends it, otherwise the caller's
 selected organization. It is absent from `ConnectionPayload`,
 `ConnectionRegistrationEvent`, `ConnectionActionRequest`,
