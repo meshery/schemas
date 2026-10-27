@@ -7,7 +7,7 @@ const ProfileSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Profile",
-    "description": "OpenAPI schema for profiles: publishing or persona profiles owned by an\norganization and assigned to workspaces. A profile here is not the user\naccount profile (`/api/identity/users/profile`) and not a performance\nprofile (`/api/performance/profiles`).\nWorkspaces: like an environment, a profile can be assigned to any number\nof workspaces through `/api/workspaces/{workspaceId}/profiles`, and that\nassignment is how access to it is granted.\nRead access: a profile is visible to its owner, to organization admins,\nand to members of the workspaces it is assigned to. The owner sees their\nown profile whether or not it is assigned to any workspace. Organization\nadmins and workspace members also need Workspace Management / Profiles:\nView Profiles. Provider admins do not see profiles automatically. Seeing\na profile does not grant access to its linked connections, which keep\ntheir own access rules.\nWrite access: Create Profile, Edit Profile and Delete Profile. Edit\nProfile also governs linking and unlinking the profile's connections and\ntransferring its owner; the owner may always edit their own profile.\nAccounts: the platform accounts a profile acts through are existing\nConnections, linked by a profile-to-connection mapping that mirrors the\nenvironment-to-connection mapping.\nA caller without the required key receives a 403. An id that does not name\na live profile the caller can see receives a 404, whether it does not\nexist or belongs to another organization or workspace.\n",
+    "description": "OpenAPI schema for profiles: publishing or persona profiles owned by an\norganization and assigned to workspaces. A profile here is not the user\naccount profile (`/api/identity/users/profile`) and not a performance\nprofile (`/api/performance/profiles`).\nWorkspaces: like an environment, a profile can be assigned to any number\nof workspaces through `/api/workspaces/{workspaceId}/profiles`, and that\nassignment is how access to it is granted.\nRead access: a profile is visible to its owner, to organization admins,\nand to members of the workspaces it is assigned to. The owner sees their\nown profile whether or not it is assigned to any workspace. Organization\nadmins and workspace members also need Workspace Management / Profiles:\nView Profiles. The user a profile represents (`userId`) can also read it,\nwithout View Profiles, while they are a member of its organization; that\ngrant is read only (listing and getProfileById), and every write keeps the\nrules below. Provider admins do not see profiles automatically. Seeing\na profile does not grant access to its linked connections, which keep\ntheir own access rules.\nWrite access: Create Profile, Edit Profile and Delete Profile. Edit\nProfile also governs linking and unlinking the profile's connections and\ntransferring its owner; the owner may always edit their own profile.\nConcurrency: getProfileById and updateProfile answer an `ETag`; sending it\nback as `If-Match` makes updateProfile conditional (412 when stale).\nAccounts: the platform accounts a profile acts through are existing\nConnections, linked by a profile-to-connection mapping that mirrors the\nenvironment-to-connection mapping.\nA caller without the required key receives a 403. An id that does not name\na live profile the caller can see receives a 404, whether it does not\nexist or belongs to another organization or workspace.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -366,6 +366,67 @@ const ProfileSchema: Record<string, unknown> = {
               }
             }
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -387,7 +448,7 @@ const ProfileSchema: Record<string, unknown> = {
         ],
         "operationId": "getProfiles",
         "summary": "Get all profiles",
-        "description": "Gets the live profiles the caller can see: those the caller owns (including profiles assigned to no workspace), those assigned to a workspace the caller is a member of, and, for organization admins, every profile of the organization. Provider admins are not granted visibility automatically. `search` matches the name or description case-insensitively.",
+        "description": "Gets the live profiles the caller can see: those the caller owns (including profiles assigned to no workspace), those that represent the caller (`userId`), those assigned to a workspace the caller is a member of, and, for organization admins, every profile of the organization. Provider admins are not granted visibility automatically. `search` matches the name or description case-insensitively; `name` matches the name exactly, ignoring case.",
         "parameters": [
           {
             "name": "search",
@@ -395,6 +456,17 @@ const ProfileSchema: Record<string, unknown> = {
             "description": "Get responses that match search param value",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "description": "Return only live profiles whose name equals this value, ignoring case.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255
             }
           },
           {
@@ -706,6 +778,346 @@ const ProfileSchema: Record<string, unknown> = {
               }
             }
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profiles/connections": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "profiles"
+        ],
+        "operationId": "getProfileConnectionMappings",
+        "summary": "Get the connection links of every visible profile",
+        "description": "Gets, in one paged read, the live profile-to-connection links of every live profile of the organization whose connections the caller may list under getProfileConnections' rules: the profiles the caller can see, with View Profiles; without it, only the profiles the caller owns. A profile that only represents the caller (`userId`) contributes no links, as its read-only grant does not cover its connections. A client learns which connections each profile acts through without one getProfileConnections call per profile. Items are ProfileConnectionMapping records; they carry ids only, and the connections themselves keep their own access rules. Ordered by profile, then connection.",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "query",
+            "description": "Organization ID used to scope the listing. Defaults to the organization the session resolved to.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile connection links",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated list of profile-to-connection links.",
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "mappings"
+                  ],
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of items across all pages.",
+                      "minimum": 0
+                    },
+                    "mappings": {
+                      "type": "array",
+                      "description": "Profile-to-connection links in this page.",
+                      "x-go-type-skip-optional-pointer": true,
+                      "items": {
+                        "x-go-type": "ProfileConnectionMapping",
+                        "type": "object",
+                        "description": "Junction record linking a profile to a connection.",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "profileId",
+                          "connectionId"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "Mapping record ID.",
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "profileId": {
+                            "description": "ID of the linked profile.",
+                            "x-go-name": "ProfileID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "profile_id",
+                              "json": "profileId"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "connectionId": {
+                            "description": "ID of the linked connection.",
+                            "x-go-name": "ConnectionID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "connection_id",
+                              "json": "connectionId"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "createdAt": {
+                            "description": "Timestamp when the mapping was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "json": "createdAt,omitempty"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp when the mapping was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "json": "updatedAt,omitempty"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deletedAt": {
+                            "description": "Timestamp when the mapping was soft-deleted. Null while the mapping remains active.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            },
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -729,7 +1141,7 @@ const ProfileSchema: Record<string, unknown> = {
         ],
         "operationId": "getProfileById",
         "summary": "Get profile by ID",
-        "description": "Gets a profile visible to the caller: its owner (whether or not the profile is assigned to any workspace), an organization admin, or a member of a workspace it is assigned to. Provider admins are not granted visibility automatically. A profile the caller cannot see returns 404. Seeing the profile does not grant access to its linked connections.",
+        "description": "Gets a profile visible to the caller: its owner (whether or not the profile is assigned to any workspace), the user it represents (`userId`, read only), an organization admin, or a member of a workspace it is assigned to. Provider admins are not granted visibility automatically. A profile the caller cannot see returns 404. Seeing the profile does not grant access to its linked connections. The response carries the profile's entity tag in the `ETag` header.",
         "parameters": [
           {
             "name": "profileId",
@@ -750,6 +1162,15 @@ const ProfileSchema: Record<string, unknown> = {
         "responses": {
           "200": {
             "description": "Profile",
+            "headers": {
+              "ETag": {
+                "description": "Strong entity tag of the profile. It changes whenever the profile changes; send it back as `If-Match` to make updateProfile conditional.",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -984,6 +1405,67 @@ const ProfileSchema: Record<string, unknown> = {
               }
             }
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -1005,7 +1487,7 @@ const ProfileSchema: Record<string, unknown> = {
         ],
         "operationId": "updateProfile",
         "summary": "Update a profile",
-        "description": "Replaces the client-settable fields of the profile. `organizationId` cannot change after creation; a different value is refused with 400. Changing `owner` transfers the profile; the new owner must be a member of the organization.",
+        "description": "Replaces the client-settable fields of the profile. `organizationId` cannot change after creation; a different value is refused with 400. Changing `owner` transfers the profile; the new owner must be a member of the organization. The optional `If-Match` header makes the write conditional on the entity tag the profile carried when it was read: when it no longer matches, the request is refused with 412 and nothing is written. Without `If-Match` the write is unconditional.",
         "parameters": [
           {
             "name": "profileId",
@@ -1020,6 +1502,16 @@ const ProfileSchema: Record<string, unknown> = {
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
               }
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": false,
+            "description": "Entity tag of the profile as last read, from the `ETag` header of getProfileById or updateProfile. When present the write applies only if it still matches; otherwise 412.",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
             }
           }
         ],
@@ -1109,6 +1601,15 @@ const ProfileSchema: Record<string, unknown> = {
         "responses": {
           "200": {
             "description": "Updated profile",
+            "headers": {
+              "ETag": {
+                "description": "Strong entity tag of the profile. It changes whenever the profile changes; send it back as `If-Match` to make updateProfile conditional.",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -1343,6 +1844,70 @@ const ProfileSchema: Record<string, unknown> = {
               }
             }
           },
+          "412": {
+            "description": "Precondition failed - `If-Match` does not match the profile's current entity tag, so nothing was written. Read the profile again and reapply the change."
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -1426,6 +1991,67 @@ const ProfileSchema: Record<string, unknown> = {
               }
             }
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -1449,7 +2075,7 @@ const ProfileSchema: Record<string, unknown> = {
         ],
         "operationId": "getProfileConnections",
         "summary": "Get profile connections",
-        "description": "Gets the connections linked to a profile visible to the caller: its owner (whether or not the profile is assigned to any workspace), an organization admin, or a member of a workspace it is assigned to. The owner needs no permission key; organization admins and workspace members also need View Profiles. Provider admins are not granted visibility automatically. A profile the caller cannot see returns 404. Seeing the profile does not grant access to its linked connections, which follow their own access rules.",
+        "description": "Gets the connections linked to a profile visible to the caller: its owner (whether or not the profile is assigned to any workspace), an organization admin, or a member of a workspace it is assigned to. The owner needs no permission key; organization admins and workspace members also need View Profiles. Provider admins are not granted visibility automatically. A profile the caller cannot see returns 404. Seeing the profile does not grant access to its linked connections, which follow their own access rules. `kind` narrows the page to connections of the given kinds.",
         "parameters": [
           {
             "name": "profileId",
@@ -1463,6 +2089,19 @@ const ProfileSchema: Record<string, unknown> = {
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
+              }
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "description": "Return only connections of these kinds (repeatable), as getConnections does.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 255
               }
             }
           },
@@ -1544,7 +2183,8 @@ const ProfileSchema: Record<string, unknown> = {
                           "type",
                           "subType",
                           "kind",
-                          "status"
+                          "status",
+                          "organizationId"
                         ],
                         "properties": {
                           "id": {
@@ -2358,11 +2998,12 @@ const ProfileSchema: Record<string, unknown> = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "organization_id",
-                              "json": "organizationId,omitempty"
+                              "json": "organizationId"
                             },
-                            "x-go-type-skip-optional-pointer": false,
                             "x-order": 19
                           },
                           "environments": {
@@ -2674,6 +3315,67 @@ const ProfileSchema: Record<string, unknown> = {
               }
             }
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -2746,47 +3448,47 @@ const ProfileSchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
+                      "description": "Mapping record ID.",
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
                         "json": "id"
-                      }
-                    },
-                    "profileId": {
+                      },
                       "type": "string",
                       "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
-                      },
+                      }
+                    },
+                    "profileId": {
+                      "description": "ID of the linked profile.",
                       "x-go-name": "ProfileID",
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "profile_id",
                         "json": "profileId"
-                      }
-                    },
-                    "connectionId": {
+                      },
                       "type": "string",
                       "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
-                      },
+                      }
+                    },
+                    "connectionId": {
+                      "description": "ID of the linked connection.",
                       "x-go-name": "ConnectionID",
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "connection_id",
                         "json": "connectionId"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "createdAt": {
@@ -2866,6 +3568,67 @@ const ProfileSchema: Record<string, unknown> = {
               "text/plain": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -2968,6 +3731,67 @@ const ProfileSchema: Record<string, unknown> = {
               }
             }
           },
+          "429": {
+            "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds the caller must wait before retrying.",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "The sentence the caller is shown."
+                    },
+                    "code": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                    },
+                    "severity": {
+                      "type": "string",
+                      "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                      "enum": [
+                        "emergency",
+                        "alert",
+                        "critical",
+                        "fatal"
+                      ]
+                    },
+                    "probableCause": {
+                      "type": "array",
+                      "description": "MeshKit's probable causes of the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "suggestedRemediation": {
+                      "type": "array",
+                      "description": "MeshKit's suggested remediations for the error.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -3033,9 +3857,113 @@ const ProfileSchema: Record<string, unknown> = {
             }
           }
         }
+      },
+      "MeshkitError429": {
+        "description": "Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying.",
+        "headers": {
+          "Retry-After": {
+            "description": "Number of seconds the caller must wait before retrying.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "required": [
+                "error"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The sentence the caller is shown."
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error."
+                },
+                "severity": {
+                  "type": "string",
+                  "description": "MeshKit severity name. Omitted when MeshKit reports none.",
+                  "enum": [
+                    "emergency",
+                    "alert",
+                    "critical",
+                    "fatal"
+                  ]
+                },
+                "probableCause": {
+                  "type": "array",
+                  "description": "MeshKit's probable causes of the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "suggestedRemediation": {
+                  "type": "array",
+                  "description": "MeshKit's suggested remediations for the error.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "headers": {
+      "ProfileETag": {
+        "description": "Strong entity tag of the profile. It changes whenever the profile changes; send it back as `If-Match` to make updateProfile conditional.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
       }
     },
     "parameters": {
+      "ifMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": false,
+        "description": "Entity tag of the profile as last read, from the `ETag` header of getProfileById or updateProfile. When present the write applies only if it still matches; otherwise 412.",
+        "schema": {
+          "type": "string",
+          "maxLength": 255
+        }
+      },
+      "nameQuery": {
+        "name": "name",
+        "in": "query",
+        "required": false,
+        "description": "Return only live profiles whose name equals this value, ignoring case.",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        }
+      },
+      "connectionKindQuery": {
+        "name": "kind",
+        "in": "query",
+        "required": false,
+        "description": "Return only connections of these kinds (repeatable), as getConnections does.",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 255
+          }
+        }
+      },
       "profileId": {
         "name": "profileId",
         "in": "path",
@@ -3638,47 +4566,47 @@ const ProfileSchema: Record<string, unknown> = {
         ],
         "properties": {
           "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
+            "description": "Mapping record ID.",
             "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
               "db": "id",
               "json": "id"
-            }
-          },
-          "profileId": {
+            },
             "type": "string",
             "format": "uuid",
-            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
+            }
+          },
+          "profileId": {
+            "description": "ID of the linked profile.",
             "x-go-name": "ProfileID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "profile_id",
               "json": "profileId"
-            }
-          },
-          "connectionId": {
+            },
             "type": "string",
             "format": "uuid",
-            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
+            }
+          },
+          "connectionId": {
+            "description": "ID of the linked connection.",
             "x-go-name": "ConnectionID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "connection_id",
               "json": "connectionId"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
             }
           },
           "createdAt": {
@@ -3716,6 +4644,131 @@ const ProfileSchema: Record<string, unknown> = {
             "format": "date-time",
             "nullable": true,
             "x-go-type-skip-optional-pointer": true
+          }
+        }
+      },
+      "ProfileConnectionMappingPage": {
+        "type": "object",
+        "description": "Paginated list of profile-to-connection links.",
+        "required": [
+          "page",
+          "pageSize",
+          "totalCount",
+          "mappings"
+        ],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Maximum number of items returned on each page.",
+            "minimum": 1
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items across all pages.",
+            "minimum": 0
+          },
+          "mappings": {
+            "type": "array",
+            "description": "Profile-to-connection links in this page.",
+            "x-go-type-skip-optional-pointer": true,
+            "items": {
+              "x-go-type": "ProfileConnectionMapping",
+              "type": "object",
+              "description": "Junction record linking a profile to a connection.",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "profileId",
+                "connectionId"
+              ],
+              "properties": {
+                "id": {
+                  "description": "Mapping record ID.",
+                  "x-go-name": "ID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "id"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "profileId": {
+                  "description": "ID of the linked profile.",
+                  "x-go-name": "ProfileID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "profile_id",
+                    "json": "profileId"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "connectionId": {
+                  "description": "ID of the linked connection.",
+                  "x-go-name": "ConnectionID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "connection_id",
+                    "json": "connectionId"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "createdAt": {
+                  "description": "Timestamp when the mapping was created.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "json": "createdAt,omitempty"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updatedAt": {
+                  "description": "Timestamp when the mapping was last updated.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "json": "updatedAt,omitempty"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "deletedAt": {
+                  "description": "Timestamp when the mapping was soft-deleted. Null while the mapping remains active.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "json": "deletedAt,omitempty"
+                  },
+                  "x-go-type": "meshcore.NullTime",
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true,
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
+            }
           }
         }
       }

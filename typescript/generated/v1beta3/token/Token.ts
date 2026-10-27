@@ -80,16 +80,12 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Show native client sign-in consent
-         * @description Browser-facing step of the native client sign-in flow (RFC 8252 loopback redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in user, never URL credentials. Validates the request and renders a consent page that asks the user to allow the named local client to act on their behalf. Nothing is issued by this call. When the request names the client application (`client`) and its version (`clientVersion`) and that version is below the provider's minimum for that client, an update page is rendered with status 426 instead of the consent page.
+         * Authorize native client sign-in
+         * @description Browser-facing step of the native client sign-in flow (RFC 8252 loopback redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in user and the Create Token permission. Validates the request. When the request names the client application (`client`) and its version (`clientVersion`) and that version is below the provider minimum, it renders the update page with status 426 and issues nothing. Otherwise it stores a single-use authorization code that expires after 60 seconds, bound to the user, the client name and the PKCE code challenge, and redirects the browser to http://127.0.0.1:{port}/callback with code and state query parameters. Only the 127.0.0.1 loopback IP literal is ever used; no token or cookie is placed in the redirect; no consent page is shown.
          */
         get: operations["getNativeClientAuthorization"];
         put?: never;
-        /**
-         * Approve native client sign-in
-         * @description Submitted by the consent page with the same parameters as the GET, as a same-origin form post. Stores a single-use authorization code that expires after 60 seconds, bound to the user, the client name and the PKCE code challenge, then redirects the browser to http://127.0.0.1:{port}/callback with code and state query parameters. Only the 127.0.0.1 loopback IP literal is ever used as the redirect host; no token or cookie is placed in the redirect.
-         */
-        post: operations["approveNativeClientAuthorization"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -155,7 +151,7 @@ export interface components {
              */
             updatedAt: string;
         };
-        /** @description Consent form fields for approving a native client sign-in. */
+        /** @description Query fields of GET /api/identity/native/authorize. The signed-in session issues the authorization code from these fields. */
         NativeAuthorizationPayload: {
             /** @description Display name of the native client. */
             clientName: string;
@@ -178,11 +174,11 @@ export interface components {
             /** @description PKCE code verifier (RFC 7636, 43 to 128 unreserved characters). */
             codeVerifier: string;
         };
-        /** @description Query parameters of the loopback redirect that approveNativeClientAuthorization answers with, http://127.0.0.1:{port}/callback?code=...&state=... The code is single-use and expires after 60 seconds; no token is ever placed in the URL. The native client compares state with the one it sent before redeeming the code at /api/identity/native/token. */
+        /** @description Query parameters of the loopback redirect that getNativeClientAuthorization answers with, http://127.0.0.1:{port}/callback?code=...&state=... The code is single-use and expires after 60 seconds; no token is ever placed in the URL. The native client compares state with the one it sent before redeeming the code at /api/identity/native/token. */
         NativeAuthorizationCallback: {
             /** @description Single-use authorization code, redeemed with the PKCE code verifier. */
             code: string;
-            /** @description The state the native client sent to the consent page, unchanged. */
+            /** @description The state the native client sent on the authorize request, unchanged. */
             state: string;
         };
         /** @description A paginated list of tokens. */
@@ -305,7 +301,7 @@ export interface components {
         name: string;
         /** @description Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
         purpose: string;
-        /** @description Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token. */
+        /** @description Display name of the native client asking to sign in. Used as the name and purpose of the minted token. */
         nativeClientName: string;
         /** @description Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`. */
         nativeClient: string;
@@ -790,7 +786,7 @@ export interface operations {
     getNativeClientAuthorization: {
         parameters: {
             query: {
-                /** @description Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token. */
+                /** @description Display name of the native client asking to sign in. Used as the name and purpose of the minted token. */
                 clientName: string;
                 /** @description Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`. */
                 client?: string;
@@ -810,71 +806,6 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
-        responses: {
-            /** @description Consent page */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Update page; the client's version is below the provider's minimum for that client. */
-            426: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-        };
-    };
-    approveNativeClientAuthorization: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/x-www-form-urlencoded": {
-                    /** @description Display name of the native client. */
-                    clientName: string;
-                    /** @description Port on 127.0.0.1 for the callback. */
-                    port: number;
-                    /** @description PKCE S256 code challenge. */
-                    codeChallenge: string;
-                    /**
-                     * @description PKCE challenge method.
-                     * @enum {string}
-                     */
-                    codeChallengeMethod: "S256";
-                    /** @description Opaque client state returned on the callback. */
-                    state: string;
-                };
-            };
-        };
         responses: {
             /** @description Redirect to the loopback callback carrying code and state. The callback's query parameters are described by NativeAuthorizationCallback. */
             302: {
@@ -910,6 +841,15 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Update page; the client's version is below the provider's minimum for that client. */
+            426: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
                 };
             };
             /** @description Internal server error */

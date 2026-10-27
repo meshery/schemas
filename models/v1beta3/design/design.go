@@ -358,7 +358,7 @@ type GithubImportResponse struct {
 	UpdatedIds *[]meshcore.Uuid `json:"updatedIds,omitempty" yaml:"updatedIds,omitempty"`
 }
 
-// MesheryPattern Server-returned design (pattern) resource as persisted by meshery-cloud.
+// MesheryPattern Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.
 type MesheryPattern struct {
 	CatalogData *catalogv1alpha2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
 
@@ -377,6 +377,9 @@ type MesheryPattern struct {
 	ID            meshcore.Id        `json:"id,omitempty" yaml:"id,omitempty"`
 	Location      meshcore.MapObject `json:"location,omitempty" yaml:"location,omitempty"`
 	Name          meshcore.Text      `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID meshcore.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`
 
 	// PatternFile Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
 	PatternFile *string `db:"pattern_file" json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
@@ -404,6 +407,12 @@ type MesheryPatternDesignType string
 
 // MesheryPatternVisibility Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
 type MesheryPatternVisibility string
+
+// MesheryPatternClonePayload Payload for cloning a design. The optional name is applied to the cloned design; the server derives ownership and visibility from the request context.
+type MesheryPatternClonePayload struct {
+	// Name Optional name to apply to the cloned design.
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+}
 
 // MesheryPatternDeleteRequestBody Payload for bulk deleting designs by ID.
 type MesheryPatternDeleteRequestBody struct {
@@ -473,7 +482,7 @@ type MesheryPatternPage struct {
 	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
-// MesheryPatternPayload Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response.
+// MesheryPatternPayload Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (`organizationId`, createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded. The server assigns `organizationId` from the session organization, ignores any client value, and re-projects server-owned fields on the response.
 type MesheryPatternPayload struct {
 	CatalogData *catalogv1alpha2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
 
@@ -505,7 +514,7 @@ type MesheryPatternRequestBody struct {
 	Name *string       `json:"name,omitempty" yaml:"name,omitempty"`
 	Path meshcore.Text `json:"path,omitempty" yaml:"path,omitempty"`
 
-	// PatternData Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response.
+	// PatternData Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (`organizationId`, createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded. The server assigns `organizationId` from the session organization, ignores any client value, and re-projects server-owned fields on the response.
 	PatternData *MesheryPatternPayload `json:"patternData,omitempty" yaml:"patternData,omitempty"`
 
 	// Save When true, persist the design in addition to parsing it.
@@ -577,10 +586,10 @@ type PageSize = int
 // Search defines model for search.
 type Search = string
 
-// MeshcoreMeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// MeshcoreMeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshcoreMeshkitError403 = meshcore.MeshkitError
 
-// MeshcoreMeshkitError502 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// MeshcoreMeshkitError502 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type MeshcoreMeshkitError502 = meshcore.MeshkitError
 
 // CatalogContentPayload defines model for catalogContentPayload.

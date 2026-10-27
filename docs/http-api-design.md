@@ -90,6 +90,20 @@ are the emitting service's internal allocation and are renumbered. Two generator
 
 `validation/github_integration_contract_test.go` (`TestMeshkitErrorContract`) pins both.
 
+### Rate limiting (429)
+
+`MeshkitError429` in `v1beta2/core` is the shared rate-limit response: the `MeshkitError` JSON
+body plus a required `Retry-After` header carrying the integer number of seconds the caller must
+wait before retrying. Reference it, through a `MeshkitError429` alias under the construct's own
+`components/responses`, from every operation whose server applies a per-user rate limit. Layer5
+Cloud rate-limits the Blowhorn route families per user, so every operation of the v1beta3
+`claim`, `schedule`, `ledger`, `content_item`, `event`, `profile`, `provider_capability` and
+`blowhorn_health` constructs declares it, as do the desktop `registerConnection`,
+`recordConnectionHeartbeat` and `deregisterDesktopConnection` connection operations. A client
+that receives `429` waits `Retry-After` seconds and retries; it does not treat the response as a
+refusal of the request itself. `validation/rate_limit_contract_test.go` pins the response and its
+references.
+
 ## Resource grouping and path structure
 
 Endpoints are grouped into logical categories under `/api`:
@@ -196,18 +210,17 @@ authorize the App, which the server stores on the caller's GitHub connection
 Local native clients (CLIs, desktop agents) sign in with the RFC 8252 loopback
 pattern bound by RFC 7636 PKCE, defined in `v1beta3/token`:
 
-1. `GET /api/identity/native/authorize` (session cookie required) validates
-   `clientName`, `port`, `codeChallenge`, `codeChallengeMethod=S256` and `state`
-   and renders a consent page. Nothing is issued. Optional `client` and
-   `clientVersion` name the client application and its version; when the version
-   is below the provider's minimum for that client, an update page is rendered
-   with `426` instead of the consent page.
-2. The consent form posts (same origin) to `POST /api/identity/native/authorize`,
-   which stores a single-use code (60 second TTL) bound to the user, client name
-   and challenge, then redirects to
-   `http://127.0.0.1:{port}/callback?code=...&state=...`. The redirect host is
-   always the 127.0.0.1 literal; no token is in the URL.
-3. The client calls `POST /api/identity/native/token` with `code` and
+1. `GET /api/identity/native/authorize` requires the session cookie of a
+   signed-in user and the Create Token permission. It validates `clientName`,
+   `port`, `codeChallenge`, `codeChallengeMethod=S256` and `state`. Optional
+   `client` and `clientVersion` name the client application and its version;
+   when that version is below the provider minimum, an update page is rendered
+   with `426` and nothing is issued. Otherwise the call stores a single-use
+   code (60 second TTL) bound to the user, client name and challenge, then
+   redirects to `http://127.0.0.1:{port}/callback?code=...&state=...`. The
+   redirect host is always the 127.0.0.1 literal; no token or cookie is in the
+   redirect, and no consent page is shown.
+2. The client calls `POST /api/identity/native/token` with `code` and
    `codeVerifier`. The code is consumed on the first redemption attempt; on a
    verifier match an API token is minted with `name` and `purpose` set to the
    client name.
@@ -314,8 +327,18 @@ when another live connection holds it. The holder is returned as
 `claimedByConnectionId`, a reference to `connections.id`; a claim ends when the
 entry is deleted or the holding connection is deleted.
 
-`GET` and `DELETE /api/ledgers/{ledger}/entries/{entryKey}` read and release a
-key; a key outside that ledger is `404`. Product data such as contacts is a
+`GET`, `PUT` and `DELETE /api/ledgers/{ledger}/entries/{entryKey}` read,
+replace and release a key; a key outside that ledger is `404`. `PUT`
+(`updateLedgerEntry`) replaces `value` wholesale and advances `updatedAt`
+(strictly increasing, so it works as a version token). It never changes
+`entryKey`, `claimedByConnectionId`, `claimedAt`, `createdAt` or `id`, does
+not create a missing key, and does not check who holds a claim. Optional
+`expectedValue` and `expectedUpdatedAt` make the write conditional: JSON
+equality for the value (key order and whitespace do not matter) and exact
+equality for `updatedAt`. Both may be sent, and then both must hold. With
+neither, the update is unconditional. A mismatch is `412` and changes
+nothing. Recording still never changes an existing entry; changing a value
+is this update. Product data such as contacts is a
 ledger with a composite key (for example `platform:handle`) and a JSON value,
 not its own route tree.
 
@@ -326,7 +349,8 @@ parameters and a `LedgerEntryPage` envelope (`page`, `pageSize`, `totalCount`,
 case; `order` takes `entryKey`, `createdAt` or `updatedAt` and defaults to
 `entryKey asc`. An empty ledger is an empty page; a non-member gets `404`.
 
-Ledgers are organization-shared bookkeeping: any organization member may
-record, claim, list, read and delete. A claim is bound to a connection the
-caller owns, so one member cannot claim on behalf of another member's machine;
-a delete is not checked against who holds the key.
+Ledgers are organization-shared bookkeeping: any member of the session
+organization may record, claim, list, read, update and delete. A claim is
+bound to a connection the caller owns, so one member cannot claim on behalf
+of another member's machine; a delete or an update is not checked against
+who holds the key.

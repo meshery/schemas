@@ -19,7 +19,7 @@ export interface paths {
         put?: never;
         /**
          * Record a ledger entry
-         * @description Records `entryKey` in the ledger. A new key creates the entry and returns `201`. An existing key never creates a second entry and is not changed: the stored entry is returned unchanged with `200`, and the supplied `value` is ignored. Recording never changes `claimedByConnectionId` or `claimedAt`.
+         * @description Records `entryKey` in the ledger. A new key creates the entry and returns `201`. Recording never changes an existing entry: the stored entry is returned unchanged with `200`, and the supplied `value` is ignored. Change a stored value with updateLedgerEntry. Recording never changes `claimedByConnectionId` or `claimedAt`.
          */
         post: operations["recordLedgerEntry"];
         delete?: never;
@@ -60,7 +60,11 @@ export interface paths {
          * @description Returns the entry recorded under `entryKey` in the ledger, or `404` when the key is not in this ledger.
          */
         get: operations["getLedgerEntry"];
-        put?: never;
+        /**
+         * Update a ledger entry
+         * @description Replaces the stored `value` wholesale (not a merge) and advances `updatedAt` (strictly increasing, so it works as a version token). Never changes `entryKey`, `claimedByConnectionId`, `claimedAt`, `createdAt` or `id`. Does not create entries: a key that is not in the ledger is `404` (use POST entries or claims to create). Does not check who holds a claim (same as delete). Any member of the session organization may update. `expectedValue`, when present, applies the update only if the stored value equals it (JSON equality; key order and whitespace do not matter). `expectedUpdatedAt`, when present, applies the update only if the stored entry's `updatedAt` equals it exactly; clients echo the `updatedAt` they last read. Both preconditions may be sent; then both must hold. With neither, the update is unconditional. A precondition that does not match returns `412` and changes nothing. A bad ledger name, key, or body (for example a missing `value` or a non-object value) is `400`.
+         */
+        put: operations["updateLedgerEntry"];
         post?: never;
         /**
          * Delete a ledger entry
@@ -78,7 +82,7 @@ export interface components {
     schemas: {
         /**
          * Ledger Entry Schema
-         * @description Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and returns the stored entry unchanged, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Any organization member may read and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization.
+         * @description Server-returned ledger entry. An organization keeps any number of named ledgers, each an idempotent set keyed by entryKey: recording an existing key never creates a second entry and never changes that entry, and claim-if-absent gives a key to exactly one claiming connection, so two workers never both act on it. Change a stored value with updateLedgerEntry, which replaces the value wholesale and advances updatedAt. Any organization member may read, update and delete entries; a claim names the connection that holds it, which must be the caller's own live connection in the organization. An update does not check who holds a claim.
          */
         LedgerEntry: {
             /**
@@ -114,7 +118,7 @@ export interface components {
             createdAt: string;
             /**
              * Format: date-time
-             * @description Timestamp of last ledger entry modification.
+             * @description Timestamp of last ledger entry modification; advances on every update.
              */
             updatedAt: string;
         };
@@ -161,7 +165,7 @@ export interface components {
                 createdAt: string;
                 /**
                  * Format: date-time
-                 * @description Timestamp of last ledger entry modification.
+                 * @description Timestamp of last ledger entry modification; advances on every update.
                  */
                 updatedAt: string;
             }[];
@@ -172,6 +176,18 @@ export interface components {
             entryKey: string;
             /** @description Entry value, stored as a JSON object. */
             value?: Record<string, never>;
+        };
+        /** @description Payload for replacing a ledger entry's value. The ledger and entryKey come from the path. Claim fields, id and timestamps are server-owned and are not accepted here. */
+        LedgerEntryUpdatePayload: {
+            /** @description The new entry value, stored as a JSON object. Replaces the stored value wholesale. */
+            value: Record<string, never>;
+            /** @description Optional precondition. When present, including as an empty object, the update applies only if the stored value equals this object (JSON equality; key order and whitespace do not matter). Omit the property to skip this check. Absence is distinct from an empty object. */
+            expectedValue?: Record<string, never>;
+            /**
+             * Format: date-time
+             * @description Optional precondition. When present, the update applies only if the stored entry's updatedAt equals this instant exactly. Clients echo the updatedAt they last read. Omit the property to skip this check.
+             */
+            expectedUpdatedAt?: string;
         };
         /** @description Claim-if-absent payload giving a key to one connection. */
         LedgerClaimPayload: {
@@ -223,6 +239,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Precondition Failed - expectedValue or expectedUpdatedAt does not match the stored entry, so nothing was changed */
+        412: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Internal server error */
         500: {
             headers: {
@@ -230,6 +255,31 @@ export interface components {
             };
             content: {
                 "text/plain": string;
+            };
+        };
+        /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+        MeshkitError429: {
+            headers: {
+                /** @description Number of seconds the caller must wait before retrying. */
+                "Retry-After": number;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
             };
         };
     };
@@ -322,7 +372,7 @@ export interface operations {
                             createdAt: string;
                             /**
                              * Format: date-time
-                             * @description Timestamp of last ledger entry modification.
+                             * @description Timestamp of last ledger entry modification; advances on every update.
                              */
                             updatedAt: string;
                         }[];
@@ -354,6 +404,31 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -428,7 +503,7 @@ export interface operations {
                         createdAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp of last ledger entry modification.
+                         * @description Timestamp of last ledger entry modification; advances on every update.
                          */
                         updatedAt: string;
                     };
@@ -474,7 +549,7 @@ export interface operations {
                         createdAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp of last ledger entry modification.
+                         * @description Timestamp of last ledger entry modification; advances on every update.
                          */
                         updatedAt: string;
                     };
@@ -496,6 +571,31 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -575,7 +675,7 @@ export interface operations {
                         createdAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp of last ledger entry modification.
+                         * @description Timestamp of last ledger entry modification; advances on every update.
                          */
                         updatedAt: string;
                     };
@@ -621,7 +721,7 @@ export interface operations {
                         createdAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp of last ledger entry modification.
+                         * @description Timestamp of last ledger entry modification; advances on every update.
                          */
                         updatedAt: string;
                     };
@@ -661,6 +761,31 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -728,7 +853,7 @@ export interface operations {
                         createdAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp of last ledger entry modification.
+                         * @description Timestamp of last ledger entry modification; advances on every update.
                          */
                         updatedAt: string;
                     };
@@ -750,6 +875,177 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updateLedgerEntry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Name of the ledger, for example `processed-profiles`. */
+                ledger: string;
+                /** @description Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
+                entryKey: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The new entry value, stored as a JSON object. Replaces the stored value wholesale. */
+                    value: Record<string, never>;
+                    /** @description Optional precondition. When present, including as an empty object, the update applies only if the stored value equals this object (JSON equality; key order and whitespace do not matter). Omit the property to skip this check. Absence is distinct from an empty object. */
+                    expectedValue?: Record<string, never>;
+                    /**
+                     * Format: date-time
+                     * @description Optional precondition. When present, the update applies only if the stored entry's updatedAt equals this instant exactly. Clients echo the updatedAt they last read. Omit the property to skip this check.
+                     */
+                    expectedUpdatedAt?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description The updated ledger entry */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Server-generated ledger entry ID.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description Owning organization ID. Derived from the authenticated session, never client-settable.
+                         */
+                        organizationId: string;
+                        /** @description Name of the ledger (the idempotent set) the entry belongs to. */
+                        ledger: string;
+                        /** @description Key within the ledger. Unique per (organization, ledger). */
+                        entryKey: string;
+                        /** @description Entry value, stored as a JSON blob. */
+                        value?: Record<string, never>;
+                        /**
+                         * Format: uuid
+                         * @description ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+                         */
+                        claimedByConnectionId?: string;
+                        /**
+                         * Format: date-time
+                         * @description Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds.
+                         */
+                        claimedAt?: string | null;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of ledger entry creation.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of last ledger entry modification; advances on every update.
+                         */
+                        updatedAt: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Precondition Failed - expectedValue or expectedUpdatedAt does not match the stored entry, so nothing was changed */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -800,6 +1096,31 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */

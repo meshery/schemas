@@ -1,5 +1,6 @@
 import { cloudBaseApi as api } from "./api";
 export const addTagTypes = [
+  "Diagnostics_Diagnostics",
   "Feature_Features",
   "Organization_SMTP_Configuration_OrganizationSmtp",
   "Support_Support",
@@ -18,7 +19,6 @@ export const addTagTypes = [
   "View_views",
   "Academy_API_Academy",
   "BlowhornHealth_blowhornHealth",
-  "BlowhornProfile_blowhornProfiles",
   "Claim_claims",
   "Connection_API_Connections",
   "Connection_API_ConnectionDefinitions",
@@ -51,6 +51,10 @@ const injectedRtkApi = api
   })
   .injectEndpoints({
     endpoints: (build) => ({
+      submitFailureDiagnostic: build.mutation<SubmitFailureDiagnosticApiResponse, SubmitFailureDiagnosticApiArg>({
+        query: (queryArg) => ({ url: `/api/diagnostics/failures`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Diagnostics_Diagnostics"],
+      }),
       getFeatures: build.query<GetFeaturesApiResponse, GetFeaturesApiArg>({
         query: (queryArg) => ({
           url: `/api/entitlement/features`,
@@ -160,6 +164,13 @@ const injectedRtkApi = api
       }),
       submitSupportRequest: build.mutation<SubmitSupportRequestApiResponse, SubmitSupportRequestApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/support`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Support_Support"],
+      }),
+      submitAnonymousSupportRequest: build.mutation<
+        SubmitAnonymousSupportRequestApiResponse,
+        SubmitAnonymousSupportRequestApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/support/anonymous`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Support_Support"],
       }),
       getSystemVersion: build.query<GetSystemVersionApiResponse, GetSystemVersionApiArg>({
@@ -879,39 +890,6 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/blowhorn/health` }),
         providesTags: ["BlowhornHealth_blowhornHealth"],
       }),
-      listBlowhornProfiles: build.query<ListBlowhornProfilesApiResponse, ListBlowhornProfilesApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/profiles`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-          },
-        }),
-        providesTags: ["BlowhornProfile_blowhornProfiles"],
-      }),
-      upsertBlowhornProfile: build.mutation<UpsertBlowhornProfileApiResponse, UpsertBlowhornProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/profiles`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
-      }),
-      getBlowhornProfile: build.query<GetBlowhornProfileApiResponse, GetBlowhornProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}` }),
-        providesTags: ["BlowhornProfile_blowhornProfiles"],
-      }),
-      updateBlowhornProfile: build.mutation<UpdateBlowhornProfileApiResponse, UpdateBlowhornProfileApiArg>({
-        query: (queryArg) => ({
-          url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}`,
-          method: "PUT",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
-      }),
-      deleteBlowhornProfile: build.mutation<DeleteBlowhornProfileApiResponse, DeleteBlowhornProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/blowhorn/profiles/${queryArg.blowhornProfileId}`, method: "DELETE" }),
-        invalidatesTags: ["BlowhornProfile_blowhornProfiles"],
-      }),
       listClaims: build.query<ListClaimsApiResponse, ListClaimsApiArg>({
         query: (queryArg) => ({
           url: `/api/claims`,
@@ -1181,7 +1159,11 @@ const injectedRtkApi = api
         invalidatesTags: ["Design_designs"],
       }),
       clonePattern: build.mutation<ClonePatternApiResponse, ClonePatternApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns/clone/${queryArg.designId}`, method: "POST" }),
+        query: (queryArg) => ({
+          url: `/api/content/patterns/clone/${queryArg.designId}`,
+          method: "POST",
+          body: queryArg.body,
+        }),
         invalidatesTags: ["Design_designs"],
       }),
       getDesignPatternFile: build.query<GetDesignPatternFileApiResponse, GetDesignPatternFileApiArg>({
@@ -1438,6 +1420,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             filter: queryArg?.filter,
+            scope: queryArg?.scope,
           },
         }),
         providesTags: ["Events_events"],
@@ -1723,6 +1706,14 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}` }),
         providesTags: ["Ledger_ledgers"],
       }),
+      updateLedgerEntry: build.mutation<UpdateLedgerEntryApiResponse, UpdateLedgerEntryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Ledger_ledgers"],
+      }),
       deleteLedgerEntry: build.mutation<DeleteLedgerEntryApiResponse, DeleteLedgerEntryApiArg>({
         query: (queryArg) => ({
           url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}`,
@@ -1853,6 +1844,7 @@ const injectedRtkApi = api
           url: `/api/profiles`,
           params: {
             search: queryArg?.search,
+            name: queryArg?.name,
             order: queryArg?.order,
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -1863,12 +1855,33 @@ const injectedRtkApi = api
         }),
         providesTags: ["Profile_profiles"],
       }),
+      getProfileConnectionMappings: build.query<
+        GetProfileConnectionMappingsApiResponse,
+        GetProfileConnectionMappingsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/profiles/connections`,
+          params: {
+            orgId: queryArg?.orgId,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Profile_profiles"],
+      }),
       getProfileById: build.query<GetProfileByIdApiResponse, GetProfileByIdApiArg>({
         query: (queryArg) => ({ url: `/api/profiles/${queryArg.profileId}` }),
         providesTags: ["Profile_profiles"],
       }),
       updateProfile: build.mutation<UpdateProfileApiResponse, UpdateProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/profiles/${queryArg.profileId}`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/profiles/${queryArg.profileId}`,
+          method: "PUT",
+          body: queryArg.body,
+          headers: {
+            "If-Match": queryArg["If-Match"],
+          },
+        }),
         invalidatesTags: ["Profile_profiles"],
       }),
       deleteProfile: build.mutation<DeleteProfileApiResponse, DeleteProfileApiArg>({
@@ -1879,6 +1892,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/profiles/${queryArg.profileId}/connections`,
           params: {
+            kind: queryArg?.kind,
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
@@ -2110,13 +2124,6 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["token_tokens"],
-      }),
-      approveNativeClientAuthorization: build.mutation<
-        ApproveNativeClientAuthorizationApiResponse,
-        ApproveNativeClientAuthorizationApiArg
-      >({
-        query: (queryArg) => ({ url: `/api/identity/native/authorize`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["token_tokens"],
       }),
       exchangeNativeAuthorizationCode: build.mutation<
         ExchangeNativeAuthorizationCodeApiResponse,
@@ -2351,6 +2358,60 @@ const injectedRtkApi = api
     overrideExisting: false,
   });
 export { injectedRtkApi as cloudApi };
+export type SubmitFailureDiagnosticApiResponse = /** status 201 Failure diagnostic stored */ {
+  /** The stored diagnostic's id: the client's own when it sent one, otherwise generated by the server. Send it as AnonymousSupportRequest.diagnosticId to link a human report to this diagnostic. */
+  diagnosticId: string;
+};
+export type SubmitFailureDiagnosticApiArg = {
+  body: {
+    /** Id generated by the client for this report. A human support request links back to it through AnonymousSupportRequest.diagnosticId. */
+    diagnosticId: string;
+    /** When this occurrence of the failure happened. */
+    occurredAt: string;
+    /** When this failure was first seen on this install, for the deduplication window the count covers. */
+    firstSeenAt: string;
+    /** How many times the same failure has occurred on this install within the deduplication window (per install per day). */
+    count: number;
+    client: {
+      /** The client that produced this report. */
+      kind: "blowhorn-desktop";
+      /** Client version, for example the app release version. */
+      version: string;
+      /** Source revision the client build came from. */
+      buildSha: string;
+      /** Release channel the client build belongs to. Kept a free string rather than an enum: channel names are release-process values, and a new channel must not make older clients' reports undecodable. */
+      channel: string;
+    };
+    os: {
+      /** Operating system name. */
+      name: string;
+      /** Operating system version. */
+      version: string;
+      /** Operating system architecture. */
+      arch: string;
+    };
+    failure: {
+      /** Where the failure first became visible to the person. */
+      surface: "tray" | "popover" | "console" | "service";
+      /** Stable machine-readable name for the cause. Deliberately a patterned string, not a closed enum: new failure causes are named by the client over time, and a closed enum would make the server reject reports carrying a cause it does not know yet. Consumers must treat an unknown cause as opaque, never as an error. Known causes today are the Blowhorn engine's StoreUnavailable.cause names: unavailable, not_configured, incomplete, bad_setting, config_unreadable, tunnel_refused, tunnel_silent, tunnel_off, not_postgres, auth_rejected, host_not_permitted, database_missing, timeout, version_unreadable, ledger_unreadable, schema_behind, schema_ahead, schema_edited, no_organization, unknown_organization, plus other named causes as clients add them. */
+      cause: string;
+      /** Machine-readable code for the failure, when the failure carries one beyond its cause (for example an exit or provider code). Kept a string so numeric and symbolic codes both fit; empty when the failure carries no code. */
+      code: string;
+      /** Redacted human-readable sentence for the failure: only the cause sentence survives, with paths, usernames, emails, profile names, post text, and tokens removed. */
+      message: string;
+      /** How many scheduled ticks the failure skipped, when the failure interrupted scheduled work. */
+      ticksSkipped: number;
+    };
+    compat: {
+      /** Schema version the client requires the server to speak for this report to be understood. */
+      requiresSchema: string;
+      /** Version of the client-server contract this report was built against. Kept a string so dotted versions and plain numbers both fit. */
+      contractVersion: string;
+    };
+    /** Optional per-install id, present only when the person has not opted out of failure reports. A random uuid4 minted once per install (Blowhorn's installationId, written beside cloud.yaml and reused), never a hardware id. Omitted entirely when opted out. */
+    installId?: string;
+  };
+};
 export type GetFeaturesApiResponse = /** status 200 Features response */ {
   /** Unique identifier for the feature. */
   id: string;
@@ -2978,6 +3039,26 @@ export type SubmitSupportRequestApiArg = {
     message: string;
     /** Category that best represents the nature of the inquiry. */
     scope?: "Support" | "Community" | "Account" | "Commercial";
+  };
+};
+export type SubmitAnonymousSupportRequestApiResponse = /** status 200 Support request received and forwarded */ {
+  /** Always `received`. */
+  status: "received";
+  /** Echoes the request's diagnosticId; omitted when the request linked none. */
+  diagnosticId?: string;
+};
+export type SubmitAnonymousSupportRequestApiArg = {
+  body: {
+    /** Concise and descriptive title for the support request. */
+    subject: string;
+    /** Detailed description of the issue or question. */
+    message: string;
+    /** Category that best represents the nature of the inquiry. */
+    scope?: "Support" | "Community" | "Account" | "Commercial";
+    /** Optional email address the person typed in for a follow-up. Absent when they did not ask to be contacted; never inferred from an account, because this request may come from a signed-out client. */
+    email?: string;
+    /** Optional id of the FailureDiagnostic submitted for the same incident (schemas/constructs/v1beta1/diagnostics/api.yml), linking the human report to the automatic diagnostic. */
+    diagnosticId?: string;
   };
 };
 export type GetSystemVersionApiResponse = /** status 200 Server version metadata */ {
@@ -3626,6 +3707,9 @@ export type GetMeshModelModelsApiResponse = /** status 200 Model and capabilitie
       updated_at?: string;
       /** SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
+      /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+       */
+      organizationId?: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -8970,136 +9054,6 @@ export type GetBlowhornHealthApiResponse = /** status 200 Blowhorn health respon
   checkedAt?: string;
 };
 export type GetBlowhornHealthApiArg = void;
-export type ListBlowhornProfilesApiResponse = /** status 200 Blowhorn profiles page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** Blowhorn profiles included on this page of results. */
-  blowhornProfiles?: {
-    /** Server-generated Blowhorn profile ID. */
-    id: string;
-    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-    organizationId: string;
-    /** ID of the existing Layer5 user the profile settings belong to. */
-    userId: string;
-    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-    slug: string;
-    /** Free-form profile attributes, stored as a JSON blob. */
-    attributes?: object;
-    /** Timestamp of Blowhorn profile creation. */
-    createdAt: string;
-    /** Timestamp of last Blowhorn profile modification. */
-    updatedAt: string;
-    /** Timestamp when the Blowhorn profile was soft-deleted. */
-    deletedAt?: string | null;
-  }[];
-};
-export type ListBlowhornProfilesApiArg = {
-  /** Get responses by page */
-  page?: number;
-  /** Number of items per page (canonical camelCase form). */
-  pageSize?: number;
-  /** Number of items per page. Deprecated alias of pageSize;
-    canonical `pageSize` wins when both are present.
-     */
-  pagesize?: number;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-};
-export type UpsertBlowhornProfileApiResponse = /** status 200 Blowhorn profile saved */ {
-  /** Server-generated Blowhorn profile ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** ID of the existing Layer5 user the profile settings belong to. */
-  userId: string;
-  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-  slug: string;
-  /** Free-form profile attributes, stored as a JSON blob. */
-  attributes?: object;
-  /** Timestamp of Blowhorn profile creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn profile modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn profile was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type UpsertBlowhornProfileApiArg = {
-  body: {
-    /** Existing Blowhorn profile ID for updates; omit on create. */
-    id?: string;
-    /** ID of the existing Layer5 user the profile settings belong to. */
-    userId: string;
-    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-    slug: string;
-    /** Free-form profile attributes, stored as a JSON blob. */
-    attributes?: object;
-  };
-};
-export type GetBlowhornProfileApiResponse = /** status 200 Blowhorn profile response */ {
-  /** Server-generated Blowhorn profile ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** ID of the existing Layer5 user the profile settings belong to. */
-  userId: string;
-  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-  slug: string;
-  /** Free-form profile attributes, stored as a JSON blob. */
-  attributes?: object;
-  /** Timestamp of Blowhorn profile creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn profile modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn profile was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type GetBlowhornProfileApiArg = {
-  /** Blowhorn profile ID */
-  blowhornProfileId: string;
-};
-export type UpdateBlowhornProfileApiResponse = /** status 200 Blowhorn profile updated */ {
-  /** Server-generated Blowhorn profile ID. */
-  id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
-  organizationId: string;
-  /** ID of the existing Layer5 user the profile settings belong to. */
-  userId: string;
-  /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-  slug: string;
-  /** Free-form profile attributes, stored as a JSON blob. */
-  attributes?: object;
-  /** Timestamp of Blowhorn profile creation. */
-  createdAt: string;
-  /** Timestamp of last Blowhorn profile modification. */
-  updatedAt: string;
-  /** Timestamp when the Blowhorn profile was soft-deleted. */
-  deletedAt?: string | null;
-};
-export type UpdateBlowhornProfileApiArg = {
-  /** Blowhorn profile ID */
-  blowhornProfileId: string;
-  body: {
-    /** Existing Blowhorn profile ID for updates; omit on create. */
-    id?: string;
-    /** ID of the existing Layer5 user the profile settings belong to. */
-    userId: string;
-    /** Unique slug for the profile within the organization. Renames are guarded server-side. */
-    slug: string;
-    /** Free-form profile attributes, stored as a JSON blob. */
-    attributes?: object;
-  };
-};
-export type DeleteBlowhornProfileApiResponse = unknown;
-export type DeleteBlowhornProfileApiArg = {
-  /** Blowhorn profile ID */
-  blowhornProfileId: string;
-};
 export type ListClaimsApiResponse = /** status 200 Claims page */ {
   /** Current page number of the result set. */
   page: number;
@@ -9641,9 +9595,9 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
-    /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
      */
-    organizationId?: string;
+    organizationId: string;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -9962,9 +9916,9 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
        */
-      organizationId?: string;
+      organizationId: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -10240,9 +10194,9 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
       updatedAt?: string;
       /** Timestamp when the connection was soft-deleted, if applicable. */
       deletedAt?: string | null;
-      /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
        */
-      organizationId?: string;
+      organizationId: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -10280,7 +10234,7 @@ export type RegisterConnectionApiResponse = /** status 200 Existing desktop conn
       schemaVersion: string;
     };
 export type RegisterConnectionApiArg = {
-  /** Organization the connection is registered in. Required for kind `desktop`; ignored for other kinds.
+  /** Session organization. The server assigns `Connection.organizationId` from this header when it is present, and from the caller's selected organization when it is absent. Kind `desktop` requires the header: a desktop registration without it is refused with 400.
    */
   "X-Current-Orgid"?: string;
   body: {
@@ -10704,9 +10658,9 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
    */
-  organizationId?: string;
+  organizationId: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -10986,9 +10940,9 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
    */
-  organizationId?: string;
+  organizationId: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -11235,6 +11189,8 @@ export type GetDesktopConnectionsOfOrganizationApiResponse = /** status 200 Desk
     status: string;
     /** Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one. */
     lastSeenAt?: string | null;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
   }[];
   /** Total number of connections on all pages. */
   totalCount: number;
@@ -11495,9 +11451,9 @@ export type RecordConnectionHeartbeatApiResponse = /** status 200 Connection aft
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
-  /** Organization the connection is registered in, taken from the `X-Current-Orgid` header on registration. Servers implementing this contract use it, with the owner and `metadata.installationId`, as the deduplication key for `desktop` connections. Lets an organization list and count its connections (for example its registered desktop installs) without going through each owner. Absent on connections that predate it.
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
    */
-  organizationId?: string;
+  organizationId: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -12296,8 +12252,8 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12315,10 +12271,13 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -12570,8 +12529,8 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12589,10 +12548,13 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Owning user ID. */
   userId?: string;
+  /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+   */
+  organizationId: string;
   /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
    */
   user?: {
@@ -12824,8 +12786,8 @@ export type UpsertPatternApiArg = {
       catalogData?: {
         /** Tracks the specific content version that has been made available in the Catalog. */
         publishedVersion?: string;
-        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-        class?: "official" | "verified" | "reference architecture";
+        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+        contentClass?: "official" | "verified" | "community";
         /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
         compatibility: "kubernetes"[];
         /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12843,7 +12805,7 @@ export type UpsertPatternApiArg = {
           | "Troubleshooting"
           | "Workloads";
         /** Contains reference to the dark and light mode snapshots of the design. */
-        snapshotURL?: string[];
+        imageURL?: string[];
       };
       /** Optional structured location metadata (branch, host, path, ...). */
       location?: {
@@ -12887,8 +12849,8 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12906,10 +12868,13 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Owning user ID. */
   userId?: string;
+  /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+   */
+  organizationId: string;
   /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
    */
   user?: {
@@ -13145,8 +13110,8 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -13164,10 +13129,13 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Owning user ID. */
   userId?: string;
+  /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+   */
+  organizationId: string;
   /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
    */
   user?: {
@@ -13386,6 +13354,10 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
 export type ClonePatternApiArg = {
   /** Design (Pattern) ID */
   designId: string;
+  body: {
+    /** Optional name to apply to the cloned design. */
+    name?: string;
+  };
 };
 export type GetDesignPatternFileApiResponse = unknown;
 export type GetDesignPatternFileApiArg = {
@@ -13409,8 +13381,8 @@ export type RefreshPatternFromSourceApiResponse =
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -13428,10 +13400,13 @@ export type RefreshPatternFromSourceApiResponse =
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -13662,8 +13637,8 @@ export type UpdatePatternSourceApiResponse =
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -13681,10 +13656,13 @@ export type UpdatePatternSourceApiResponse =
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -13927,8 +13905,8 @@ export type ImportDesignApiResponse =
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -13946,10 +13924,13 @@ export type ImportDesignApiResponse =
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -14199,8 +14180,8 @@ export type GetGithubImportedDesignsApiResponse = /** status 200 Imported design
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -14218,10 +14199,13 @@ export type GetGithubImportedDesignsApiResponse = /** status 200 Imported design
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -14463,8 +14447,8 @@ export type ImportGithubRepositoryApiResponse =
       catalogData?: {
         /** Tracks the specific content version that has been made available in the Catalog. */
         publishedVersion?: string;
-        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-        class?: "official" | "verified" | "reference architecture";
+        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+        contentClass?: "official" | "verified" | "community";
         /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
         compatibility: "kubernetes"[];
         /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -14482,10 +14466,13 @@ export type ImportGithubRepositoryApiResponse =
           | "Troubleshooting"
           | "Workloads";
         /** Contains reference to the dark and light mode snapshots of the design. */
-        snapshotURL?: string[];
+        imageURL?: string[];
       };
       /** Owning user ID. */
       userId?: string;
+      /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+       */
+      organizationId: string;
       /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
        */
       user?: {
@@ -14735,6 +14722,8 @@ export type ImportGithubRepositoryApiResponse =
       systemId: string;
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       owner?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
       /** Timestamp when the event was recorded. */
       createdAt: string;
       /** Timestamp when the event was last updated. */
@@ -14810,8 +14799,8 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -14829,10 +14818,13 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -15075,8 +15067,8 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -15094,7 +15086,7 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Timestamp of filter creation. */
     createdAt: string;
@@ -16149,6 +16141,9 @@ export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */
     /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
      */
     systemId?: string;
+    /** The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+     */
+    organizationId?: string;
     /** The category of the event. */
     category: string;
     /** The action of the event. */
@@ -16222,6 +16217,8 @@ export type CreateEventApiResponse =
         systemId: string;
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         owner?: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        organizationId: string;
         /** Timestamp when the event was recorded. */
         createdAt: string;
         /** Timestamp when the event was last updated. */
@@ -16258,6 +16255,8 @@ export type CreateEventApiResponse =
         systemId: string;
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         owner?: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        organizationId: string;
         /** Timestamp when the event was recorded. */
         createdAt: string;
         /** Timestamp when the event was last updated. */
@@ -16295,6 +16294,9 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
     /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
      */
     systemId?: string;
+    /** The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+     */
+    organizationId?: string;
     /** The category of the event. */
     category: string;
     /** The action of the event. */
@@ -16324,6 +16326,9 @@ export type GetEventsApiArg = {
   order?: string;
   /** Get filtered reponses */
   filter?: string;
+  /** Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403.
+   */
+  scope?: "user" | "organization";
 };
 export type GetEventSummaryByUserApiResponse = /** status 200 Event summary page */ {
   /** Current page number of the result set. */
@@ -16397,8 +16402,8 @@ export type GetFiltersApiResponse = /** status 200 Filters response */ {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -16416,7 +16421,7 @@ export type GetFiltersApiResponse = /** status 200 Filters response */ {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Timestamp of filter creation. */
     createdAt: string;
@@ -16468,8 +16473,8 @@ export type UpsertFilterApiResponse = /** status 200 Filter saved */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -16487,7 +16492,7 @@ export type UpsertFilterApiResponse = /** status 200 Filter saved */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Timestamp of filter creation. */
   createdAt: string;
@@ -16538,8 +16543,8 @@ export type UpsertFilterApiArg = {
       catalogData?: {
         /** Tracks the specific content version that has been made available in the Catalog. */
         publishedVersion?: string;
-        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-        class?: "official" | "verified" | "reference architecture";
+        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+        contentClass?: "official" | "verified" | "community";
         /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
         compatibility: "kubernetes"[];
         /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -16557,7 +16562,7 @@ export type UpsertFilterApiArg = {
           | "Troubleshooting"
           | "Workloads";
         /** Contains reference to the dark and light mode snapshots of the design. */
-        snapshotURL?: string[];
+        imageURL?: string[];
       };
     };
     /** Optional opaque configuration string passed through to the
@@ -16609,8 +16614,8 @@ export type GetFilterApiResponse = /** status 200 Filter response */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -16628,7 +16633,7 @@ export type GetFilterApiResponse = /** status 200 Filter response */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Timestamp of filter creation. */
   createdAt: string;
@@ -16665,8 +16670,8 @@ export type UpdateFilterApiResponse = /** status 200 Filter updated */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -16684,7 +16689,7 @@ export type UpdateFilterApiResponse = /** status 200 Filter updated */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Timestamp of filter creation. */
   createdAt: string;
@@ -16726,8 +16731,8 @@ export type UpdateFilterApiArg = {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -16745,7 +16750,7 @@ export type UpdateFilterApiArg = {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
   };
 };
@@ -16780,8 +16785,8 @@ export type CloneFilterApiResponse = /** status 200 Filter cloned */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -16799,7 +16804,7 @@ export type CloneFilterApiResponse = /** status 200 Filter cloned */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Timestamp of filter creation. */
   createdAt: string;
@@ -17370,7 +17375,7 @@ export type ListLedgerEntriesApiResponse = /** status 200 Ledger entries page */
     claimedAt?: string | null;
     /** Timestamp of ledger entry creation. */
     createdAt: string;
-    /** Timestamp of last ledger entry modification. */
+    /** Timestamp of last ledger entry modification; advances on every update. */
     updatedAt: string;
   }[];
 };
@@ -17405,7 +17410,7 @@ export type RecordLedgerEntryApiResponse = /** status 200 The key was already re
       claimedAt?: string | null;
       /** Timestamp of ledger entry creation. */
       createdAt: string;
-      /** Timestamp of last ledger entry modification. */
+      /** Timestamp of last ledger entry modification; advances on every update. */
       updatedAt: string;
     }
   | /** status 201 The key was recorded */ {
@@ -17426,7 +17431,7 @@ export type RecordLedgerEntryApiResponse = /** status 200 The key was already re
       claimedAt?: string | null;
       /** Timestamp of ledger entry creation. */
       createdAt: string;
-      /** Timestamp of last ledger entry modification. */
+      /** Timestamp of last ledger entry modification; advances on every update. */
       updatedAt: string;
     };
 export type RecordLedgerEntryApiArg = {
@@ -17458,7 +17463,7 @@ export type ClaimLedgerEntryApiResponse = /** status 200 The caller's connection
       claimedAt?: string | null;
       /** Timestamp of ledger entry creation. */
       createdAt: string;
-      /** Timestamp of last ledger entry modification. */
+      /** Timestamp of last ledger entry modification; advances on every update. */
       updatedAt: string;
     }
   | /** status 201 The key was absent; it was recorded and claimed */ {
@@ -17479,7 +17484,7 @@ export type ClaimLedgerEntryApiResponse = /** status 200 The caller's connection
       claimedAt?: string | null;
       /** Timestamp of ledger entry creation. */
       createdAt: string;
-      /** Timestamp of last ledger entry modification. */
+      /** Timestamp of last ledger entry modification; advances on every update. */
       updatedAt: string;
     };
 export type ClaimLedgerEntryApiArg = {
@@ -17513,7 +17518,7 @@ export type GetLedgerEntryApiResponse = /** status 200 Ledger entry */ {
   claimedAt?: string | null;
   /** Timestamp of ledger entry creation. */
   createdAt: string;
-  /** Timestamp of last ledger entry modification. */
+  /** Timestamp of last ledger entry modification; advances on every update. */
   updatedAt: string;
 };
 export type GetLedgerEntryApiArg = {
@@ -17521,6 +17526,43 @@ export type GetLedgerEntryApiArg = {
   ledger: string;
   /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
   entryKey: string;
+};
+export type UpdateLedgerEntryApiResponse = /** status 200 The updated ledger entry */ {
+  /** Server-generated ledger entry ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Name of the ledger (the idempotent set) the entry belongs to. */
+  ledger: string;
+  /** Key within the ledger. Unique per (organization, ledger). */
+  entryKey: string;
+  /** Entry value, stored as a JSON blob. */
+  value?: object;
+  /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+   */
+  claimedByConnectionId?: string;
+  /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+  claimedAt?: string | null;
+  /** Timestamp of ledger entry creation. */
+  createdAt: string;
+  /** Timestamp of last ledger entry modification; advances on every update. */
+  updatedAt: string;
+};
+export type UpdateLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
+  entryKey: string;
+  body: {
+    /** The new entry value, stored as a JSON object. Replaces the stored value wholesale. */
+    value: object;
+    /** Optional precondition. When present, including as an empty object, the update applies only if the stored value equals this object (JSON equality; key order and whitespace do not matter). Omit the property to skip this check. Absence is distinct from an empty object.
+     */
+    expectedValue?: object;
+    /** Optional precondition. When present, the update applies only if the stored entry's updatedAt equals this instant exactly. Clients echo the updatedAt they last read. Omit the property to skip this check.
+     */
+    expectedUpdatedAt?: string;
+  };
 };
 export type DeleteLedgerEntryApiResponse = unknown;
 export type DeleteLedgerEntryApiArg = {
@@ -18230,6 +18272,8 @@ export type GetProfilesApiResponse = /** status 200 Profiles */ {
 export type GetProfilesApiArg = {
   /** Get responses that match search param value */
   search?: string;
+  /** Return only live profiles whose name equals this value, ignoring case. */
+  name?: string;
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
@@ -18242,6 +18286,37 @@ export type GetProfilesApiArg = {
   orgId?: string;
   /** Return only the profile that represents this user. */
   userId?: string;
+};
+export type GetProfileConnectionMappingsApiResponse = /** status 200 Profile connection links */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of items across all pages. */
+  totalCount: number;
+  /** Profile-to-connection links in this page. */
+  mappings: {
+    /** Mapping record ID. */
+    id: string;
+    /** ID of the linked profile. */
+    profileId: string;
+    /** ID of the linked connection. */
+    connectionId: string;
+    /** Timestamp when the mapping was created. */
+    createdAt?: string;
+    /** Timestamp when the mapping was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the mapping was soft-deleted. Null while the mapping remains active. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetProfileConnectionMappingsApiArg = {
+  /** Organization ID used to scope the listing. Defaults to the organization the session resolved to. */
+  orgId?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
 };
 export type GetProfileByIdApiResponse = /** status 200 Profile */ {
   /** Server-generated profile ID. */
@@ -18298,6 +18373,8 @@ export type UpdateProfileApiResponse = /** status 200 Updated profile */ {
 export type UpdateProfileApiArg = {
   /** Profile ID */
   profileId: string;
+  /** Entity tag of the profile as last read, from the `ETag` header of getProfileById or updateProfile. When present the write applies only if it still matches; otherwise 412. */
+  "If-Match"?: string;
   /** Body for creating or updating a profile */
   body: {
     /** Name of the profile, typically its short handle. Not unique. */
@@ -18563,7 +18640,7 @@ export type GetProfileConnectionsApiResponse = /** status 200 Profile connection
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    organizationId?: string;
+    organizationId: string;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -18614,6 +18691,8 @@ export type GetProfileConnectionsApiResponse = /** status 200 Profile connection
 export type GetProfileConnectionsApiArg = {
   /** Profile ID */
   profileId: string;
+  /** Return only connections of these kinds (repeatable), as getConnections does. */
+  kind?: string[];
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -18626,11 +18705,11 @@ export type GetProfileConnectionsApiArg = {
   pagesize?: number;
 };
 export type AddConnectionToProfileApiResponse = /** status 201 Connection linked to profile */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  /** Mapping record ID. */
   id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  /** ID of the linked profile. */
   profileId: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  /** ID of the linked connection. */
   connectionId: string;
   /** Timestamp when the mapping was created. */
   createdAt?: string;
@@ -18950,6 +19029,14 @@ export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
     updatedAt: string;
     /** Timestamp when the schedule was soft-deleted. Null while live. */
     deletedAt?: string | null;
+    /** Optional Risk Profile this schedule runs under, resolved above the
+        profile x platform resolution and below an explicit per-run flag.
+        Omitted when the schedule has no override: it then runs under whatever
+        profile x platform, configuration, environment, account or default
+        resolves to, exactly as before. Any value outside the Risk Profile
+        enum is refused with 400.
+         */
+    riskProfile?: "cautious" | "standard" | "brisk";
   }[];
 };
 export type ListSchedulesApiArg = {
@@ -19102,6 +19189,14 @@ export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
   updatedAt: string;
   /** Timestamp when the schedule was soft-deleted. Null while live. */
   deletedAt?: string | null;
+  /** Optional Risk Profile this schedule runs under, resolved above the
+    profile x platform resolution and below an explicit per-run flag.
+    Omitted when the schedule has no override: it then runs under whatever
+    profile x platform, configuration, environment, account or default
+    resolves to, exactly as before. Any value outside the Risk Profile
+    enum is refused with 400.
+     */
+  riskProfile?: "cautious" | "standard" | "brisk";
 };
 export type CreateScheduleApiArg = {
   body: {
@@ -19179,6 +19274,13 @@ export type CreateScheduleApiArg = {
     paused?: boolean;
     /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
     pauseReason?: string;
+    /** Optional Risk Profile this schedule runs under, resolved above
+        the profile x platform resolution and below an explicit per-run
+        flag. Omit to inherit: the schedule then runs under whatever
+        profile x platform, configuration, environment, account or
+        default resolves to, exactly as before.
+         */
+    riskProfile?: "cautious" | "standard" | "brisk";
   };
 };
 export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
@@ -19308,6 +19410,14 @@ export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
   updatedAt: string;
   /** Timestamp when the schedule was soft-deleted. Null while live. */
   deletedAt?: string | null;
+  /** Optional Risk Profile this schedule runs under, resolved above the
+    profile x platform resolution and below an explicit per-run flag.
+    Omitted when the schedule has no override: it then runs under whatever
+    profile x platform, configuration, environment, account or default
+    resolves to, exactly as before. Any value outside the Risk Profile
+    enum is refused with 400.
+     */
+  riskProfile?: "cautious" | "standard" | "brisk";
 };
 export type GetScheduleByIdApiArg = {
   /** Schedule ID */
@@ -19440,6 +19550,14 @@ export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
   updatedAt: string;
   /** Timestamp when the schedule was soft-deleted. Null while live. */
   deletedAt?: string | null;
+  /** Optional Risk Profile this schedule runs under, resolved above the
+    profile x platform resolution and below an explicit per-run flag.
+    Omitted when the schedule has no override: it then runs under whatever
+    profile x platform, configuration, environment, account or default
+    resolves to, exactly as before. Any value outside the Risk Profile
+    enum is refused with 400.
+     */
+  riskProfile?: "cautious" | "standard" | "brisk";
 };
 export type UpdateScheduleApiArg = {
   /** Schedule ID */
@@ -19521,6 +19639,13 @@ export type UpdateScheduleApiArg = {
     paused?: boolean;
     /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
     pauseReason?: string;
+    /** Optional Risk Profile this schedule runs under, resolved above
+        the profile x platform resolution and below an explicit per-run
+        flag. Omit to inherit: the schedule then runs under whatever
+        profile x platform, configuration, environment, account or
+        default resolves to, exactly as before.
+         */
+    riskProfile?: "cautious" | "standard" | "brisk";
   };
 };
 export type DeleteScheduleByIdApiResponse = unknown;
@@ -19663,6 +19788,14 @@ export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page *
     updatedAt: string;
     /** Timestamp when the schedule was soft-deleted. Null while live. */
     deletedAt?: string | null;
+    /** Optional Risk Profile this schedule runs under, resolved above the
+        profile x platform resolution and below an explicit per-run flag.
+        Omitted when the schedule has no override: it then runs under whatever
+        profile x platform, configuration, environment, account or default
+        resolves to, exactly as before. Any value outside the Risk Profile
+        enum is refused with 400.
+         */
+    riskProfile?: "cautious" | "standard" | "brisk";
   }[];
 };
 export type GetSchedulesOfWorkspaceApiArg = {
@@ -19815,6 +19948,14 @@ export type AssignScheduleToWorkspaceApiResponse = /** status 200 The linked sch
   updatedAt: string;
   /** Timestamp when the schedule was soft-deleted. Null while live. */
   deletedAt?: string | null;
+  /** Optional Risk Profile this schedule runs under, resolved above the
+    profile x platform resolution and below an explicit per-run flag.
+    Omitted when the schedule has no override: it then runs under whatever
+    profile x platform, configuration, environment, account or default
+    resolves to, exactly as before. Any value outside the Risk Profile
+    enum is refused with 400.
+     */
+  riskProfile?: "cautious" | "standard" | "brisk";
 };
 export type AssignScheduleToWorkspaceApiArg = {
   /** Workspace ID */
@@ -20332,7 +20473,7 @@ export type IssueIndefiniteLifetimeTokenApiArg = {
 };
 export type GetNativeClientAuthorizationApiResponse = unknown;
 export type GetNativeClientAuthorizationApiArg = {
-  /** Display name of the native client asking to sign in. Shown on the consent page and used as the name and purpose of the minted token. */
+  /** Display name of the native client asking to sign in. Used as the name and purpose of the minted token. */
   clientName: string;
   /** Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`. */
   client?: string;
@@ -20346,21 +20487,6 @@ export type GetNativeClientAuthorizationApiArg = {
   codeChallengeMethod: "S256";
   /** Opaque value from the native client, returned unchanged on the callback. */
   state: string;
-};
-export type ApproveNativeClientAuthorizationApiResponse = unknown;
-export type ApproveNativeClientAuthorizationApiArg = {
-  body: {
-    /** Display name of the native client. */
-    clientName: string;
-    /** Port on 127.0.0.1 for the callback. */
-    port: number;
-    /** PKCE S256 code challenge. */
-    codeChallenge: string;
-    /** PKCE challenge method. */
-    codeChallengeMethod: "S256";
-    /** Opaque client state returned on the callback. */
-    state: string;
-  };
 };
 export type ExchangeNativeAuthorizationCodeApiResponse = /** status 201 API token minted for the native client */ {
   /** Unique identifier for the token. */
@@ -20832,14 +20958,14 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
-      pattern_caveats: string;
+      patternCaveats: string;
       /** Purpose of the design along with its intended and unintended uses. */
-      pattern_info: string;
+      patternInfo: string;
       /** Categorization of the type of design or operational flow depicted in this design. */
       type:
         | "Deployment"
@@ -20851,10 +20977,13 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     created_at?: string;
     user_id?: string;
+    /** The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId?: string;
     location?: {
       [key: string]: string;
     };
@@ -20954,6 +21083,8 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
             updated_at?: string;
             /** SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+            organizationId?: string;
             /** Associated environments for this connection */
             environments?: {
               /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -22060,6 +22191,7 @@ export type UnassignViewFromWorkspaceApiArg = {
   viewId: string;
 };
 export const {
+  useSubmitFailureDiagnosticMutation,
   useGetFeaturesQuery,
   useLazyGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
@@ -22078,6 +22210,7 @@ export const {
   useLazyGetOrganizationSmtpDomainVerificationQuery,
   useVerifyOrganizationSmtpDomainMutation,
   useSubmitSupportRequestMutation,
+  useSubmitAnonymousSupportRequestMutation,
   useGetSystemVersionQuery,
   useLazyGetSystemVersionQuery,
   useSendTestEmailMutation,
@@ -22220,13 +22353,6 @@ export const {
   useLazyGetCertificateByIdQuery,
   useGetBlowhornHealthQuery,
   useLazyGetBlowhornHealthQuery,
-  useListBlowhornProfilesQuery,
-  useLazyListBlowhornProfilesQuery,
-  useUpsertBlowhornProfileMutation,
-  useGetBlowhornProfileQuery,
-  useLazyGetBlowhornProfileQuery,
-  useUpdateBlowhornProfileMutation,
-  useDeleteBlowhornProfileMutation,
   useListClaimsQuery,
   useLazyListClaimsQuery,
   useCreateClaimMutation,
@@ -22366,6 +22492,7 @@ export const {
   useClaimLedgerEntryMutation,
   useGetLedgerEntryQuery,
   useLazyGetLedgerEntryQuery,
+  useUpdateLedgerEntryMutation,
   useDeleteLedgerEntryMutation,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
@@ -22391,6 +22518,8 @@ export const {
   useCreateProfileMutation,
   useGetProfilesQuery,
   useLazyGetProfilesQuery,
+  useGetProfileConnectionMappingsQuery,
+  useLazyGetProfileConnectionMappingsQuery,
   useGetProfileByIdQuery,
   useLazyGetProfileByIdQuery,
   useUpdateProfileMutation,
@@ -22432,7 +22561,6 @@ export const {
   useLazyIssueIndefiniteLifetimeTokenQuery,
   useGetNativeClientAuthorizationQuery,
   useLazyGetNativeClientAuthorizationQuery,
-  useApproveNativeClientAuthorizationMutation,
   useExchangeNativeAuthorizationCodeMutation,
   useGetUsersQuery,
   useLazyGetUsersQuery,

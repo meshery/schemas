@@ -1,0 +1,210 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Content Metrics Schema
+description: |
+  Server-returned daily content figures for one page, as recorded in the
+  `metadata` of an event on the events service (category `blowhorn`,
+  action `content_metrics`); the event construct carries the envelope and
+  this construct names the metadata's own shape, which Event leaves open.
+  One row is one page on one day, keyed by (organizationId, platform,
+  subject, readingDate): the day's impressions, clicks, reactions,
+  comments and reposts, each split organic / sponsored alongside its
+  total, plus the engagement rates the source export reports. A figure
+  exists only when the export carries its column — an export without a
+  sponsored breakdown records no sponsored figures — and every figure is
+  nullable: a blank cell is not a zero.
+type: object
+additionalProperties: false
+required:
+  - organizationId
+  - platform
+  - subject
+  - readingDate
+properties:
+  organizationId:
+    type: string
+    format: uuid
+    description: Owning organization ID.
+    x-go-type: uuid.UUID
+    x-go-type-import:
+      path: github.com/gofrs/uuid
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 1
+  platform:
+    type: string
+    description: The platform the page belongs to (today only `linkedin` produces these exports).
+    x-oapi-codegen-extra-tags:
+      db: platform
+    x-order: 2
+  subject:
+    type: string
+    description: The page the figures describe, named as the source export names it.
+    x-oapi-codegen-extra-tags:
+      db: subject
+    x-order: 3
+  readingDate:
+    type: string
+    format: date
+    description: The day the figures describe, as an ISO calendar date.
+    x-oapi-codegen-extra-tags:
+      db: reading_date
+    x-order: 4
+  impressionsOrganic:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Organic impressions that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: impressions_organic
+    x-order: 5
+  impressionsSponsored:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Sponsored impressions that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: impressions_sponsored
+    x-order: 6
+  impressions:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: All impressions that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: impressions
+    x-order: 7
+  uniqueImpressions:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Unique impressions that day (the export reports this figure for organic only); null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: unique_impressions
+    x-order: 8
+  clicksOrganic:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Organic clicks that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: clicks_organic
+    x-order: 9
+  clicksSponsored:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Sponsored clicks that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: clicks_sponsored
+    x-order: 10
+  clicks:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: All clicks that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: clicks
+    x-order: 11
+  reactionsOrganic:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Organic reactions that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: reactions_organic
+    x-order: 12
+  reactionsSponsored:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Sponsored reactions that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: reactions_sponsored
+    x-order: 13
+  reactions:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: All reactions that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: reactions
+    x-order: 14
+  commentsOrganic:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Organic comments that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: comments_organic
+    x-order: 15
+  commentsSponsored:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Sponsored comments that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: comments_sponsored
+    x-order: 16
+  comments:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: All comments that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: comments
+    x-order: 17
+  repostsOrganic:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Organic reposts that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: reposts_organic
+    x-order: 18
+  repostsSponsored:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: Sponsored reposts that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: reposts_sponsored
+    x-order: 19
+  reposts:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: All reposts that day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: reposts
+    x-order: 20
+  engagementRateOrganic:
+    type: number
+    nullable: true
+    minimum: 0
+    description: Organic engagement rate that day, as the export reports it; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: engagement_rate_organic
+    x-order: 21
+  engagementRateSponsored:
+    type: number
+    nullable: true
+    minimum: 0
+    description: Sponsored engagement rate that day, as the export reports it; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: engagement_rate_sponsored
+    x-order: 22
+  engagementRate:
+    type: number
+    nullable: true
+    minimum: 0
+    description: Overall engagement rate that day, as the export reports it; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: engagement_rate
+    x-order: 23
+  sourceFile:
+    type: string
+    description: The export file the row was read from; empty when the row did not come from a file export.
+    x-oapi-codegen-extra-tags:
+      db: source_file
+    x-order: 24

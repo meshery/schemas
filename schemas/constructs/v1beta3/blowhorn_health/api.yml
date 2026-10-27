@@ -41,6 +41,8 @@ paths:
                 $ref: "#/components/schemas/BlowhornHealth"
         "401":
           $ref: "#/components/responses/401"
+        "429":
+          $ref: "#/components/responses/MeshkitError429"
         "500":
           $ref: "#/components/responses/500"
 
@@ -54,6 +56,8 @@ components:
   responses:
     401:
       $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    MeshkitError429:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
     500:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
 

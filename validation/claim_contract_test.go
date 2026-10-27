@@ -108,7 +108,9 @@ func TestDesktopConnectionsOfOrganizationContract(t *testing.T) {
 	for k := range props {
 		got = append(got, k)
 	}
-	want := map[string]bool{"id": true, "name": true, "kind": true, "owner": true, "status": true, "lastSeenAt": true}
+	// organizationId is declared because this projection is additionalProperties: false.
+	// Without it the server could not return the connection's organization on the list.
+	want := map[string]bool{"id": true, "name": true, "kind": true, "owner": true, "status": true, "lastSeenAt": true, "organizationId": true}
 	if len(got) != len(want) {
 		t.Errorf("ConnectionSummary properties = %v, want exactly %v", got, want)
 	}

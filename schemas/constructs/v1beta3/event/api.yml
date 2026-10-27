@@ -32,6 +32,8 @@ paths:
           $ref: '#/components/responses/401'
         '404':
           $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           $ref: '#/components/responses/500'
   /api/events/delete:
@@ -58,6 +60,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           $ref: '#/components/responses/500'
   /api/events/status:
@@ -84,6 +88,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           $ref: '#/components/responses/500'
   /api/events/{eventId}/status:
@@ -114,6 +120,8 @@ paths:
           $ref: '#/components/responses/401'
         '404':
           $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           $ref: '#/components/responses/500'
   /api/workspaces/{workspaceId}/events:
@@ -151,6 +159,8 @@ paths:
           description: Unauthorized
         '404':
           description: Workspace not found
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           description: Server error
   /api/events:
@@ -180,6 +190,8 @@ paths:
             text/plain:
               schema:
                 type: string
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           description: Server error
     post:
@@ -198,7 +210,8 @@ paths:
         Records an event and answers 201 with it. When the payload carries an
         `idempotencyKey` the authenticated caller already used, nothing new is
         recorded and the answer is 200 with the event first recorded under that
-        key.
+        key. The server assigns the organization from the session; clients do
+        not send it.
       responses:
         '200':
           description: >
@@ -218,6 +231,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           $ref: '#/components/responses/500'
   /api/events/list:
@@ -234,6 +249,7 @@ paths:
       - $ref: '#/components/parameters/search'
       - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/eventsFilter'
+      - $ref: '#/components/parameters/eventsScope'
       responses:
         '200':
           description: Events page
@@ -243,8 +259,12 @@ paths:
                 $ref: '#/components/schemas/EventsPage'
         '401':
           description: Unauthorized
+        '403':
+          $ref: '#/components/responses/MeshkitError403'
         '404':
           description: Not found
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           description: Server error
   /api/events/summary:
@@ -272,6 +292,8 @@ paths:
           description: Unauthorized
         '404':
           description: Not found
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           description: Server error
   /api/events/types:
@@ -299,6 +321,8 @@ paths:
           description: Unauthorized
         '404':
           description: Not found
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
         '500':
           description: Server error
 components:
@@ -309,6 +333,8 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/responses/401
     404:
       $ref: ../../v1beta2/core/api.yml#/components/responses/404
+    MeshkitError429:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
     500:
       $ref: ../../v1beta2/core/api.yml#/components/responses/500
     MeshkitError403:
@@ -357,6 +383,21 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/filter
     eventsFilter:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/filter
+    eventsScope:
+      name: scope
+      in: query
+      required: false
+      description: >
+        Which events are returned. `user` (default): only the caller's own
+        events (unchanged behavior). `organization`: every member's events in
+        the caller's session organization. Requires organization administration
+        permission in the session organization; callers without it get 403.
+      schema:
+        type: string
+        enum:
+          - user
+          - organization
+        default: user
   securitySchemes:
     jwt:
       type: http
@@ -505,6 +546,7 @@ components:
         - severity
         - status
         - systemId
+        - organizationId
         - createdAt
         - updatedAt
       properties:
@@ -513,29 +555,34 @@ components:
           description: Event ID.
           x-oapi-codegen-extra-tags:
             db: id
+          x-order: 7
         actedUpon:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/Id
           description: ID of the entity on which the event was performed.
           x-oapi-codegen-extra-tags:
             db: acted_upon
+          x-order: 1
         action:
           type: string
           description: Action taken on the resource, for example `import`.
           maxLength: 500
           x-oapi-codegen-extra-tags:
             db: action
+          x-order: 2
         category:
           type: string
           description: Resource kind the operation was invoked on, for example `pattern`.
           maxLength: 500
           x-oapi-codegen-extra-tags:
             db: category
+          x-order: 3
         description:
           type: string
           description: Human-readable summary of what happened.
           maxLength: 5000
           x-oapi-codegen-extra-tags:
             db: description
+          x-order: 6
         metadata:
           type: object
           description: >
@@ -549,6 +596,7 @@ components:
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: metadata
+          x-order: 8
         operationId:
           # Core's OperationId component is not referenced: the Go generator
           # emits it as core.OperationId, ignoring its x-go-name, and models/core
@@ -558,6 +606,7 @@ components:
           x-go-name: OperationID
           x-oapi-codegen-extra-tags:
             db: operation_id
+          x-order: 9
         severity:
           type: string
           description: >
@@ -569,6 +618,7 @@ components:
           maxLength: 255
           x-oapi-codegen-extra-tags:
             db: severity
+          x-order: 12
         status:
           type: string
           description: >
@@ -578,6 +628,7 @@ components:
           maxLength: 255
           x-oapi-codegen-extra-tags:
             db: status
+          x-order: 13
         systemId:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/SystemId
           description: >
@@ -589,26 +640,46 @@ components:
             be joined to the claim it released (`Claim.outcomeEventId`) and to
             the connection (`connections.id`). The value is asserted by the
             sender and is not checked against the caller's connections.
+          x-order: 14
         owner:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           description: ID of the user the event belongs to; omitted when the event has no owner.
           x-oapi-codegen-extra-tags:
             db: owner
+          x-order: 10
+        organizationId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: >
+            The organization the event belongs to. The server sets it: the
+            organization selected in the session when a user action recorded
+            the event, or the organization of the resource a system event
+            refers to. Provider-level system events with no tenant belong to
+            the provider organization. Never accepted from clients.
+          readOnly: true
+          x-go-name: OrganizationID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: organization_id
+            json: organizationId
+          x-order: 11
         createdAt:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
           description: Timestamp when the event was recorded.
           x-oapi-codegen-extra-tags:
             db: created_at
+          x-order: 4
         updatedAt:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
           description: Timestamp when the event was last updated.
           x-oapi-codegen-extra-tags:
             db: updated_at
+          x-order: 15
         deletedAt:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/NullTime
           description: Timestamp when the event was soft-deleted; omitted when it was not.
           x-oapi-codegen-extra-tags:
             db: deleted_at
+          x-order: 5
     EventsPage:
       type: object
       description: Paginated list of events.

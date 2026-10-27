@@ -19,7 +19,7 @@ export interface paths {
         put?: never;
         /**
          * Save design
-         * @description Creates or updates an infrastructure design.
+         * @description Creates or updates an infrastructure design. The server assigns `organizationId` from the session organization; clients do not send it. On update the organization stays the one assigned at create.
          */
         post: operations["upsertPattern"];
         delete?: never;
@@ -613,6 +613,11 @@ export interface components {
                          * @description SQL null Timestamp to handle null values of time.
                          */
                         deleted_at?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+                         */
+                        organizationId?: string;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -1851,7 +1856,7 @@ export interface components {
                 }[];
             }[];
         };
-        /** @description Server-returned design (pattern) resource as persisted by meshery-cloud. */
+        /** @description Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it. */
         MesheryPattern: {
             /**
              * Format: uuid
@@ -1864,8 +1869,8 @@ export interface components {
             catalogData?: {
                 /** @description Tracks the specific content version that has been made available in the Catalog. */
                 publishedVersion?: string;
-                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                class?: string & ("official" | "verified" | "reference architecture");
+                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                contentClass?: string & ("official" | "verified" | "community");
                 /**
                  * Model
                  * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -1889,13 +1894,18 @@ export interface components {
                  */
                 type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                 /** @description Contains reference to the dark and light mode snapshots of the design. */
-                snapshotURL?: string[];
+                imageURL?: string[];
             };
             /**
              * Format: uuid
              * @description Owning user ID.
              */
             userId?: string;
+            /**
+             * Format: uuid
+             * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+             */
+            readonly organizationId: string;
             /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
             user?: {
                 /**
@@ -2236,8 +2246,8 @@ export interface components {
                 catalogData?: {
                     /** @description Tracks the specific content version that has been made available in the Catalog. */
                     publishedVersion?: string;
-                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                    class?: string & ("official" | "verified" | "reference architecture");
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                    contentClass?: string & ("official" | "verified" | "community");
                     /**
                      * Model
                      * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -2261,13 +2271,18 @@ export interface components {
                      */
                     type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                     /** @description Contains reference to the dark and light mode snapshots of the design. */
-                    snapshotURL?: string[];
+                    imageURL?: string[];
                 };
                 /**
                  * Format: uuid
                  * @description Owning user ID.
                  */
                 userId?: string;
+                /**
+                 * Format: uuid
+                 * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                 */
+                readonly organizationId: string;
                 /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                 user?: {
                     /**
@@ -2603,7 +2618,12 @@ export interface components {
                 name?: string;
             }[];
         };
-        /** @description Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response. */
+        /** @description Payload for cloning a design. The optional name is applied to the cloned design; the server derives ownership and visibility from the request context. */
+        MesheryPatternClonePayload: {
+            /** @description Optional name to apply to the cloned design. */
+            name?: string;
+        };
+        /** @description Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (`organizationId`, createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded. The server assigns `organizationId` from the session organization, ignores any client value, and re-projects server-owned fields on the response. */
         MesheryPatternPayload: {
             /**
              * Format: uuid
@@ -2621,8 +2641,8 @@ export interface components {
             catalogData?: {
                 /** @description Tracks the specific content version that has been made available in the Catalog. */
                 publishedVersion?: string;
-                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                class?: string & ("official" | "verified" | "reference architecture");
+                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                contentClass?: string & ("official" | "verified" | "community");
                 /**
                  * Model
                  * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -2646,7 +2666,7 @@ export interface components {
                  */
                 type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                 /** @description Contains reference to the dark and light mode snapshots of the design. */
-                snapshotURL?: string[];
+                imageURL?: string[];
             };
             /** @description Optional structured location metadata (branch, host, path, ...). */
             location?: {
@@ -2687,8 +2707,8 @@ export interface components {
                 catalogData?: {
                     /** @description Tracks the specific content version that has been made available in the Catalog. */
                     publishedVersion?: string;
-                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                    class?: string & ("official" | "verified" | "reference architecture");
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                    contentClass?: string & ("official" | "verified" | "community");
                     /**
                      * Model
                      * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -2712,7 +2732,7 @@ export interface components {
                      */
                     type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                     /** @description Contains reference to the dark and light mode snapshots of the design. */
-                    snapshotURL?: string[];
+                    imageURL?: string[];
                 };
                 /** @description Optional structured location metadata (branch, host, path, ...). */
                 location?: {
@@ -2886,8 +2906,8 @@ export interface components {
                 catalogData?: {
                     /** @description Tracks the specific content version that has been made available in the Catalog. */
                     publishedVersion?: string;
-                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                    class?: string & ("official" | "verified" | "reference architecture");
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                    contentClass?: string & ("official" | "verified" | "community");
                     /**
                      * Model
                      * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -2911,13 +2931,18 @@ export interface components {
                      */
                     type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                     /** @description Contains reference to the dark and light mode snapshots of the design. */
-                    snapshotURL?: string[];
+                    imageURL?: string[];
                 };
                 /**
                  * Format: uuid
                  * @description Owning user ID.
                  */
                 userId?: string;
+                /**
+                 * Format: uuid
+                 * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                 */
+                readonly organizationId: string;
                 /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                 user?: {
                     /**
@@ -3283,6 +3308,11 @@ export interface components {
                  */
                 owner?: string;
                 /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                readonly organizationId: string;
+                /**
                  * Format: date-time
                  * @description Timestamp when the event was recorded.
                  */
@@ -3381,8 +3411,8 @@ export interface components {
                 catalogData?: {
                     /** @description Tracks the specific content version that has been made available in the Catalog. */
                     publishedVersion?: string;
-                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                    class?: string & ("official" | "verified" | "reference architecture");
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                    contentClass?: string & ("official" | "verified" | "community");
                     /**
                      * Model
                      * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -3406,13 +3436,18 @@ export interface components {
                      */
                     type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                     /** @description Contains reference to the dark and light mode snapshots of the design. */
-                    snapshotURL?: string[];
+                    imageURL?: string[];
                 };
                 /**
                  * Format: uuid
                  * @description Owning user ID.
                  */
                 userId?: string;
+                /**
+                 * Format: uuid
+                 * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                 */
+                readonly organizationId: string;
                 /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                 user?: {
                     /**
@@ -3771,8 +3806,8 @@ export interface components {
                 catalogData?: {
                     /** @description Tracks the specific content version that has been made available in the Catalog. */
                     publishedVersion?: string;
-                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                    class?: string & ("official" | "verified" | "reference architecture");
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                    contentClass?: string & ("official" | "verified" | "community");
                     /**
                      * Model
                      * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -3796,7 +3831,7 @@ export interface components {
                      */
                     type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                     /** @description Contains reference to the dark and light mode snapshots of the design. */
-                    snapshotURL?: string[];
+                    imageURL?: string[];
                 };
                 /**
                  * Format: date-time
@@ -4733,8 +4768,8 @@ export interface operations {
                             catalogData?: {
                                 /** @description Tracks the specific content version that has been made available in the Catalog. */
                                 publishedVersion?: string;
-                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                                class?: string & ("official" | "verified" | "reference architecture");
+                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                                contentClass?: string & ("official" | "verified" | "community");
                                 /**
                                  * Model
                                  * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -4758,13 +4793,18 @@ export interface operations {
                                  */
                                 type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                                 /** @description Contains reference to the dark and light mode snapshots of the design. */
-                                snapshotURL?: string[];
+                                imageURL?: string[];
                             };
                             /**
                              * Format: uuid
                              * @description Owning user ID.
                              */
                             userId?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                             */
+                            readonly organizationId: string;
                             /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                             user?: {
                                 /**
@@ -5139,8 +5179,8 @@ export interface operations {
                         catalogData?: {
                             /** @description Tracks the specific content version that has been made available in the Catalog. */
                             publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                            contentClass?: string & ("official" | "verified" | "community");
                             /**
                              * Model
                              * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -5164,7 +5204,7 @@ export interface operations {
                              */
                             type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                             /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
+                            imageURL?: string[];
                         };
                         /** @description Optional structured location metadata (branch, host, path, ...). */
                         location?: {
@@ -5214,8 +5254,8 @@ export interface operations {
                         catalogData?: {
                             /** @description Tracks the specific content version that has been made available in the Catalog. */
                             publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                            contentClass?: string & ("official" | "verified" | "community");
                             /**
                              * Model
                              * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -5239,13 +5279,18 @@ export interface operations {
                              */
                             type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                             /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
+                            imageURL?: string[];
                         };
                         /**
                          * Format: uuid
                          * @description Owning user ID.
                          */
                         userId?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                         */
+                        readonly organizationId: string;
                         /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
@@ -5689,8 +5734,8 @@ export interface operations {
                         catalogData?: {
                             /** @description Tracks the specific content version that has been made available in the Catalog. */
                             publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                            contentClass?: string & ("official" | "verified" | "community");
                             /**
                              * Model
                              * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -5714,13 +5759,18 @@ export interface operations {
                              */
                             type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                             /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
+                            imageURL?: string[];
                         };
                         /**
                          * Format: uuid
                          * @description Owning user ID.
                          */
                         userId?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                         */
+                        readonly organizationId: string;
                         /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
@@ -6129,7 +6179,14 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Optional name to apply to the cloned design. */
+                    name?: string;
+                };
+            };
+        };
         responses: {
             /** @description Design cloned */
             200: {
@@ -6149,8 +6206,8 @@ export interface operations {
                         catalogData?: {
                             /** @description Tracks the specific content version that has been made available in the Catalog. */
                             publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                            contentClass?: string & ("official" | "verified" | "community");
                             /**
                              * Model
                              * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -6174,13 +6231,18 @@ export interface operations {
                              */
                             type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                             /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
+                            imageURL?: string[];
                         };
                         /**
                          * Format: uuid
                          * @description Owning user ID.
                          */
                         userId?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                         */
+                        readonly organizationId: string;
                         /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
@@ -6681,8 +6743,8 @@ export interface operations {
                         catalogData?: {
                             /** @description Tracks the specific content version that has been made available in the Catalog. */
                             publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                            contentClass?: string & ("official" | "verified" | "community");
                             /**
                              * Model
                              * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -6706,13 +6768,18 @@ export interface operations {
                              */
                             type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                             /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
+                            imageURL?: string[];
                         };
                         /**
                          * Format: uuid
                          * @description Owning user ID.
                          */
                         userId?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                         */
+                        readonly organizationId: string;
                         /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
@@ -7173,8 +7240,8 @@ export interface operations {
                         catalogData?: {
                             /** @description Tracks the specific content version that has been made available in the Catalog. */
                             publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                            contentClass?: string & ("official" | "verified" | "community");
                             /**
                              * Model
                              * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -7198,13 +7265,18 @@ export interface operations {
                              */
                             type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                             /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
+                            imageURL?: string[];
                         };
                         /**
                          * Format: uuid
                          * @description Owning user ID.
                          */
                         userId?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                         */
+                        readonly organizationId: string;
                         /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
@@ -7674,8 +7746,8 @@ export interface operations {
                         catalogData?: {
                             /** @description Tracks the specific content version that has been made available in the Catalog. */
                             publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                            contentClass?: string & ("official" | "verified" | "community");
                             /**
                              * Model
                              * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -7699,13 +7771,18 @@ export interface operations {
                              */
                             type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                             /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
+                            imageURL?: string[];
                         };
                         /**
                          * Format: uuid
                          * @description Owning user ID.
                          */
                         userId?: string;
+                        /**
+                         * Format: uuid
+                         * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                         */
+                        readonly organizationId: string;
                         /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                         user?: {
                             /**
@@ -8097,8 +8174,8 @@ export interface operations {
                             catalogData?: {
                                 /** @description Tracks the specific content version that has been made available in the Catalog. */
                                 publishedVersion?: string;
-                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                                class?: string & ("official" | "verified" | "reference architecture");
+                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                                contentClass?: string & ("official" | "verified" | "community");
                                 /**
                                  * Model
                                  * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -8122,13 +8199,18 @@ export interface operations {
                                  */
                                 type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                                 /** @description Contains reference to the dark and light mode snapshots of the design. */
-                                snapshotURL?: string[];
+                                imageURL?: string[];
                             };
                             /**
                              * Format: uuid
                              * @description Owning user ID.
                              */
                             userId?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                             */
+                            readonly organizationId: string;
                             /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                             user?: {
                                 /**
@@ -8551,8 +8633,8 @@ export interface operations {
                             catalogData?: {
                                 /** @description Tracks the specific content version that has been made available in the Catalog. */
                                 publishedVersion?: string;
-                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                                class?: string & ("official" | "verified" | "reference architecture");
+                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                                contentClass?: string & ("official" | "verified" | "community");
                                 /**
                                  * Model
                                  * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -8576,13 +8658,18 @@ export interface operations {
                                  */
                                 type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                                 /** @description Contains reference to the dark and light mode snapshots of the design. */
-                                snapshotURL?: string[];
+                                imageURL?: string[];
                             };
                             /**
                              * Format: uuid
                              * @description Owning user ID.
                              */
                             userId?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                             */
+                            readonly organizationId: string;
                             /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                             user?: {
                                 /**
@@ -8948,6 +9035,11 @@ export interface operations {
                              */
                             owner?: string;
                             /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            readonly organizationId: string;
+                            /**
                              * Format: date-time
                              * @description Timestamp when the event was recorded.
                              */
@@ -9232,8 +9324,8 @@ export interface operations {
                             catalogData?: {
                                 /** @description Tracks the specific content version that has been made available in the Catalog. */
                                 publishedVersion?: string;
-                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                                class?: string & ("official" | "verified" | "reference architecture");
+                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                                contentClass?: string & ("official" | "verified" | "community");
                                 /**
                                  * Model
                                  * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -9257,13 +9349,18 @@ export interface operations {
                                  */
                                 type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                                 /** @description Contains reference to the dark and light mode snapshots of the design. */
-                                snapshotURL?: string[];
+                                imageURL?: string[];
                             };
                             /**
                              * Format: uuid
                              * @description Owning user ID.
                              */
                             userId?: string;
+                            /**
+                             * Format: uuid
+                             * @description The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+                             */
+                            readonly organizationId: string;
                             /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
                             user?: {
                                 /**
@@ -9622,8 +9719,8 @@ export interface operations {
                             catalogData?: {
                                 /** @description Tracks the specific content version that has been made available in the Catalog. */
                                 publishedVersion?: string;
-                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                                class?: string & ("official" | "verified" | "reference architecture");
+                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+                                contentClass?: string & ("official" | "verified" | "community");
                                 /**
                                  * Model
                                  * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -9647,7 +9744,7 @@ export interface operations {
                                  */
                                 type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                                 /** @description Contains reference to the dark and light mode snapshots of the design. */
-                                snapshotURL?: string[];
+                                imageURL?: string[];
                             };
                             /**
                              * Format: date-time

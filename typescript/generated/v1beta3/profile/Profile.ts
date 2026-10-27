@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Get all profiles
-         * @description Gets the live profiles the caller can see: those the caller owns (including profiles assigned to no workspace), those assigned to a workspace the caller is a member of, and, for organization admins, every profile of the organization. Provider admins are not granted visibility automatically. `search` matches the name or description case-insensitively.
+         * @description Gets the live profiles the caller can see: those the caller owns (including profiles assigned to no workspace), those that represent the caller (`userId`), those assigned to a workspace the caller is a member of, and, for organization admins, every profile of the organization. Provider admins are not granted visibility automatically. `search` matches the name or description case-insensitively; `name` matches the name exactly, ignoring case.
          */
         get: operations["getProfiles"];
         put?: never;
@@ -22,6 +22,26 @@ export interface paths {
          * @description Creates a profile in the organization named by `organizationId`. The server assigns `id` and the timestamps; `owner` defaults to the authenticated user. Names are not unique.
          */
         post: operations["createProfile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profiles/connections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the connection links of every visible profile
+         * @description Gets, in one paged read, the live profile-to-connection links of every live profile of the organization whose connections the caller may list under getProfileConnections' rules: the profiles the caller can see, with View Profiles; without it, only the profiles the caller owns. A profile that only represents the caller (`userId`) contributes no links, as its read-only grant does not cover its connections. A client learns which connections each profile acts through without one getProfileConnections call per profile. Items are ProfileConnectionMapping records; they carry ids only, and the connections themselves keep their own access rules. Ordered by profile, then connection.
+         */
+        get: operations["getProfileConnectionMappings"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -37,12 +57,12 @@ export interface paths {
         };
         /**
          * Get profile by ID
-         * @description Gets a profile visible to the caller: its owner (whether or not the profile is assigned to any workspace), an organization admin, or a member of a workspace it is assigned to. Provider admins are not granted visibility automatically. A profile the caller cannot see returns 404. Seeing the profile does not grant access to its linked connections.
+         * @description Gets a profile visible to the caller: its owner (whether or not the profile is assigned to any workspace), the user it represents (`userId`, read only), an organization admin, or a member of a workspace it is assigned to. Provider admins are not granted visibility automatically. A profile the caller cannot see returns 404. Seeing the profile does not grant access to its linked connections. The response carries the profile's entity tag in the `ETag` header.
          */
         get: operations["getProfileById"];
         /**
          * Update a profile
-         * @description Replaces the client-settable fields of the profile. `organizationId` cannot change after creation; a different value is refused with 400. Changing `owner` transfers the profile; the new owner must be a member of the organization.
+         * @description Replaces the client-settable fields of the profile. `organizationId` cannot change after creation; a different value is refused with 400. Changing `owner` transfers the profile; the new owner must be a member of the organization. The optional `If-Match` header makes the write conditional on the entity tag the profile carried when it was read: when it no longer matches, the request is refused with 412 and nothing is written. Without `If-Match` the write is unconditional.
          */
         put: operations["updateProfile"];
         post?: never;
@@ -65,7 +85,7 @@ export interface paths {
         };
         /**
          * Get profile connections
-         * @description Gets the connections linked to a profile visible to the caller: its owner (whether or not the profile is assigned to any workspace), an organization admin, or a member of a workspace it is assigned to. The owner needs no permission key; organization admins and workspace members also need View Profiles. Provider admins are not granted visibility automatically. A profile the caller cannot see returns 404. Seeing the profile does not grant access to its linked connections, which follow their own access rules.
+         * @description Gets the connections linked to a profile visible to the caller: its owner (whether or not the profile is assigned to any workspace), an organization admin, or a member of a workspace it is assigned to. The owner needs no permission key; organization admins and workspace members also need View Profiles. Provider admins are not granted visibility automatically. A profile the caller cannot see returns 404. Seeing the profile does not grant access to its linked connections, which follow their own access rules. `kind` narrows the page to connections of the given kinds.
          */
         get: operations["getProfileConnections"];
         put?: never;
@@ -273,17 +293,17 @@ export interface components {
         ProfileConnectionMapping: {
             /**
              * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             * @description Mapping record ID.
              */
             id: string;
             /**
              * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             * @description ID of the linked profile.
              */
             profileId: string;
             /**
              * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             * @description ID of the linked connection.
              */
             connectionId: string;
             /**
@@ -301,6 +321,48 @@ export interface components {
              * @description Timestamp when the mapping was soft-deleted. Null while the mapping remains active.
              */
             deletedAt?: string | null;
+        };
+        /** @description Paginated list of profile-to-connection links. */
+        ProfileConnectionMappingPage: {
+            /** @description Zero-based page index returned in this response. */
+            page: number;
+            /** @description Maximum number of items returned on each page. */
+            pageSize: number;
+            /** @description Total number of items across all pages. */
+            totalCount: number;
+            /** @description Profile-to-connection links in this page. */
+            mappings: {
+                /**
+                 * Format: uuid
+                 * @description Mapping record ID.
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the linked profile.
+                 */
+                profileId: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the linked connection.
+                 */
+                connectionId: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was last updated.
+                 */
+                updatedAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was soft-deleted. Null while the mapping remains active.
+                 */
+                deletedAt?: string | null;
+            }[];
         };
     };
     responses: {
@@ -349,8 +411,39 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+        MeshkitError429: {
+            headers: {
+                /** @description Number of seconds the caller must wait before retrying. */
+                "Retry-After": number;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
     };
     parameters: {
+        /** @description Entity tag of the profile as last read, from the `ETag` header of getProfileById or updateProfile. When present the write applies only if it still matches; otherwise 412. */
+        ifMatch: string;
+        /** @description Return only live profiles whose name equals this value, ignoring case. */
+        nameQuery: string;
+        /** @description Return only connections of these kinds (repeatable), as getConnections does. */
+        connectionKindQuery: string[];
         /** @description Profile ID */
         profileId: string;
         /** @description Connection ID */
@@ -405,7 +498,10 @@ export interface components {
             };
         };
     };
-    headers: never;
+    headers: {
+        /** @description Strong entity tag of the profile. It changes whenever the profile changes; send it back as `If-Match` to make updateProfile conditional. */
+        ProfileETag: string;
+    };
     pathItems: never;
 }
 export type $defs = Record<string, never>;
@@ -415,6 +511,8 @@ export interface operations {
             query?: {
                 /** @description Get responses that match search param value */
                 search?: string;
+                /** @description Return only live profiles whose name equals this value, ignoring case. */
+                name?: string;
                 /** @description Get ordered responses */
                 order?: string;
                 /** @description Get responses by page */
@@ -526,6 +624,31 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -668,6 +791,159 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getProfileConnectionMappings: {
+        parameters: {
+            query?: {
+                /** @description Organization ID used to scope the listing. Defaults to the organization the session resolved to. */
+                orgId?: string;
+                /** @description Get responses by page */
+                page?: number;
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Profile connection links */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Zero-based page index returned in this response. */
+                        page: number;
+                        /** @description Maximum number of items returned on each page. */
+                        pageSize: number;
+                        /** @description Total number of items across all pages. */
+                        totalCount: number;
+                        /** @description Profile-to-connection links in this page. */
+                        mappings: {
+                            /**
+                             * Format: uuid
+                             * @description Mapping record ID.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the linked profile.
+                             */
+                            profileId: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the linked connection.
+                             */
+                            connectionId: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the mapping was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the mapping was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the mapping was soft-deleted. Null while the mapping remains active.
+                             */
+                            deletedAt?: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
             /** @description Internal server error */
             500: {
                 headers: {
@@ -694,6 +970,8 @@ export interface operations {
             /** @description Profile */
             200: {
                 headers: {
+                    /** @description Strong entity tag of the profile. It changes whenever the profile changes; send it back as `If-Match` to make updateProfile conditional. */
+                    ETag: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -791,6 +1069,31 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
             /** @description Internal server error */
             500: {
                 headers: {
@@ -805,7 +1108,10 @@ export interface operations {
     updateProfile: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Entity tag of the profile as last read, from the `ETag` header of getProfileById or updateProfile. When present the write applies only if it still matches; otherwise 412. */
+                "If-Match"?: string;
+            };
             path: {
                 /** @description Profile ID */
                 profileId: string;
@@ -846,6 +1152,8 @@ export interface operations {
             /** @description Updated profile */
             200: {
                 headers: {
+                    /** @description Strong entity tag of the profile. It changes whenever the profile changes; send it back as `If-Match` to make updateProfile conditional. */
+                    ETag: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -941,6 +1249,38 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Precondition failed - `If-Match` does not match the profile's current entity tag, so nothing was written. Read the profile again and reapply the change. */
+            412: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -1009,6 +1349,31 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
             /** @description Internal server error */
             500: {
                 headers: {
@@ -1023,6 +1388,8 @@ export interface operations {
     getProfileConnections: {
         parameters: {
             query?: {
+                /** @description Return only connections of these kinds (repeatable), as getConnections does. */
+                kind?: string[];
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */
@@ -1330,7 +1697,7 @@ export interface operations {
                              * Format: uuid
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            organizationId?: string;
+                            organizationId: string;
                             /** @description Associated environments for this connection */
                             environments?: {
                                 /**
@@ -1459,6 +1826,31 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
             /** @description Internal server error */
             500: {
                 headers: {
@@ -1493,17 +1885,17 @@ export interface operations {
                     "application/json": {
                         /**
                          * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         * @description Mapping record ID.
                          */
                         id: string;
                         /**
                          * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         * @description ID of the linked profile.
                          */
                         profileId: string;
                         /**
                          * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         * @description ID of the linked connection.
                          */
                         connectionId: string;
                         /**
@@ -1558,6 +1950,31 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -1626,6 +2043,31 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Too many requests - the caller exceeded the server's per-user request rate for this route family. Wait the number of seconds in `Retry-After` before retrying. */
+            429: {
+                headers: {
+                    /** @description Number of seconds the caller must wait before retrying. */
+                    "Retry-After": number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */

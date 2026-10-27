@@ -144,7 +144,7 @@ type Connection struct {
 	TransitionMap map[string][]ConnectionStateTransition `db:"-" gorm:"type:bytes;serializer:json" json:"transitionMap,omitempty" yaml:"transitionMap,omitempty"`
 
 	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrganizationId *core.Uuid `db:"organization_id" json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
+	OrganizationID core.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`
 }
 
 // ConnectionStatus Connection Status
@@ -248,7 +248,7 @@ type ConnectionPage struct {
 	StatusSummary *map[ConnectionStatusValue]int `json:"statusSummary,omitempty" yaml:"statusSummary,omitempty"`
 }
 
-// ConnectionPayload Payload for creating or updating a connection
+// ConnectionPayload Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.
 type ConnectionPayload struct {
 	// CredentialID Associated credential ID
 	CredentialID *uuid.UUID `json:"credentialId,omitempty" yaml:"credentialId,omitempty"`
@@ -375,6 +375,9 @@ type ConnectionSummary struct {
 
 	// LastSeenAt Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one.
 	LastSeenAt *core.NullTime `json:"lastSeenAt" yaml:"lastSeenAt"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID core.Uuid `json:"organizationId" yaml:"organizationId"`
 }
 
 // ConnectionSummaryPage Page of connection summaries.
@@ -597,5 +600,8 @@ type PageSize = int
 // Search defines model for search.
 type Search = string
 
-// CoreMeshkitError409 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+// CoreMeshkitError409 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
 type CoreMeshkitError409 = core.MeshkitError
+
+// CoreMeshkitError429 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError429 = core.MeshkitError

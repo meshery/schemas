@@ -6,6 +6,7 @@ package schedule
 import (
 	core "github.com/meshery/schemas/models/core"
 	claimv1beta3 "github.com/meshery/schemas/models/v1beta3/claim"
+	risk_profilev1beta3 "github.com/meshery/schemas/models/v1beta3/risk_profile"
 )
 
 // Defines values for ScheduleStatus.
@@ -147,6 +148,20 @@ type Schedule struct {
 
 	// DeletedAt Timestamp when the schedule was soft-deleted. Null while live.
 	DeletedAt *core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
+
+	// RiskProfile The Risk Profile preset value. Wherever the value is carried, the
+	// workload runs that preset end to end - pace, share of each built-in cap,
+	// quiet hours and the pause after a sign-in challenge - instead of the
+	// preset the surrounding resolution (profile x platform, configuration,
+	// environment, account preference, defaults) would otherwise produce;
+	// omitting the value inherits that resolution unchanged. The value is a
+	// preset name, never `custom`: custom is a reported state of a profile
+	// whose dials sit outside its preset, not a choice anything can make.
+	// Referenced by the optional `riskProfile` property on the schedule
+	// construct's `Schedule` and `SchedulePayload` components
+	// (`v1beta3/schedule`). A new carrier references this component rather
+	// than restating the enum.
+	RiskProfile *risk_profilev1beta3.RiskProfile `db:"risk_profile" json:"riskProfile,omitempty" yaml:"riskProfile,omitempty"`
 }
 
 // SchedulePage Paginated collection of schedules.
@@ -218,6 +233,20 @@ type SchedulePayload struct {
 
 	// RetryDelayMinutes Minutes to wait before a retry becomes due.
 	RetryDelayMinutes *int `json:"retryDelayMinutes,omitempty" yaml:"retryDelayMinutes,omitempty"`
+
+	// RiskProfile The Risk Profile preset value. Wherever the value is carried, the
+	// workload runs that preset end to end - pace, share of each built-in cap,
+	// quiet hours and the pause after a sign-in challenge - instead of the
+	// preset the surrounding resolution (profile x platform, configuration,
+	// environment, account preference, defaults) would otherwise produce;
+	// omitting the value inherits that resolution unchanged. The value is a
+	// preset name, never `custom`: custom is a reported state of a profile
+	// whose dials sit outside its preset, not a choice anything can make.
+	// Referenced by the optional `riskProfile` property on the schedule
+	// construct's `Schedule` and `SchedulePayload` components
+	// (`v1beta3/schedule`). A new carrier references this component rather
+	// than restating the enum.
+	RiskProfile *risk_profilev1beta3.RiskProfile `json:"riskProfile,omitempty" yaml:"riskProfile,omitempty"`
 
 	// RunAt Time the schedule first becomes due.
 	RunAt *core.NullTime `json:"runAt" yaml:"runAt"`
@@ -319,3 +348,6 @@ type WorkspaceId = core.Uuid
 
 // WorkspaceIdQuery A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type WorkspaceIdQuery = core.Uuid
+
+// CoreMeshkitError429 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError429 = core.MeshkitError

@@ -2604,8 +2604,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "description": "Tracks the specific content version that has been made available in the Catalog.",
                                 "type": "string"
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -2617,8 +2617,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ]
                               },
@@ -2635,12 +2635,12 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "minItems": 1,
                                 "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
                               },
-                              "pattern_caveats": {
+                              "patternCaveats": {
                                 "type": "string",
                                 "title": "Caveats and Considerations",
                                 "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
                               },
-                              "pattern_info": {
+                              "patternInfo": {
                                 "type": "string",
                                 "title": "Description",
                                 "minLength": 1,
@@ -2662,7 +2662,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -2674,8 +2674,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                             },
                             "required": [
                               "compatibility",
-                              "pattern_caveats",
-                              "pattern_info",
+                              "patternCaveats",
+                              "patternInfo",
                               "type"
                             ]
                           },
@@ -2692,6 +2692,21 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             },
                             "x-go-type-skip-optional-pointer": true
+                          },
+                          "organizationId": {
+                            "description": "The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.\n",
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
                           "location": {
                             "type": "object",
@@ -3241,6 +3256,22 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "format": "date-time",
                                                   "x-go-type-skip-optional-pointer": true
+                                                },
+                                                "organizationId": {
+                                                  "type": "string",
+                                                  "format": "uuid",
+                                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                                  "x-go-type": "uuid.UUID",
+                                                  "x-go-type-import": {
+                                                    "path": "github.com/gofrs/uuid"
+                                                  },
+                                                  "x-go-name": "OrganizationID",
+                                                  "x-oapi-codegen-extra-tags": {
+                                                    "db": "organization_id",
+                                                    "json": "organizationId,omitempty",
+                                                    "yaml": "organizationId"
+                                                  },
+                                                  "x-order": 15
                                                 },
                                                 "environments": {
                                                   "type": "array",
@@ -11069,8 +11100,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "description": "Tracks the specific content version that has been made available in the Catalog.",
                       "type": "string"
                     },
-                    "class": {
-                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                    "contentClass": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                       "type": "string",
                       "oneOf": [
                         {
@@ -11082,8 +11113,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                           "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                         },
                         {
-                          "const": "reference architecture",
-                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                          "const": "community",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                         }
                       ]
                     },
@@ -11100,12 +11131,12 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "minItems": 1,
                       "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
                     },
-                    "pattern_caveats": {
+                    "patternCaveats": {
                       "type": "string",
                       "title": "Caveats and Considerations",
                       "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
                     },
-                    "pattern_info": {
+                    "patternInfo": {
                       "type": "string",
                       "title": "Description",
                       "minLength": 1,
@@ -11127,7 +11158,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "default": "Deployment",
                       "description": "Categorization of the type of design or operational flow depicted in this design."
                     },
-                    "snapshotURL": {
+                    "imageURL": {
                       "type": "array",
                       "items": {
                         "type": "string",
@@ -11139,8 +11170,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                   },
                   "required": [
                     "compatibility",
-                    "pattern_caveats",
-                    "pattern_info",
+                    "patternCaveats",
+                    "patternInfo",
                     "type"
                   ]
                 },
@@ -11157,6 +11188,21 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   },
                   "x-go-type-skip-optional-pointer": true
+                },
+                "organizationId": {
+                  "description": "The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.\n",
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 },
                 "location": {
                   "type": "object",
@@ -11706,6 +11752,22 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
+                                      },
+                                      "organizationId": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        },
+                                        "x-go-name": "OrganizationID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "organization_id",
+                                          "json": "organizationId,omitempty",
+                                          "yaml": "organizationId"
+                                        },
+                                        "x-order": 15
                                       },
                                       "environments": {
                                         "type": "array",

@@ -8,6 +8,13 @@
     "extension": true
   },
   {
+    "construct": "activity_metrics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/activity_metrics/activity_metrics.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "activity_result",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/activity_result/activity_result.yaml",
@@ -25,13 +32,6 @@
     "construct": "blowhorn_health",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/blowhorn_health/api.yml",
-    "core": false,
-    "extension": true
-  },
-  {
-    "construct": "blowhorn_profile",
-    "version": "v1beta3",
-    "href": "/schemas/constructs/v1beta3/blowhorn_profile/blowhorn_profile.yaml",
     "core": false,
     "extension": true
   },
@@ -94,6 +94,13 @@
     "extension": true
   },
   {
+    "construct": "content_metrics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/content_metrics/content_metrics.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "controllers_config",
     "version": "v1alpha1",
     "href": "/schemas/constructs/v1alpha1/controllers_config/controllers_config.yaml",
@@ -121,6 +128,13 @@
     "href": "/schemas/constructs/v1beta3/design/design.yaml",
     "docs_href": "https://docs.meshery.io/concepts/logical/designs",
     "core": true,
+    "extension": true
+  },
+  {
+    "construct": "diagnostics",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/diagnostics/api.yml",
+    "core": false,
     "extension": true
   },
   {
@@ -158,6 +172,20 @@
     "href": "/schemas/constructs/v1beta3/filter/filter.yaml",
     "core": false,
     "extension": true
+  },
+  {
+    "construct": "follower_demographics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/follower_demographics/follower_demographics.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "follower_metrics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/follower_metrics/follower_metrics.yaml",
+    "core": false,
+    "extension": false
   },
   {
     "construct": "github",
@@ -268,6 +296,13 @@
     "extension": false
   },
   {
+    "construct": "risk_profile",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/risk_profile/risk_profile.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "role",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/role/api.yml",
@@ -280,6 +315,13 @@
     "href": "/schemas/constructs/v1beta3/schedule/schedule.yaml",
     "core": false,
     "extension": true
+  },
+  {
+    "construct": "schedule_stop",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/schedule_stop/schedule_stop.yaml",
+    "core": false,
+    "extension": false
   },
   {
     "construct": "subcategory",

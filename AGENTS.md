@@ -47,6 +47,10 @@ Any new emitter of Go source must do the same. Hand-written Go in `models/`
 (`*_helper.go`, `const.go`, `import.go`, `*_conversion.go`, `models/core/`) is not
 covered by that step.
 
+Removing a construct removes its generated output in the same PR. The generators prune
+output directories whose construct is gone, and `make test-generated-outputs` fails while
+one is committed. See [`docs/superseded-construct-consumer-verification.md`](docs/superseded-construct-consumer-verification.md#removing-a-construct-removes-its-generated-output).
+
 ## Required on Every PR
 
 - **Tests accompany every behavioral change.** Run every locally-runnable test
@@ -69,6 +73,19 @@ Always run `make build`, `go test ./...`, and `npm run build` before committing 
 - Use `chrome-devtools-axi` for browser automation (navigate, snapshot, click, fill forms, run JS, inspect console/network) in place of raw Playwright/chrome-devtools MCP for ad hoc tasks.
 - Run `quota-axi` to check local agent-provider quota windows before long-running work.
 - Use the `lavish` skill (`lavish-axi` CLI) to turn a plan, comparison, or report into a reviewable HTML artifact.
+- **Work in a treehouse worktree, never in the main clone.** Other agent sessions and the
+  no-mistakes pipeline share the main clone. Take a worktree with
+  `treehouse get --lease -b <branch>` (it prints the path; `--base <branch>` starts it from
+  another branch), work there, and release it with `treehouse return <path>` once the change
+  has merged. `treehouse status` lists the pool. Never make one with `git worktree add` or a
+  second clone.
+- **Land every change through no-mistakes, at most three runs per pull request.** Commit in
+  the worktree, then run `no-mistakes axi run --intent "<goal>"` (a clone without a
+  `no-mistakes` remote needs `no-mistakes init` once). `no-mistakes axi status` shows the step
+  and its findings, and `no-mistakes axi respond` answers a review gate. The pipeline reviews,
+  tests, pushes and opens the pull request. After the third run, merge the pull request as it
+  stands and open an issue for anything still flagged. A run that stopped on a usage limit
+  counts; one cancelled before it did anything does not.
 
 ### Where skills live
 
@@ -90,6 +107,8 @@ The YAML file for an entity represents the **full server-side object** as return
 - `additionalProperties: false` at the top level
 - All server-generated fields defined in `properties`: `id`, `created_at`, `updated_at`, `deleted_at`
 - Server-generated fields that are always present belong in `required`
+
+Exception: an **event-metadata construct** (no endpoints; recorded and read back verbatim as an `Event`'s `metadata`) has no server-generated fields, so it declares none and its `*Payload` carries the same field set. See [the authoring reference](docs/schema-authoring-reference.md#event-metadata-constructs-have-no-server-generated-fields).
 
 ### Rule 2: Every writable entity needs a `*Payload` schema in `api.yml`
 
@@ -184,6 +203,8 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/environment-purpose-contract.md`](docs/environment-purpose-contract.md)** - what `Environment.purpose` means, why it is not client-settable, and what each consumer must enforce for that to hold.
 - **[`docs/profile-contract.md`](docs/profile-contract.md)** - the profile construct, its workspace assignment, and its permission keys.
 - **[`docs/claim-contract.md`](docs/claim-contract.md)** - the claim construct: connection holders, expiry at read time, kept history, release outcomes, and its permission keys.
+- **[`docs/event-organization-contract.md`](docs/event-organization-contract.md)** - `Event.organizationId` and the `getEvents` `scope` query.
+- **[`docs/connection-design-organization-contract.md`](docs/connection-design-organization-contract.md)** - `Connection.organizationId` and design `organizationId` (`meshery_patterns`), both server-assigned.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
 - **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
 

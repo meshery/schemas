@@ -36,6 +36,7 @@ const config = require("./lib/config");
 const paths = require("./lib/paths");
 const { commandExists } = require("./lib/exec");
 const { writeGeneratedHelperFile } = require("./lib/generated-go-helpers");
+const generatedOutputs = require("./lib/generated-outputs");
 const { formatGoFile, requireGofmt } = require("./lib/gofmt");
 
 /**
@@ -1607,6 +1608,14 @@ async function main() {
     // Generate Go models for all packages
     for (const pkg of schemaPackages) {
       await generateGoModels(pkg);
+    }
+
+    // A filtered run does not regenerate every package, so only a full run
+    // decides which output is orphaned.
+    if (!packageFilter) {
+      for (const dir of generatedOutputs.pruneOrphanedGoOutputs(paths.getProjectRoot())) {
+        logger.info(`Removed output of removed construct: ${dir}`);
+      }
     }
 
     // Summary

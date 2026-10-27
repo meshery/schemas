@@ -1,0 +1,159 @@
+openapi: 3.0.0
+info:
+  title: Content Metrics
+  description: |-
+    OpenAPI schema for daily content figures for a page, consumed by
+    Blowhorn's analytics store. The rows have no endpoints of their own:
+    they are recorded and read back as the `metadata` of events on the
+    events service (category `blowhorn`, action `content_metrics`; see
+    the event construct), so this file declares the components only and
+    the paths stay with the event construct.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths: {}
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ContentMetrics:
+      $ref: ./content_metrics.yaml
+    ContentMetricsPayload:
+      type: object
+      description: |-
+        Payload for recording one day's content figures for a page, sent as
+        the `metadata` of a create-event call. Contains only client-settable
+        fields; the row has no server-generated fields, because the events
+        service stores and returns event metadata verbatim, so the payload
+        and the recorded row (ContentMetrics) share one field set.
+      additionalProperties: false
+      required:
+      - organizationId
+      - platform
+      - subject
+      - readingDate
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: Owning organization ID.
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-name: OrganizationID
+        platform:
+          type: string
+          description: The platform the page belongs to (today only `linkedin` produces these exports).
+        subject:
+          type: string
+          description: The page the figures describe, named as the source export names it.
+        readingDate:
+          type: string
+          format: date
+          description: The day the figures describe, as an ISO calendar date.
+        impressionsOrganic:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Organic impressions that day; null when the export's cell is blank.
+        impressionsSponsored:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Sponsored impressions that day; null when the export's cell is blank.
+        impressions:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: All impressions that day; null when the export's cell is blank.
+        uniqueImpressions:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Unique impressions that day (the export reports this figure for organic only); null when the export's cell is blank.
+        clicksOrganic:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Organic clicks that day; null when the export's cell is blank.
+        clicksSponsored:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Sponsored clicks that day; null when the export's cell is blank.
+        clicks:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: All clicks that day; null when the export's cell is blank.
+        reactionsOrganic:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Organic reactions that day; null when the export's cell is blank.
+        reactionsSponsored:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Sponsored reactions that day; null when the export's cell is blank.
+        reactions:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: All reactions that day; null when the export's cell is blank.
+        commentsOrganic:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Organic comments that day; null when the export's cell is blank.
+        commentsSponsored:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Sponsored comments that day; null when the export's cell is blank.
+        comments:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: All comments that day; null when the export's cell is blank.
+        repostsOrganic:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Organic reposts that day; null when the export's cell is blank.
+        repostsSponsored:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Sponsored reposts that day; null when the export's cell is blank.
+        reposts:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: All reposts that day; null when the export's cell is blank.
+        engagementRateOrganic:
+          type: number
+          nullable: true
+          minimum: 0
+          description: Organic engagement rate that day, as the export reports it; null when the export's cell is blank.
+        engagementRateSponsored:
+          type: number
+          nullable: true
+          minimum: 0
+          description: Sponsored engagement rate that day, as the export reports it; null when the export's cell is blank.
+        engagementRate:
+          type: number
+          nullable: true
+          minimum: 0
+          description: Overall engagement rate that day, as the export reports it; null when the export's cell is blank.
+        sourceFile:
+          type: string
+          description: The export file the row was read from; empty when the row did not come from a file export.

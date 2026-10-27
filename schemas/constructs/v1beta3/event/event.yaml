@@ -26,6 +26,21 @@ properties:
     x-oapi-codegen-extra-tags:
       db: system_id
       json: systemId
+  organizationId:
+    type: string
+    format: uuid
+    description: >
+      The organization the event belongs to (see Event.organizationId). Set by
+      the server; lets an organization-scope listing show each row's tenant.
+    readOnly: true
+    x-go-type: uuid.UUID
+    x-go-type-import:
+      path: github.com/gofrs/uuid
+    x-go-name: OrganizationID
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+      json: organizationId
   category:
     type: string
     description: The category of the event.

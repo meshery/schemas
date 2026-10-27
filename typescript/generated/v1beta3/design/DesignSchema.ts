@@ -175,7 +175,10 @@ const DesignSchema: Record<string, unknown> = {
                       "items": {
                         "x-go-type": "MesheryPattern",
                         "type": "object",
-                        "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                        "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                        "required": [
+                          "organizationId"
+                        ],
                         "properties": {
                           "id": {
                             "description": "Server-generated design ID.",
@@ -207,8 +210,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "maxLength": 500
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -220,8 +223,8 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ],
                                 "maxLength": 500
@@ -268,7 +271,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -297,6 +300,22 @@ const DesignSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             },
                             "x-go-type-skip-optional-pointer": true
+                          },
+                          "organizationId": {
+                            "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
                           "user": {
                             "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -1219,7 +1238,7 @@ const DesignSchema: Record<string, unknown> = {
         ],
         "summary": "Save design",
         "operationId": "upsertPattern",
-        "description": "Creates or updates an infrastructure design.",
+        "description": "Creates or updates an infrastructure design. The server assigns `organizationId` from the session organization; clients do not send it. On update the organization stays the one assigned at create.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -1285,8 +1304,8 @@ const DesignSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 500
                           },
-                          "class": {
-                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                          "contentClass": {
+                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                             "type": "string",
                             "oneOf": [
                               {
@@ -1298,8 +1317,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                               },
                               {
-                                "const": "reference architecture",
-                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                "const": "community",
+                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                               }
                             ],
                             "maxLength": 500
@@ -1346,7 +1365,7 @@ const DesignSchema: Record<string, unknown> = {
                             "default": "Deployment",
                             "description": "Categorization of the type of design or operational flow depicted in this design."
                           },
-                          "snapshotURL": {
+                          "imageURL": {
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -1431,7 +1450,10 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                  "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                  "required": [
+                    "organizationId"
+                  ],
                   "properties": {
                     "id": {
                       "description": "Server-generated design ID.",
@@ -1463,8 +1485,8 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "maxLength": 500
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -1476,8 +1498,8 @@ const DesignSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ],
                           "maxLength": 500
@@ -1524,7 +1546,7 @@ const DesignSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -1553,6 +1575,22 @@ const DesignSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "organizationId": {
+                      "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                      "readOnly": true,
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "user": {
                       "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -2598,7 +2636,10 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                  "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                  "required": [
+                    "organizationId"
+                  ],
                   "properties": {
                     "id": {
                       "description": "Server-generated design ID.",
@@ -2630,8 +2671,8 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "maxLength": 500
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -2643,8 +2684,8 @@ const DesignSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ],
                           "maxLength": 500
@@ -2691,7 +2732,7 @@ const DesignSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -2720,6 +2761,22 @@ const DesignSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "organizationId": {
+                      "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                      "readOnly": true,
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "user": {
                       "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -3725,6 +3782,25 @@ const DesignSchema: Record<string, unknown> = {
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Payload for cloning a design. The optional name is applied to the cloned design; the server derives ownership and visibility from the request context.\n",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Optional name to apply to the cloned design.",
+                    "minLength": 1,
+                    "maxLength": 255
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Design cloned",
@@ -3732,7 +3808,10 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                  "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                  "required": [
+                    "organizationId"
+                  ],
                   "properties": {
                     "id": {
                       "description": "Server-generated design ID.",
@@ -3764,8 +3843,8 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "maxLength": 500
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -3777,8 +3856,8 @@ const DesignSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ],
                           "maxLength": 500
@@ -3825,7 +3904,7 @@ const DesignSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -3854,6 +3933,22 @@ const DesignSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "organizationId": {
+                      "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                      "readOnly": true,
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "user": {
                       "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -4973,7 +5068,10 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                  "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                  "required": [
+                    "organizationId"
+                  ],
                   "properties": {
                     "id": {
                       "description": "Server-generated design ID.",
@@ -5005,8 +5103,8 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "maxLength": 500
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -5018,8 +5116,8 @@ const DesignSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ],
                           "maxLength": 500
@@ -5066,7 +5164,7 @@ const DesignSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -5095,6 +5193,22 @@ const DesignSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "organizationId": {
+                      "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                      "readOnly": true,
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "user": {
                       "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -6003,7 +6117,7 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
                   "required": [
                     "error"
                   ],
@@ -6084,7 +6198,7 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
                   "required": [
                     "error"
                   ],
@@ -6211,7 +6325,10 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                  "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                  "required": [
+                    "organizationId"
+                  ],
                   "properties": {
                     "id": {
                       "description": "Server-generated design ID.",
@@ -6243,8 +6360,8 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "maxLength": 500
                         },
-                        "class": {
-                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                        "contentClass": {
+                          "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                           "type": "string",
                           "oneOf": [
                             {
@@ -6256,8 +6373,8 @@ const DesignSchema: Record<string, unknown> = {
                               "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                             },
                             {
-                              "const": "reference architecture",
-                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                              "const": "community",
+                              "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                             }
                           ],
                           "maxLength": 500
@@ -6304,7 +6421,7 @@ const DesignSchema: Record<string, unknown> = {
                           "default": "Deployment",
                           "description": "Categorization of the type of design or operational flow depicted in this design."
                         },
-                        "snapshotURL": {
+                        "imageURL": {
                           "type": "array",
                           "items": {
                             "type": "string",
@@ -6333,6 +6450,22 @@ const DesignSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "organizationId": {
+                      "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                      "readOnly": true,
+                      "x-go-name": "OrganizationID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "json": "organizationId"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "user": {
                       "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -7241,7 +7374,7 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
                   "required": [
                     "error"
                   ],
@@ -7322,7 +7455,7 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
                   "required": [
                     "error"
                   ],
@@ -7454,7 +7587,10 @@ const DesignSchema: Record<string, unknown> = {
                   "minItems": 1,
                   "items": {
                     "type": "object",
-                    "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                    "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                    "required": [
+                      "organizationId"
+                    ],
                     "properties": {
                       "id": {
                         "description": "Server-generated design ID.",
@@ -7486,8 +7622,8 @@ const DesignSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 500
                           },
-                          "class": {
-                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                          "contentClass": {
+                            "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                             "type": "string",
                             "oneOf": [
                               {
@@ -7499,8 +7635,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                               },
                               {
-                                "const": "reference architecture",
-                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                "const": "community",
+                                "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                               }
                             ],
                             "maxLength": 500
@@ -7547,7 +7683,7 @@ const DesignSchema: Record<string, unknown> = {
                             "default": "Deployment",
                             "description": "Categorization of the type of design or operational flow depicted in this design."
                           },
-                          "snapshotURL": {
+                          "imageURL": {
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -7576,6 +7712,22 @@ const DesignSchema: Record<string, unknown> = {
                           "path": "github.com/gofrs/uuid"
                         },
                         "x-go-type-skip-optional-pointer": true
+                      },
+                      "organizationId": {
+                        "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                        "readOnly": true,
+                        "x-go-name": "OrganizationID",
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "organization_id",
+                          "json": "organizationId"
+                        },
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
                       },
                       "user": {
                         "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -8563,7 +8715,10 @@ const DesignSchema: Record<string, unknown> = {
                       "items": {
                         "x-go-type": "MesheryPattern",
                         "type": "object",
-                        "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                        "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                        "required": [
+                          "organizationId"
+                        ],
                         "properties": {
                           "id": {
                             "description": "Server-generated design ID.",
@@ -8595,8 +8750,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "maxLength": 500
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -8608,8 +8763,8 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ],
                                 "maxLength": 500
@@ -8656,7 +8811,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -8685,6 +8840,22 @@ const DesignSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             },
                             "x-go-type-skip-optional-pointer": true
+                          },
+                          "organizationId": {
+                            "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
                           "user": {
                             "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -9741,7 +9912,10 @@ const DesignSchema: Record<string, unknown> = {
                       "description": "Designs created or updated by this import, with `sourceContent`, `patternFile` and `catalogData` omitted.\n",
                       "items": {
                         "type": "object",
-                        "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                        "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                        "required": [
+                          "organizationId"
+                        ],
                         "properties": {
                           "id": {
                             "description": "Server-generated design ID.",
@@ -9773,8 +9947,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "maxLength": 500
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -9786,8 +9960,8 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ],
                                 "maxLength": 500
@@ -9834,7 +10008,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -9863,6 +10037,22 @@ const DesignSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             },
                             "x-go-type-skip-optional-pointer": true
+                          },
+                          "organizationId": {
+                            "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
                           "user": {
                             "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -10788,6 +10978,7 @@ const DesignSchema: Record<string, unknown> = {
                           "severity",
                           "status",
                           "systemId",
+                          "organizationId",
                           "createdAt",
                           "updatedAt"
                         ],
@@ -10797,6 +10988,7 @@ const DesignSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "id"
                             },
+                            "x-order": 7,
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
@@ -10810,6 +11002,7 @@ const DesignSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "acted_upon"
                             },
+                            "x-order": 1,
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
@@ -10824,7 +11017,8 @@ const DesignSchema: Record<string, unknown> = {
                             "maxLength": 500,
                             "x-oapi-codegen-extra-tags": {
                               "db": "action"
-                            }
+                            },
+                            "x-order": 2
                           },
                           "category": {
                             "type": "string",
@@ -10832,7 +11026,8 @@ const DesignSchema: Record<string, unknown> = {
                             "maxLength": 500,
                             "x-oapi-codegen-extra-tags": {
                               "db": "category"
-                            }
+                            },
+                            "x-order": 3
                           },
                           "description": {
                             "type": "string",
@@ -10840,7 +11035,8 @@ const DesignSchema: Record<string, unknown> = {
                             "maxLength": 5000,
                             "x-oapi-codegen-extra-tags": {
                               "db": "description"
-                            }
+                            },
+                            "x-order": 6
                           },
                           "metadata": {
                             "type": "object",
@@ -10854,7 +11050,8 @@ const DesignSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "metadata"
-                            }
+                            },
+                            "x-order": 8
                           },
                           "operationId": {
                             "description": "ID correlating the events one operation emitted.",
@@ -10862,6 +11059,7 @@ const DesignSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "operation_id"
                             },
+                            "x-order": 9,
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
@@ -10876,7 +11074,8 @@ const DesignSchema: Record<string, unknown> = {
                             "maxLength": 255,
                             "x-oapi-codegen-extra-tags": {
                               "db": "severity"
-                            }
+                            },
+                            "x-order": 12
                           },
                           "status": {
                             "type": "string",
@@ -10884,10 +11083,12 @@ const DesignSchema: Record<string, unknown> = {
                             "maxLength": 255,
                             "x-oapi-codegen-extra-tags": {
                               "db": "status"
-                            }
+                            },
+                            "x-order": 13
                           },
                           "systemId": {
                             "description": "ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.\n",
+                            "x-order": 14,
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
@@ -10910,13 +11111,32 @@ const DesignSchema: Record<string, unknown> = {
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "owner"
-                            }
+                            },
+                            "x-order": 10
+                          },
+                          "organizationId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "x-order": 11
                           },
                           "createdAt": {
                             "description": "Timestamp when the event was recorded.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at"
                             },
+                            "x-order": 4,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -10926,6 +11146,7 @@ const DesignSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at"
                             },
+                            "x-order": 15,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -10935,6 +11156,7 @@ const DesignSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at"
                             },
+                            "x-order": 5,
                             "x-go-type": "meshcore.NullTime",
                             "x-go-type-import": {
                               "name": "meshcore",
@@ -10979,7 +11201,7 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
                   "required": [
                     "error"
                   ],
@@ -11050,7 +11272,7 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
                   "required": [
                     "error"
                   ],
@@ -11245,7 +11467,7 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
                   "required": [
                     "error"
                   ],
@@ -11316,7 +11538,7 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+                  "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
                   "required": [
                     "error"
                   ],
@@ -11519,7 +11741,10 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+                        "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+                        "required": [
+                          "organizationId"
+                        ],
                         "properties": {
                           "id": {
                             "description": "Server-generated design ID.",
@@ -11551,8 +11776,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "maxLength": 500
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -11564,8 +11789,8 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ],
                                 "maxLength": 500
@@ -11612,7 +11837,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -11641,6 +11866,22 @@ const DesignSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             },
                             "x-go-type-skip-optional-pointer": true
+                          },
+                          "organizationId": {
+                            "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                            "readOnly": true,
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organizationId"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
                           "user": {
                             "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -12632,8 +12873,8 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "maxLength": 500
                               },
-                              "class": {
-                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                              "contentClass": {
+                                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                                 "type": "string",
                                 "oneOf": [
                                   {
@@ -12645,8 +12886,8 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                                   },
                                   {
-                                    "const": "reference architecture",
-                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                                    "const": "community",
+                                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                                   }
                                 ],
                                 "maxLength": 500
@@ -12693,7 +12934,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "default": "Deployment",
                                 "description": "Categorization of the type of design or operational flow depicted in this design."
                               },
-                              "snapshotURL": {
+                              "imageURL": {
                                 "type": "array",
                                 "items": {
                                   "type": "string",
@@ -16315,7 +16556,7 @@ const DesignSchema: Record<string, unknown> = {
           "application/json": {
             "schema": {
               "type": "object",
-              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
               "required": [
                 "error"
               ],
@@ -16366,7 +16607,7 @@ const DesignSchema: Record<string, unknown> = {
           "application/json": {
             "schema": {
               "type": "object",
-              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
+              "description": "A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.",
               "required": [
                 "error"
               ],
@@ -17051,6 +17292,22 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "string",
                               "format": "date-time",
                               "x-go-type-skip-optional-pointer": true
+                            },
+                            "organizationId": {
+                              "description": "The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.\n",
+                              "x-go-name": "OrganizationID",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "organization_id",
+                                "json": "organizationId,omitempty",
+                                "yaml": "organizationId"
+                              },
+                              "x-order": 15,
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
                             },
                             "environments": {
                               "type": "array",
@@ -21175,7 +21432,10 @@ const DesignSchema: Record<string, unknown> = {
       },
       "MesheryPattern": {
         "type": "object",
-        "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+        "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+        "required": [
+          "organizationId"
+        ],
         "properties": {
           "id": {
             "description": "Server-generated design ID.",
@@ -21207,8 +21467,8 @@ const DesignSchema: Record<string, unknown> = {
                 "type": "string",
                 "maxLength": 500
               },
-              "class": {
-                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+              "contentClass": {
+                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                 "type": "string",
                 "oneOf": [
                   {
@@ -21220,8 +21480,8 @@ const DesignSchema: Record<string, unknown> = {
                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                   },
                   {
-                    "const": "reference architecture",
-                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                    "const": "community",
+                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                   }
                 ],
                 "maxLength": 500
@@ -21268,7 +21528,7 @@ const DesignSchema: Record<string, unknown> = {
                 "default": "Deployment",
                 "description": "Categorization of the type of design or operational flow depicted in this design."
               },
-              "snapshotURL": {
+              "imageURL": {
                 "type": "array",
                 "items": {
                   "type": "string",
@@ -21297,6 +21557,22 @@ const DesignSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             },
             "x-go-type-skip-optional-pointer": true
+          },
+          "organizationId": {
+            "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+            "readOnly": true,
+            "x-go-name": "OrganizationID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "organization_id",
+              "json": "organizationId"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
           },
           "user": {
             "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -22200,7 +22476,10 @@ const DesignSchema: Record<string, unknown> = {
             "items": {
               "x-go-type": "MesheryPattern",
               "type": "object",
-              "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+              "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+              "required": [
+                "organizationId"
+              ],
               "properties": {
                 "id": {
                   "description": "Server-generated design ID.",
@@ -22232,8 +22511,8 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "maxLength": 500
                     },
-                    "class": {
-                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                    "contentClass": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                       "type": "string",
                       "oneOf": [
                         {
@@ -22245,8 +22524,8 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                         },
                         {
-                          "const": "reference architecture",
-                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                          "const": "community",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                         }
                       ],
                       "maxLength": 500
@@ -22293,7 +22572,7 @@ const DesignSchema: Record<string, unknown> = {
                       "default": "Deployment",
                       "description": "Categorization of the type of design or operational flow depicted in this design."
                     },
-                    "snapshotURL": {
+                    "imageURL": {
                       "type": "array",
                       "items": {
                         "type": "string",
@@ -22322,6 +22601,22 @@ const DesignSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   },
                   "x-go-type-skip-optional-pointer": true
+                },
+                "organizationId": {
+                  "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 },
                 "user": {
                   "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -23242,9 +23537,21 @@ const DesignSchema: Record<string, unknown> = {
           }
         }
       },
+      "MesheryPatternClonePayload": {
+        "type": "object",
+        "description": "Payload for cloning a design. The optional name is applied to the cloned design; the server derives ownership and visibility from the request context.\n",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Optional name to apply to the cloned design.",
+            "minLength": 1,
+            "maxLength": 255
+          }
+        }
+      },
       "MesheryPatternPayload": {
         "type": "object",
-        "description": "Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response.\n",
+        "description": "Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (`organizationId`, createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded. The server assigns `organizationId` from the session organization, ignores any client value, and re-projects server-owned fields on the response.\n",
         "properties": {
           "id": {
             "description": "Existing design ID for updates; omit on create.",
@@ -23293,8 +23600,8 @@ const DesignSchema: Record<string, unknown> = {
                 "type": "string",
                 "maxLength": 500
               },
-              "class": {
-                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+              "contentClass": {
+                "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                 "type": "string",
                 "oneOf": [
                   {
@@ -23306,8 +23613,8 @@ const DesignSchema: Record<string, unknown> = {
                     "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                   },
                   {
-                    "const": "reference architecture",
-                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                    "const": "community",
+                    "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                   }
                 ],
                 "maxLength": 500
@@ -23354,7 +23661,7 @@ const DesignSchema: Record<string, unknown> = {
                 "default": "Deployment",
                 "description": "Categorization of the type of design or operational flow depicted in this design."
               },
-              "snapshotURL": {
+              "imageURL": {
                 "type": "array",
                 "items": {
                   "type": "string",
@@ -23471,8 +23778,8 @@ const DesignSchema: Record<string, unknown> = {
                     "type": "string",
                     "maxLength": 500
                   },
-                  "class": {
-                    "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                  "contentClass": {
+                    "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                     "type": "string",
                     "oneOf": [
                       {
@@ -23484,8 +23791,8 @@ const DesignSchema: Record<string, unknown> = {
                         "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                       },
                       {
-                        "const": "reference architecture",
-                        "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                        "const": "community",
+                        "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                       }
                     ],
                     "maxLength": 500
@@ -23532,7 +23839,7 @@ const DesignSchema: Record<string, unknown> = {
                     "default": "Deployment",
                     "description": "Categorization of the type of design or operational flow depicted in this design."
                   },
-                  "snapshotURL": {
+                  "imageURL": {
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -23878,7 +24185,10 @@ const DesignSchema: Record<string, unknown> = {
             "description": "Designs created or updated by this import, with `sourceContent`, `patternFile` and `catalogData` omitted.\n",
             "items": {
               "type": "object",
-              "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+              "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+              "required": [
+                "organizationId"
+              ],
               "properties": {
                 "id": {
                   "description": "Server-generated design ID.",
@@ -23910,8 +24220,8 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "maxLength": 500
                     },
-                    "class": {
-                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                    "contentClass": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                       "type": "string",
                       "oneOf": [
                         {
@@ -23923,8 +24233,8 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                         },
                         {
-                          "const": "reference architecture",
-                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                          "const": "community",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                         }
                       ],
                       "maxLength": 500
@@ -23971,7 +24281,7 @@ const DesignSchema: Record<string, unknown> = {
                       "default": "Deployment",
                       "description": "Categorization of the type of design or operational flow depicted in this design."
                     },
-                    "snapshotURL": {
+                    "imageURL": {
                       "type": "array",
                       "items": {
                         "type": "string",
@@ -24000,6 +24310,22 @@ const DesignSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   },
                   "x-go-type-skip-optional-pointer": true
+                },
+                "organizationId": {
+                  "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 },
                 "user": {
                   "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -24925,6 +25251,7 @@ const DesignSchema: Record<string, unknown> = {
                 "severity",
                 "status",
                 "systemId",
+                "organizationId",
                 "createdAt",
                 "updatedAt"
               ],
@@ -24934,6 +25261,7 @@ const DesignSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "id"
                   },
+                  "x-order": 7,
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
@@ -24947,6 +25275,7 @@ const DesignSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "acted_upon"
                   },
+                  "x-order": 1,
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
@@ -24961,7 +25290,8 @@ const DesignSchema: Record<string, unknown> = {
                   "maxLength": 500,
                   "x-oapi-codegen-extra-tags": {
                     "db": "action"
-                  }
+                  },
+                  "x-order": 2
                 },
                 "category": {
                   "type": "string",
@@ -24969,7 +25299,8 @@ const DesignSchema: Record<string, unknown> = {
                   "maxLength": 500,
                   "x-oapi-codegen-extra-tags": {
                     "db": "category"
-                  }
+                  },
+                  "x-order": 3
                 },
                 "description": {
                   "type": "string",
@@ -24977,7 +25308,8 @@ const DesignSchema: Record<string, unknown> = {
                   "maxLength": 5000,
                   "x-oapi-codegen-extra-tags": {
                     "db": "description"
-                  }
+                  },
+                  "x-order": 6
                 },
                 "metadata": {
                   "type": "object",
@@ -24991,7 +25323,8 @@ const DesignSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "metadata"
-                  }
+                  },
+                  "x-order": 8
                 },
                 "operationId": {
                   "description": "ID correlating the events one operation emitted.",
@@ -24999,6 +25332,7 @@ const DesignSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "operation_id"
                   },
+                  "x-order": 9,
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
@@ -25013,7 +25347,8 @@ const DesignSchema: Record<string, unknown> = {
                   "maxLength": 255,
                   "x-oapi-codegen-extra-tags": {
                     "db": "severity"
-                  }
+                  },
+                  "x-order": 12
                 },
                 "status": {
                   "type": "string",
@@ -25021,10 +25356,12 @@ const DesignSchema: Record<string, unknown> = {
                   "maxLength": 255,
                   "x-oapi-codegen-extra-tags": {
                     "db": "status"
-                  }
+                  },
+                  "x-order": 13
                 },
                 "systemId": {
                   "description": "ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.\n",
+                  "x-order": 14,
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
@@ -25047,13 +25384,32 @@ const DesignSchema: Record<string, unknown> = {
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "owner"
-                  }
+                  },
+                  "x-order": 10
+                },
+                "organizationId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId"
+                  },
+                  "x-order": 11
                 },
                 "createdAt": {
                   "description": "Timestamp when the event was recorded.",
                   "x-oapi-codegen-extra-tags": {
                     "db": "created_at"
                   },
+                  "x-order": 4,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
@@ -25063,6 +25419,7 @@ const DesignSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at"
                   },
+                  "x-order": 15,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
@@ -25072,6 +25429,7 @@ const DesignSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "deleted_at"
                   },
+                  "x-order": 5,
                   "x-go-type": "meshcore.NullTime",
                   "x-go-type-import": {
                     "name": "meshcore",
@@ -25273,7 +25631,10 @@ const DesignSchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "object",
-              "description": "Server-returned design (pattern) resource as persisted by meshery-cloud.",
+              "description": "Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.\n",
+              "required": [
+                "organizationId"
+              ],
               "properties": {
                 "id": {
                   "description": "Server-generated design ID.",
@@ -25305,8 +25666,8 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "maxLength": 500
                     },
-                    "class": {
-                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                    "contentClass": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                       "type": "string",
                       "oneOf": [
                         {
@@ -25318,8 +25679,8 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                         },
                         {
-                          "const": "reference architecture",
-                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                          "const": "community",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                         }
                       ],
                       "maxLength": 500
@@ -25366,7 +25727,7 @@ const DesignSchema: Record<string, unknown> = {
                       "default": "Deployment",
                       "description": "Categorization of the type of design or operational flow depicted in this design."
                     },
-                    "snapshotURL": {
+                    "imageURL": {
                       "type": "array",
                       "items": {
                         "type": "string",
@@ -25395,6 +25756,22 @@ const DesignSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   },
                   "x-go-type-skip-optional-pointer": true
+                },
+                "organizationId": {
+                  "description": "The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.\n",
+                  "readOnly": true,
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 },
                 "user": {
                   "description": "Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
@@ -26386,8 +26763,8 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "maxLength": 500
                     },
-                    "class": {
-                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
+                    "contentClass": {
+                      "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content.",
                       "type": "string",
                       "oneOf": [
                         {
@@ -26399,8 +26776,8 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility."
                         },
                         {
-                          "const": "reference architecture",
-                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
+                          "const": "community",
+                          "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
                         }
                       ],
                       "maxLength": 500
@@ -26447,7 +26824,7 @@ const DesignSchema: Record<string, unknown> = {
                       "default": "Deployment",
                       "description": "Categorization of the type of design or operational flow depicted in this design."
                     },
-                    "snapshotURL": {
+                    "imageURL": {
                       "type": "array",
                       "items": {
                         "type": "string",
