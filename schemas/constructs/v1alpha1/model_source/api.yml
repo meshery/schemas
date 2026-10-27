@@ -1,0 +1,233 @@
+openapi: 3.0.0
+info:
+  title: Model Source
+  description: OpenAPI schema for Meshery Model Source manifests, component overrides, and registry taxonomy metadata.
+  version: v1alpha1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths: {}
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ModelSource:
+      $ref: "./model_source.yaml"
+
+    ModelSourceSource:
+      type: object
+      additionalProperties: false
+      description: Source location and upstream details for model generation.
+      required:
+        - url
+        - kind
+      properties:
+        url:
+          type: string
+          description: URL to git repo, Artifact Hub package, or HTTP manifest/chart.
+          minLength: 1
+          maxLength: 2048
+        kind:
+          type: string
+          description: Kind of source repository or upstream package.
+          enum:
+            - github
+            - artifacthub
+            - http
+        version:
+          type: string
+          description: Optional pinned upstream package or release version.
+          minLength: 1
+          maxLength: 100
+        group:
+          type: string
+          description: Optional group filter for CRD generation.
+          minLength: 1
+          maxLength: 253
+
+    ModelSourceMetadata:
+      type: object
+      additionalProperties: false
+      description: Model visual styling, capabilities, and representation metadata.
+      properties:
+        shape:
+          type: string
+          description: UI shape token for model components (e.g., circle, round-rectangle).
+          minLength: 1
+          maxLength: 100
+        primaryColor:
+          type: string
+          description: "Primary hex color code for UI representation (e.g., #00B39F)."
+          minLength: 1
+          maxLength: 30
+        secondaryColor:
+          type: string
+          description: "Secondary hex color code for UI representation (e.g., #00D3A9)."
+          minLength: 1
+          maxLength: 30
+        svgColor:
+          type: string
+          description: Relative path to colored SVG file (e.g., ./svg/color.svg or color.svg).
+          minLength: 1
+          maxLength: 500
+        svgWhite:
+          type: string
+          description: Relative path to white SVG file.
+          minLength: 1
+          maxLength: 500
+        svgComplete:
+          type: string
+          description: Relative path to complete SVG file.
+          minLength: 1
+          maxLength: 500
+        isAnnotation:
+          type: boolean
+          description: Whether components of this model are annotations by default.
+          default: false
+        capabilities:
+          type: array
+          description: Array of capability names or capability references supported by the model.
+          items:
+            type: string
+            description: A capability identifier or name.
+            minLength: 1
+            maxLength: 100
+          x-go-type-skip-optional-pointer: true
+        styleOverrides:
+          description: Style overrides as a JSON string or styling directive map.
+          oneOf:
+            - type: string
+              description: JSON string representation of style overrides.
+              minLength: 1
+              maxLength: 4096
+            - type: object
+              description: Key-value map of style overrides.
+              additionalProperties: true
+
+    ModelSourcePublish:
+      type: object
+      additionalProperties: false
+      description: Publishing targets and visibility flags for the model.
+      properties:
+        registry:
+          type: boolean
+          description: Whether to publish the model to the Meshery Model Registry.
+          default: true
+        sites:
+          type: boolean
+          description: Whether to publish the model to meshery.io and layer5.io docs/integrations sites.
+          default: true
+
+    ModelSourceWebsite:
+      type: object
+      additionalProperties: false
+      description: Website marketing and documentation metadata.
+      properties:
+        aboutProject:
+          type: string
+          description: Narrative description of the project for website display.
+          minLength: 1
+          maxLength: 5000
+        pageSubtitle:
+          type: string
+          description: Subtitle for the model's website integration page.
+          minLength: 1
+          maxLength: 500
+        docsURL:
+          type: string
+          description: Documentation URL for the upstream project.
+          minLength: 1
+          maxLength: 2048
+        standardBlurb:
+          type: string
+          description: Standard blurb summarizing the integration.
+          minLength: 1
+          maxLength: 2000
+        features:
+          type: array
+          description: Bullet-point features highlighting key capabilities (replaces flat feature1, feature2, feature3).
+          items:
+            type: string
+            description: A single feature highlight.
+            minLength: 1
+            maxLength: 500
+          x-go-type-skip-optional-pointer: true
+        howItWorks:
+          type: string
+          description: High-level overview of how the integration functions with Meshery.
+          minLength: 1
+          maxLength: 2000
+        howItWorksDetails:
+          type: string
+          description: Detailed explanation of how the integration functions with Meshery.
+          minLength: 1
+          maxLength: 5000
+        screenshots:
+          type: array
+          description: Relative paths or URLs to screenshots for the integration page.
+          items:
+            type: string
+            description: Relative path or URL to a screenshot image.
+            minLength: 1
+            maxLength: 2048
+          x-go-type-skip-optional-pointer: true
+        fullPage:
+          type: boolean
+          description: Whether the model has a full dedicated integration page.
+        layer5Site:
+          type: boolean
+          description: Whether to publish to the layer5.io website collections.
+        mesheryDocs:
+          type: boolean
+          description: Whether to publish documentation to docs.meshery.io.
+
+    ComponentOverride:
+      $ref: "./component_override.yaml"
+
+    Category:
+      $ref: "./categories.yaml"
+
+    SubCategory:
+      type: object
+      additionalProperties: false
+      description: Subcategory of the model category.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the subcategory.
+          minLength: 1
+          maxLength: 100
+        svgColor:
+          type: string
+          description: Relative path to colored SVG file or SVG content for the subcategory.
+          minLength: 1
+          maxLength: 500
+        svgWhite:
+          type: string
+          description: Relative path to white SVG file or SVG content for the subcategory.
+          minLength: 1
+          maxLength: 500
+
+    Categories:
+      type: array
+      description: List of category definitions in the registry taxonomy.
+      items:
+        $ref: "#/components/schemas/Category"
+
+    Capability:
+      $ref: "./capabilities.yaml"
+
+    Capabilities:
+      type: array
+      description: List of capability definitions in the registry taxonomy.
+      items:
+        $ref: "#/components/schemas/Capability"

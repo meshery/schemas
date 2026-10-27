@@ -133,6 +133,7 @@ const excludeFromGoGeneration = [
 const excludeFromMergeStatic = new Set([
   "v1alpha1/core",
   "v1alpha1/capability",
+  "v1alpha1/model_source",
   "v1beta1/core",
   "v1beta1/capability",
   "v1beta1/selector",
