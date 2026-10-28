@@ -364,8 +364,12 @@ Install via `npm install`:
 
 ### Go Tools
 
+`oapi-codegen` needs no install. It is declared by the `tool` directive in
+`go.mod`, and the generator invokes it as `go tool oapi-codegen`, so the module
+pins the version. `go mod download` is enough:
+
 ```bash
-go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+go mod download
 ```
 
 ---
@@ -398,11 +402,15 @@ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 
 ## Troubleshooting
 
-### oapi-codegen not found
+### `go tool oapi-codegen` fails
 ```bash
-go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
-export PATH="${GOPATH:-$HOME/go}/bin:$PATH"
+go mod download
+go tool oapi-codegen --version
 ```
+
+Do not `go install` a separate copy and put it on `PATH`. The version comes from
+the `tool` directive in `go.mod`; a second binary on `PATH` is how generated
+output used to drift between contributors.
 
 ### Node dependencies missing
 ```bash
