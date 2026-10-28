@@ -791,7 +791,6 @@ components:
             json: "childOrganizationBranding,omitempty"
         childOrganizationName:
           type: string
-          minLength: 1
           maxLength: 255
           description: "Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named \"My Organization\". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward."
           x-oapi-codegen-extra-tags:
