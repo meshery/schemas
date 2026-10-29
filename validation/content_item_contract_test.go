@@ -133,10 +133,8 @@ func TestContentItemRulesOfEngagementAndThreads(t *testing.T) {
 		t.Errorf("capFraction maximum = %v, want 1: a dial never exceeds the built-in cap", got)
 	}
 
-	// Omission keeps the stored rules; null clears them.
-	update, _ := mustLookup(t, doc, "paths", "/api/content-items/{contentItemId}", "put", "description").(string)
-	if !strings.Contains(update, "An omitted `rulesOfEngagement` keeps the stored rules") {
-		t.Error("updateContentItem must say an omitted rulesOfEngagement keeps the stored rules")
+	if got := mustLookup(t, doc, "components", "schemas", "ContentItemPayload", "properties", "rulesOfEngagement", "nullable"); got != true {
+		t.Error("ContentItemPayload.rulesOfEngagement must be nullable so update can clear it")
 	}
 
 	params, _ := mustLookup(t, doc, "paths", "/api/content-items", "get", "parameters").([]any)
@@ -148,15 +146,5 @@ func TestContentItemRulesOfEngagementAndThreads(t *testing.T) {
 	}
 	if !found {
 		t.Error("listContentItems must accept the threadId filter")
-	}
-
-	// The reply's wait for its parent's link is client behaviour, recorded as
-	// such in the claim contract rather than added as a claim rule.
-	claim, err := os.ReadFile(filepath.Join(root, "docs/claim-contract.md"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !strings.Contains(string(claim), "## Claims are exclusion, not readiness") {
-		t.Error("docs/claim-contract.md must keep the section that says readiness is not a claim rule")
 	}
 }

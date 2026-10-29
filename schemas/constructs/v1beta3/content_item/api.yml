@@ -381,7 +381,8 @@ components:
             insert.
           maxLength: 255
         rulesOfEngagement:
-          $ref: "#/components/schemas/ContentItemRulesOfEngagement"
+          allOf:
+            - $ref: "#/components/schemas/ContentItemRulesOfEngagement"
           description: |
             The item's own rules of engagement, which can only tighten the
             rules its profile and platform run under. Omitted on insert, the
