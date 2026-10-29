@@ -97,8 +97,8 @@ body plus a required `Retry-After` header carrying the integer number of seconds
 wait before retrying. Reference it, through a `MeshkitError429` alias under the construct's own
 `components/responses`, from every operation whose server applies a per-user rate limit. Layer5
 Cloud rate-limits the Blowhorn route families per user, so every operation of the v1beta3
-`claim`, `schedule`, `ledger`, `content_item`, `event`, `profile`, `provider_capability` and
-`blowhorn_health` constructs declares it, as do the desktop `registerConnection`,
+`claim`, `schedule`, `ledger`, `content_item`, `media_asset`, `event`, `profile`,
+`provider_capability` and `blowhorn_health` constructs declares it, as do the desktop `registerConnection`,
 `recordConnectionHeartbeat` and `deregisterDesktopConnection` connection operations. A client
 that receives `429` waits `Retry-After` seconds and retries; it does not treat the response as a
 refusal of the request itself. `validation/rate_limit_contract_test.go` pins the response and its
@@ -306,6 +306,21 @@ registers or keeps a connection alive. An authenticated request also receives
 plan, entitlements and device usage for a live member of `X-Current-Orgid`).
 A client reads paths from `capabilities` instead of hard-coding them, and does
 not use a separate health endpoint.
+
+## Media assets
+
+`v1beta3/media_asset` stores image and video files so a content item can post
+a file with no link. `createMediaAsset` (`POST /api/media-assets`) answers a
+`pending` asset and a short-lived upload URL. The client `PUT`s the bytes to
+that URL, and `completeMediaAsset` (`POST .../{mediaAssetId}/complete`)
+checks size, sniffed type and SHA-256, then answers the asset `ready`, or
+`409` with the asset `rejected`. `getMediaAssetDownload` (`GET
+.../{mediaAssetId}/download`) mints a fresh download URL per use. A content
+item stores the asset ID, never a URL. No schema carries a storage
+credential. The Drive-backed relay `getMediaAssetContent` is the one route
+here without a session: its signed `expires` and `signature` are the grant.
+Limits are read from `getMediaAssetQuota` (`GET /api/media-assets/quota`).
+Full contract: [`media-asset-contract.md`](media-asset-contract.md).
 
 ## Ledgers
 

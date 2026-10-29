@@ -20,6 +20,7 @@ var rateLimitedOperations = map[string][]string{
 	"profile":             nil,
 	"provider_capability": nil,
 	"blowhorn_health":     nil,
+	"media_asset":         nil,
 	"connection":          {"registerConnection", "recordConnectionHeartbeat", "deregisterDesktopConnection"},
 }
 
