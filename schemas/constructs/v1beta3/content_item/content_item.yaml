@@ -51,9 +51,9 @@ properties:
     type: string
     description: >
       Hex digest over the canonical content values (`data`, `profile`,
-      `rowNumber` and, when set, `rulesOfEngagement`), typed so null, empty
-      string, zero and false differ. An item without `rulesOfEngagement`
-      hashes exactly as it did before the field existed. The thread fields
+      `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`),
+      typed so null, empty string, zero and false differ. An item without
+      them hashes exactly as it did before the fields existed. The thread fields
       are fixed at insert and are not part of it. Server-computed; used for
       conditional updates.
     minLength: 1
@@ -170,3 +170,22 @@ properties:
       db: thread_index
       json: "threadIndex,omitempty"
     x-order: 14
+  mediaAssetIds:
+    type: array
+    uniqueItems: true
+    maxItems: 20
+    x-go-type: pq.StringArray
+    x-go-type-import:
+      path: github.com/lib/pq
+    x-go-type-skip-optional-pointer: true
+    items:
+      type: string
+      format: uuid
+      description: ID of a media_asset in the same organization.
+    description: >
+      The media assets the item posts, in posting order. Ids only, never
+      URLs. Omitted when the item posts no file.
+    x-oapi-codegen-extra-tags:
+      db: media_asset_ids
+      json: "mediaAssetIds,omitempty"
+    x-order: 15

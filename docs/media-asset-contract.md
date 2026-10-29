@@ -2,7 +2,8 @@
 
 `schemas/constructs/v1beta3/media_asset` holds image and video files that an
 organization uploads so a content item can post a file with no link. A
-content item refers to an asset by its `id` and never by a URL. A download
+content item refers to an asset by its `id` and never by a URL: content
+items list their assets in `mediaAssetIds`. A download
 URL is minted only when the file is about to be used, and it is never stored.
 
 ## Upload flow

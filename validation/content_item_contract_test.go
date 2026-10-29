@@ -115,6 +115,30 @@ func TestContentItemRulesOfEngagementAndThreads(t *testing.T) {
 		t.Errorf("ContentItem.threadIndex minimum = %v, want 1 (the root counts as 0)", got)
 	}
 
+	if required["mediaAssetIds"] {
+		t.Error("ContentItem.mediaAssetIds must stay optional")
+	}
+	if got := mustLookup(t, entity, "properties", "mediaAssetIds", "x-oapi-codegen-extra-tags", "db"); got != "media_asset_ids" {
+		t.Errorf("ContentItem.mediaAssetIds db tag = %v, want media_asset_ids", got)
+	}
+	for _, schema := range []any{
+		mustLookup(t, entity, "properties", "mediaAssetIds"),
+		mustLookup(t, doc, "components", "schemas", "ContentItemPayload", "properties", "mediaAssetIds"),
+	} {
+		if got := mustLookup(t, schema, "type"); got != "array" {
+			t.Errorf("mediaAssetIds type = %v, want array", got)
+		}
+		if got := mustLookup(t, schema, "uniqueItems"); got != true {
+			t.Errorf("mediaAssetIds uniqueItems = %v, want true", got)
+		}
+		if got := mustLookup(t, schema, "maxItems"); got != 20 {
+			t.Errorf("mediaAssetIds maxItems = %v, want 20", got)
+		}
+		if got := mustLookup(t, schema, "items", "format"); got != "uuid" {
+			t.Errorf("mediaAssetIds items format = %v, want uuid", got)
+		}
+	}
+
 	roe := mustLookup(t, doc, "components", "schemas", "ContentItemRulesOfEngagement")
 	if got, _ := mappingValue(roe, "additionalProperties"); got != false {
 		t.Error("ContentItemRulesOfEngagement must be closed (additionalProperties: false)")

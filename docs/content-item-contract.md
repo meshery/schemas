@@ -151,11 +151,28 @@ What the schema provides is enough for the client to decide in one read:
 the typed `replyToId` to find the parent, and the `threadId` filter to read
 the whole chain.
 
+## Media assets
+
+`mediaAssetIds` is an optional, ordered list of up to 20 distinct media asset
+ids (`media_asset`, see `docs/media-asset-contract.md`): the files the item
+posts, in posting order. An item refers to an asset by id, never by URL.
+
+- Each id must name a media asset of the session organization, else `400`.
+  A missing, another organization's and a deleted asset get the same `400`.
+- The server does not require the asset to be `ready` at write time. Deleting
+  an asset does not check content item references, so an item can name an
+  asset that is gone; the item is refused by name when it posts, and the
+  posting client checks readiness.
+- On update an omitted `mediaAssetIds` keeps the stored list and `[]` clears
+  it, for the same reason as `rulesOfEngagement`: old clients send the whole
+  item without it.
+- The fingerprint covers it when set; an item without it hashes as before.
+
 ## Consumers
 
 - **layer5io/meshery-cloud** must add the columns (`rules_of_engagement`
   jsonb, `thread_id` and `reply_to_id` uuid referencing `content_items`,
-  `thread_index` integer), indexes on `(organization_id, thread_id)` and
+  `thread_index` integer, `media_asset_ids` uuid[]), indexes on `(organization_id, thread_id)` and
   `(organization_id, reply_to_id)`, and a partial unique index on
   `(organization_id, thread_id, thread_index)` over live rows. It must also
   enforce the insert and update rules above, tell an omitted

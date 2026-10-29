@@ -108,6 +108,13 @@ paths:
         A `rulesOfEngagement` outside its schema (an unknown preset or
         dial, or a value out of range) is refused with a 400, on insert
         and on update alike.
+        Each `mediaAssetIds` entry must name a media asset of the session
+        organization, else 400 (the same 400 for a missing, another
+        organization's and a deleted asset), on insert and on update alike.
+        The server does not require the asset to be ready at write time:
+        deleting an asset does not check content item references, and such
+        an item is refused by name when it posts, so the posting client
+        checks readiness.
         Thread fields are checked against the organization's live content
         items in the same transaction as the insert, and a violation is
         refused with a 400: `threadId` must name a live item of the
@@ -189,7 +196,8 @@ paths:
         holds. An omitted `rowNumber` keeps the stored one.
         An omitted `rulesOfEngagement` keeps the stored rules and `null`
         clears them, so a writer that does not know the field never erases
-        it. The thread fields are fixed at insert: omitted, or equal to the
+        it. An omitted `mediaAssetIds` keeps the stored list and `[]`
+        clears it. The thread fields are fixed at insert: omitted, or equal to the
         stored values, they are kept; any other value is refused with a 400.
       parameters:
         - $ref: "#/components/parameters/contentItemId"
@@ -426,6 +434,24 @@ components:
             Required exactly when `threadId` is given. Read on insert; on
             update it must be omitted or equal the stored value.
           minimum: 1
+        mediaAssetIds:
+          type: array
+          uniqueItems: true
+          maxItems: 20
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
+          x-go-type-skip-optional-pointer: true
+          items:
+            type: string
+            format: uuid
+            description: ID of a media_asset in the same organization.
+          description: |
+            The media assets the item posts, in posting order. Omitted on
+            insert means none; omitted on update keeps the stored list (old
+            clients send the whole item without it); an empty array clears it.
+          x-oapi-codegen-extra-tags:
+            json: "mediaAssetIds,omitempty"
 
     ContentItemRulesOfEngagement:
       type: object
