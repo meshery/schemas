@@ -64,6 +64,32 @@ paths:
           $ref: '#/components/responses/MeshkitError429'
         '500':
           $ref: '#/components/responses/500'
+  /api/events/mark-all-read:
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+      - events
+      operationId: markAllEventsRead
+      summary: Mark all events as read
+      description: >
+        Marks every unread event owned by the authenticated caller as read.
+        System-owned events are not changed. The caller is determined from
+        the authenticated session; clients do not send a user ID.
+      responses:
+        '200':
+          description: All events marked as read
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarkAllEventsReadResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/MeshkitError429'
+        '500':
+          $ref: '#/components/responses/500'
   /api/events/status:
     put:
       x-internal: ["cloud", "meshery"]
@@ -477,6 +503,17 @@ components:
           type: string
           description: Updated status of the event.
           maxLength: 255
+    MarkAllEventsReadResponse:
+      type: object
+      additionalProperties: false
+      description: Response returned after marking the caller's unread events as read.
+      required:
+      - message
+      properties:
+        message:
+          type: string
+          description: Human-readable status message.
+          maxLength: 500
     BulkDeleteRequest:
       type: object
       description: Payload for bulk-deleting events by ID.

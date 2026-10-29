@@ -120,6 +120,44 @@ func TestGetEventsScope(t *testing.T) {
 	}
 }
 
+// markAllEventsRead derives the caller from the authenticated session and
+// changes only that caller's events; system-owned events remain untouched.
+func TestMarkAllEventsReadContract(t *testing.T) {
+	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), "schemas/constructs/v1beta3/event/api.yml"))
+	op := mustLookup(t, doc, "paths", "/api/events/mark-all-read", "post")
+
+	if got := mustValue(op, "operationId"); got != "markAllEventsRead" {
+		t.Errorf("operationId = %v, want markAllEventsRead", got)
+	}
+	if got := sequenceStrings(mustValue(op, "x-internal")); !reflect.DeepEqual(got, []string{"cloud", "meshery"}) {
+		t.Errorf("markAllEventsRead x-internal = %v, want [cloud meshery]", got)
+	}
+	if _, has := mappingValue(op, "requestBody"); has {
+		t.Error("markAllEventsRead must derive the caller from the session, not accept a request body")
+	}
+	if _, has := mappingValue(op, "parameters"); has {
+		t.Error("markAllEventsRead must not accept a userId parameter")
+	}
+
+	desc, _ := mustValue(op, "description").(string)
+	for _, phrase := range []string{"authenticated caller", "System-owned events are not changed"} {
+		if !strings.Contains(desc, phrase) {
+			t.Errorf("markAllEventsRead description = %q, want it to mention %q", desc, phrase)
+		}
+	}
+
+	responses := mustValue(op, "responses")
+	for _, status := range []string{"200", "401", "429", "500"} {
+		if _, has := mappingValue(responses, status); !has {
+			t.Errorf("markAllEventsRead responses missing %s", status)
+		}
+	}
+	responseSchema := mustLookup(t, op, "responses", "200", "content", "application/json", "schema")
+	if got := mustValue(responseSchema, "$ref"); got != "#/components/schemas/MarkAllEventsReadResponse" {
+		t.Errorf("markAllEventsRead 200 response schema = %v, want MarkAllEventsReadResponse", got)
+	}
+}
+
 func asInt(v any) (int, bool) {
 	switch n := v.(type) {
 	case int:
