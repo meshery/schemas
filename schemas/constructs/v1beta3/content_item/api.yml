@@ -432,7 +432,7 @@ components:
       x-generate-db-helpers: true
       additionalProperties: false
       description: |
-        A content item's own rules of engagement: a Risk Profile preset and,
+        A content item's own rules of engagement: a Posture preset and,
         optionally, dials changed for this item only. Every value can only
         tighten. The client that runs the item resolves the effective rules
         as the stricter of these and the rules that apply to its profile and
@@ -445,11 +445,11 @@ components:
         - preset
       properties:
         preset:
-          $ref: "../risk_profile/api.yml#/components/schemas/RiskProfile"
-          x-go-type: "risk_profilev1beta3.RiskProfile"
+          $ref: "../posture/api.yml#/components/schemas/Posture"
+          x-go-type: "posturev1beta3.Posture"
           x-go-type-import:
-            path: github.com/meshery/schemas/models/v1beta3/risk_profile
-            name: risk_profilev1beta3
+            path: github.com/meshery/schemas/models/v1beta3/posture
+            name: posturev1beta3
           description: |
             The preset the item asks for. It applies only when it is at
             least as cautious as the preset its profile and platform

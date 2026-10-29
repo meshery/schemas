@@ -119,8 +119,8 @@ func TestContentItemRulesOfEngagementAndThreads(t *testing.T) {
 	if got, _ := mappingValue(roe, "additionalProperties"); got != false {
 		t.Error("ContentItemRulesOfEngagement must be closed (additionalProperties: false)")
 	}
-	if got := mustLookup(t, roe, "properties", "preset", "$ref"); got != "../risk_profile/api.yml#/components/schemas/RiskProfile" {
-		t.Errorf("rulesOfEngagement.preset must reference the RiskProfile enum, got %v", got)
+	if got := mustLookup(t, roe, "properties", "preset", "$ref"); got != "../posture/api.yml#/components/schemas/Posture" {
+		t.Errorf("rulesOfEngagement.preset must reference the Posture enum, got %v", got)
 	}
 	if list, _ := mustLookup(t, roe, "required").([]any); len(list) != 1 || list[0] != "preset" {
 		t.Errorf("ContentItemRulesOfEngagement required = %v, want [preset]", list)

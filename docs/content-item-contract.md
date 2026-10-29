@@ -20,7 +20,7 @@ generated type carries.
 
 | Field | Type | Meaning |
 | --- | --- | --- |
-| `preset` | `RiskProfile` (`v1beta3/risk_profile`) | Required. `cautious`, `standard` or `brisk`. |
+| `preset` | `Posture` (`v1beta3/posture`) | Required. `cautious`, `standard` or `brisk`. |
 | `dials.pace` | `slow`, `normal`, `fast` | Typing and interaction pace. |
 | `dials.minDelaySeconds` | integer, 0 to 86400 | Least time between two public actions on one platform for one profile. |
 | `dials.quietHours` | `{start, end}`, hours 0 to 23 | Local hours with no public actions, wrapping past midnight when `end` is earlier than `start`. |
@@ -34,8 +34,8 @@ presence is what marks the item's rules "adjusted".
 cautious of `preset` and the preset its profile and platform resolve to.
 Each dial applies only where it is stricter than that preset's own value.
 The warm-up and the pause after a sign-in challenge apply regardless. The
-schedule's `riskProfile` is a different carrier: there, the preset replaces
-the resolution (see the schedule construct's `riskProfile`).
+schedule's `posture` is a different carrier: there, the preset replaces
+the resolution (see the schedule construct's `posture`).
 
 **The server stores and validates; it does not resolve.** The resolution
 needs the profile and platform settings, the warm-up and the challenge
