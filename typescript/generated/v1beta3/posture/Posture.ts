@@ -8,22 +8,22 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
-         * Risk Profile Schema
-         * @description The Risk Profile preset value. Wherever the value is carried, the
-         *     workload runs that preset end to end - pace, share of each built-in cap,
-         *     quiet hours and the pause after a sign-in challenge - instead of the
-         *     preset the surrounding resolution (profile x platform, configuration,
+         * Posture Schema
+         * @description The Posture preset value. Wherever the value is carried, the workload
+         *     runs that preset end to end - pace, share of each built-in cap, quiet
+         *     hours and the pause after a sign-in challenge - instead of the preset
+         *     the surrounding resolution (profile x platform, configuration,
          *     environment, account preference, defaults) would otherwise produce;
          *     omitting the value inherits that resolution unchanged. The value is a
          *     preset name, never `custom`: custom is a reported state of a profile
          *     whose dials sit outside its preset, not a choice anything can make.
-         *     Referenced by the optional `riskProfile` property on the schedule
+         *     Referenced by the optional `posture` property on the schedule
          *     construct's `Schedule` and `SchedulePayload` components
          *     (`v1beta3/schedule`). A new carrier references this component rather
          *     than restating the enum.
          * @enum {string}
          */
-        RiskProfile: "cautious" | "standard" | "brisk";
+        Posture: "cautious" | "standard" | "brisk";
     };
     responses: never;
     parameters: never;

@@ -369,16 +369,16 @@ export interface components {
              */
             readonly deletedAt?: string | null;
             /**
-             * Risk Profile Schema
-             * @description Optional Risk Profile this schedule runs under, resolved above the
+             * Posture Schema
+             * @description Optional Posture this schedule runs under, resolved above the
              *     profile x platform resolution and below an explicit per-run flag.
              *     Omitted when the schedule has no override: it then runs under whatever
              *     profile x platform, configuration, environment, account or default
-             *     resolves to, exactly as before. Any value outside the Risk Profile
+             *     resolves to, exactly as before. Any value outside the Posture
              *     enum is refused with 400.
              * @enum {string}
              */
-            riskProfile?: "cautious" | "standard" | "brisk";
+            posture?: "cautious" | "standard" | "brisk";
         };
         /**
          * @description Lifecycle status of a schedule. `pending`: created, not yet
@@ -530,15 +530,15 @@ export interface components {
             /** @description Reason for pausing; stored only while `paused` is true and cleared on resume. */
             pauseReason?: string;
             /**
-             * Risk Profile Schema
-             * @description Optional Risk Profile this schedule runs under, resolved above
+             * Posture Schema
+             * @description Optional Posture this schedule runs under, resolved above
              *     the profile x platform resolution and below an explicit per-run
              *     flag. Omit to inherit: the schedule then runs under whatever
              *     profile x platform, configuration, environment, account or
              *     default resolves to, exactly as before.
              * @enum {string}
              */
-            riskProfile?: "cautious" | "standard" | "brisk";
+            posture?: "cautious" | "standard" | "brisk";
         };
         /** @description Paginated collection of schedules. */
         SchedulePage: {
@@ -772,16 +772,16 @@ export interface components {
                  */
                 readonly deletedAt?: string | null;
                 /**
-                 * Risk Profile Schema
-                 * @description Optional Risk Profile this schedule runs under, resolved above the
+                 * Posture Schema
+                 * @description Optional Posture this schedule runs under, resolved above the
                  *     profile x platform resolution and below an explicit per-run flag.
                  *     Omitted when the schedule has no override: it then runs under whatever
                  *     profile x platform, configuration, environment, account or default
-                 *     resolves to, exactly as before. Any value outside the Risk Profile
+                 *     resolves to, exactly as before. Any value outside the Posture
                  *     enum is refused with 400.
                  * @enum {string}
                  */
-                riskProfile?: "cautious" | "standard" | "brisk";
+                posture?: "cautious" | "standard" | "brisk";
             }[];
         };
     };
@@ -1136,16 +1136,16 @@ export interface operations {
                              */
                             readonly deletedAt?: string | null;
                             /**
-                             * Risk Profile Schema
-                             * @description Optional Risk Profile this schedule runs under, resolved above the
+                             * Posture Schema
+                             * @description Optional Posture this schedule runs under, resolved above the
                              *     profile x platform resolution and below an explicit per-run flag.
                              *     Omitted when the schedule has no override: it then runs under whatever
                              *     profile x platform, configuration, environment, account or default
-                             *     resolves to, exactly as before. Any value outside the Risk Profile
+                             *     resolves to, exactly as before. Any value outside the Posture
                              *     enum is refused with 400.
                              * @enum {string}
                              */
-                            riskProfile?: "cautious" | "standard" | "brisk";
+                            posture?: "cautious" | "standard" | "brisk";
                         }[];
                     };
                 };
@@ -1321,15 +1321,15 @@ export interface operations {
                     /** @description Reason for pausing; stored only while `paused` is true and cleared on resume. */
                     pauseReason?: string;
                     /**
-                     * Risk Profile Schema
-                     * @description Optional Risk Profile this schedule runs under, resolved above
+                     * Posture Schema
+                     * @description Optional Posture this schedule runs under, resolved above
                      *     the profile x platform resolution and below an explicit per-run
                      *     flag. Omit to inherit: the schedule then runs under whatever
                      *     profile x platform, configuration, environment, account or
                      *     default resolves to, exactly as before.
                      * @enum {string}
                      */
-                    riskProfile?: "cautious" | "standard" | "brisk";
+                    posture?: "cautious" | "standard" | "brisk";
                 };
             };
         };
@@ -1565,16 +1565,16 @@ export interface operations {
                          */
                         readonly deletedAt?: string | null;
                         /**
-                         * Risk Profile Schema
-                         * @description Optional Risk Profile this schedule runs under, resolved above the
+                         * Posture Schema
+                         * @description Optional Posture this schedule runs under, resolved above the
                          *     profile x platform resolution and below an explicit per-run flag.
                          *     Omitted when the schedule has no override: it then runs under whatever
                          *     profile x platform, configuration, environment, account or default
-                         *     resolves to, exactly as before. Any value outside the Risk Profile
+                         *     resolves to, exactly as before. Any value outside the Posture
                          *     enum is refused with 400.
                          * @enum {string}
                          */
-                        riskProfile?: "cautious" | "standard" | "brisk";
+                        posture?: "cautious" | "standard" | "brisk";
                     };
                 };
             };
@@ -1884,16 +1884,16 @@ export interface operations {
                          */
                         readonly deletedAt?: string | null;
                         /**
-                         * Risk Profile Schema
-                         * @description Optional Risk Profile this schedule runs under, resolved above the
+                         * Posture Schema
+                         * @description Optional Posture this schedule runs under, resolved above the
                          *     profile x platform resolution and below an explicit per-run flag.
                          *     Omitted when the schedule has no override: it then runs under whatever
                          *     profile x platform, configuration, environment, account or default
-                         *     resolves to, exactly as before. Any value outside the Risk Profile
+                         *     resolves to, exactly as before. Any value outside the Posture
                          *     enum is refused with 400.
                          * @enum {string}
                          */
-                        riskProfile?: "cautious" | "standard" | "brisk";
+                        posture?: "cautious" | "standard" | "brisk";
                     };
                 };
             };
@@ -2065,15 +2065,15 @@ export interface operations {
                     /** @description Reason for pausing; stored only while `paused` is true and cleared on resume. */
                     pauseReason?: string;
                     /**
-                     * Risk Profile Schema
-                     * @description Optional Risk Profile this schedule runs under, resolved above
+                     * Posture Schema
+                     * @description Optional Posture this schedule runs under, resolved above
                      *     the profile x platform resolution and below an explicit per-run
                      *     flag. Omit to inherit: the schedule then runs under whatever
                      *     profile x platform, configuration, environment, account or
                      *     default resolves to, exactly as before.
                      * @enum {string}
                      */
-                    riskProfile?: "cautious" | "standard" | "brisk";
+                    posture?: "cautious" | "standard" | "brisk";
                 };
             };
         };
@@ -2309,16 +2309,16 @@ export interface operations {
                          */
                         readonly deletedAt?: string | null;
                         /**
-                         * Risk Profile Schema
-                         * @description Optional Risk Profile this schedule runs under, resolved above the
+                         * Posture Schema
+                         * @description Optional Posture this schedule runs under, resolved above the
                          *     profile x platform resolution and below an explicit per-run flag.
                          *     Omitted when the schedule has no override: it then runs under whatever
                          *     profile x platform, configuration, environment, account or default
-                         *     resolves to, exactly as before. Any value outside the Risk Profile
+                         *     resolves to, exactly as before. Any value outside the Posture
                          *     enum is refused with 400.
                          * @enum {string}
                          */
-                        riskProfile?: "cautious" | "standard" | "brisk";
+                        posture?: "cautious" | "standard" | "brisk";
                     };
                 };
             };
@@ -2725,16 +2725,16 @@ export interface operations {
                              */
                             readonly deletedAt?: string | null;
                             /**
-                             * Risk Profile Schema
-                             * @description Optional Risk Profile this schedule runs under, resolved above the
+                             * Posture Schema
+                             * @description Optional Posture this schedule runs under, resolved above the
                              *     profile x platform resolution and below an explicit per-run flag.
                              *     Omitted when the schedule has no override: it then runs under whatever
                              *     profile x platform, configuration, environment, account or default
-                             *     resolves to, exactly as before. Any value outside the Risk Profile
+                             *     resolves to, exactly as before. Any value outside the Posture
                              *     enum is refused with 400.
                              * @enum {string}
                              */
-                            riskProfile?: "cautious" | "standard" | "brisk";
+                            posture?: "cautious" | "standard" | "brisk";
                         }[];
                     };
                 };
@@ -3045,16 +3045,16 @@ export interface operations {
                          */
                         readonly deletedAt?: string | null;
                         /**
-                         * Risk Profile Schema
-                         * @description Optional Risk Profile this schedule runs under, resolved above the
+                         * Posture Schema
+                         * @description Optional Posture this schedule runs under, resolved above the
                          *     profile x platform resolution and below an explicit per-run flag.
                          *     Omitted when the schedule has no override: it then runs under whatever
                          *     profile x platform, configuration, environment, account or default
-                         *     resolves to, exactly as before. Any value outside the Risk Profile
+                         *     resolves to, exactly as before. Any value outside the Posture
                          *     enum is refused with 400.
                          * @enum {string}
                          */
-                        riskProfile?: "cautious" | "standard" | "brisk";
+                        posture?: "cautious" | "standard" | "brisk";
                     };
                 };
             };
