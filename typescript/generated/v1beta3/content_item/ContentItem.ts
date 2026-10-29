@@ -17,7 +17,10 @@ export interface paths {
          *     organization of the authenticated session, ordered by `rowNumber`
          *     unless `order` names another column (`rowNumber`, `createdAt`,
          *     `updatedAt`). `search` matches the profile or the content values,
-         *     case-insensitively.
+         *     case-insensitively. `threadId` returns one whole thread: the root
+         *     item it names and every live item whose `threadId` names it,
+         *     ordered by `threadIndex` (the root first) unless `order` names
+         *     another column.
          */
         get: operations["listContentItems"];
         put?: never;
@@ -38,6 +41,27 @@ export interface paths {
          *     (an explicit `rowNumber` of 0 is still accepted). A supplied
          *     `rowNumber` that another live content item of the organization
          *     already holds refuses the insert with a 409.
+         *     A `rulesOfEngagement` outside its schema (an unknown preset or
+         *     dial, or a value out of range) is refused with a 400, on insert
+         *     and on update alike.
+         *     Each `mediaAssetIds` entry must name a media asset of the session
+         *     organization, else 400 (the same 400 for a missing, another
+         *     organization's and a deleted asset), on insert and on update alike.
+         *     The server does not require the asset to be ready at write time:
+         *     deleting an asset does not check content item references, and such
+         *     an item is refused by name when it posts, so the posting client
+         *     checks readiness.
+         *     Thread fields are checked against the organization's live content
+         *     items in the same transaction as the insert, and a violation is
+         *     refused with a 400: `threadId` must name a live item of the
+         *     organization that is not itself part of a thread; `replyToId`
+         *     requires `threadId` and must name that root or a live item of the
+         *     same thread; `threadIndex` is required exactly when `threadId` is
+         *     given and must exceed the position of the item `replyToId` names
+         *     (the root counts as 0). An item of another organization, a deleted
+         *     item and a missing one receive the same 400. A `threadIndex` that
+         *     another live item of the same thread already holds refuses the
+         *     insert with a 409.
          */
         post: operations["insertContentItem"];
         delete?: never;
@@ -62,6 +86,11 @@ export interface paths {
          *     refused with a 409, as is an update that would move the item
          *     onto a `rowNumber` another live content item of the organization
          *     holds. An omitted `rowNumber` keeps the stored one.
+         *     An omitted `rulesOfEngagement` keeps the stored rules and `null`
+         *     clears them, so a writer that does not know the field never erases
+         *     it. An omitted `mediaAssetIds` keeps the stored list and `[]`
+         *     clears it. The thread fields are fixed at insert: omitted, or equal to the
+         *     stored values, they are kept; any other value is refused with a 400.
          */
         put: operations["updateContentItem"];
         post?: never;
@@ -70,7 +99,8 @@ export interface paths {
          * @description Soft-deletes the content item. When `expectedFingerprint` is
          *     supplied, the delete applies only when the stored fingerprint
          *     still matches and is refused with a 409 otherwise; without it the
-         *     delete is unconditional.
+         *     delete is unconditional. Deleting an item that other items name in
+         *     `threadId` or `replyToId` leaves their references as they are.
          */
         delete: operations["deleteContentItem"];
         options?: never;
@@ -88,23 +118,26 @@ export interface components {
          *     Content items carry a row number and a server-computed fingerprint over
          *     their canonical values; updates are conditional on the fingerprint the
          *     writer read, so stale writes are refused rather than silently applied.
+         *     An item may carry its own rules of engagement, which can only tighten,
+         *     and may belong to a thread through `threadId`, `replyToId` and
+         *     `threadIndex`. See docs/content-item-contract.md.
          */
         ContentItem: {
             /**
              * Format: uuid
-             * @description Server-generated content item ID.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id: string;
             /**
              * Format: uuid
-             * @description Owning organization ID. Derived from the authenticated session, never client-settable.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             organizationId: string;
             /** @description Subject of the owning profile. */
             profile: string;
             /** @description Row number of the content item, unique across the live content items of the organization. */
             rowNumber: number;
-            /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+            /** @description Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates. */
             fingerprint: string;
             /** @description Content values, stored as a JSON blob. */
             data?: Record<string, never>;
@@ -125,9 +158,61 @@ export interface components {
             deletedAt?: string | null;
             /**
              * Format: uuid
-             * @description ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             createdBy?: string;
+            /** @description The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
+            rulesOfEngagement?: {
+                /**
+                 * Posture Schema
+                 * @description The preset the item asks for. It applies only when it is at
+                 *     least as cautious as the preset its profile and platform
+                 *     resolve to.
+                 * @enum {string}
+                 */
+                preset: "cautious" | "standard" | "brisk";
+                /**
+                 * @description Dials changed for this item only. Omitted when none were
+                 *     changed; present, the item's rules read as adjusted.
+                 */
+                dials?: {
+                    /**
+                     * @description Typing and interaction pace.
+                     * @enum {string}
+                     */
+                    pace?: "slow" | "normal" | "fast";
+                    /** @description Least time, in seconds, between two public actions on one platform for one profile. */
+                    minDelaySeconds?: number;
+                    /** @description Local hours with no public actions. */
+                    quietHours?: {
+                        /** @description Local hour the window opens. */
+                        start: number;
+                        /** @description Local hour the window closes. */
+                        end: number;
+                    };
+                    /**
+                     * Format: double
+                     * @description Share of each built-in daily cap the item may use, above 0 and at most 1.
+                     */
+                    capFraction?: number;
+                    /** @description Whether the item runs without pointer movement. */
+                    noMouseMove?: boolean;
+                };
+            };
+            /**
+             * Format: uuid
+             * @description ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+             */
+            threadId?: string;
+            /**
+             * Format: uuid
+             * @description ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+             */
+            replyToId?: string;
+            /** @description Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only. */
+            threadIndex?: number;
+            /** @description The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file. */
+            mediaAssetIds?: string[];
         };
         /**
          * @description Payload for inserting or updating a content item.
@@ -139,7 +224,7 @@ export interface components {
         ContentItemPayload: {
             /**
              * Format: uuid
-             * @description Existing content item ID for updates; ignored on insert.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id?: string;
             /** @description Subject of the owning profile. */
@@ -160,6 +245,162 @@ export interface components {
              *     insert.
              */
             expectedFingerprint?: string;
+            /**
+             * @description The item's own rules of engagement, which can only tighten the
+             *     rules its profile and platform run under. Omitted on insert, the
+             *     item has none; omitted on update, the stored rules are kept;
+             *     `null` on update clears them.
+             */
+            rulesOfEngagement?: {
+                /**
+                 * Posture Schema
+                 * @description The preset the item asks for. It applies only when it is at
+                 *     least as cautious as the preset its profile and platform
+                 *     resolve to.
+                 * @enum {string}
+                 */
+                preset: "cautious" | "standard" | "brisk";
+                /**
+                 * @description Dials changed for this item only. Omitted when none were
+                 *     changed; present, the item's rules read as adjusted.
+                 */
+                dials?: {
+                    /**
+                     * @description Typing and interaction pace.
+                     * @enum {string}
+                     */
+                    pace?: "slow" | "normal" | "fast";
+                    /** @description Least time, in seconds, between two public actions on one platform for one profile. */
+                    minDelaySeconds?: number;
+                    /** @description Local hours with no public actions. */
+                    quietHours?: {
+                        /** @description Local hour the window opens. */
+                        start: number;
+                        /** @description Local hour the window closes. */
+                        end: number;
+                    };
+                    /**
+                     * Format: double
+                     * @description Share of each built-in daily cap the item may use, above 0 and at most 1.
+                     */
+                    capFraction?: number;
+                    /** @description Whether the item runs without pointer movement. */
+                    noMouseMove?: boolean;
+                };
+            } | null;
+            /**
+             * Format: uuid
+             * @description ID of the thread's root item. Read on insert; on update it must
+             *     be omitted or equal the stored value.
+             */
+            threadId?: string;
+            /**
+             * Format: uuid
+             * @description ID of the item this item answers directly: the root named by
+             *     `threadId` or an item of the same thread. Requires `threadId`.
+             *     Read on insert; on update it must be omitted or equal the stored
+             *     value.
+             */
+            replyToId?: string;
+            /**
+             * @description Position of the item in its thread, the root counting as 0.
+             *     Required exactly when `threadId` is given. Read on insert; on
+             *     update it must be omitted or equal the stored value.
+             */
+            threadIndex?: number;
+            /**
+             * @description The media assets the item posts, in posting order. Omitted on
+             *     insert means none; omitted on update keeps the stored list (old
+             *     clients send the whole item without it); an empty array clears it.
+             */
+            mediaAssetIds?: string[];
+        };
+        /**
+         * @description A content item's own rules of engagement: a Posture preset and,
+         *     optionally, dials changed for this item only. Every value can only
+         *     tighten. The client that runs the item resolves the effective rules
+         *     as the stricter of these and the rules that apply to its profile and
+         *     platform without them (the more cautious preset wins, and each dial
+         *     applies only where it is stricter than the resolved preset's own);
+         *     the warm-up and the pause after a sign-in challenge always apply.
+         *     The server validates the shape and stores the value as given; it
+         *     never resolves or loosens it.
+         */
+        ContentItemRulesOfEngagement: {
+            /**
+             * Posture Schema
+             * @description The preset the item asks for. It applies only when it is at
+             *     least as cautious as the preset its profile and platform
+             *     resolve to.
+             * @enum {string}
+             */
+            preset: "cautious" | "standard" | "brisk";
+            /**
+             * @description Dials changed for this item only. Omitted when none were
+             *     changed; present, the item's rules read as adjusted.
+             */
+            dials?: {
+                /**
+                 * @description Typing and interaction pace.
+                 * @enum {string}
+                 */
+                pace?: "slow" | "normal" | "fast";
+                /** @description Least time, in seconds, between two public actions on one platform for one profile. */
+                minDelaySeconds?: number;
+                /** @description Local hours with no public actions. */
+                quietHours?: {
+                    /** @description Local hour the window opens. */
+                    start: number;
+                    /** @description Local hour the window closes. */
+                    end: number;
+                };
+                /**
+                 * Format: double
+                 * @description Share of each built-in daily cap the item may use, above 0 and at most 1.
+                 */
+                capFraction?: number;
+                /** @description Whether the item runs without pointer movement. */
+                noMouseMove?: boolean;
+            };
+        };
+        /**
+         * @description Dials of a content item's rules of engagement. Each is optional and
+         *     applies only where it is stricter than the resolved preset's own
+         *     value; a dial that would loosen is ignored by the client that runs
+         *     the item.
+         */
+        ContentItemRulesOfEngagementDials: {
+            /**
+             * @description Typing and interaction pace.
+             * @enum {string}
+             */
+            pace?: "slow" | "normal" | "fast";
+            /** @description Least time, in seconds, between two public actions on one platform for one profile. */
+            minDelaySeconds?: number;
+            /** @description Local hours with no public actions. */
+            quietHours?: {
+                /** @description Local hour the window opens. */
+                start: number;
+                /** @description Local hour the window closes. */
+                end: number;
+            };
+            /**
+             * Format: double
+             * @description Share of each built-in daily cap the item may use, above 0 and at most 1.
+             */
+            capFraction?: number;
+            /** @description Whether the item runs without pointer movement. */
+            noMouseMove?: boolean;
+        };
+        /**
+         * @description A window of local hours with no public actions, from `start` up to
+         *     `end`, wrapping past midnight when `end` is earlier than `start`.
+         */
+        ContentItemQuietHours: {
+            /** @description Local hour the window opens. */
+            start: number;
+            /** @description Local hour the window closes. */
+            end: number;
         };
         /** @description Paginated collection of content items. */
         ContentItemPage: {
@@ -173,19 +414,19 @@ export interface components {
             contentItems?: {
                 /**
                  * Format: uuid
-                 * @description Server-generated content item ID.
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 id: string;
                 /**
                  * Format: uuid
-                 * @description Owning organization ID. Derived from the authenticated session, never client-settable.
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 organizationId: string;
                 /** @description Subject of the owning profile. */
                 profile: string;
                 /** @description Row number of the content item, unique across the live content items of the organization. */
                 rowNumber: number;
-                /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+                /** @description Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates. */
                 fingerprint: string;
                 /** @description Content values, stored as a JSON blob. */
                 data?: Record<string, never>;
@@ -206,9 +447,61 @@ export interface components {
                 deletedAt?: string | null;
                 /**
                  * Format: uuid
-                 * @description ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 createdBy?: string;
+                /** @description The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
+                rulesOfEngagement?: {
+                    /**
+                     * Posture Schema
+                     * @description The preset the item asks for. It applies only when it is at
+                     *     least as cautious as the preset its profile and platform
+                     *     resolve to.
+                     * @enum {string}
+                     */
+                    preset: "cautious" | "standard" | "brisk";
+                    /**
+                     * @description Dials changed for this item only. Omitted when none were
+                     *     changed; present, the item's rules read as adjusted.
+                     */
+                    dials?: {
+                        /**
+                         * @description Typing and interaction pace.
+                         * @enum {string}
+                         */
+                        pace?: "slow" | "normal" | "fast";
+                        /** @description Least time, in seconds, between two public actions on one platform for one profile. */
+                        minDelaySeconds?: number;
+                        /** @description Local hours with no public actions. */
+                        quietHours?: {
+                            /** @description Local hour the window opens. */
+                            start: number;
+                            /** @description Local hour the window closes. */
+                            end: number;
+                        };
+                        /**
+                         * Format: double
+                         * @description Share of each built-in daily cap the item may use, above 0 and at most 1.
+                         */
+                        capFraction?: number;
+                        /** @description Whether the item runs without pointer movement. */
+                        noMouseMove?: boolean;
+                    };
+                };
+                /**
+                 * Format: uuid
+                 * @description ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+                 */
+                threadId?: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+                 */
+                replyToId?: string;
+                /** @description Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only. */
+                threadIndex?: number;
+                /** @description The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file. */
+                mediaAssetIds?: string[];
             }[];
         };
     };
@@ -249,7 +542,7 @@ export interface components {
                 "text/plain": string;
             };
         };
-        /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber */
+        /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, another live content item of the organization already holds the same rowNumber, or another live item of the same thread already holds the same threadIndex */
         409: {
             headers: {
                 [name: string]: unknown;
@@ -299,6 +592,11 @@ export interface components {
          *     delete applies only when the stored fingerprint still matches.
          */
         expectedFingerprint: string;
+        /**
+         * @description Return one thread: the root item this ID names and every live item
+         *     whose `threadId` names it.
+         */
+        threadId: string;
         /** @description Content item ID */
         contentItemId: string;
         /** @description Get responses by page */
@@ -341,6 +639,11 @@ export interface operations {
                 order?: string;
                 /** @description Filter by owning profile subject (exact match). */
                 profile?: string;
+                /**
+                 * @description Return one thread: the root item this ID names and every live item
+                 *     whose `threadId` names it.
+                 */
+                threadId?: string;
             };
             header?: never;
             path?: never;
@@ -365,19 +668,19 @@ export interface operations {
                         contentItems?: {
                             /**
                              * Format: uuid
-                             * @description Server-generated content item ID.
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             id: string;
                             /**
                              * Format: uuid
-                             * @description Owning organization ID. Derived from the authenticated session, never client-settable.
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             organizationId: string;
                             /** @description Subject of the owning profile. */
                             profile: string;
                             /** @description Row number of the content item, unique across the live content items of the organization. */
                             rowNumber: number;
-                            /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+                            /** @description Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates. */
                             fingerprint: string;
                             /** @description Content values, stored as a JSON blob. */
                             data?: Record<string, never>;
@@ -398,9 +701,61 @@ export interface operations {
                             deletedAt?: string | null;
                             /**
                              * Format: uuid
-                             * @description ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             createdBy?: string;
+                            /** @description The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
+                            rulesOfEngagement?: {
+                                /**
+                                 * Posture Schema
+                                 * @description The preset the item asks for. It applies only when it is at
+                                 *     least as cautious as the preset its profile and platform
+                                 *     resolve to.
+                                 * @enum {string}
+                                 */
+                                preset: "cautious" | "standard" | "brisk";
+                                /**
+                                 * @description Dials changed for this item only. Omitted when none were
+                                 *     changed; present, the item's rules read as adjusted.
+                                 */
+                                dials?: {
+                                    /**
+                                     * @description Typing and interaction pace.
+                                     * @enum {string}
+                                     */
+                                    pace?: "slow" | "normal" | "fast";
+                                    /** @description Least time, in seconds, between two public actions on one platform for one profile. */
+                                    minDelaySeconds?: number;
+                                    /** @description Local hours with no public actions. */
+                                    quietHours?: {
+                                        /** @description Local hour the window opens. */
+                                        start: number;
+                                        /** @description Local hour the window closes. */
+                                        end: number;
+                                    };
+                                    /**
+                                     * Format: double
+                                     * @description Share of each built-in daily cap the item may use, above 0 and at most 1.
+                                     */
+                                    capFraction?: number;
+                                    /** @description Whether the item runs without pointer movement. */
+                                    noMouseMove?: boolean;
+                                };
+                            };
+                            /**
+                             * Format: uuid
+                             * @description ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+                             */
+                            threadId?: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+                             */
+                            replyToId?: string;
+                            /** @description Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only. */
+                            threadIndex?: number;
+                            /** @description The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file. */
+                            mediaAssetIds?: string[];
                         }[];
                     };
                 };
@@ -480,7 +835,7 @@ export interface operations {
                 "application/json": {
                     /**
                      * Format: uuid
-                     * @description Existing content item ID for updates; ignored on insert.
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                      */
                     id?: string;
                     /** @description Subject of the owning profile. */
@@ -501,6 +856,75 @@ export interface operations {
                      *     insert.
                      */
                     expectedFingerprint?: string;
+                    /**
+                     * @description The item's own rules of engagement, which can only tighten the
+                     *     rules its profile and platform run under. Omitted on insert, the
+                     *     item has none; omitted on update, the stored rules are kept;
+                     *     `null` on update clears them.
+                     */
+                    rulesOfEngagement?: {
+                        /**
+                         * Posture Schema
+                         * @description The preset the item asks for. It applies only when it is at
+                         *     least as cautious as the preset its profile and platform
+                         *     resolve to.
+                         * @enum {string}
+                         */
+                        preset: "cautious" | "standard" | "brisk";
+                        /**
+                         * @description Dials changed for this item only. Omitted when none were
+                         *     changed; present, the item's rules read as adjusted.
+                         */
+                        dials?: {
+                            /**
+                             * @description Typing and interaction pace.
+                             * @enum {string}
+                             */
+                            pace?: "slow" | "normal" | "fast";
+                            /** @description Least time, in seconds, between two public actions on one platform for one profile. */
+                            minDelaySeconds?: number;
+                            /** @description Local hours with no public actions. */
+                            quietHours?: {
+                                /** @description Local hour the window opens. */
+                                start: number;
+                                /** @description Local hour the window closes. */
+                                end: number;
+                            };
+                            /**
+                             * Format: double
+                             * @description Share of each built-in daily cap the item may use, above 0 and at most 1.
+                             */
+                            capFraction?: number;
+                            /** @description Whether the item runs without pointer movement. */
+                            noMouseMove?: boolean;
+                        };
+                    } | null;
+                    /**
+                     * Format: uuid
+                     * @description ID of the thread's root item. Read on insert; on update it must
+                     *     be omitted or equal the stored value.
+                     */
+                    threadId?: string;
+                    /**
+                     * Format: uuid
+                     * @description ID of the item this item answers directly: the root named by
+                     *     `threadId` or an item of the same thread. Requires `threadId`.
+                     *     Read on insert; on update it must be omitted or equal the stored
+                     *     value.
+                     */
+                    replyToId?: string;
+                    /**
+                     * @description Position of the item in its thread, the root counting as 0.
+                     *     Required exactly when `threadId` is given. Read on insert; on
+                     *     update it must be omitted or equal the stored value.
+                     */
+                    threadIndex?: number;
+                    /**
+                     * @description The media assets the item posts, in posting order. Omitted on
+                     *     insert means none; omitted on update keeps the stored list (old
+                     *     clients send the whole item without it); an empty array clears it.
+                     */
+                    mediaAssetIds?: string[];
                 };
             };
         };
@@ -514,19 +938,19 @@ export interface operations {
                     "application/json": {
                         /**
                          * Format: uuid
-                         * @description Server-generated content item ID.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
                         /**
                          * Format: uuid
-                         * @description Owning organization ID. Derived from the authenticated session, never client-settable.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         organizationId: string;
                         /** @description Subject of the owning profile. */
                         profile: string;
                         /** @description Row number of the content item, unique across the live content items of the organization. */
                         rowNumber: number;
-                        /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+                        /** @description Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates. */
                         fingerprint: string;
                         /** @description Content values, stored as a JSON blob. */
                         data?: Record<string, never>;
@@ -547,9 +971,61 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         createdBy?: string;
+                        /** @description The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
+                        rulesOfEngagement?: {
+                            /**
+                             * Posture Schema
+                             * @description The preset the item asks for. It applies only when it is at
+                             *     least as cautious as the preset its profile and platform
+                             *     resolve to.
+                             * @enum {string}
+                             */
+                            preset: "cautious" | "standard" | "brisk";
+                            /**
+                             * @description Dials changed for this item only. Omitted when none were
+                             *     changed; present, the item's rules read as adjusted.
+                             */
+                            dials?: {
+                                /**
+                                 * @description Typing and interaction pace.
+                                 * @enum {string}
+                                 */
+                                pace?: "slow" | "normal" | "fast";
+                                /** @description Least time, in seconds, between two public actions on one platform for one profile. */
+                                minDelaySeconds?: number;
+                                /** @description Local hours with no public actions. */
+                                quietHours?: {
+                                    /** @description Local hour the window opens. */
+                                    start: number;
+                                    /** @description Local hour the window closes. */
+                                    end: number;
+                                };
+                                /**
+                                 * Format: double
+                                 * @description Share of each built-in daily cap the item may use, above 0 and at most 1.
+                                 */
+                                capFraction?: number;
+                                /** @description Whether the item runs without pointer movement. */
+                                noMouseMove?: boolean;
+                            };
+                        };
+                        /**
+                         * Format: uuid
+                         * @description ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+                         */
+                        threadId?: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+                         */
+                        replyToId?: string;
+                        /** @description Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only. */
+                        threadIndex?: number;
+                        /** @description The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file. */
+                        mediaAssetIds?: string[];
                     };
                 };
             };
@@ -589,7 +1065,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber */
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, another live content item of the organization already holds the same rowNumber, or another live item of the same thread already holds the same threadIndex */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -655,19 +1131,19 @@ export interface operations {
                     "application/json": {
                         /**
                          * Format: uuid
-                         * @description Server-generated content item ID.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
                         /**
                          * Format: uuid
-                         * @description Owning organization ID. Derived from the authenticated session, never client-settable.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         organizationId: string;
                         /** @description Subject of the owning profile. */
                         profile: string;
                         /** @description Row number of the content item, unique across the live content items of the organization. */
                         rowNumber: number;
-                        /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+                        /** @description Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates. */
                         fingerprint: string;
                         /** @description Content values, stored as a JSON blob. */
                         data?: Record<string, never>;
@@ -688,9 +1164,61 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         createdBy?: string;
+                        /** @description The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
+                        rulesOfEngagement?: {
+                            /**
+                             * Posture Schema
+                             * @description The preset the item asks for. It applies only when it is at
+                             *     least as cautious as the preset its profile and platform
+                             *     resolve to.
+                             * @enum {string}
+                             */
+                            preset: "cautious" | "standard" | "brisk";
+                            /**
+                             * @description Dials changed for this item only. Omitted when none were
+                             *     changed; present, the item's rules read as adjusted.
+                             */
+                            dials?: {
+                                /**
+                                 * @description Typing and interaction pace.
+                                 * @enum {string}
+                                 */
+                                pace?: "slow" | "normal" | "fast";
+                                /** @description Least time, in seconds, between two public actions on one platform for one profile. */
+                                minDelaySeconds?: number;
+                                /** @description Local hours with no public actions. */
+                                quietHours?: {
+                                    /** @description Local hour the window opens. */
+                                    start: number;
+                                    /** @description Local hour the window closes. */
+                                    end: number;
+                                };
+                                /**
+                                 * Format: double
+                                 * @description Share of each built-in daily cap the item may use, above 0 and at most 1.
+                                 */
+                                capFraction?: number;
+                                /** @description Whether the item runs without pointer movement. */
+                                noMouseMove?: boolean;
+                            };
+                        };
+                        /**
+                         * Format: uuid
+                         * @description ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+                         */
+                        threadId?: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+                         */
+                        replyToId?: string;
+                        /** @description Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only. */
+                        threadIndex?: number;
+                        /** @description The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file. */
+                        mediaAssetIds?: string[];
                     };
                 };
             };
@@ -781,7 +1309,7 @@ export interface operations {
                 "application/json": {
                     /**
                      * Format: uuid
-                     * @description Existing content item ID for updates; ignored on insert.
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                      */
                     id?: string;
                     /** @description Subject of the owning profile. */
@@ -802,6 +1330,75 @@ export interface operations {
                      *     insert.
                      */
                     expectedFingerprint?: string;
+                    /**
+                     * @description The item's own rules of engagement, which can only tighten the
+                     *     rules its profile and platform run under. Omitted on insert, the
+                     *     item has none; omitted on update, the stored rules are kept;
+                     *     `null` on update clears them.
+                     */
+                    rulesOfEngagement?: {
+                        /**
+                         * Posture Schema
+                         * @description The preset the item asks for. It applies only when it is at
+                         *     least as cautious as the preset its profile and platform
+                         *     resolve to.
+                         * @enum {string}
+                         */
+                        preset: "cautious" | "standard" | "brisk";
+                        /**
+                         * @description Dials changed for this item only. Omitted when none were
+                         *     changed; present, the item's rules read as adjusted.
+                         */
+                        dials?: {
+                            /**
+                             * @description Typing and interaction pace.
+                             * @enum {string}
+                             */
+                            pace?: "slow" | "normal" | "fast";
+                            /** @description Least time, in seconds, between two public actions on one platform for one profile. */
+                            minDelaySeconds?: number;
+                            /** @description Local hours with no public actions. */
+                            quietHours?: {
+                                /** @description Local hour the window opens. */
+                                start: number;
+                                /** @description Local hour the window closes. */
+                                end: number;
+                            };
+                            /**
+                             * Format: double
+                             * @description Share of each built-in daily cap the item may use, above 0 and at most 1.
+                             */
+                            capFraction?: number;
+                            /** @description Whether the item runs without pointer movement. */
+                            noMouseMove?: boolean;
+                        };
+                    } | null;
+                    /**
+                     * Format: uuid
+                     * @description ID of the thread's root item. Read on insert; on update it must
+                     *     be omitted or equal the stored value.
+                     */
+                    threadId?: string;
+                    /**
+                     * Format: uuid
+                     * @description ID of the item this item answers directly: the root named by
+                     *     `threadId` or an item of the same thread. Requires `threadId`.
+                     *     Read on insert; on update it must be omitted or equal the stored
+                     *     value.
+                     */
+                    replyToId?: string;
+                    /**
+                     * @description Position of the item in its thread, the root counting as 0.
+                     *     Required exactly when `threadId` is given. Read on insert; on
+                     *     update it must be omitted or equal the stored value.
+                     */
+                    threadIndex?: number;
+                    /**
+                     * @description The media assets the item posts, in posting order. Omitted on
+                     *     insert means none; omitted on update keeps the stored list (old
+                     *     clients send the whole item without it); an empty array clears it.
+                     */
+                    mediaAssetIds?: string[];
                 };
             };
         };
@@ -815,19 +1412,19 @@ export interface operations {
                     "application/json": {
                         /**
                          * Format: uuid
-                         * @description Server-generated content item ID.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
                         /**
                          * Format: uuid
-                         * @description Owning organization ID. Derived from the authenticated session, never client-settable.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         organizationId: string;
                         /** @description Subject of the owning profile. */
                         profile: string;
                         /** @description Row number of the content item, unique across the live content items of the organization. */
                         rowNumber: number;
-                        /** @description Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+                        /** @description Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates. */
                         fingerprint: string;
                         /** @description Content values, stored as a JSON blob. */
                         data?: Record<string, never>;
@@ -848,9 +1445,61 @@ export interface operations {
                         deletedAt?: string | null;
                         /**
                          * Format: uuid
-                         * @description ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         createdBy?: string;
+                        /** @description The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them. */
+                        rulesOfEngagement?: {
+                            /**
+                             * Posture Schema
+                             * @description The preset the item asks for. It applies only when it is at
+                             *     least as cautious as the preset its profile and platform
+                             *     resolve to.
+                             * @enum {string}
+                             */
+                            preset: "cautious" | "standard" | "brisk";
+                            /**
+                             * @description Dials changed for this item only. Omitted when none were
+                             *     changed; present, the item's rules read as adjusted.
+                             */
+                            dials?: {
+                                /**
+                                 * @description Typing and interaction pace.
+                                 * @enum {string}
+                                 */
+                                pace?: "slow" | "normal" | "fast";
+                                /** @description Least time, in seconds, between two public actions on one platform for one profile. */
+                                minDelaySeconds?: number;
+                                /** @description Local hours with no public actions. */
+                                quietHours?: {
+                                    /** @description Local hour the window opens. */
+                                    start: number;
+                                    /** @description Local hour the window closes. */
+                                    end: number;
+                                };
+                                /**
+                                 * Format: double
+                                 * @description Share of each built-in daily cap the item may use, above 0 and at most 1.
+                                 */
+                                capFraction?: number;
+                                /** @description Whether the item runs without pointer movement. */
+                                noMouseMove?: boolean;
+                            };
+                        };
+                        /**
+                         * Format: uuid
+                         * @description ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+                         */
+                        threadId?: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+                         */
+                        replyToId?: string;
+                        /** @description Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only. */
+                        threadIndex?: number;
+                        /** @description The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file. */
+                        mediaAssetIds?: string[];
                     };
                 };
             };
@@ -890,7 +1539,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber */
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, another live content item of the organization already holds the same rowNumber, or another live item of the same thread already holds the same threadIndex */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -996,7 +1645,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber */
+            /** @description Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, another live content item of the organization already holds the same rowNumber, or another live item of the same thread already holds the same threadIndex */
             409: {
                 headers: {
                     [name: string]: unknown;

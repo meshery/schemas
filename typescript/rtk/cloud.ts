@@ -1090,6 +1090,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             profile: queryArg?.profile,
+            threadId: queryArg?.threadId,
           },
         }),
         providesTags: ["ContentItem_contentItems"],
@@ -12151,15 +12152,16 @@ export type ListContentItemsApiResponse = /** status 200 Content item page */ {
   totalCount?: number;
   /** Content items included on this page of results. */
   contentItems?: {
-    /** Server-generated content item ID. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
-    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     organizationId: string;
     /** Subject of the owning profile. */
     profile: string;
     /** Row number of the content item, unique across the live content items of the organization. */
     rowNumber: number;
-    /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+    /** Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates.
+     */
     fingerprint: string;
     /** Content values, stored as a JSON blob. */
     data?: object;
@@ -12169,9 +12171,49 @@ export type ListContentItemsApiResponse = /** status 200 Content item page */ {
     updatedAt: string;
     /** Timestamp when the content item was soft-deleted. */
     deletedAt?: string | null;
-    /** ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
-     */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     createdBy?: string;
+    /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+     */
+    rulesOfEngagement?: {
+      /** The preset the item asks for. It applies only when it is at
+            least as cautious as the preset its profile and platform
+            resolve to.
+             */
+      preset: "cautious" | "standard" | "brisk";
+      /** Dials changed for this item only. Omitted when none were
+            changed; present, the item's rules read as adjusted.
+             */
+      dials?: {
+        /** Typing and interaction pace. */
+        pace?: "slow" | "normal" | "fast";
+        /** Least time, in seconds, between two public actions on one platform for one profile. */
+        minDelaySeconds?: number;
+        /** Local hours with no public actions. */
+        quietHours?: {
+          /** Local hour the window opens. */
+          start: number;
+          /** Local hour the window closes. */
+          end: number;
+        };
+        /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+        capFraction?: number;
+        /** Whether the item runs without pointer movement. */
+        noMouseMove?: boolean;
+      };
+    };
+    /** ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+     */
+    threadId?: string;
+    /** ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+     */
+    replyToId?: string;
+    /** Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only.
+     */
+    threadIndex?: number;
+    /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
+     */
+    mediaAssetIds?: string[];
   }[];
 };
 export type ListContentItemsApiArg = {
@@ -12189,17 +12231,22 @@ export type ListContentItemsApiArg = {
   order?: string;
   /** Filter by owning profile subject (exact match). */
   profile?: string;
+  /** Return one thread: the root item this ID names and every live item
+    whose `threadId` names it.
+     */
+  threadId?: string;
 };
 export type InsertContentItemApiResponse = /** status 201 Content item created */ {
-  /** Server-generated content item ID. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   organizationId: string;
   /** Subject of the owning profile. */
   profile: string;
   /** Row number of the content item, unique across the live content items of the organization. */
   rowNumber: number;
-  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  /** Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates.
+   */
   fingerprint: string;
   /** Content values, stored as a JSON blob. */
   data?: object;
@@ -12209,13 +12256,53 @@ export type InsertContentItemApiResponse = /** status 201 Content item created *
   updatedAt: string;
   /** Timestamp when the content item was soft-deleted. */
   deletedAt?: string | null;
-  /** ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
-   */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string;
+  /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+   */
+  rulesOfEngagement?: {
+    /** The preset the item asks for. It applies only when it is at
+        least as cautious as the preset its profile and platform
+        resolve to.
+         */
+    preset: "cautious" | "standard" | "brisk";
+    /** Dials changed for this item only. Omitted when none were
+        changed; present, the item's rules read as adjusted.
+         */
+    dials?: {
+      /** Typing and interaction pace. */
+      pace?: "slow" | "normal" | "fast";
+      /** Least time, in seconds, between two public actions on one platform for one profile. */
+      minDelaySeconds?: number;
+      /** Local hours with no public actions. */
+      quietHours?: {
+        /** Local hour the window opens. */
+        start: number;
+        /** Local hour the window closes. */
+        end: number;
+      };
+      /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+      capFraction?: number;
+      /** Whether the item runs without pointer movement. */
+      noMouseMove?: boolean;
+    };
+  };
+  /** ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+   */
+  threadId?: string;
+  /** ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+   */
+  replyToId?: string;
+  /** Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only.
+   */
+  threadIndex?: number;
+  /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
+   */
+  mediaAssetIds?: string[];
 };
 export type InsertContentItemApiArg = {
   body: {
-    /** Existing content item ID for updates; ignored on insert. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
     /** Subject of the owning profile. */
     profile: string;
@@ -12233,18 +12320,71 @@ export type InsertContentItemApiArg = {
         insert.
          */
     expectedFingerprint?: string;
+    /** The item's own rules of engagement, which can only tighten the
+        rules its profile and platform run under. Omitted on insert, the
+        item has none; omitted on update, the stored rules are kept;
+        `null` on update clears them.
+         */
+    rulesOfEngagement?: {
+      /** The preset the item asks for. It applies only when it is at
+            least as cautious as the preset its profile and platform
+            resolve to.
+             */
+      preset: "cautious" | "standard" | "brisk";
+      /** Dials changed for this item only. Omitted when none were
+            changed; present, the item's rules read as adjusted.
+             */
+      dials?: {
+        /** Typing and interaction pace. */
+        pace?: "slow" | "normal" | "fast";
+        /** Least time, in seconds, between two public actions on one platform for one profile. */
+        minDelaySeconds?: number;
+        /** Local hours with no public actions. */
+        quietHours?: {
+          /** Local hour the window opens. */
+          start: number;
+          /** Local hour the window closes. */
+          end: number;
+        };
+        /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+        capFraction?: number;
+        /** Whether the item runs without pointer movement. */
+        noMouseMove?: boolean;
+      };
+    } | null;
+    /** ID of the thread's root item. Read on insert; on update it must
+        be omitted or equal the stored value.
+         */
+    threadId?: string;
+    /** ID of the item this item answers directly: the root named by
+        `threadId` or an item of the same thread. Requires `threadId`.
+        Read on insert; on update it must be omitted or equal the stored
+        value.
+         */
+    replyToId?: string;
+    /** Position of the item in its thread, the root counting as 0.
+        Required exactly when `threadId` is given. Read on insert; on
+        update it must be omitted or equal the stored value.
+         */
+    threadIndex?: number;
+    /** The media assets the item posts, in posting order. Omitted on
+        insert means none; omitted on update keeps the stored list (old
+        clients send the whole item without it); an empty array clears it.
+         */
+    mediaAssetIds?: string[];
   };
 };
 export type GetContentItemApiResponse = /** status 200 Content item response */ {
-  /** Server-generated content item ID. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   organizationId: string;
   /** Subject of the owning profile. */
   profile: string;
   /** Row number of the content item, unique across the live content items of the organization. */
   rowNumber: number;
-  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  /** Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates.
+   */
   fingerprint: string;
   /** Content values, stored as a JSON blob. */
   data?: object;
@@ -12254,24 +12394,65 @@ export type GetContentItemApiResponse = /** status 200 Content item response */ 
   updatedAt: string;
   /** Timestamp when the content item was soft-deleted. */
   deletedAt?: string | null;
-  /** ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
-   */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string;
+  /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+   */
+  rulesOfEngagement?: {
+    /** The preset the item asks for. It applies only when it is at
+        least as cautious as the preset its profile and platform
+        resolve to.
+         */
+    preset: "cautious" | "standard" | "brisk";
+    /** Dials changed for this item only. Omitted when none were
+        changed; present, the item's rules read as adjusted.
+         */
+    dials?: {
+      /** Typing and interaction pace. */
+      pace?: "slow" | "normal" | "fast";
+      /** Least time, in seconds, between two public actions on one platform for one profile. */
+      minDelaySeconds?: number;
+      /** Local hours with no public actions. */
+      quietHours?: {
+        /** Local hour the window opens. */
+        start: number;
+        /** Local hour the window closes. */
+        end: number;
+      };
+      /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+      capFraction?: number;
+      /** Whether the item runs without pointer movement. */
+      noMouseMove?: boolean;
+    };
+  };
+  /** ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+   */
+  threadId?: string;
+  /** ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+   */
+  replyToId?: string;
+  /** Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only.
+   */
+  threadIndex?: number;
+  /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
+   */
+  mediaAssetIds?: string[];
 };
 export type GetContentItemApiArg = {
   /** Content item ID */
   contentItemId: string;
 };
 export type UpdateContentItemApiResponse = /** status 200 Content item updated */ {
-  /** Server-generated content item ID. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
-  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   organizationId: string;
   /** Subject of the owning profile. */
   profile: string;
   /** Row number of the content item, unique across the live content items of the organization. */
   rowNumber: number;
-  /** Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates. */
+  /** Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates.
+   */
   fingerprint: string;
   /** Content values, stored as a JSON blob. */
   data?: object;
@@ -12281,15 +12462,55 @@ export type UpdateContentItemApiResponse = /** status 200 Content item updated *
   updatedAt: string;
   /** Timestamp when the content item was soft-deleted. */
   deletedAt?: string | null;
-  /** ID of the user whose session created the content item. Derived from the authenticated session, never client-settable, and never changed by an update. Omitted on content items created before it was recorded, and when that user was later purged.
-   */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   createdBy?: string;
+  /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+   */
+  rulesOfEngagement?: {
+    /** The preset the item asks for. It applies only when it is at
+        least as cautious as the preset its profile and platform
+        resolve to.
+         */
+    preset: "cautious" | "standard" | "brisk";
+    /** Dials changed for this item only. Omitted when none were
+        changed; present, the item's rules read as adjusted.
+         */
+    dials?: {
+      /** Typing and interaction pace. */
+      pace?: "slow" | "normal" | "fast";
+      /** Least time, in seconds, between two public actions on one platform for one profile. */
+      minDelaySeconds?: number;
+      /** Local hours with no public actions. */
+      quietHours?: {
+        /** Local hour the window opens. */
+        start: number;
+        /** Local hour the window closes. */
+        end: number;
+      };
+      /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+      capFraction?: number;
+      /** Whether the item runs without pointer movement. */
+      noMouseMove?: boolean;
+    };
+  };
+  /** ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+   */
+  threadId?: string;
+  /** ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+   */
+  replyToId?: string;
+  /** Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only.
+   */
+  threadIndex?: number;
+  /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
+   */
+  mediaAssetIds?: string[];
 };
 export type UpdateContentItemApiArg = {
   /** Content item ID */
   contentItemId: string;
   body: {
-    /** Existing content item ID for updates; ignored on insert. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
     /** Subject of the owning profile. */
     profile: string;
@@ -12307,6 +12528,58 @@ export type UpdateContentItemApiArg = {
         insert.
          */
     expectedFingerprint?: string;
+    /** The item's own rules of engagement, which can only tighten the
+        rules its profile and platform run under. Omitted on insert, the
+        item has none; omitted on update, the stored rules are kept;
+        `null` on update clears them.
+         */
+    rulesOfEngagement?: {
+      /** The preset the item asks for. It applies only when it is at
+            least as cautious as the preset its profile and platform
+            resolve to.
+             */
+      preset: "cautious" | "standard" | "brisk";
+      /** Dials changed for this item only. Omitted when none were
+            changed; present, the item's rules read as adjusted.
+             */
+      dials?: {
+        /** Typing and interaction pace. */
+        pace?: "slow" | "normal" | "fast";
+        /** Least time, in seconds, between two public actions on one platform for one profile. */
+        minDelaySeconds?: number;
+        /** Local hours with no public actions. */
+        quietHours?: {
+          /** Local hour the window opens. */
+          start: number;
+          /** Local hour the window closes. */
+          end: number;
+        };
+        /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+        capFraction?: number;
+        /** Whether the item runs without pointer movement. */
+        noMouseMove?: boolean;
+      };
+    } | null;
+    /** ID of the thread's root item. Read on insert; on update it must
+        be omitted or equal the stored value.
+         */
+    threadId?: string;
+    /** ID of the item this item answers directly: the root named by
+        `threadId` or an item of the same thread. Requires `threadId`.
+        Read on insert; on update it must be omitted or equal the stored
+        value.
+         */
+    replyToId?: string;
+    /** Position of the item in its thread, the root counting as 0.
+        Required exactly when `threadId` is given. Read on insert; on
+        update it must be omitted or equal the stored value.
+         */
+    threadIndex?: number;
+    /** The media assets the item posts, in posting order. Omitted on
+        insert means none; omitted on update keeps the stored list (old
+        clients send the whole item without it); an empty array clears it.
+         */
+    mediaAssetIds?: string[];
   };
 };
 export type DeleteContentItemApiResponse = unknown;
