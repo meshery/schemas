@@ -267,6 +267,13 @@
     "extension": true
   },
   {
+    "construct": "posture",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/posture/posture.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "profile",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/profile/profile.yaml",
@@ -292,13 +299,6 @@
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/relationship/relationship.yaml",
     "docs_href": "https://docs.meshery.io/concepts/logical/relationships",
-    "core": false,
-    "extension": false
-  },
-  {
-    "construct": "risk_profile",
-    "version": "v1beta3",
-    "href": "/schemas/constructs/v1beta3/risk_profile/risk_profile.yaml",
     "core": false,
     "extension": false
   },
