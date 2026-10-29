@@ -132,6 +132,14 @@ func TestMarkAllEventsReadContract(t *testing.T) {
 	if got := sequenceStrings(mustValue(op, "x-internal")); !reflect.DeepEqual(got, []string{"cloud", "meshery"}) {
 		t.Errorf("markAllEventsRead x-internal = %v, want [cloud meshery]", got)
 	}
+	security := mustValue(op, "security")
+	securityRequirements, ok := security.([]any)
+	if !ok || len(securityRequirements) != 1 {
+		t.Fatalf("markAllEventsRead security = %#v, want one jwt requirement", security)
+	}
+	if scopes, has := mappingValue(securityRequirements[0], "jwt"); !has || !reflect.DeepEqual(sequenceStrings(scopes), []string{}) {
+		t.Errorf("markAllEventsRead security = %#v, want jwt with no scopes", security)
+	}
 	if _, has := mappingValue(op, "requestBody"); has {
 		t.Error("markAllEventsRead must derive the caller from the session, not accept a request body")
 	}

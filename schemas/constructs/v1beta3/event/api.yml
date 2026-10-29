@@ -75,6 +75,8 @@ paths:
         Marks every unread event owned by the authenticated caller as read.
         System-owned events are not changed. The caller is determined from
         the authenticated session; clients do not send a user ID.
+      security:
+      - jwt: []
       responses:
         '200':
           description: All events marked as read
