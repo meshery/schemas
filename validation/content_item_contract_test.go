@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -73,5 +74,104 @@ func TestContentItemContract(t *testing.T) {
 		if _, err := os.Stat(filepath.Join(root, gone)); err == nil {
 			t.Errorf("%s must be removed after the rename to content_item", gone)
 		}
+	}
+}
+
+// A content item carries its own rules of engagement, which can only tighten,
+// and may belong to a thread (Blowhorn #1319, #1323, #1328). The fields are
+// optional on read and write, the rules object is closed and needs a preset,
+// the thread can be read in one list call, and an update that omits the rules
+// keeps them: clients released before the field existed send the whole item
+// without it, so omission must never clear it. See docs/content-item-contract.md.
+func TestContentItemRulesOfEngagementAndThreads(t *testing.T) {
+	root := repoRootDir(t)
+	dir := filepath.Join(root, "schemas/constructs/v1beta3/content_item")
+	doc := loadOpenAPIDocument(t, filepath.Join(dir, "api.yml"))
+	entity := loadOpenAPIDocument(t, filepath.Join(dir, "content_item.yaml"))
+
+	fields := []string{"rulesOfEngagement", "threadId", "replyToId", "threadIndex"}
+	required := map[string]bool{}
+	if list, ok := mustLookup(t, entity, "required").([]any); ok {
+		for _, name := range list {
+			required[fmt.Sprint(name)] = true
+		}
+	}
+	wantDB := map[string]string{
+		"rulesOfEngagement": "rules_of_engagement",
+		"threadId":          "thread_id",
+		"replyToId":         "reply_to_id",
+		"threadIndex":       "thread_index",
+	}
+	for _, name := range fields {
+		if required[name] {
+			t.Errorf("ContentItem.%s must stay optional", name)
+		}
+		if got := mustLookup(t, entity, "properties", name, "x-oapi-codegen-extra-tags", "db"); got != wantDB[name] {
+			t.Errorf("ContentItem.%s db tag = %v, want %s", name, got, wantDB[name])
+		}
+		mustLookup(t, doc, "components", "schemas", "ContentItemPayload", "properties", name)
+	}
+	if got := mustLookup(t, entity, "properties", "threadIndex", "minimum"); got != 1 {
+		t.Errorf("ContentItem.threadIndex minimum = %v, want 1 (the root counts as 0)", got)
+	}
+
+	if required["mediaAssetIds"] {
+		t.Error("ContentItem.mediaAssetIds must stay optional")
+	}
+	if got := mustLookup(t, entity, "properties", "mediaAssetIds", "x-oapi-codegen-extra-tags", "db"); got != "media_asset_ids" {
+		t.Errorf("ContentItem.mediaAssetIds db tag = %v, want media_asset_ids", got)
+	}
+	for _, schema := range []any{
+		mustLookup(t, entity, "properties", "mediaAssetIds"),
+		mustLookup(t, doc, "components", "schemas", "ContentItemPayload", "properties", "mediaAssetIds"),
+	} {
+		if got := mustLookup(t, schema, "type"); got != "array" {
+			t.Errorf("mediaAssetIds type = %v, want array", got)
+		}
+		if got := mustLookup(t, schema, "uniqueItems"); got != true {
+			t.Errorf("mediaAssetIds uniqueItems = %v, want true", got)
+		}
+		if got := mustLookup(t, schema, "maxItems"); got != 20 {
+			t.Errorf("mediaAssetIds maxItems = %v, want 20", got)
+		}
+		if got := mustLookup(t, schema, "items", "format"); got != "uuid" {
+			t.Errorf("mediaAssetIds items format = %v, want uuid", got)
+		}
+	}
+
+	roe := mustLookup(t, doc, "components", "schemas", "ContentItemRulesOfEngagement")
+	if got, _ := mappingValue(roe, "additionalProperties"); got != false {
+		t.Error("ContentItemRulesOfEngagement must be closed (additionalProperties: false)")
+	}
+	if got := mustLookup(t, roe, "properties", "preset", "$ref"); got != "../posture/api.yml#/components/schemas/Posture" {
+		t.Errorf("rulesOfEngagement.preset must reference the Posture enum, got %v", got)
+	}
+	if list, _ := mustLookup(t, roe, "required").([]any); len(list) != 1 || list[0] != "preset" {
+		t.Errorf("ContentItemRulesOfEngagement required = %v, want [preset]", list)
+	}
+	dials := mustLookup(t, doc, "components", "schemas", "ContentItemRulesOfEngagementDials")
+	if got, _ := mappingValue(dials, "additionalProperties"); got != false {
+		t.Error("ContentItemRulesOfEngagementDials must be closed (additionalProperties: false)")
+	}
+	if got := mustLookup(t, dials, "properties", "capFraction", "maximum"); got != 1 {
+		t.Errorf("capFraction maximum = %v, want 1: a dial never exceeds the built-in cap", got)
+	}
+
+	if got := mustLookup(t, doc, "components", "schemas", "ContentItemPayload", "properties", "rulesOfEngagement", "nullable"); got != true {
+		t.Error("ContentItemPayload.rulesOfEngagement must be nullable so update can clear it")
+	}
+	if got := mustLookup(t, doc, "components", "schemas", "ContentItemPayload", "properties", "rulesOfEngagement", "x-oapi-codegen-extra-tags", "json"); got != "rulesOfEngagement,omitempty" {
+		t.Errorf("ContentItemPayload.rulesOfEngagement json tag = %v, want rulesOfEngagement,omitempty so a Go write-back never sends null", got)
+	}
+
+	params, _ := mustLookup(t, doc, "paths", "/api/content-items", "get", "parameters").([]any)
+	found := false
+	for _, p := range params {
+		if m, ok := p.(map[string]any); ok && m["$ref"] == "#/components/parameters/threadId" {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("listContentItems must accept the threadId filter")
 	}
 }
