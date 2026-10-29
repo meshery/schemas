@@ -18,6 +18,7 @@ var rateLimitedOperations = map[string][]string{
 	"content_item":        nil,
 	"event":               nil,
 	"profile":             nil,
+	"mention_alias":       nil,
 	"provider_capability": nil,
 	"blowhorn_health":     nil,
 	"media_asset":         nil,
