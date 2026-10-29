@@ -46,7 +46,10 @@ stores it as given.
 **Writes.** `insertContentItem` sets it. On `updateContentItem`, an omitted
 `rulesOfEngagement` keeps the stored value and `null` clears it. Omission
 must keep the value because clients released before the field existed send
-the whole item without it on every write-back. The fingerprint covers
+the whole item without it on every write-back. The generated Go
+`ContentItemPayload` field carries `omitempty`, so a Go client with no value
+omits the key (keeps the stored value) instead of sending `null` (clears it);
+only a TypeScript caller can send `null`. The fingerprint covers
 `rulesOfEngagement` when it is set, so a stale write cannot overwrite it. An
 item without it hashes exactly as it did before, so stored fingerprints stay
 valid.
