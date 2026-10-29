@@ -5,6 +5,11 @@ info:
     OpenAPI schema for content items - fingerprinted content
     values keyed by organization and row number, with conditional
     updates.
+    A content item may carry its own rules of engagement
+    (`rulesOfEngagement`), which can only tighten the rules its profile and
+    platform run under, and may belong to a thread (`threadId`,
+    `replyToId`, `threadIndex`): the parts of a split post, or the replies
+    of a conversation between profiles.
     Organization scope: every operation acts only in the organization the
     session resolved to (X-Current-Orgid, then the user's selected
     organization), and only when the caller is a live member of it.
@@ -44,7 +49,10 @@ paths:
         organization of the authenticated session, ordered by `rowNumber`
         unless `order` names another column (`rowNumber`, `createdAt`,
         `updatedAt`). `search` matches the profile or the content values,
-        case-insensitively.
+        case-insensitively. `threadId` returns one whole thread: the root
+        item it names and every live item whose `threadId` names it,
+        ordered by `threadIndex` (the root first) unless `order` names
+        another column.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
@@ -57,6 +65,7 @@ paths:
           description: Filter by owning profile subject (exact match).
           schema:
             type: string
+        - $ref: "#/components/parameters/threadId"
       responses:
         "200":
           description: Content item page
@@ -96,6 +105,20 @@ paths:
         (an explicit `rowNumber` of 0 is still accepted). A supplied
         `rowNumber` that another live content item of the organization
         already holds refuses the insert with a 409.
+        A `rulesOfEngagement` outside its schema (an unknown preset or
+        dial, or a value out of range) is refused with a 400, on insert
+        and on update alike.
+        Thread fields are checked against the organization's live content
+        items in the same transaction as the insert, and a violation is
+        refused with a 400: `threadId` must name a live item of the
+        organization that is not itself part of a thread; `replyToId`
+        requires `threadId` and must name that root or a live item of the
+        same thread; `threadIndex` is required exactly when `threadId` is
+        given and must exceed the position of the item `replyToId` names
+        (the root counts as 0). An item of another organization, a deleted
+        item and a missing one receive the same 400. A `threadIndex` that
+        another live item of the same thread already holds refuses the
+        insert with a 409.
       requestBody:
         required: true
         content:
@@ -164,6 +187,10 @@ paths:
         refused with a 409, as is an update that would move the item
         onto a `rowNumber` another live content item of the organization
         holds. An omitted `rowNumber` keeps the stored one.
+        An omitted `rulesOfEngagement` keeps the stored rules and `null`
+        clears them, so a writer that does not know the field never erases
+        it. The thread fields are fixed at insert: omitted, or equal to the
+        stored values, they are kept; any other value is refused with a 400.
       parameters:
         - $ref: "#/components/parameters/contentItemId"
       requestBody:
@@ -203,7 +230,8 @@ paths:
         Soft-deletes the content item. When `expectedFingerprint` is
         supplied, the delete applies only when the stored fingerprint
         still matches and is refused with a 409 otherwise; without it the
-        delete is unconditional.
+        delete is unconditional. Deleting an item that other items name in
+        `threadId` or `replyToId` leaves their references as they are.
       parameters:
         - $ref: "#/components/parameters/contentItemId"
         - $ref: "#/components/parameters/expectedFingerprint"
@@ -242,7 +270,7 @@ components:
     403:
       $ref: "../../v1beta2/core/api.yml#/components/responses/403"
     409:
-      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber
+      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, another live content item of the organization already holds the same rowNumber, or another live item of the same thread already holds the same threadIndex
       content:
         text/plain:
           schema:
@@ -263,6 +291,15 @@ components:
       schema:
         type: string
         maxLength: 255
+    threadId:
+      name: threadId
+      in: query
+      required: false
+      description: |
+        Return one thread: the root item this ID names and every live item
+        whose `threadId` names it.
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
     contentItemId:
       name: contentItemId
       in: path
@@ -343,6 +380,142 @@ components:
             matches, and is refused with a 409 otherwise. Ignored on
             insert.
           maxLength: 255
+        rulesOfEngagement:
+          $ref: "#/components/schemas/ContentItemRulesOfEngagement"
+          description: |
+            The item's own rules of engagement, which can only tighten the
+            rules its profile and platform run under. Omitted on insert, the
+            item has none; omitted on update, the stored rules are kept;
+            `null` on update clears them.
+          nullable: true
+        threadId:
+          type: string
+          format: uuid
+          x-go-type: core.Uuid
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          description: |
+            ID of the thread's root item. Read on insert; on update it must
+            be omitted or equal the stored value.
+          x-go-name: ThreadID
+          x-oapi-codegen-extra-tags:
+            json: "threadId,omitempty"
+        replyToId:
+          type: string
+          format: uuid
+          x-go-type: core.Uuid
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          description: |
+            ID of the item this item answers directly: the root named by
+            `threadId` or an item of the same thread. Requires `threadId`.
+            Read on insert; on update it must be omitted or equal the stored
+            value.
+          x-go-name: ReplyToID
+          x-oapi-codegen-extra-tags:
+            json: "replyToId,omitempty"
+        threadIndex:
+          type: integer
+          description: |
+            Position of the item in its thread, the root counting as 0.
+            Required exactly when `threadId` is given. Read on insert; on
+            update it must be omitted or equal the stored value.
+          minimum: 1
+
+    ContentItemRulesOfEngagement:
+      type: object
+      x-generate-db-helpers: true
+      additionalProperties: false
+      description: |
+        A content item's own rules of engagement: a Risk Profile preset and,
+        optionally, dials changed for this item only. Every value can only
+        tighten. The client that runs the item resolves the effective rules
+        as the stricter of these and the rules that apply to its profile and
+        platform without them (the more cautious preset wins, and each dial
+        applies only where it is stricter than the resolved preset's own);
+        the warm-up and the pause after a sign-in challenge always apply.
+        The server validates the shape and stores the value as given; it
+        never resolves or loosens it.
+      required:
+        - preset
+      properties:
+        preset:
+          $ref: "../risk_profile/api.yml#/components/schemas/RiskProfile"
+          x-go-type: "risk_profilev1beta3.RiskProfile"
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1beta3/risk_profile
+            name: risk_profilev1beta3
+          description: |
+            The preset the item asks for. It applies only when it is at
+            least as cautious as the preset its profile and platform
+            resolve to.
+        dials:
+          $ref: "#/components/schemas/ContentItemRulesOfEngagementDials"
+          description: |
+            Dials changed for this item only. Omitted when none were
+            changed; present, the item's rules read as adjusted.
+
+    ContentItemRulesOfEngagementDials:
+      type: object
+      additionalProperties: false
+      description: |
+        Dials of a content item's rules of engagement. Each is optional and
+        applies only where it is stricter than the resolved preset's own
+        value; a dial that would loosen is ignored by the client that runs
+        the item.
+      properties:
+        pace:
+          type: string
+          description: Typing and interaction pace.
+          enum:
+            - slow
+            - normal
+            - fast
+          x-enum-varnames:
+            - ContentItemPaceSlow
+            - ContentItemPaceNormal
+            - ContentItemPaceFast
+        minDelaySeconds:
+          type: integer
+          description: Least time, in seconds, between two public actions on one platform for one profile.
+          minimum: 0
+          maximum: 86400
+        quietHours:
+          $ref: "#/components/schemas/ContentItemQuietHours"
+          description: Local hours with no public actions.
+        capFraction:
+          type: number
+          format: double
+          description: Share of each built-in daily cap the item may use, above 0 and at most 1.
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 1
+        noMouseMove:
+          type: boolean
+          description: Whether the item runs without pointer movement.
+
+    ContentItemQuietHours:
+      type: object
+      additionalProperties: false
+      description: |
+        A window of local hours with no public actions, from `start` up to
+        `end`, wrapping past midnight when `end` is earlier than `start`.
+      required:
+        - start
+        - end
+      properties:
+        start:
+          type: integer
+          description: Local hour the window opens.
+          minimum: 0
+          maximum: 23
+        end:
+          type: integer
+          description: Local hour the window closes.
+          minimum: 0
+          maximum: 23
 
     ContentItemPage:
       type: object

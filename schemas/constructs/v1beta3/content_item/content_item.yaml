@@ -5,6 +5,9 @@ description: |
   Content items carry a row number and a server-computed fingerprint over
   their canonical values; updates are conditional on the fingerprint the
   writer read, so stale writes are refused rather than silently applied.
+  An item may carry its own rules of engagement, which can only tighten,
+  and may belong to a thread through `threadId`, `replyToId` and
+  `threadIndex`. See docs/content-item-contract.md.
 type: object
 additionalProperties: false
 required:
@@ -46,7 +49,13 @@ properties:
     x-order: 4
   fingerprint:
     type: string
-    description: Hex digest over the canonical content values, typed so null, empty string, zero and false differ. Server-computed; used for conditional updates.
+    description: >
+      Hex digest over the canonical content values (`data`, `profile`,
+      `rowNumber` and, when set, `rulesOfEngagement`), typed so null, empty
+      string, zero and false differ. An item without `rulesOfEngagement`
+      hashes exactly as it did before the field existed. The thread fields
+      are fixed at insert and are not part of it. Server-computed; used for
+      conditional updates.
     minLength: 1
     maxLength: 255
     x-oapi-codegen-extra-tags:
@@ -100,3 +109,64 @@ properties:
       db: created_by
       json: "createdBy,omitempty"
     x-order: 10
+  rulesOfEngagement:
+    $ref: ./api.yml#/components/schemas/ContentItemRulesOfEngagement
+    description: >
+      The item's own rules of engagement, set by the order that wrote it.
+      They can only tighten: the client that runs the item applies the
+      stricter of these and the rules that apply to the item's profile and
+      platform without them, and the warm-up and the pause after a sign-in
+      challenge always apply. The server validates the shape and stores
+      the value; it does not resolve it. Omitted when the item has none, in
+      which case the item runs under the rules that apply without them.
+    x-oapi-codegen-extra-tags:
+      db: rules_of_engagement
+      json: "rulesOfEngagement,omitempty"
+    x-order: 11
+  threadId:
+    type: string
+    format: uuid
+    x-go-type: core.Uuid
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    description: >
+      ID of the root item of the thread this item belongs to: the first
+      post of a split thread, or the first transmission of a conversation
+      between profiles. Omitted on a standalone item and on a root itself;
+      a root is the item other items name here. Set on insert only.
+    x-go-name: ThreadID
+    x-oapi-codegen-extra-tags:
+      db: thread_id
+      json: "threadId,omitempty"
+    x-order: 12
+  replyToId:
+    type: string
+    format: uuid
+    x-go-type: core.Uuid
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    description: >
+      ID of the item this item answers directly: the thread root or another
+      item of the same thread. A split thread's part names the part before
+      it; a reply in a conversation between profiles names the transmission
+      above it. Omitted when the item answers nothing. Never set without
+      `threadId`. Set on insert only.
+    x-go-name: ReplyToID
+    x-oapi-codegen-extra-tags:
+      db: reply_to_id
+      json: "replyToId,omitempty"
+    x-order: 13
+  threadIndex:
+    type: integer
+    description: >
+      Position of the item in its thread, counting the root as 0. Present
+      exactly when `threadId` is, unique among the live items of the
+      thread, and greater than the position of the item named by
+      `replyToId`. Set on insert only.
+    minimum: 1
+    x-oapi-codegen-extra-tags:
+      db: thread_index
+      json: "threadIndex,omitempty"
+    x-order: 14
