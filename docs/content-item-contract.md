@@ -167,6 +167,7 @@ posts, in posting order. An item refers to an asset by id, never by URL.
   it, for the same reason as `rulesOfEngagement`: old clients send the whole
   item without it.
 - The fingerprint covers it when set; an item without it hashes as before.
+- The generated Go payload omits an empty `mediaAssetIds`, so a Go client cannot clear the list through it, while TypeScript clients can send `[]`.
 
 ## Consumers
 
