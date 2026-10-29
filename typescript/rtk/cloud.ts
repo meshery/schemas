@@ -31,6 +31,7 @@ export const addTagTypes = [
   "GitHub_github",
   "Invitation_Invitation",
   "Ledger_ledgers",
+  "MediaAsset_mediaAssets",
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
@@ -1720,6 +1721,61 @@ const injectedRtkApi = api
           method: "DELETE",
         }),
         invalidatesTags: ["Ledger_ledgers"],
+      }),
+      listMediaAssets: build.query<ListMediaAssetsApiResponse, ListMediaAssetsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/media-assets`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      createMediaAsset: build.mutation<CreateMediaAssetApiResponse, CreateMediaAssetApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMediaAssetQuota: build.query<GetMediaAssetQuotaApiResponse, GetMediaAssetQuotaApiArg>({
+        query: () => ({ url: `/api/media-assets/quota` }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMediaAsset: build.query<GetMediaAssetApiResponse, GetMediaAssetApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets/${queryArg.mediaAssetId}` }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      updateMediaAsset: build.mutation<UpdateMediaAssetApiResponse, UpdateMediaAssetApiArg>({
+        query: (queryArg) => ({
+          url: `/api/media-assets/${queryArg.mediaAssetId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["MediaAsset_mediaAssets"],
+      }),
+      deleteMediaAsset: build.mutation<DeleteMediaAssetApiResponse, DeleteMediaAssetApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets/${queryArg.mediaAssetId}`, method: "DELETE" }),
+        invalidatesTags: ["MediaAsset_mediaAssets"],
+      }),
+      completeMediaAsset: build.mutation<CompleteMediaAssetApiResponse, CompleteMediaAssetApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets/${queryArg.mediaAssetId}/complete`, method: "POST" }),
+        invalidatesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMediaAssetDownload: build.query<GetMediaAssetDownloadApiResponse, GetMediaAssetDownloadApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets/${queryArg.mediaAssetId}/download` }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMediaAssetContent: build.query<GetMediaAssetContentApiResponse, GetMediaAssetContentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/media-assets/${queryArg.mediaAssetId}/content`,
+          params: {
+            expires: queryArg?.expires,
+            signature: queryArg?.signature,
+          },
+        }),
+        providesTags: ["MediaAsset_mediaAssets"],
       }),
       getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
         query: (queryArg) => ({
@@ -17589,6 +17645,470 @@ export type DeleteLedgerEntryApiArg = {
   /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
   entryKey: string;
 };
+export type ListMediaAssetsApiResponse = /** status 200 Media asset page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Media assets included on this page of results. */
+  mediaAssets?: {
+    /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+     */
+    createdBy?: string;
+    /** Where the bytes are stored (`r2` or `gdrive`). */
+    backend: "r2" | "gdrive";
+    /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+     */
+    connectionId?: string;
+    /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+     */
+    externalId?: string;
+    /** Image or video, derived by the server from `contentType`. */
+    kind: "image" | "video";
+    /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+    contentType:
+      | "image/png"
+      | "image/jpeg"
+      | "image/gif"
+      | "image/webp"
+      | "image/heic"
+      | "video/mp4"
+      | "video/quicktime"
+      | "video/webm";
+    /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+     */
+    bytes: number;
+    /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+     */
+    sha256: string;
+    /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+     */
+    name?: string;
+    /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+     */
+    locationStripped: boolean;
+    /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+     */
+    status: "pending" | "ready" | "rejected" | "expired";
+    /** Why the upload was rejected. Set only on a `rejected` asset. */
+    rejectionReason?: "missing" | "size" | "type" | "checksum";
+    /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+     */
+    retainUntil?: string | null;
+    /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+    completedAt?: string | null;
+    /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+     */
+    expiresAt: string;
+    /** Timestamp of media asset creation. */
+    createdAt: string;
+    /** Timestamp of last media asset modification. */
+    updatedAt: string;
+    /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListMediaAssetsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by status, evaluated at read time (a `ready` asset past `expiresAt` matches `expired`). */
+  status?: "pending" | "ready" | "rejected" | "expired";
+};
+export type CreateMediaAssetApiResponse = /** status 201 Media asset created */ {
+  /** Server-returned media asset: one image or video file an organization
+    uploaded so that a content item can post it without a link. A content
+    item refers to an asset by its `id`, never by a URL; a short-lived
+    download URL is minted only when the file is about to be used
+    (`getMediaAssetDownload`) and is never stored.
+    An asset is created `pending` with a short-lived upload URL, becomes
+    `ready` once `completeMediaAsset` has checked the stored bytes against
+    the declared size, type and SHA-256, or `rejected` when they do not
+    match. A `pending` asset that is never completed, and a `ready` asset
+    whose retention ended, read as `expired` from `expiresAt` on: expiry is
+    evaluated when the asset is read, so an asset never reads `pending` or
+    `ready` past its `expiresAt`.
+    No field carries a storage credential, a bucket name, an object key or a
+    signed URL. The bytes live in the backend `backend` names, under a
+    location only the server knows.
+     */
+  mediaAsset: {
+    /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+     */
+    createdBy?: string;
+    /** Where the bytes are stored (`r2` or `gdrive`). */
+    backend: "r2" | "gdrive";
+    /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+     */
+    connectionId?: string;
+    /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+     */
+    externalId?: string;
+    /** Image or video, derived by the server from `contentType`. */
+    kind: "image" | "video";
+    /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+    contentType:
+      | "image/png"
+      | "image/jpeg"
+      | "image/gif"
+      | "image/webp"
+      | "image/heic"
+      | "video/mp4"
+      | "video/quicktime"
+      | "video/webm";
+    /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+     */
+    bytes: number;
+    /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+     */
+    sha256: string;
+    /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+     */
+    name?: string;
+    /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+     */
+    locationStripped: boolean;
+    /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+     */
+    status: "pending" | "ready" | "rejected" | "expired";
+    /** Why the upload was rejected. Set only on a `rejected` asset. */
+    rejectionReason?: "missing" | "size" | "type" | "checksum";
+    /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+     */
+    retainUntil?: string | null;
+    /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+    completedAt?: string | null;
+    /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+     */
+    expiresAt: string;
+    /** Timestamp of media asset creation. */
+    createdAt: string;
+    /** Timestamp of last media asset modification. */
+    updatedAt: string;
+    /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+    deletedAt?: string | null;
+  };
+  /** A short-lived grant to move one file's bytes: send one request with `method` to `url` carrying exactly `headers`, before `expiresAt`. The URL is the only credential, it covers this one file, and it must be treated as a secret: never store it, log it or put it in a content item.
+   */
+  upload: {
+    /** HTTP method to use. `PUT` for an upload, `GET` for a download. */
+    method: "PUT" | "GET";
+    /** Absolute HTTPS URL to send the request to. */
+    url: string;
+    /** Headers the request must carry, verbatim (for an upload, at least `Content-Type`, and any integrity header the signature binds). Empty when none are needed. Never contains an authorization header.
+     */
+    headers: {
+      [key: string]: string;
+    };
+    /** Time the URL stops working. */
+    expiresAt: string;
+  };
+};
+export type CreateMediaAssetApiArg = {
+  body: {
+    /** Media type of the file, from a closed allowlist. The server sniffs the stored bytes on completion and rejects an upload whose real type differs. A provider may accept fewer types than this list (`MediaAssetQuota.contentTypes`).
+     */
+    contentType:
+      | "image/png"
+      | "image/jpeg"
+      | "image/gif"
+      | "image/webp"
+      | "image/heic"
+      | "video/mp4"
+      | "video/quicktime"
+      | "video/webm";
+    /** Size of the file in bytes. Must not exceed the quota's limit for its kind. */
+    bytes: number;
+    /** Lowercase hex SHA-256 of the exact bytes that will be uploaded. */
+    sha256: string;
+    /** Display name of the file, typically its original file name. */
+    name?: string;
+    /** Whether the client removed location metadata (EXIF and XMP GPS, maker notes, device serial numbers) from the file before hashing and uploading it. Recorded as sent.
+     */
+    locationStripped: boolean;
+    /** Where to store the file. Omitted, the server stores it in `r2`. */
+    backend?: "r2" | "gdrive";
+    /** The caller's own live Google Drive connection in the session organization. Required when `backend` is `gdrive`, refused otherwise.
+     */
+    connectionId?: string;
+    /** Time the asset must stay downloadable until, for example a little after the post that uses it is scheduled. Omitted, the organization's default retention applies from completion.
+     */
+    retainUntil?: string;
+  };
+};
+export type GetMediaAssetQuotaApiResponse = /** status 200 Media asset quota */ {
+  /** Backends this provider serves for the organization. A create naming another is refused with 400. */
+  backends: ("r2" | "gdrive")[];
+  /** Content types this provider accepts. */
+  contentTypes: (
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/webp"
+    | "image/heic"
+    | "video/mp4"
+    | "video/quicktime"
+    | "video/webm"
+  )[];
+  /** Largest image a create accepts, in bytes. */
+  maxImageBytes: number;
+  /** Largest video a create accepts, in bytes. */
+  maxVideoBytes: number;
+  /** How long a `pending` asset waits for its upload and completion before it expires, in seconds. */
+  uploadWindowSeconds: number;
+  /** Days a `ready` asset is kept after completion when no `retainUntil` was set. */
+  defaultRetentionDays: number;
+  /** Furthest `retainUntil` may lie from now, in days. */
+  maxRetentionDays: number;
+  /** Total bytes the organization's live `pending` and `ready` assets may hold. Null when the organization has no storage limit. */
+  bytesLimit: number | null;
+  /** Total bytes of the organization's live `pending` and `ready` assets. Null when it could not be measured, which must be presented as unknown; a number, including 0, is a measurement.
+   */
+  bytesUsed: number | null;
+};
+export type GetMediaAssetQuotaApiArg = void;
+export type GetMediaAssetApiResponse = /** status 200 Media asset response */ {
+  /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+   */
+  createdBy?: string;
+  /** Where the bytes are stored (`r2` or `gdrive`). */
+  backend: "r2" | "gdrive";
+  /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+   */
+  connectionId?: string;
+  /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+   */
+  externalId?: string;
+  /** Image or video, derived by the server from `contentType`. */
+  kind: "image" | "video";
+  /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+  contentType:
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/webp"
+    | "image/heic"
+    | "video/mp4"
+    | "video/quicktime"
+    | "video/webm";
+  /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+   */
+  bytes: number;
+  /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+   */
+  sha256: string;
+  /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+   */
+  name?: string;
+  /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+   */
+  locationStripped: boolean;
+  /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+   */
+  status: "pending" | "ready" | "rejected" | "expired";
+  /** Why the upload was rejected. Set only on a `rejected` asset. */
+  rejectionReason?: "missing" | "size" | "type" | "checksum";
+  /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+   */
+  retainUntil?: string | null;
+  /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+  completedAt?: string | null;
+  /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+   */
+  expiresAt: string;
+  /** Timestamp of media asset creation. */
+  createdAt: string;
+  /** Timestamp of last media asset modification. */
+  updatedAt: string;
+  /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+  deletedAt?: string | null;
+};
+export type GetMediaAssetApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+};
+export type UpdateMediaAssetApiResponse = /** status 200 Media asset updated */ {
+  /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+   */
+  createdBy?: string;
+  /** Where the bytes are stored (`r2` or `gdrive`). */
+  backend: "r2" | "gdrive";
+  /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+   */
+  connectionId?: string;
+  /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+   */
+  externalId?: string;
+  /** Image or video, derived by the server from `contentType`. */
+  kind: "image" | "video";
+  /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+  contentType:
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/webp"
+    | "image/heic"
+    | "video/mp4"
+    | "video/quicktime"
+    | "video/webm";
+  /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+   */
+  bytes: number;
+  /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+   */
+  sha256: string;
+  /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+   */
+  name?: string;
+  /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+   */
+  locationStripped: boolean;
+  /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+   */
+  status: "pending" | "ready" | "rejected" | "expired";
+  /** Why the upload was rejected. Set only on a `rejected` asset. */
+  rejectionReason?: "missing" | "size" | "type" | "checksum";
+  /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+   */
+  retainUntil?: string | null;
+  /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+  completedAt?: string | null;
+  /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+   */
+  expiresAt: string;
+  /** Timestamp of media asset creation. */
+  createdAt: string;
+  /** Timestamp of last media asset modification. */
+  updatedAt: string;
+  /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+  deletedAt?: string | null;
+};
+export type UpdateMediaAssetApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+  body: {
+    /** New time the asset must stay downloadable until. Must be in the future and within `maxRetentionDays` from now. */
+    retainUntil: string;
+  };
+};
+export type DeleteMediaAssetApiResponse = unknown;
+export type DeleteMediaAssetApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+};
+export type CompleteMediaAssetApiResponse = /** status 200 Media asset ready */ {
+  /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+   */
+  createdBy?: string;
+  /** Where the bytes are stored (`r2` or `gdrive`). */
+  backend: "r2" | "gdrive";
+  /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+   */
+  connectionId?: string;
+  /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+   */
+  externalId?: string;
+  /** Image or video, derived by the server from `contentType`. */
+  kind: "image" | "video";
+  /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+  contentType:
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/webp"
+    | "image/heic"
+    | "video/mp4"
+    | "video/quicktime"
+    | "video/webm";
+  /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+   */
+  bytes: number;
+  /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+   */
+  sha256: string;
+  /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+   */
+  name?: string;
+  /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+   */
+  locationStripped: boolean;
+  /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+   */
+  status: "pending" | "ready" | "rejected" | "expired";
+  /** Why the upload was rejected. Set only on a `rejected` asset. */
+  rejectionReason?: "missing" | "size" | "type" | "checksum";
+  /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+   */
+  retainUntil?: string | null;
+  /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+  completedAt?: string | null;
+  /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+   */
+  expiresAt: string;
+  /** Timestamp of media asset creation. */
+  createdAt: string;
+  /** Timestamp of last media asset modification. */
+  updatedAt: string;
+  /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+  deletedAt?: string | null;
+};
+export type CompleteMediaAssetApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+};
+export type GetMediaAssetDownloadApiResponse = /** status 200 Media asset download */ {
+  /** HTTP method to use. `PUT` for an upload, `GET` for a download. */
+  method: "PUT" | "GET";
+  /** Absolute HTTPS URL to send the request to. */
+  url: string;
+  /** Headers the request must carry, verbatim (for an upload, at least `Content-Type`, and any integrity header the signature binds). Empty when none are needed. Never contains an authorization header.
+   */
+  headers: {
+    [key: string]: string;
+  };
+  /** Time the URL stops working. */
+  expiresAt: string;
+};
+export type GetMediaAssetDownloadApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+};
+export type GetMediaAssetContentApiResponse = /** status 200 Media asset bytes */ Blob;
+export type GetMediaAssetContentApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+  /** Time the grant lapses, in seconds since the Unix epoch. */
+  expires: number;
+  /** Server-computed signature over the asset ID and `expires`. Opaque to clients. */
+  signature: string;
+};
 export type GetPatternResourcesApiResponse = /** status 200 Pattern resources page */ {
   /** Current page number of the result set. */
   page?: number;
@@ -22512,6 +23032,20 @@ export const {
   useLazyGetLedgerEntryQuery,
   useUpdateLedgerEntryMutation,
   useDeleteLedgerEntryMutation,
+  useListMediaAssetsQuery,
+  useLazyListMediaAssetsQuery,
+  useCreateMediaAssetMutation,
+  useGetMediaAssetQuotaQuery,
+  useLazyGetMediaAssetQuotaQuery,
+  useGetMediaAssetQuery,
+  useLazyGetMediaAssetQuery,
+  useUpdateMediaAssetMutation,
+  useDeleteMediaAssetMutation,
+  useCompleteMediaAssetMutation,
+  useGetMediaAssetDownloadQuery,
+  useLazyGetMediaAssetDownloadQuery,
+  useGetMediaAssetContentQuery,
+  useLazyGetMediaAssetContentQuery,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,

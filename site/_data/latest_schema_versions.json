@@ -223,6 +223,13 @@
     "extension": true
   },
   {
+    "construct": "media_asset",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/media_asset/media_asset.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "model",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/model/model.yaml",
