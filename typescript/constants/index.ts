@@ -7,3 +7,4 @@
  */
 
 export * from "./v1beta3/connection";
+export * from "./v1beta3/mention_alias";

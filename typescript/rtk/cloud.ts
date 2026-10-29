@@ -32,6 +32,7 @@ export const addTagTypes = [
   "Invitation_Invitation",
   "Ledger_ledgers",
   "MediaAsset_mediaAssets",
+  "MentionAlias_mentionAliases",
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
@@ -1776,6 +1777,28 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMentionAliases: build.query<GetMentionAliasesApiResponse, GetMentionAliasesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/mention-aliases`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            entity: queryArg?.entity,
+            platform: queryArg?.platform,
+          },
+        }),
+        providesTags: ["MentionAlias_mentionAliases"],
+      }),
+      upsertMentionAliases: build.mutation<UpsertMentionAliasesApiResponse, UpsertMentionAliasesApiArg>({
+        query: (queryArg) => ({ url: `/api/mention-aliases`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["MentionAlias_mentionAliases"],
+      }),
+      deleteMentionAlias: build.mutation<DeleteMentionAliasApiResponse, DeleteMentionAliasApiArg>({
+        query: (queryArg) => ({ url: `/api/mention-aliases/${queryArg.mentionAliasId}`, method: "DELETE" }),
+        invalidatesTags: ["MentionAlias_mentionAliases"],
       }),
       getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
         query: (queryArg) => ({
@@ -18109,6 +18132,98 @@ export type GetMediaAssetContentApiArg = {
   /** Server-computed signature over the asset ID and `expires`. Opaque to clients. */
   signature: string;
 };
+export type GetMentionAliasesApiResponse = /** status 200 Mention alias page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Mention aliases included on this page of results. */
+  mentionAliases: {
+    /** Server-generated mention alias ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** The tag as written after `@`, without the `@` (`kate`). Compared ignoring case: `Kate` and `kate` are the same entity, and the alias keeps the casing of the write that last stored it. The pattern is the tag grammar a message is read with: letters, digits, `_`, `.` and `-`, starting and ending with a letter, digit or `_`.
+     */
+    entity: string;
+    /** A platform whose messages can tag an entity: `linkedin`, `x`, `bluesky`, `reddit` or `slack`. A server refuses any other value with 400. A platform joins by adding a value here.
+     */
+    platform: "linkedin" | "x" | "bluesky" | "reddit" | "slack";
+    /** The entity's form on `platform`, stored as confirmed: `@kate_ops` on X, `@kate.example.org` on Bluesky, `u/kate` or `r/kate` on Reddit, a member ID such as `U012AB3CD` on Slack, or a plain-text name on LinkedIn. An empty string is a confirmed answer, not a missing one: it means the entity is sent as its name in plain text on that platform. The server checks length and surrounding whitespace only; whether a value is a valid handle on its platform is the client's check.
+     */
+    handle: string;
+    /** ID of the user whose session last wrote the alias. Derived from the authenticated session on every write, never client-settable. Omitted when that user was later purged.
+     */
+    confirmedBy?: string;
+    /** Timestamp the alias was first confirmed. */
+    createdAt: string;
+    /** Timestamp the alias was last confirmed. Every write of the alias's key advances it, including one that stores the same handle again.
+     */
+    updatedAt: string;
+  }[];
+};
+export type GetMentionAliasesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Return only the aliases of these entities (repeatable), each compared ignoring case. */
+  entity?: string[];
+  /** Return only the aliases on these platforms (repeatable). */
+  platform?: ("linkedin" | "x" | "bluesky" | "reddit" | "slack")[];
+};
+export type UpsertMentionAliasesApiResponse =
+  /** status 200 The stored mention aliases, one per request entry, in request order */ {
+    /** Server-generated mention alias ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** The tag as written after `@`, without the `@` (`kate`). Compared ignoring case: `Kate` and `kate` are the same entity, and the alias keeps the casing of the write that last stored it. The pattern is the tag grammar a message is read with: letters, digits, `_`, `.` and `-`, starting and ending with a letter, digit or `_`.
+     */
+    entity: string;
+    /** A platform whose messages can tag an entity: `linkedin`, `x`, `bluesky`, `reddit` or `slack`. A server refuses any other value with 400. A platform joins by adding a value here.
+     */
+    platform: "linkedin" | "x" | "bluesky" | "reddit" | "slack";
+    /** The entity's form on `platform`, stored as confirmed: `@kate_ops` on X, `@kate.example.org` on Bluesky, `u/kate` or `r/kate` on Reddit, a member ID such as `U012AB3CD` on Slack, or a plain-text name on LinkedIn. An empty string is a confirmed answer, not a missing one: it means the entity is sent as its name in plain text on that platform. The server checks length and surrounding whitespace only; whether a value is a valid handle on its platform is the client's check.
+     */
+    handle: string;
+    /** ID of the user whose session last wrote the alias. Derived from the authenticated session on every write, never client-settable. Omitted when that user was later purged.
+     */
+    confirmedBy?: string;
+    /** Timestamp the alias was first confirmed. */
+    createdAt: string;
+    /** Timestamp the alias was last confirmed. Every write of the alias's key advances it, including one that stores the same handle again.
+     */
+    updatedAt: string;
+  }[];
+export type UpsertMentionAliasesApiArg = {
+  body: {
+    /** Aliases to write, at most one per (`entity`, `platform`) key with `entity` compared ignoring case. A key named twice refuses the whole request with 400.
+     */
+    mentionAliases: {
+      /** The tag as written after `@`, without the `@`. Compared ignoring case; the stored alias keeps this casing.
+       */
+      entity: string;
+      /** A platform whose messages can tag an entity: `linkedin`, `x`, `bluesky`, `reddit` or `slack`. A server refuses any other value with 400. A platform joins by adding a value here.
+       */
+      platform: "linkedin" | "x" | "bluesky" | "reddit" | "slack";
+      /** The entity's form on `platform`. Required, because the write replaces the stored handle: an empty string is the confirmed answer "send the name as plain text", never "keep what is stored".
+       */
+      handle: string;
+    }[];
+  };
+};
+export type DeleteMentionAliasApiResponse = unknown;
+export type DeleteMentionAliasApiArg = {
+  /** Mention alias ID */
+  mentionAliasId: string;
+};
 export type GetPatternResourcesApiResponse = /** status 200 Pattern resources page */ {
   /** Current page number of the result set. */
   page?: number;
@@ -23046,6 +23161,10 @@ export const {
   useLazyGetMediaAssetDownloadQuery,
   useGetMediaAssetContentQuery,
   useLazyGetMediaAssetContentQuery,
+  useGetMentionAliasesQuery,
+  useLazyGetMentionAliasesQuery,
+  useUpsertMentionAliasesMutation,
+  useDeleteMentionAliasMutation,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,

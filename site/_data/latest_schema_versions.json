@@ -230,6 +230,13 @@
     "extension": true
   },
   {
+    "construct": "mention_alias",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/mention_alias/mention_alias.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "model",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/model/model.yaml",
