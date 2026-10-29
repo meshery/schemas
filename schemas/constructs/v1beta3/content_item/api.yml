@@ -389,6 +389,8 @@ components:
             item has none; omitted on update, the stored rules are kept;
             `null` on update clears them.
           nullable: true
+          x-oapi-codegen-extra-tags:
+            json: "rulesOfEngagement,omitempty"
         threadId:
           type: string
           format: uuid

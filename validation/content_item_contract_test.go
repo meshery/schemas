@@ -136,6 +136,9 @@ func TestContentItemRulesOfEngagementAndThreads(t *testing.T) {
 	if got := mustLookup(t, doc, "components", "schemas", "ContentItemPayload", "properties", "rulesOfEngagement", "nullable"); got != true {
 		t.Error("ContentItemPayload.rulesOfEngagement must be nullable so update can clear it")
 	}
+	if got := mustLookup(t, doc, "components", "schemas", "ContentItemPayload", "properties", "rulesOfEngagement", "x-oapi-codegen-extra-tags", "json"); got != "rulesOfEngagement,omitempty" {
+		t.Errorf("ContentItemPayload.rulesOfEngagement json tag = %v, want rulesOfEngagement,omitempty so a Go write-back never sends null", got)
+	}
 
 	params, _ := mustLookup(t, doc, "paths", "/api/content-items", "get", "parameters").([]any)
 	found := false
