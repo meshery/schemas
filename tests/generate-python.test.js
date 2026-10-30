@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const yaml = require("js-yaml");
 
 const config = require("../build/lib/config");
 const paths = require("../build/lib/paths");
@@ -133,4 +134,40 @@ test("committed python tree keeps scaffold/generated separation and no tool stat
   };
   walk(distRoot);
   assert.deepEqual(offenders, []);
+});
+
+test("model constructs define items for relationships and components arrays (#1241)", () => {
+  for (const version of ["v1beta1", "v1beta2"]) {
+    const modelPath = paths.fromRoot("schemas", "constructs", version, "model", "model.yaml");
+    const modelDef = yaml.load(fs.readFileSync(modelPath, "utf-8"));
+    assert.deepEqual(modelDef.properties.relationships.items, {}, `${version} model relationships must define items schema`);
+    assert.deepEqual(modelDef.properties.components.items, {}, `${version} model components must define items schema`);
+  }
+});
+
+test("bundled openapi specs contain no bare array schemas without items (#1241)", () => {
+  for (const bundle of ["meshery_openapi.yml", "cloud_openapi.yml"]) {
+    const specPath = paths.fromRoot(config.paths.buildDir, bundle);
+    if (!paths.fileExists(specPath)) continue;
+    const spec = yaml.load(fs.readFileSync(specPath, "utf-8"));
+    const bareArrays = [];
+
+    const walk = (node, trail, depth) => {
+      if (node == null || depth > 100) return;
+      if (Array.isArray(node)) {
+        node.forEach((item, index) => walk(item, `${trail}[${index}]`, depth + 1));
+        return;
+      }
+      if (typeof node !== "object") return;
+      if (node.type === "array" && !node.items && !node.prefixItems) {
+        bareArrays.push(trail);
+      }
+      for (const key of Object.keys(node)) {
+        walk(node[key], `${trail}/${key}`, depth + 1);
+      }
+    };
+
+    walk(spec, "", 0);
+    assert.deepEqual(bareArrays, [], `bare array schema without items found in ${bundle}`);
+  }
 });
