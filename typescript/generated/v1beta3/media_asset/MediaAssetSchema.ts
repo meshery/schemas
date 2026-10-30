@@ -7,7 +7,7 @@ const MediaAssetSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "MediaAsset",
-    "description": "OpenAPI schema for media assets - image and video files an organization\nuploads so content items can post them without a link. A content item\nrefers to an asset by its ID; a download URL is minted only when the\nfile is about to be used and is never stored.\nUpload flow: `createMediaAsset` records the declared size, type and\nSHA-256 and answers a short-lived upload URL; the client sends the file\nto that URL with one `PUT`; `completeMediaAsset` checks the stored bytes\nagainst the declaration and makes the asset `ready` (or `rejected`).\n`getMediaAssetDownload` then answers a short-lived download URL each\ntime the file is needed.\nStorage: `backend` `r2` stores the bytes in the provider's own private\nobject storage; `gdrive` stores them in the uploading person's Google\nDrive, through their Google Drive connection. The quota names the\nbackends a provider serves. No request or response carries a storage\ncredential, an access token, a bucket name or an object key: an upload\nor download URL is the only grant, it covers one transfer of one file,\nand it lapses at its `expiresAt`.\nOrganization scope: every operation but `getMediaAssetContent` acts only\nin the organization the session resolved to (X-Current-Orgid, then the\nuser's selected organization), and only when the caller is a live member\nof it. An id that does not name a live media asset of the organization,\nand a caller who is not a live member of it, receive the same 404, so\nthe existence of another organization's assets is never disclosed.\nAuthorization: media assets are the files of content items, so they take\nthe Content Items keys in the session organization: View Content Items\nfor the reads, the quota and downloads, Create Content Item to create\nand complete an asset, Edit Content Item to change its retention, and\nDelete Content Item to delete it. A caller without the key receives a\n403 before any row is read.\n",
+    "description": "OpenAPI schema for media assets - image and video files an organization\nuploads so content items can post them without a link. A content item\nrefers to an asset by its ID; a download URL is minted only when the\nfile is about to be used and is never stored.\nUpload flow: `createMediaAsset` records the declared size, type and\nSHA-256 and answers a short-lived upload URL; the client sends the file\nto that URL with one `PUT`; `completeMediaAsset` checks the stored bytes\nagainst the declaration and makes the asset `ready` (or `rejected`).\n`getMediaAssetDownload` then answers a short-lived download URL each\ntime the file is needed.\nStorage: `backend` `r2` stores the bytes in the provider's own private\nobject storage; `gdrive` stores them in the uploading person's Google\nDrive, through their Google Drive connection. The quota names the\nbackends a provider serves, and a create names one of them: neither\nis a default. No request or response carries a storage\ncredential, an access token, a bucket name or an object key: an upload\nor download URL is the only grant, it covers one transfer of one file,\nand it lapses at its `expiresAt`.\nOrganization scope: every operation but `getMediaAssetContent` acts only\nin the organization the session resolved to (X-Current-Orgid, then the\nuser's selected organization), and only when the caller is a live member\nof it. An id that does not name a live media asset of the organization,\nand a caller who is not a live member of it, receive the same 404, so\nthe existence of another organization's assets is never disclosed.\nAuthorization: media assets are the files of content items, so they take\nthe Content Items keys in the session organization: View Content Items\nfor the reads, the quota and downloads, Create Content Item to create\nand complete an asset, Edit Content Item to change its retention, and\nDelete Content Item to delete it. A caller without the key receives a\n403 before any row is read.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
@@ -580,7 +580,8 @@ const MediaAssetSchema: Record<string, unknown> = {
                   "contentType",
                   "bytes",
                   "sha256",
-                  "locationStripped"
+                  "locationStripped",
+                  "backend"
                 ],
                 "properties": {
                   "contentType": {
@@ -632,10 +633,7 @@ const MediaAssetSchema: Record<string, unknown> = {
                     "description": "Whether the client removed location metadata (EXIF and XMP GPS, maker notes, device serial numbers) from the file before hashing and uploading it. Recorded as sent.\n"
                   },
                   "backend": {
-                    "description": "Where to store the file. Omitted, the server stores it in `r2`.",
-                    "x-oapi-codegen-extra-tags": {
-                      "json": "backend,omitempty"
-                    },
+                    "description": "Where to store the file. Required, with no default: the client picks one of the backends `getMediaAssetQuota` lists in `backends`, and a create naming any other answers `400`.\n",
                     "type": "string",
                     "enum": [
                       "r2",
@@ -1255,10 +1253,10 @@ const MediaAssetSchema: Record<string, unknown> = {
                   "properties": {
                     "backends": {
                       "type": "array",
-                      "description": "Backends this provider serves for the organization. A create naming another is refused with 400.",
+                      "description": "Backends this provider serves for the organization, and the only statement of what it serves. A create must name one of them in `backend` (there is no default); naming another is refused with 400.\n",
                       "items": {
                         "type": "string",
-                        "description": "Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.\n",
+                        "description": "Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. Neither is a default: a provider states the ones it serves in `MediaAssetQuota.backends`, and a create names one of them. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.\n",
                         "enum": [
                           "r2",
                           "gdrive"
@@ -4052,7 +4050,7 @@ const MediaAssetSchema: Record<string, unknown> = {
       },
       "MediaAssetBackend": {
         "type": "string",
-        "description": "Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.\n",
+        "description": "Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. Neither is a default: a provider states the ones it serves in `MediaAssetQuota.backends`, and a create names one of them. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.\n",
         "enum": [
           "r2",
           "gdrive"
@@ -4138,7 +4136,8 @@ const MediaAssetSchema: Record<string, unknown> = {
           "contentType",
           "bytes",
           "sha256",
-          "locationStripped"
+          "locationStripped",
+          "backend"
         ],
         "properties": {
           "contentType": {
@@ -4190,10 +4189,7 @@ const MediaAssetSchema: Record<string, unknown> = {
             "description": "Whether the client removed location metadata (EXIF and XMP GPS, maker notes, device serial numbers) from the file before hashing and uploading it. Recorded as sent.\n"
           },
           "backend": {
-            "description": "Where to store the file. Omitted, the server stores it in `r2`.",
-            "x-oapi-codegen-extra-tags": {
-              "json": "backend,omitempty"
-            },
+            "description": "Where to store the file. Required, with no default: the client picks one of the backends `getMediaAssetQuota` lists in `backends`, and a create naming any other answers `400`.\n",
             "type": "string",
             "enum": [
               "r2",
@@ -4673,10 +4669,10 @@ const MediaAssetSchema: Record<string, unknown> = {
         "properties": {
           "backends": {
             "type": "array",
-            "description": "Backends this provider serves for the organization. A create naming another is refused with 400.",
+            "description": "Backends this provider serves for the organization, and the only statement of what it serves. A create must name one of them in `backend` (there is no default); naming another is refused with 400.\n",
             "items": {
               "type": "string",
-              "description": "Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.\n",
+              "description": "Where the asset's bytes are stored. `r2` is the provider's own private object storage; `gdrive` is the uploading person's Google Drive, reached through their Google Drive connection. Neither is a default: a provider states the ones it serves in `MediaAssetQuota.backends`, and a create names one of them. A reader never branches on it: `getMediaAssetDownload` answers the same shape for both.\n",
               "enum": [
                 "r2",
                 "gdrive"

@@ -18137,8 +18137,9 @@ export type CreateMediaAssetApiArg = {
     /** Whether the client removed location metadata (EXIF and XMP GPS, maker notes, device serial numbers) from the file before hashing and uploading it. Recorded as sent.
      */
     locationStripped: boolean;
-    /** Where to store the file. Omitted, the server stores it in `r2`. */
-    backend?: "r2" | "gdrive";
+    /** Where to store the file. Required, with no default: the client picks one of the backends `getMediaAssetQuota` lists in `backends`, and a create naming any other answers `400`.
+     */
+    backend: "r2" | "gdrive";
     /** The caller's own live Google Drive connection in the session organization. Required when `backend` is `gdrive`, refused otherwise.
      */
     connectionId?: string;
@@ -18148,7 +18149,8 @@ export type CreateMediaAssetApiArg = {
   };
 };
 export type GetMediaAssetQuotaApiResponse = /** status 200 Media asset quota */ {
-  /** Backends this provider serves for the organization. A create naming another is refused with 400. */
+  /** Backends this provider serves for the organization, and the only statement of what it serves. A create must name one of them in `backend` (there is no default); naming another is refused with 400.
+   */
   backends: ("r2" | "gdrive")[];
   /** Content types this provider accepts. */
   contentTypes: (
