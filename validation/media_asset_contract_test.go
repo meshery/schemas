@@ -4,6 +4,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/getkin/kin-openapi/openapi3"
 )
 
 // The media asset contract (docs/media-asset-contract.md): an asset is
@@ -173,5 +175,57 @@ func TestMediaAssetQuotaUsageCanBeUnmeasured(t *testing.T) {
 	used := mustLookup(t, doc, "components", "schemas", "MediaAssetQuota", "properties", "bytesUsed")
 	if got := mustValue(used, "nullable"); got != true {
 		t.Errorf("MediaAssetQuota.bytesUsed nullable = %v, want true", got)
+	}
+}
+
+// backend is required on create and has no default: the provider's
+// MediaAssetQuota.backends is the only statement of what it serves, so a
+// create that omitted backend would land on whatever a default named, served
+// or not. Both enum values stay valid.
+func TestMediaAssetCreateRequiresBackend(t *testing.T) {
+	doc, err := loadAPISpec(filepath.Join(repoRootDir(t), mediaAssetDir, "api.yml"))
+	if err != nil {
+		t.Fatalf("load %s: %v", mediaAssetDir, err)
+	}
+	payload := doc.Components.Schemas["MediaAssetPayload"].Value
+	if backend := payload.Properties["backend"]; backend == nil {
+		t.Fatal("MediaAssetPayload has no backend property")
+	} else if backend.Value.Default != nil {
+		t.Errorf("MediaAssetPayload.backend default = %v, want none", backend.Value.Default)
+	}
+	if got := doc.Components.Schemas["MediaAssetBackend"].Value.Default; got != nil {
+		t.Errorf("MediaAssetBackend default = %v, want none", got)
+	}
+
+	base := func(backend any) map[string]any {
+		body := map[string]any{
+			"contentType":      "image/png",
+			"bytes":            1,
+			"sha256":           strings.Repeat("0", 64),
+			"locationStripped": true,
+		}
+		if backend != nil {
+			body["backend"] = backend
+		}
+		return body
+	}
+	request := []openapi3.SchemaValidationOption{openapi3.VisitAsRequest()}
+	cases := []struct {
+		name    string
+		body    map[string]any
+		wantErr bool
+	}{
+		{"names gdrive", base("gdrive"), false},
+		{"names r2", base("r2"), false},
+		{"omits backend", base(nil), true},
+		{"names an unknown backend", base("s3"), true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := payload.VisitJSON(tc.body, request...)
+			if (err != nil) != tc.wantErr {
+				t.Errorf("VisitJSON(%v) error = %v, wantErr %v", tc.body, err, tc.wantErr)
+			}
+		})
 	}
 }
