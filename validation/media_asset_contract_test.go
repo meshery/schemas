@@ -187,7 +187,20 @@ func TestMediaAssetCreateRequiresBackend(t *testing.T) {
 	if err != nil {
 		t.Fatalf("load %s: %v", mediaAssetDir, err)
 	}
-	payload := doc.Components.Schemas["MediaAssetPayload"].Value
+	// Resolve the payload through createMediaAsset's request body, so the
+	// rule is tested on the schema a create actually validates against.
+	create := doc.Paths.Find("/api/media-assets").Post
+	if create == nil || create.RequestBody == nil {
+		t.Fatal("createMediaAsset has no request body")
+	}
+	body := create.RequestBody.Value.Content.Get("application/json")
+	if body == nil || body.Schema == nil {
+		t.Fatal("createMediaAsset has no application/json request schema")
+	}
+	if body.Schema.Ref != "#/components/schemas/MediaAssetPayload" {
+		t.Errorf("createMediaAsset request schema = %q, want #/components/schemas/MediaAssetPayload", body.Schema.Ref)
+	}
+	payload := body.Schema.Value
 	if backend := payload.Properties["backend"]; backend == nil {
 		t.Fatal("MediaAssetPayload has no backend property")
 	} else if backend.Value.Default != nil {
