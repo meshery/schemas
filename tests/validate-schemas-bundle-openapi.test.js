@@ -1,6 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
+const Ajv = require("ajv");
 
 const config = require("../build/lib/config");
 const { dereferenceOpenapiSpec, mergeOpenapiSpec } = require("../build/bundle-openapi");
@@ -186,6 +187,54 @@ test("clonePattern declares a request body for generated clients", async () => {
     minLength: 1,
     maxLength: 255,
   });
+});
+
+test("catalog schemas, read responses, and requests share the declared contentClass enum", async () => {
+  const projectRoot = config.getProjectRoot();
+  const enumValues = ["official", "verified", "community"];
+  const catalogSpecs = await Promise.all(
+    ["v1alpha2", "v1beta1", "v1beta2"].map((version) =>
+      dereferenceOpenapiSpec(
+        path.join(projectRoot, `schemas/constructs/${version}/catalog/api.yml`),
+      ),
+    ),
+  );
+  const designSpec = await dereferenceOpenapiSpec(
+    path.join(projectRoot, "schemas/constructs/v1beta3/design/api.yml"),
+  );
+  const workspaceSpec = await dereferenceOpenapiSpec(
+    path.join(projectRoot, "schemas/constructs/v1beta3/workspace/api.yml"),
+  );
+
+  const catalogPattern =
+    designSpec.components.schemas.CatalogContentPage.properties.patterns.items;
+  const workspaceDesign =
+    workspaceSpec.components.schemas.MesheryDesignPage.properties.designs.items;
+  const catalogRequest = designSpec.components.schemas.CatalogRequest;
+
+  for (const catalogSpec of catalogSpecs) {
+    const catalogData = catalogSpec.components.schemas.CatalogData;
+    assert.equal(Object.hasOwn(catalogData.properties, "class"), false);
+    assert.deepEqual(catalogData.properties.contentClass.enum, enumValues);
+  }
+
+  for (const catalogData of [
+    catalogPattern.properties.catalogData,
+    workspaceDesign.properties.catalogData,
+  ]) {
+    assert.equal(Object.hasOwn(catalogData.properties, "class"), false);
+    assert.deepEqual(catalogData.properties.contentClass.enum, enumValues);
+  }
+
+  const requestContentClass = catalogRequest.properties.contentClass;
+  assert.deepEqual(requestContentClass.oneOf[0].enum, enumValues);
+
+  const validateContentClass = new Ajv({ allErrors: true, strict: false }).compile(
+    requestContentClass,
+  );
+  assert.equal(validateContentClass(null), true, JSON.stringify(validateContentClass.errors));
+  assert.equal(validateContentClass("official"), true);
+  assert.equal(validateContentClass("unknown"), false);
 });
 
 test("filterOpenapiByTag applies consumer-specific base metadata", () => {
