@@ -1,6 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
+const Ajv = require("ajv");
 
 const config = require("../build/lib/config");
 const { dereferenceOpenapiSpec, mergeOpenapiSpec } = require("../build/bundle-openapi");
@@ -171,9 +172,26 @@ test("dereferenceOpenapiSpec resolves a construct api.yml in-process", async () 
   assert.ok(document.components.schemas.KeyPage);
 });
 
+test("clonePattern declares a request body for generated clients", async () => {
+  const projectRoot = config.getProjectRoot();
+  const document = await dereferenceOpenapiSpec(
+    path.join(projectRoot, "schemas/constructs/v1beta3/design/api.yml"),
+  );
+  const operation = document.paths["/api/content/patterns/clone/{designId}"].post;
+
+  assert.equal(operation.operationId, "clonePattern");
+  assert.equal(operation.requestBody.required, true);
+  assert.deepEqual(operation.requestBody.content["application/json"].schema.properties.name, {
+    type: "string",
+    description: "Optional name to apply to the cloned design.",
+    minLength: 1,
+    maxLength: 255,
+  });
+});
+
 test("catalog schemas, read responses, and requests share the declared contentClass enum", async () => {
   const projectRoot = config.getProjectRoot();
-  const enumValues = ["official", "verified", "project", "community"];
+  const enumValues = ["official", "verified", "community"];
   const catalogSpecs = await Promise.all(
     ["v1alpha2", "v1beta1", "v1beta2"].map((version) =>
       dereferenceOpenapiSpec(
@@ -208,22 +226,15 @@ test("catalog schemas, read responses, and requests share the declared contentCl
     assert.deepEqual(catalogData.properties.contentClass.enum, enumValues);
   }
 
-  assert.deepEqual(catalogRequest.properties.contentClass.allOf[0].enum, enumValues);
-test("clonePattern declares a request body for generated clients", async () => {
-  const projectRoot = config.getProjectRoot();
-  const document = await dereferenceOpenapiSpec(
-    path.join(projectRoot, "schemas/constructs/v1beta3/design/api.yml"),
-  );
-  const operation = document.paths["/api/content/patterns/clone/{designId}"].post;
+  const requestContentClass = catalogRequest.properties.contentClass;
+  assert.deepEqual(requestContentClass.oneOf[0].enum, enumValues);
 
-  assert.equal(operation.operationId, "clonePattern");
-  assert.equal(operation.requestBody.required, true);
-  assert.deepEqual(operation.requestBody.content["application/json"].schema.properties.name, {
-    type: "string",
-    description: "Optional name to apply to the cloned design.",
-    minLength: 1,
-    maxLength: 255,
-  });
+  const validateContentClass = new Ajv({ allErrors: true, strict: false }).compile(
+    requestContentClass,
+  );
+  assert.equal(validateContentClass(null), true, JSON.stringify(validateContentClass.errors));
+  assert.equal(validateContentClass("official"), true);
+  assert.equal(validateContentClass("unknown"), false);
 });
 
 test("filterOpenapiByTag applies consumer-specific base metadata", () => {

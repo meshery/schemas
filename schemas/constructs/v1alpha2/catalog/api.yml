@@ -15,16 +15,17 @@ components:
   schemas:
     CatalogDataContentClass:
       type: string
-      description: Support-level classification emitted for catalog content.
+      description: |
+        Support-level classification emitted for catalog content. Existing
+        records may still contain the legacy value `reference architecture`;
+        migrate those values before validating records against this enum.
       enum:
         - official
         - verified
-        - project
         - community
       x-enum-varnames:
         - CatalogDataContentClassOfficial
         - CatalogDataContentClassVerified
-        - CatalogDataContentClassProject
         - CatalogDataContentClassCommunity
     CatalogData:
       $ref: "./catalog.yaml"
