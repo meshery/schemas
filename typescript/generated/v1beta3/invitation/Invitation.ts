@@ -200,6 +200,20 @@ export interface components {
                 /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
                 teams: string[];
                 /**
+                 * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                 * @default direct_membership
+                 * @enum {string}
+                 */
+                acceptanceOutcome: "direct_membership" | "child_organization";
+                /**
+                 * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+                 * @default parent
+                 * @enum {string}
+                 */
+                childOrganizationBranding: "parent" | "provider" | "none";
+                /** @description Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+                childOrganizationName?: string;
+                /**
                  * @description Activation status of the invitation.
                  * @enum {string}
                  */
@@ -396,10 +410,10 @@ export interface components {
             isDefault?: boolean;
             /** @description Name of the invitation. */
             name: string;
-            /** @description Description of the invitation. */
-            description: string;
-            /** @description Email addresses or patterns this invitation is valid for. */
-            emails: string[];
+            /** @description Description of the invitation. Optional; omitting it stores an empty description. */
+            description?: string;
+            /** @description Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation. */
+            emails?: string[];
             /**
              * Format: uuid
              * @description ID of the organization to which the user is invited.
@@ -412,10 +426,24 @@ export interface components {
             expiresAt?: string;
             /** @description Quota for the invitation; limits the number of users that can accept it. */
             quota?: number;
-            /** @description Roles that the user will have when accepting the invitation. */
-            roles: string[];
-            /** @description Teams that the user will be added to when accepting the invitation. */
-            teams: string[];
+            /** @description Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles. */
+            roles?: string[];
+            /** @description Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
+            teams?: string[];
+            /**
+             * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+             * @default direct_membership
+             * @enum {string}
+             */
+            acceptanceOutcome: "direct_membership" | "child_organization";
+            /**
+             * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+             * @default parent
+             * @enum {string}
+             */
+            childOrganizationBranding: "parent" | "provider" | "none";
+            /** @description Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+            childOrganizationName?: string;
             /**
              * @description Activation status of the invitation.
              * @enum {string}
@@ -427,6 +455,18 @@ export interface components {
          * @enum {string}
          */
         InvitationStatus: "enabled" | "disabled";
+        /**
+         * @description Outcome of accepting an invitation. direct_membership adds the accepting user to the inviting organization; child_organization creates a new child organization of the inviting organization for the accepting user.
+         * @default direct_membership
+         * @enum {string}
+         */
+        InvitationAcceptanceOutcome: "direct_membership" | "child_organization";
+        /**
+         * @description Branding a child organization created through an invitation starts with: parent (default) copies the inviting organization's branding, provider copies the provider organization's branding, none gives the child no branding of its own. A snapshot taken at creation.
+         * @default parent
+         * @enum {string}
+         */
+        InvitationChildOrganizationBranding: "parent" | "provider" | "none";
         /** @description Invitation entity schema. */
         Invitation: {
             /**
@@ -465,6 +505,20 @@ export interface components {
             roles: string[];
             /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
             teams: string[];
+            /**
+             * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+             * @default direct_membership
+             * @enum {string}
+             */
+            acceptanceOutcome: "direct_membership" | "child_organization";
+            /**
+             * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+             * @default parent
+             * @enum {string}
+             */
+            childOrganizationBranding: "parent" | "provider" | "none";
+            /** @description Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+            childOrganizationName?: string;
             /**
              * @description Activation status of the invitation.
              * @enum {string}
@@ -531,6 +585,98 @@ export interface components {
             };
             content: {
                 "text/plain": string;
+            };
+        };
+        /** @description Invalid request body or request param */
+        MeshkitError400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Forbidden */
+        MeshkitError403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Result not found */
+        MeshkitError404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Internal server error */
+        MeshkitError500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
             };
         };
     };
@@ -624,6 +770,20 @@ export interface operations {
                         /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
                         teams: string[];
                         /**
+                         * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                         * @default direct_membership
+                         * @enum {string}
+                         */
+                        acceptanceOutcome: "direct_membership" | "child_organization";
+                        /**
+                         * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+                         * @default parent
+                         * @enum {string}
+                         */
+                        childOrganizationBranding: "parent" | "provider" | "none";
+                        /** @description Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+                        childOrganizationName?: string;
+                        /**
                          * @description Activation status of the invitation.
                          * @enum {string}
                          */
@@ -711,10 +871,10 @@ export interface operations {
                     isDefault?: boolean;
                     /** @description Name of the invitation. */
                     name: string;
-                    /** @description Description of the invitation. */
-                    description: string;
-                    /** @description Email addresses or patterns this invitation is valid for. */
-                    emails: string[];
+                    /** @description Description of the invitation. Optional; omitting it stores an empty description. */
+                    description?: string;
+                    /** @description Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation. */
+                    emails?: string[];
                     /**
                      * Format: uuid
                      * @description ID of the organization to which the user is invited.
@@ -727,10 +887,24 @@ export interface operations {
                     expiresAt?: string;
                     /** @description Quota for the invitation; limits the number of users that can accept it. */
                     quota?: number;
-                    /** @description Roles that the user will have when accepting the invitation. */
-                    roles: string[];
-                    /** @description Teams that the user will be added to when accepting the invitation. */
-                    teams: string[];
+                    /** @description Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles. */
+                    roles?: string[];
+                    /** @description Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
+                    teams?: string[];
+                    /**
+                     * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                     * @default direct_membership
+                     * @enum {string}
+                     */
+                    acceptanceOutcome?: "direct_membership" | "child_organization";
+                    /**
+                     * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+                     * @default parent
+                     * @enum {string}
+                     */
+                    childOrganizationBranding?: "parent" | "provider" | "none";
+                    /** @description Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+                    childOrganizationName?: string;
                     /**
                      * @description Activation status of the invitation.
                      * @enum {string}
@@ -784,6 +958,20 @@ export interface operations {
                         /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
                         teams: string[];
                         /**
+                         * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                         * @default direct_membership
+                         * @enum {string}
+                         */
+                        acceptanceOutcome: "direct_membership" | "child_organization";
+                        /**
+                         * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+                         * @default parent
+                         * @enum {string}
+                         */
+                        childOrganizationBranding: "parent" | "provider" | "none";
+                        /** @description Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+                        childOrganizationName?: string;
+                        /**
                          * @description Activation status of the invitation.
                          * @enum {string}
                          */
@@ -812,7 +1000,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */
@@ -830,7 +1032,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Result not found */
@@ -839,7 +1055,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -848,7 +1078,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
         };
@@ -982,6 +1226,20 @@ export interface operations {
                             /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
                             teams: string[];
                             /**
+                             * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                             * @default direct_membership
+                             * @enum {string}
+                             */
+                            acceptanceOutcome: "direct_membership" | "child_organization";
+                            /**
+                             * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+                             * @default parent
+                             * @enum {string}
+                             */
+                            childOrganizationBranding: "parent" | "provider" | "none";
+                            /** @description Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+                            childOrganizationName?: string;
+                            /**
                              * @description Activation status of the invitation.
                              * @enum {string}
                              */
@@ -1058,10 +1316,10 @@ export interface operations {
                     isDefault?: boolean;
                     /** @description Name of the invitation. */
                     name: string;
-                    /** @description Description of the invitation. */
-                    description: string;
-                    /** @description Email addresses or patterns this invitation is valid for. */
-                    emails: string[];
+                    /** @description Description of the invitation. Optional; omitting it stores an empty description. */
+                    description?: string;
+                    /** @description Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation. */
+                    emails?: string[];
                     /**
                      * Format: uuid
                      * @description ID of the organization to which the user is invited.
@@ -1074,10 +1332,24 @@ export interface operations {
                     expiresAt?: string;
                     /** @description Quota for the invitation; limits the number of users that can accept it. */
                     quota?: number;
-                    /** @description Roles that the user will have when accepting the invitation. */
-                    roles: string[];
-                    /** @description Teams that the user will be added to when accepting the invitation. */
-                    teams: string[];
+                    /** @description Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles. */
+                    roles?: string[];
+                    /** @description Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
+                    teams?: string[];
+                    /**
+                     * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                     * @default direct_membership
+                     * @enum {string}
+                     */
+                    acceptanceOutcome?: "direct_membership" | "child_organization";
+                    /**
+                     * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+                     * @default parent
+                     * @enum {string}
+                     */
+                    childOrganizationBranding?: "parent" | "provider" | "none";
+                    /** @description Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+                    childOrganizationName?: string;
                     /**
                      * @description Activation status of the invitation.
                      * @enum {string}
@@ -1131,6 +1403,20 @@ export interface operations {
                         /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
                         teams: string[];
                         /**
+                         * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                         * @default direct_membership
+                         * @enum {string}
+                         */
+                        acceptanceOutcome: "direct_membership" | "child_organization";
+                        /**
+                         * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+                         * @default parent
+                         * @enum {string}
+                         */
+                        childOrganizationBranding: "parent" | "provider" | "none";
+                        /** @description Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+                        childOrganizationName?: string;
+                        /**
                          * @description Activation status of the invitation.
                          * @enum {string}
                          */
@@ -1159,7 +1445,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */
@@ -1177,7 +1477,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -1186,7 +1500,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
         };
@@ -1247,6 +1575,20 @@ export interface operations {
                         /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
                         teams: string[];
                         /**
+                         * @description Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization.
+                         * @default direct_membership
+                         * @enum {string}
+                         */
+                        acceptanceOutcome: "direct_membership" | "child_organization";
+                        /**
+                         * @description Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source.
+                         * @default parent
+                         * @enum {string}
+                         */
+                        childOrganizationBranding: "parent" | "provider" | "none";
+                        /** @description Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+                        childOrganizationName?: string;
+                        /**
                          * @description Activation status of the invitation.
                          * @enum {string}
                          */
@@ -1275,7 +1617,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */
@@ -1293,7 +1649,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
             /** @description Internal server error */
@@ -1302,7 +1672,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
                 };
             };
         };

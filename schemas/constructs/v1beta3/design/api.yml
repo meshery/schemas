@@ -16,6 +16,8 @@ security:
 tags:
   - name: designs
     description: Operations related to designs and infrastructure patterns
+  - name: github
+    description: GitHub repository reads that back design import and remap
 paths:
   /api/content/patterns:
     get:
@@ -85,7 +87,10 @@ paths:
         - designs
       summary: Save design
       operationId: upsertPattern
-      description: Creates or updates an infrastructure design.
+      description: >
+        Creates or updates an infrastructure design. The server assigns
+        `organizationId` from the session organization; clients do not send
+        it. On update the organization stays the one assigned at create.
       requestBody:
         required: true
         content:
@@ -186,6 +191,12 @@ paths:
       description: Creates a copy of an existing design.
       parameters:
         - $ref: "#/components/parameters/designId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryPatternClonePayload"
       responses:
         "200":
           description: Design cloned
@@ -266,6 +277,136 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/content/patterns/refresh/{designId}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Refresh design from its source
+      operationId: refreshPatternFromSource
+      description: >
+        Re-fetches the source file recorded in the design's `location`
+        (`type: github`, `host: github.com/<owner>/<repo>`, `path`, optional
+        `branch`; an empty branch means the repository's default branch),
+        re-identifies it, and rewrites the design's content in place under the
+        same design ID. A Meshery Design source replaces `patternFile`; any other
+        source type (Helm Chart, Kubernetes Manifest, Docker Compose) replaces
+        `sourceContent` and clears `patternFile`, so Meshery reconverts it the
+        next time the design is opened - exactly the state a first import leaves.
+        Only the design's owner may refresh it. No request body.
+        Denials: `404` answers both "no such design" and "not the caller's
+        design" with the same body by design, so the route is not an existence
+        oracle;
+        `403` means the repository is not reachable through one of the
+        caller's verified GitHub App installations - the installations GitHub
+        lists for the caller's own GitHub account when they authorize the App.
+        The refusal is deliberately uniform: the App not being installed on
+        the repository's account and its being installed there for someone
+        else answer the same body, so the route does not reveal where the App
+        is installed. A distinct `403` whose MeshKit error asks for re-authorization means
+        the caller's GitHub connection predates verification; re-authorize it
+        (see `startGithubAuthorization`) before use;
+        `409` means the design has no
+        refreshable source (`location.type` is not `github`, or `host`/`path`
+        is missing) or its source path no longer resolves to an importable
+        file; `502` means GitHub could not be reached or rejected the request.
+        The server resolves the tracked ref to a commit, reads the file at
+        that commit, and records it in `location.commitSha`.
+      parameters:
+        - $ref: "#/components/parameters/designId"
+      responses:
+        "200":
+          description: >
+            Design refreshed. `sourceContent` and `patternFile` are omitted
+            from the response body (they can be megabytes), as on import.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryPattern"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/MeshkitError403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+        "502":
+          $ref: "#/components/responses/MeshkitError502"
+
+  /api/content/patterns/{designId}/source:
+    patch:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Remap a design's GitHub source
+      operationId: updatePatternSource
+      description: >
+        Re-points the design's source binding - the GitHub file its `location`
+        records and `refreshPatternFromSource` re-reads - at another repository,
+        path or ref. The design's content is not changed: call
+        `refreshPatternFromSource` afterwards to replace it from the new source.
+        The server resolves `ref` to a commit and confirms that `path` names an
+        importable file at that commit before it writes anything, so a binding
+        that a refresh could not read is never stored. It writes `location` as
+        `type: github`, `host`, `path` and `branch` (= `ref`). When the binding
+        changes, `location.commitSha` is removed, because the stored content
+        was not read from the new source; it is kept when the request names the
+        binding the design already has. A design with no GitHub source (an
+        upload or URL import) may be bound to one; it becomes refreshable.
+        Only the design's owner may remap it.
+        Denials: `404` answers "no such design", "not the caller's design" and
+        "connectionId is not the caller's own live GitHub connection" with the
+        same body, so the route is not an existence oracle;
+        `403` means the repository is not reachable through one of the
+        caller's verified GitHub App installations - the installations GitHub
+        lists for the caller's own GitHub account when they authorize the App.
+        The refusal is deliberately uniform: the App not being installed on
+        the repository's account and its being installed there for someone
+        else answer the same body, so the route does not reveal where the App
+        is installed. A distinct `403` whose MeshKit error asks for re-authorization means
+        the caller's GitHub connection predates verification; re-authorize it
+        (see `startGithubAuthorization`) before use;
+        `409` means `ref` does not resolve to a commit, or `path` does not name
+        an importable file at it (missing, a directory, or not a supported
+        format); `502` means GitHub could not be reached or rejected the
+        request.
+      parameters:
+        - $ref: "#/components/parameters/designId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DesignSourceBindingPayload"
+      responses:
+        "200":
+          description: >
+            Source binding updated. `sourceContent` and `patternFile` are
+            omitted from the response body, as on refresh and import.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryPattern"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/MeshkitError403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+        "502":
+          $ref: "#/components/responses/MeshkitError502"
+
   /api/pattern/import:
     post:
       x-internal: ["cloud", "meshery"]
@@ -302,6 +443,176 @@ paths:
           $ref: "#/components/responses/401"
         "500":
           description: Internal server error
+
+  # The two GitHub import operations below are served by Meshery Cloud's GitHub
+  # integration, but they read and write designs, so they live in this construct
+  # and carry its `designs` tag. RTK cache tags are namespaced by the declaring
+  # construct's `info.title` (build/bundle-openapi.js prefixTags), so only here
+  # do they share the `Design_designs` tag with getPatterns, deletePattern,
+  # refreshPatternFromSource and updatePatternSource - an import, a refresh or
+  # a remap refetches the design lists, and a delete, refresh or remap
+  # refetches the imported-designs inventory. The branch list that follows them
+  # reads only GitHub, so it carries the `github` tag instead: a design write
+  # must not refetch it.
+  /api/integrations/github/designs/{connectionId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: List designs imported from GitHub
+      operationId: getGithubImportedDesigns
+      description: >
+        Returns the designs owned by the GitHub connection's owner whose
+        `location.type` is `github` - every design imported (or refreshed)
+        from GitHub - newest first. The inventory is owner-wide, not scoped
+        to the connection: Meshery Cloud keeps one GitHub App connection per
+        user, and the connection only authorizes the read. Use `repository`
+        to narrow it. `location` carries `host` (github.com/<owner>/<repo>),
+        `path` and `branch` (empty = the repository's default branch).
+        `patternFile` and `sourceContent` are not projected. Only the
+        connection's owner may list it, as only a design's owner may refresh
+        it: a caller who does not own the connection gets 404 regardless of
+        any all-organizations scope, with the same body as "no such
+        connection", so private designs are never listed to another user.
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+        - name: repository
+          in: query
+          required: false
+          description: Restrict to one repository, as `<owner>/<repo>` (case-insensitive).
+          schema:
+            type: string
+            maxLength: 512
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: Imported designs page.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryPatternPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/github/import/{connectionId}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Import files from a GitHub repository as designs
+      operationId: importGithubRepository
+      description: >
+        Imports the selected files (a selected directory is walked recursively)
+        from one repository reachable through the caller's GitHub App
+        connection. Matching is idempotent: a file whose
+        (owner, location.type, location.host, location.path, location.branch)
+        already identifies one of the caller's designs is handled per
+        `onExisting`. `connectionId` must name the caller's own live GitHub
+        connection (404 otherwise).
+        `403` means the repository is not reachable through one of the
+        caller's verified GitHub App installations - the installations GitHub
+        lists for the caller's own GitHub account when they authorize the App.
+        The refusal is deliberately uniform: the App not being installed on
+        the repository's account and its being installed there for someone
+        else answer the same body, so the route does not reveal where the App
+        is installed. A distinct `403` whose MeshKit error asks for re-authorization means
+        the caller's GitHub connection predates verification; re-authorize it
+        (see `startGithubAuthorization`) before use;
+        `502` means GitHub could
+        not be reached or rejected the request. Each imported or updated
+        design records the commit its file was read at in
+        `location.commitSha`.
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GithubImportPayload"
+      responses:
+        "200":
+          description: Import outcome. Per-file failures are reported in `errors`, not as a non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GithubImportResponse"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/MeshkitError403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "502":
+          $ref: "#/components/responses/MeshkitError502"
+
+  /api/integrations/github/branches/{connectionId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - github
+      summary: List a repository's branches
+      operationId: getGithubRepositoryBranches
+      description: >
+        Lists the branches of one repository reachable through the caller's
+        GitHub App connection, with the repository's default branch, so a
+        client can offer the refs a design's source can track. Branch order
+        is GitHub's. `connectionId` must name the caller's own live GitHub
+        connection (404 otherwise, with the same body as "no such
+        connection").
+        `403` means the repository is not reachable through one of the
+        caller's verified GitHub App installations - the installations GitHub
+        lists for the caller's own GitHub account when they authorize the App.
+        The refusal is deliberately uniform: the App not being installed on
+        the repository's account and its being installed there for someone
+        else answer the same body, so the route does not reveal where the App
+        is installed. A distinct `403` whose MeshKit error asks for re-authorization means
+        the caller's GitHub connection predates verification; re-authorize it
+        (see `startGithubAuthorization`) before use;
+        `502` means GitHub could not be
+        reached or rejected the request.
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+        - name: repository
+          in: query
+          required: true
+          description: Repository as `<owner>/<repo>` (case-insensitive).
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 512
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: Repository branches page.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GithubBranchPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/MeshkitError403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "502":
+          $ref: "#/components/responses/MeshkitError502"
 
   /api/catalog/content/{type}:
     get:
@@ -661,14 +972,27 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/401"
     404:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    409:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/409"
     500:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+    MeshkitError403:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError403"
+    MeshkitError502:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError502"
 
   parameters:
     designId:
       name: designId
       in: path
       description: Design (Pattern) ID
+      required: true
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    connectionId:
+      name: connectionId
+      in: path
+      description: ID of a GitHub App connection.
       required: true
       schema:
         $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
@@ -710,7 +1034,13 @@ components:
 
     MesheryPattern:
       type: object
-      description: Server-returned design (pattern) resource as persisted by meshery-cloud.
+      description: >
+        Server-returned design (pattern) resource as persisted in
+        `meshery_patterns`. `organizationId` is required and read-only: the
+        server assigns it from the session organization and clients never
+        send it.
+      required:
+        - organizationId
       properties:
         id:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/Id"
@@ -730,6 +1060,20 @@ components:
           description: Owning user ID.
           x-oapi-codegen-extra-tags:
             db: owner
+        organizationId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: >
+            The organization the design belongs to. The server sets it from
+            the session organization (`X-Current-Orgid`, or the caller's
+            selected organization) on create, including import. Never accepted
+            from clients. A workspace this design is assigned to must belong
+            to this same organization.
+          readOnly: true
+          x-go-name: OrganizationID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: organization_id
+            json: organizationId
         user:
           $ref: "../../v1beta2/user/api.yml#/components/schemas/User"
           description: >
@@ -747,7 +1091,10 @@ components:
             db: "-"
         location:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/MapObject"
-          description: Optional structured location metadata (branch, host, path, ...).
+          description: >
+            Optional structured location metadata (branch, host, path, ...).
+            For a design bound to a GitHub source the keys are those of
+            DesignSourceLocation, including commitSha.
         patternFile:
           type: string
           description: >
@@ -914,16 +1261,30 @@ components:
             x-go-type: DeletePatternModel
           description: Designs targeted for deletion.
 
+    MesheryPatternClonePayload:
+      type: object
+      description: >
+        Payload for cloning a design. The optional name is applied to the
+        cloned design; the server derives ownership and visibility from the
+        request context.
+      properties:
+        name:
+          type: string
+          description: Optional name to apply to the cloned design.
+          minLength: 1
+          maxLength: 255
+
     MesheryPatternPayload:
       type: object
       description: >
         Client-settable subset of the design (pattern) entity used as the
         body of the inner `patternData` envelope on
-        POST /api/content/patterns. Server-generated fields (createdAt,
-        updatedAt, viewCount, downloadCount, cloneCount, deploymentCount,
-        shareCount, the joined `user` object, and the imported-source
-        `sourceContent` blob) are deliberately excluded — the server
-        ignores them on writes and re-projects them on the response.
+        POST /api/content/patterns. Server-generated fields (`organizationId`,
+        createdAt, updatedAt, viewCount, downloadCount, cloneCount,
+        deploymentCount, shareCount, the joined `user` object, and the
+        imported-source `sourceContent` blob) are deliberately excluded. The
+        server assigns `organizationId` from the session organization, ignores
+        any client value, and re-projects server-owned fields on the response.
       properties:
         id:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/Id"
@@ -1085,6 +1446,240 @@ components:
           type: string
           format: uri
           description: "A direct URL to a single file. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design."
+
+    GithubImportPayload:
+      type: object
+      description: Files to import from one repository and how to treat files that were imported before.
+      required:
+        - name
+        - paths
+      properties:
+        name:
+          type: string
+          description: Repository as `<owner>/<repo>`.
+          maxLength: 512
+        paths:
+          type: array
+          minItems: 1
+          description: >
+            Selected tree items, as served by `GET /api/integrations/github/scan`.
+            The server reads only `type` and `entry.path`; the remaining scan
+            fields are accepted and ignored.
+          items:
+            $ref: "#/components/schemas/GithubImportPath"
+            x-go-type: GithubImportPath
+        onExisting:
+          type: string
+          description: >
+            What to do with a selected file that already identifies one of the
+            caller's designs. `skip` (the default, "import new only") leaves it
+            untouched and reports it in `skippedPaths`, so a request that omits
+            `onExisting` never overwrites an existing design; `update` refreshes
+            that design in place under the same ID (idempotent import); `new`
+            imports it again as an additional design.
+          enum:
+            - update
+            - skip
+            - new
+          default: skip
+          # oapi-codegen only prefixes enum constants on collision; without
+          # explicit varnames it leaks bare `Update`, `Skip`, `New` into the
+          # Go package.
+          x-enum-varnames:
+            - GithubImportPayloadOnExistingUpdate
+            - GithubImportPayloadOnExistingSkip
+            - GithubImportPayloadOnExistingNew
+
+    GithubImportPath:
+      type: object
+      description: One selected file or directory in the repository tree.
+      required:
+        - type
+        - entry
+      properties:
+        type:
+          type: string
+          description: Tree item kind; a directory is imported recursively.
+          enum:
+            - file
+            - dir
+          x-enum-varnames:
+            - GithubImportPathTypeFile
+            - GithubImportPathTypeDir
+        entry:
+          $ref: "#/components/schemas/GithubImportPathEntry"
+      additionalProperties: true
+
+    GithubImportPathEntry:
+      type: object
+      description: >
+        The repository entry a selected tree item points at. Only `path` is
+        read; the other scan fields on the entry are accepted and ignored.
+      required:
+        - path
+      properties:
+        path:
+          type: string
+          description: Repository-relative path of the file or directory.
+          maxLength: 4096
+
+    GithubImportResponse:
+      type: object
+      description: Outcome of a GitHub repository import.
+      properties:
+        patterns:
+          type: array
+          description: >
+            Designs created or updated by this import, with `sourceContent`,
+            `patternFile` and `catalogData` omitted.
+          items:
+            $ref: "#/components/schemas/MesheryPattern"
+            x-go-type: MesheryPattern
+        updatedIds:
+          type: array
+          description: IDs (all also present in `patterns`) of designs updated in place rather than created.
+          items:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+        skippedPaths:
+          type: array
+          description: Repository-relative paths left untouched because `onExisting` was `skip` and a design already imports them.
+          items:
+            type: string
+            description: Repository-relative path of a skipped file.
+            maxLength: 4096
+        errors:
+          type: array
+          description: One Error-severity import event per selected path that failed.
+          items:
+            $ref: "../event/api.yml#/components/schemas/Event"
+            x-go-type: eventv1beta3.Event
+            x-go-type-import:
+              path: github.com/meshery/schemas/models/v1beta3/event
+              name: eventv1beta3
+
+    DesignSourceBindingPayload:
+      type: object
+      description: >
+        The GitHub file a design is bound to - what `refreshPatternFromSource`
+        re-reads.
+      required:
+        - connectionId
+        - host
+        - path
+      properties:
+        connectionId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: >
+            The caller's own live GitHub App connection, which authorizes
+            reading the repository.
+        host:
+          type: string
+          description: >
+            Repository as `github.com/<owner>/<repo>` - the same form
+            `location.host` stores.
+          pattern: '^github\.com/[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})/[A-Za-z0-9._-]{1,100}$'
+          maxLength: 512
+        path:
+          type: string
+          description: >
+            Repository-relative path of a file (not a directory), with no
+            leading slash.
+          minLength: 1
+          maxLength: 4096
+        ref:
+          type: string
+          description: >
+            Branch or tag the binding tracks, stored as `location.branch`.
+            Empty or omitted means the repository's default branch.
+          maxLength: 255
+
+    DesignSourceLocation:
+      type: object
+      description: >
+        The keys of a design's `location` (a MapObject on MesheryPattern) when
+        the design is bound to a GitHub source. Written by
+        `importGithubRepository`, `refreshPatternFromSource` and
+        `updatePatternSource`. A design created by an upload or a URL import
+        retains no source - it carries no `github` location and cannot be
+        refreshed until it is bound to one.
+      properties:
+        type:
+          type: string
+          description: Source kind; `github` for a design bound to a GitHub file.
+          maxLength: 64
+        host:
+          type: string
+          description: Repository as `github.com/<owner>/<repo>`.
+          maxLength: 512
+        path:
+          type: string
+          description: Repository-relative path of the source file.
+          maxLength: 4096
+        branch:
+          type: string
+          description: >
+            Ref the binding tracks (a branch or tag name). Empty means the
+            repository's default branch.
+          maxLength: 255
+        commitSha:
+          type: string
+          description: >
+            The commit the design's stored content was last read from, by an
+            import or a refresh. Absent when the content was not read from the
+            current binding - after a remap without a refresh, or for a design
+            imported before commits were recorded. Compare it with the head of
+            `branch` to tell whether the source has drifted.
+          pattern: '^[0-9a-f]{40}([0-9a-f]{24})?$'
+      additionalProperties: true
+
+    GithubBranch:
+      type: object
+      description: One branch of a GitHub repository.
+      required:
+        - name
+        - commitSha
+      properties:
+        name:
+          type: string
+          description: Branch name.
+          maxLength: 255
+        commitSha:
+          type: string
+          description: Commit at the head of the branch.
+          pattern: '^[0-9a-f]{40}([0-9a-f]{24})?$'
+
+    GithubBranchPage:
+      type: object
+      description: >
+        A page of a repository's branches. GitHub does not report a total, so
+        the page says whether another follows instead of carrying a count.
+      required:
+        - defaultBranch
+        - branches
+        - page
+        - pageSize
+        - hasMore
+      properties:
+        defaultBranch:
+          type: string
+          description: The repository's default branch.
+          maxLength: 255
+        branches:
+          type: array
+          items:
+            $ref: "#/components/schemas/GithubBranch"
+            x-go-type: GithubBranch
+        page:
+          type: integer
+          description: Zero-based page index served.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Page size served.
+          minimum: 1
+        hasMore:
+          type: boolean
+          description: True when another page of branches follows.
 
     DesignPreferences:
       type: object

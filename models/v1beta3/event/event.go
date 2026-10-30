@@ -9,7 +9,13 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	core "github.com/meshery/schemas/models/core"
+	"github.com/meshery/schemas/models/core"
+)
+
+// Defines values for EventsScope.
+const (
+	Organization EventsScope = "organization"
+	User         EventsScope = "user"
 )
 
 // BulkDeleteRequest Payload for bulk-deleting events by ID.
@@ -45,6 +51,43 @@ type ErrorResponse struct {
 	Error *string `json:"error,omitempty" yaml:"error,omitempty"`
 }
 
+// Event One recorded event (an `event_trackers` row) in the wire form MeshKit's `models/events.Event` serializes. Meshery Cloud returns these, for example, as the per-path failure records of a GitHub repository import (`importGithubRepository`, `errors`). Unlike EventResult, it carries no joined user profile fields.
+type Event struct {
+	ActedUpon core.Id `db:"acted_upon" json:"actedUpon" yaml:"actedUpon"`
+
+	// Action Action taken on the resource, for example `import`.
+	Action string `db:"action" json:"action" yaml:"action"`
+
+	// Category Resource kind the operation was invoked on, for example `pattern`.
+	Category  string    `db:"category" json:"category" yaml:"category"`
+	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
+
+	// Description Human-readable summary of what happened.
+	Description string  `db:"description" json:"description" yaml:"description"`
+	ID          core.Id `db:"id" json:"id" yaml:"id"`
+
+	// Metadata Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+	Metadata    core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+	OperationID core.Id  `db:"operation_id" json:"operationId" yaml:"operationId"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID core.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`
+
+	// Severity Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+	Severity string `db:"severity" json:"severity" yaml:"severity"`
+
+	// Status Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
+	Status    string        `db:"status" json:"status" yaml:"status"`
+	SystemID  core.SystemId `db:"system_id" json:"systemId" yaml:"systemId"`
+	UpdatedAt core.Time     `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+}
+
 // EventPayload Payload for creating a new event.
 type EventPayload struct {
 	// Action The action of the event.
@@ -55,6 +98,9 @@ type EventPayload struct {
 
 	// Description Description of the event.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
+
+	// IdempotencyKey Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
+	IdempotencyKey *string `json:"idempotencyKey,omitempty" yaml:"idempotencyKey,omitempty"`
 
 	// Owner UUID of the user associated with the event.
 	Owner                *uuid.UUID             `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
@@ -84,13 +130,16 @@ type EventResult struct {
 	// LastName The last name of the user associated with the event.
 	LastName *string `json:"lastName,omitempty" yaml:"lastName,omitempty"`
 
+	// OrganizationID The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+	OrganizationID uuid.UUID `db:"organization_id" json:"organizationId" yaml:"organizationId"`
+
 	// Owner UUID of the user associated with the event.
 	Owner uuid.UUID `db:"owner" json:"owner" yaml:"owner"`
 
 	// Provider One of (x-oapi-codegen-extra-tags-cloud, github, google)
 	Provider core.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
 
-	// SystemId System identifier of the event source.
+	// SystemId System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
 	SystemId string `db:"system_id" json:"systemId" yaml:"systemId"`
 }
 
@@ -164,6 +213,9 @@ type EventId = uuid.UUID
 // Filter defines model for filter.
 type Filter = string
 
+// EventsScope defines model for eventsScope.
+type EventsScope string
+
 // Order defines model for order.
 type Order = string
 
@@ -184,6 +236,12 @@ type Search = string
 
 // WorkspaceId defines model for workspaceId.
 type WorkspaceId = core.WorkspaceId
+
+// CoreMeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError403 = core.MeshkitError
+
+// CoreMeshkitError429 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type CoreMeshkitError429 = core.MeshkitError
 
 // Getter for additional properties for EventPayload. Returns the specified
 // element and whether it was found
@@ -234,6 +292,14 @@ func (a *EventPayload) UnmarshalJSON(b []byte) error {
 		delete(object, "description")
 	}
 
+	if raw, found := object["idempotencyKey"]; found {
+		err = json.Unmarshal(raw, &a.IdempotencyKey)
+		if err != nil {
+			return fmt.Errorf("error reading 'idempotencyKey': %w", err)
+		}
+		delete(object, "idempotencyKey")
+	}
+
 	if raw, found := object["owner"]; found {
 		err = json.Unmarshal(raw, &a.Owner)
 		if err != nil {
@@ -279,6 +345,13 @@ func (a EventPayload) MarshalJSON() ([]byte, error) {
 		object["description"], err = json.Marshal(a.Description)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'description': %w", err)
+		}
+	}
+
+	if a.IdempotencyKey != nil {
+		object["idempotencyKey"], err = json.Marshal(a.IdempotencyKey)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'idempotencyKey': %w", err)
 		}
 	}
 

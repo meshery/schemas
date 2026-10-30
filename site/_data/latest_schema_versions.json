@@ -8,9 +8,30 @@
     "extension": true
   },
   {
+    "construct": "activity_metrics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/activity_metrics/activity_metrics.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "activity_result",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/activity_result/activity_result.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
     "construct": "badge",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/badge/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "blowhorn_health",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/blowhorn_health/api.yml",
     "core": false,
     "extension": true
   },
@@ -36,6 +57,13 @@
     "extension": false
   },
   {
+    "construct": "claim",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/claim/claim.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "component",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/component/component.yaml",
@@ -56,6 +84,20 @@
     "version": "v1beta1",
     "href": "/schemas/constructs/v1beta1/console/api.yml",
     "core": true,
+    "extension": false
+  },
+  {
+    "construct": "content_item",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/content_item/content_item.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "content_metrics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/content_metrics/content_metrics.yaml",
+    "core": false,
     "extension": false
   },
   {
@@ -86,6 +128,13 @@
     "href": "/schemas/constructs/v1beta3/design/design.yaml",
     "docs_href": "https://docs.meshery.io/concepts/logical/designs",
     "core": true,
+    "extension": true
+  },
+  {
+    "construct": "diagnostics",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/diagnostics/api.yml",
+    "core": false,
     "extension": true
   },
   {
@@ -125,6 +174,27 @@
     "extension": true
   },
   {
+    "construct": "follower_demographics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/follower_demographics/follower_demographics.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "follower_metrics",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/follower_metrics/follower_metrics.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "github",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/github/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "invitation",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/invitation/invitation.yaml",
@@ -142,6 +212,27 @@
     "construct": "keychain",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/keychain/keychain.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "ledger",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/ledger/ledger_entry.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "media_asset",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/media_asset/media_asset.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "mention_alias",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/mention_alias/mention_alias.yaml",
     "core": false,
     "extension": true
   },
@@ -190,6 +281,27 @@
     "extension": true
   },
   {
+    "construct": "posture",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/posture/posture.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "profile",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/profile/profile.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "provider_capability",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/provider_capability/provider_capability.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "registry",
     "version": "v1beta1",
     "href": "/schemas/constructs/v1beta1/registry/api.yml",
@@ -213,10 +325,17 @@
   },
   {
     "construct": "schedule",
-    "version": "v1beta2",
-    "href": "/schemas/constructs/v1beta2/schedule/api.yml",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/schedule/schedule.yaml",
     "core": false,
     "extension": true
+  },
+  {
+    "construct": "schedule_stop",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/schedule_stop/schedule_stop.yaml",
+    "core": false,
+    "extension": false
   },
   {
     "construct": "subcategory",

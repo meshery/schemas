@@ -575,7 +575,8 @@ const UserSchema: Record<string, unknown> = {
                             "properties": {
                               "teamsWithRoles": {
                                 "type": "array",
-                                "description": "Team memberships for the user with their assigned roles.",
+                                "nullable": true,
+                                "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                                 "items": {
                                   "type": "object",
                                   "additionalProperties": false,
@@ -704,7 +705,8 @@ const UserSchema: Record<string, unknown> = {
                               },
                               "totalCount": {
                                 "type": "integer",
-                                "description": "Total number of team memberships returned for the user.",
+                                "nullable": true,
+                                "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                                 "minimum": 0,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "total_count",
@@ -723,7 +725,8 @@ const UserSchema: Record<string, unknown> = {
                             "properties": {
                               "organizationsWithRoles": {
                                 "type": "array",
-                                "description": "Organization memberships for the user with their assigned roles.",
+                                "nullable": true,
+                                "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                                 "items": {
                                   "type": "object",
                                   "additionalProperties": false,
@@ -858,7 +861,8 @@ const UserSchema: Record<string, unknown> = {
                               },
                               "totalCount": {
                                 "type": "integer",
-                                "description": "Total number of organization memberships returned for the user.",
+                                "nullable": true,
+                                "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                                 "minimum": 0,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "total_count",
@@ -1407,7 +1411,8 @@ const UserSchema: Record<string, unknown> = {
                       "properties": {
                         "teamsWithRoles": {
                           "type": "array",
-                          "description": "Team memberships for the user with their assigned roles.",
+                          "nullable": true,
+                          "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                           "items": {
                             "type": "object",
                             "additionalProperties": false,
@@ -1536,7 +1541,8 @@ const UserSchema: Record<string, unknown> = {
                         },
                         "totalCount": {
                           "type": "integer",
-                          "description": "Total number of team memberships returned for the user.",
+                          "nullable": true,
+                          "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
@@ -1555,7 +1561,8 @@ const UserSchema: Record<string, unknown> = {
                       "properties": {
                         "organizationsWithRoles": {
                           "type": "array",
-                          "description": "Organization memberships for the user with their assigned roles.",
+                          "nullable": true,
+                          "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                           "items": {
                             "type": "object",
                             "additionalProperties": false,
@@ -1690,7 +1697,8 @@ const UserSchema: Record<string, unknown> = {
                         },
                         "totalCount": {
                           "type": "integer",
-                          "description": "Total number of organization memberships returned for the user.",
+                          "nullable": true,
+                          "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
@@ -2218,7 +2226,8 @@ const UserSchema: Record<string, unknown> = {
                       "properties": {
                         "teamsWithRoles": {
                           "type": "array",
-                          "description": "Team memberships for the user with their assigned roles.",
+                          "nullable": true,
+                          "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                           "items": {
                             "type": "object",
                             "additionalProperties": false,
@@ -2347,7 +2356,8 @@ const UserSchema: Record<string, unknown> = {
                         },
                         "totalCount": {
                           "type": "integer",
-                          "description": "Total number of team memberships returned for the user.",
+                          "nullable": true,
+                          "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
@@ -2366,7 +2376,8 @@ const UserSchema: Record<string, unknown> = {
                       "properties": {
                         "organizationsWithRoles": {
                           "type": "array",
-                          "description": "Organization memberships for the user with their assigned roles.",
+                          "nullable": true,
+                          "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                           "items": {
                             "type": "object",
                             "additionalProperties": false,
@@ -2501,7 +2512,8 @@ const UserSchema: Record<string, unknown> = {
                         },
                         "totalCount": {
                           "type": "integer",
-                          "description": "Total number of organization memberships returned for the user.",
+                          "nullable": true,
+                          "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
@@ -2528,6 +2540,212 @@ const UserSchema: Record<string, unknown> = {
           },
           "403": {
             "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/users/preferences": {
+      "put": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "users"
+        ],
+        "operationId": "updateUserPreferences",
+        "summary": "Update the current user's preferences",
+        "description": "Merges the payload onto the signed-in user's stored preferences. A key the payload names replaces the stored value; a key it leaves out keeps the stored value. Setting selectedOrganizationId switches the organization the user's session has selected, as Meshery Cloud's and Meshery's organization switchers do. Badges are server-owned and are never changed through this operation.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "The client-settable fields of Preference for updateUserPreferences. Every field is optional: the server merges the ones present onto the stored preferences and keeps the rest. updatedAt is server-recorded and is not settable.",
+                "additionalProperties": false,
+                "properties": {
+                  "meshAdapters": {
+                    "type": "array",
+                    "items": {
+                      "x-go-type": "Adapter",
+                      "type": "object",
+                      "description": "Placeholder for Adapter struct definition."
+                    },
+                    "description": "The mesh adapters of the preference."
+                  },
+                  "grafana": {
+                    "x-go-type": "Grafana",
+                    "type": "object",
+                    "properties": {
+                      "grafanaUrl": {
+                        "type": "string",
+                        "description": "Grafana URL for the user configuration.",
+                        "maxLength": 500
+                      },
+                      "grafanaApiKey": {
+                        "type": "string",
+                        "description": "Grafana API key for the user configuration.",
+                        "maxLength": 500
+                      },
+                      "selectedBoardsConfigs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "board": {
+                              "type": "object",
+                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                            },
+                            "panels": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                              },
+                              "description": "Panels selected for the Grafana board configuration."
+                            },
+                            "templateVars": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Template variables applied to the selected Grafana board configuration."
+                            }
+                          }
+                        },
+                        "description": "Selected Grafana board configurations for the user."
+                      }
+                    }
+                  },
+                  "prometheus": {
+                    "x-go-type": "Prometheus",
+                    "type": "object",
+                    "properties": {
+                      "prometheusUrl": {
+                        "type": "string",
+                        "description": "The prometheus URL of the prometheus.",
+                        "maxLength": 500
+                      },
+                      "selectedPrometheusBoardsConfigs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "board": {
+                              "type": "object",
+                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                            },
+                            "panels": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                              },
+                              "description": "Panels selected for the Grafana board configuration."
+                            },
+                            "templateVars": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Template variables applied to the selected Grafana board configuration."
+                            }
+                          }
+                        },
+                        "description": "The selected prometheus boards configs of the prometheus."
+                      }
+                    }
+                  },
+                  "loadTestPrefs": {
+                    "x-go-type": "LoadTestPreferences",
+                    "type": "object",
+                    "properties": {
+                      "c": {
+                        "type": "integer",
+                        "description": "Concurrent requests",
+                        "minimum": 0
+                      },
+                      "qps": {
+                        "type": "integer",
+                        "description": "Queries per second",
+                        "minimum": 0
+                      },
+                      "t": {
+                        "type": "string",
+                        "description": "Duration",
+                        "maxLength": 500
+                      },
+                      "gen": {
+                        "type": "string",
+                        "description": "Load generator",
+                        "maxLength": 500
+                      }
+                    }
+                  },
+                  "anonymousUsageStats": {
+                    "type": "boolean",
+                    "description": "The anonymous usage stats of the preference."
+                  },
+                  "anonymousPerfResults": {
+                    "type": "boolean",
+                    "description": "The anonymous perf results of the preference."
+                  },
+                  "dashboardPreferences": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "The dashboard preferences of the preference."
+                  },
+                  "selectedOrganizationId": {
+                    "type": "string",
+                    "description": "ID of the organization to make the session's selected organization.",
+                    "maxLength": 500,
+                    "format": "uuid"
+                  },
+                  "selectedWorkspaceForOrganizations": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "description": "The selected workspace for organizations of the preference."
+                  },
+                  "usersExtensionPreferences": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "The users extension preferences of the preference."
+                  },
+                  "remoteProviderPreferences": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "The remote provider preferences of the preference."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Preferences updated"
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3014,7 +3232,7 @@ const UserSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Payload for creating or updating a connection",
+                "description": "Payload for creating or updating a connection. `organizationId` is not a client field. The server assigns it from the session organization.\n",
                 "properties": {
                   "id": {
                     "type": "string",
@@ -4783,7 +5001,8 @@ const UserSchema: Record<string, unknown> = {
             "properties": {
               "teamsWithRoles": {
                 "type": "array",
-                "description": "Team memberships for the user with their assigned roles.",
+                "nullable": true,
+                "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                 "items": {
                   "type": "object",
                   "additionalProperties": false,
@@ -4912,7 +5131,8 @@ const UserSchema: Record<string, unknown> = {
               },
               "totalCount": {
                 "type": "integer",
-                "description": "Total number of team memberships returned for the user.",
+                "nullable": true,
+                "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                 "minimum": 0,
                 "x-oapi-codegen-extra-tags": {
                   "db": "total_count",
@@ -4931,7 +5151,8 @@ const UserSchema: Record<string, unknown> = {
             "properties": {
               "organizationsWithRoles": {
                 "type": "array",
-                "description": "Organization memberships for the user with their assigned roles.",
+                "nullable": true,
+                "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                 "items": {
                   "type": "object",
                   "additionalProperties": false,
@@ -5066,7 +5287,8 @@ const UserSchema: Record<string, unknown> = {
               },
               "totalCount": {
                 "type": "integer",
-                "description": "Total number of organization memberships returned for the user.",
+                "nullable": true,
+                "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                 "minimum": 0,
                 "x-oapi-codegen-extra-tags": {
                   "db": "total_count",
@@ -5912,7 +6134,8 @@ const UserSchema: Record<string, unknown> = {
                   "properties": {
                     "teamsWithRoles": {
                       "type": "array",
-                      "description": "Team memberships for the user with their assigned roles.",
+                      "nullable": true,
+                      "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                       "items": {
                         "type": "object",
                         "additionalProperties": false,
@@ -6041,7 +6264,8 @@ const UserSchema: Record<string, unknown> = {
                     },
                     "totalCount": {
                       "type": "integer",
-                      "description": "Total number of team memberships returned for the user.",
+                      "nullable": true,
+                      "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "total_count",
@@ -6060,7 +6284,8 @@ const UserSchema: Record<string, unknown> = {
                   "properties": {
                     "organizationsWithRoles": {
                       "type": "array",
-                      "description": "Organization memberships for the user with their assigned roles.",
+                      "nullable": true,
+                      "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                       "items": {
                         "type": "object",
                         "additionalProperties": false,
@@ -6195,7 +6420,8 @@ const UserSchema: Record<string, unknown> = {
                     },
                     "totalCount": {
                       "type": "integer",
-                      "description": "Total number of organization memberships returned for the user.",
+                      "nullable": true,
+                      "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "total_count",
@@ -6677,7 +6903,8 @@ const UserSchema: Record<string, unknown> = {
                   "properties": {
                     "teamsWithRoles": {
                       "type": "array",
-                      "description": "Team memberships for the user with their assigned roles.",
+                      "nullable": true,
+                      "description": "Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                       "items": {
                         "type": "object",
                         "additionalProperties": false,
@@ -6806,7 +7033,8 @@ const UserSchema: Record<string, unknown> = {
                     },
                     "totalCount": {
                       "type": "integer",
-                      "description": "Total number of team memberships returned for the user.",
+                      "nullable": true,
+                      "description": "Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "total_count",
@@ -6825,7 +7053,8 @@ const UserSchema: Record<string, unknown> = {
                   "properties": {
                     "organizationsWithRoles": {
                       "type": "array",
-                      "description": "Organization memberships for the user with their assigned roles.",
+                      "nullable": true,
+                      "description": "Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships.",
                       "items": {
                         "type": "object",
                         "additionalProperties": false,
@@ -6960,7 +7189,8 @@ const UserSchema: Record<string, unknown> = {
                     },
                     "totalCount": {
                       "type": "integer",
-                      "description": "Total number of organization memberships returned for the user.",
+                      "nullable": true,
+                      "description": "Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "total_count",
@@ -7129,6 +7359,167 @@ const UserSchema: Record<string, unknown> = {
           "selectedOrganizationId": {
             "type": "string",
             "description": "ID of the associated selectedOrganization.",
+            "maxLength": 500,
+            "format": "uuid"
+          },
+          "selectedWorkspaceForOrganizations": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The selected workspace for organizations of the preference."
+          },
+          "usersExtensionPreferences": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "The users extension preferences of the preference."
+          },
+          "remoteProviderPreferences": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "The remote provider preferences of the preference."
+          }
+        }
+      },
+      "PreferencePayload": {
+        "type": "object",
+        "description": "The client-settable fields of Preference for updateUserPreferences. Every field is optional: the server merges the ones present onto the stored preferences and keeps the rest. updatedAt is server-recorded and is not settable.",
+        "additionalProperties": false,
+        "properties": {
+          "meshAdapters": {
+            "type": "array",
+            "items": {
+              "x-go-type": "Adapter",
+              "type": "object",
+              "description": "Placeholder for Adapter struct definition."
+            },
+            "description": "The mesh adapters of the preference."
+          },
+          "grafana": {
+            "x-go-type": "Grafana",
+            "type": "object",
+            "properties": {
+              "grafanaUrl": {
+                "type": "string",
+                "description": "Grafana URL for the user configuration.",
+                "maxLength": 500
+              },
+              "grafanaApiKey": {
+                "type": "string",
+                "description": "Grafana API key for the user configuration.",
+                "maxLength": 500
+              },
+              "selectedBoardsConfigs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "board": {
+                      "type": "object",
+                      "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                    },
+                    "panels": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                      },
+                      "description": "Panels selected for the Grafana board configuration."
+                    },
+                    "templateVars": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Template variables applied to the selected Grafana board configuration."
+                    }
+                  }
+                },
+                "description": "Selected Grafana board configurations for the user."
+              }
+            }
+          },
+          "prometheus": {
+            "x-go-type": "Prometheus",
+            "type": "object",
+            "properties": {
+              "prometheusUrl": {
+                "type": "string",
+                "description": "The prometheus URL of the prometheus.",
+                "maxLength": 500
+              },
+              "selectedPrometheusBoardsConfigs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "board": {
+                      "type": "object",
+                      "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                    },
+                    "panels": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                      },
+                      "description": "Panels selected for the Grafana board configuration."
+                    },
+                    "templateVars": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Template variables applied to the selected Grafana board configuration."
+                    }
+                  }
+                },
+                "description": "The selected prometheus boards configs of the prometheus."
+              }
+            }
+          },
+          "loadTestPrefs": {
+            "x-go-type": "LoadTestPreferences",
+            "type": "object",
+            "properties": {
+              "c": {
+                "type": "integer",
+                "description": "Concurrent requests",
+                "minimum": 0
+              },
+              "qps": {
+                "type": "integer",
+                "description": "Queries per second",
+                "minimum": 0
+              },
+              "t": {
+                "type": "string",
+                "description": "Duration",
+                "maxLength": 500
+              },
+              "gen": {
+                "type": "string",
+                "description": "Load generator",
+                "maxLength": 500
+              }
+            }
+          },
+          "anonymousUsageStats": {
+            "type": "boolean",
+            "description": "The anonymous usage stats of the preference."
+          },
+          "anonymousPerfResults": {
+            "type": "boolean",
+            "description": "The anonymous perf results of the preference."
+          },
+          "dashboardPreferences": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "The dashboard preferences of the preference."
+          },
+          "selectedOrganizationId": {
+            "type": "string",
+            "description": "ID of the organization to make the session's selected organization.",
             "maxLength": 500,
             "format": "uuid"
           },

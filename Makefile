@@ -47,7 +47,7 @@ generate-site-index: site-data-generate
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup generate-ts generate-enums-ts test-enums-ts publish-ts bundle-openapi generate-golang test-gofmt generate-rtk test-rtk test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
+.PHONY: setup generate-ts generate-enums-ts test-enums-ts test-generated-outputs publish-ts bundle-openapi generate-golang test-gofmt generate-rtk test-rtk generate-python test-python test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -66,6 +66,10 @@ generate-enums-ts:
 ## Run enum constant generation regression tests
 test-enums-ts:
 	node --test tests/generate-enums-ts.test.js
+
+## Fail when generated output remains for a removed construct, and test the prune
+test-generated-outputs:
+	node --test tests/generated-outputs.test.js
 
 ## Bundle Typescript library, json templates, yaml templates
 build-ts: generate-ts
@@ -98,6 +102,16 @@ generate-rtk: bundle-openapi
 test-rtk: bundle-openapi
 	node --test tests/generate-rtk.test.js
 	node --test tests/readonly-request-body.test.js
+
+## Generate Python client, pilot constructs only (requires bundle-openapi and the pinned pip toolchain)
+generate-python: bundle-openapi
+	node build/generate-python.js
+
+## Guard the committed Python client against its manifest, install the distribution, run the pytest round-trip (refresh with generate-python)
+test-python: bundle-openapi
+	node --test tests/generate-python.test.js
+	python3 -m pip install ./python/generated
+	python3 -m pytest python/tests -q
 
 ## Run TypeScript unit tests (node --test with native type-stripping; needs Node >= 22.6)
 test-ts:

@@ -212,6 +212,11 @@ export interface components {
                              * @description SQL null Timestamp to handle null values of time.
                              */
                             deleted_at?: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            organizationId?: string;
                             /** @description Associated environments for this connection */
                             environments?: {
                                 /**
@@ -1603,6 +1608,11 @@ export interface components {
                              * @description SQL null Timestamp to handle null values of time.
                              */
                             deleted_at?: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            organizationId?: string;
                             /** @description Associated environments for this connection */
                             environments?: {
                                 /**
@@ -3172,6 +3182,11 @@ export interface operations {
                                      * @description SQL null Timestamp to handle null values of time.
                                      */
                                     deleted_at?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                     */
+                                    organizationId?: string;
                                     /** @description Associated environments for this connection */
                                     environments?: {
                                         /**
@@ -4571,6 +4586,11 @@ export interface operations {
                                          * @description SQL null Timestamp to handle null values of time.
                                          */
                                         deleted_at?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                         */
+                                        organizationId?: string;
                                         /** @description Associated environments for this connection */
                                         environments?: {
                                             /**

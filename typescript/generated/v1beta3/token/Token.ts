@@ -41,7 +41,7 @@ export interface paths {
         };
         /**
          * Download token
-         * @description Downloads a specific token by its ID for use as a local credential file (e.g. mesheryctl's auth.json). Gated by the Download Token permission and recorded as a distinct audit event from viewing or listing tokens.
+         * @description Downloads a specific token by its ID for use as a local credential file (e.g. a CLI auth file). Gated by the Download Token permission and recorded as a distinct audit event from viewing or listing tokens.
          */
         get: operations["downloadToken"];
         put?: never;
@@ -66,6 +66,46 @@ export interface paths {
         get: operations["issueIndefiniteLifetimeToken"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/native/authorize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Authorize native client sign-in
+         * @description Browser-facing step of the native client sign-in flow (RFC 8252 loopback redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in user and the Create Token permission. Validates the request. When the request names the client application (`client`) and its version (`clientVersion`) and that version is below the provider minimum, it renders the update page with status 426 and issues nothing. Otherwise it stores a single-use authorization code that expires after 60 seconds, bound to the user, the client name and the PKCE code challenge, and redirects the browser to http://127.0.0.1:{port}/callback with code and state query parameters. Only the 127.0.0.1 loopback IP literal is ever used; no token or cookie is placed in the redirect; no consent page is shown.
+         */
+        get: operations["getNativeClientAuthorization"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/native/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Exchange native client authorization code
+         * @description Redeems a single-use authorization code from the native client sign-in flow. The caller proves possession of the PKCE code verifier (BASE64URL(SHA256(codeVerifier)) must equal the stored S256 challenge). The code is consumed on the first redemption attempt, whether or not the verifier matches. On success an API token is minted for the user with name and purpose set to the client name. This call is authenticated by the code and verifier, not by a session.
+         */
+        post: operations["exchangeNativeAuthorizationCode"];
         delete?: never;
         options?: never;
         head?: never;
@@ -110,6 +150,36 @@ export interface components {
              * @description Timestamp when the token was last updated.
              */
             updatedAt: string;
+        };
+        /** @description Query fields of GET /api/identity/native/authorize. The signed-in session issues the authorization code from these fields. */
+        NativeAuthorizationPayload: {
+            /** @description Display name of the native client. */
+            clientName: string;
+            /** @description Port on 127.0.0.1 for the callback. */
+            port: number;
+            /** @description PKCE S256 code challenge. */
+            codeChallenge: string;
+            /**
+             * @description PKCE challenge method.
+             * @enum {string}
+             */
+            codeChallengeMethod: "S256";
+            /** @description Opaque client state returned on the callback. */
+            state: string;
+        };
+        /** @description Redeems a native client authorization code with its PKCE verifier. */
+        NativeCodeExchangePayload: {
+            /** @description Single-use authorization code from the loopback callback. */
+            code: string;
+            /** @description PKCE code verifier (RFC 7636, 43 to 128 unreserved characters). */
+            codeVerifier: string;
+        };
+        /** @description Query parameters of the loopback redirect that getNativeClientAuthorization answers with, http://127.0.0.1:{port}/callback?code=...&state=... The code is single-use and expires after 60 seconds; no token is ever placed in the URL. The native client compares state with the one it sent before redeeming the code at /api/identity/native/token. */
+        NativeAuthorizationCallback: {
+            /** @description Single-use authorization code, redeemed with the PKCE code verifier. */
+            code: string;
+            /** @description The state the native client sent on the authorize request, unchanged. */
+            state: string;
         };
         /** @description A paginated list of tokens. */
         TokenPage: {
@@ -175,6 +245,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Forbidden */
+        403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Result not found */
         404: {
             headers: {
@@ -220,8 +299,22 @@ export interface components {
         isOauth: boolean;
         /** @description Name of the token. */
         name: string;
-        /** @description Purpose for which the token is generated. */
+        /** @description Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
         purpose: string;
+        /** @description Display name of the native client asking to sign in. Used as the name and purpose of the minted token. */
+        nativeClientName: string;
+        /** @description Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`. */
+        nativeClient: string;
+        /** @description Version of the client application, for example `v1.25.0`. */
+        nativeClientVersion: string;
+        /** @description Port on 127.0.0.1 where the native client listens for the callback. */
+        nativePort: number;
+        /** @description PKCE code challenge, BASE64URL(SHA256(codeVerifier)) without padding. */
+        nativeCodeChallenge: string;
+        /** @description PKCE challenge method. Only S256 is accepted. */
+        nativeCodeChallengeMethod: "S256";
+        /** @description Opaque value from the native client, returned unchanged on the callback. */
+        nativeState: string;
     };
     requestBodies: never;
     headers: never;
@@ -234,6 +327,8 @@ export interface operations {
             query?: {
                 /** @description Whether to retrieve OAuth-backed sessions instead of API tokens. */
                 isOauth?: boolean;
+                /** @description Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
+                purpose?: string;
                 /** @description Get responses by page */
                 page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
@@ -330,7 +425,7 @@ export interface operations {
             query: {
                 /** @description Name of the token. */
                 name: string;
-                /** @description Purpose for which the token is generated. */
+                /** @description Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
                 purpose?: string;
             };
             header?: never;
@@ -656,6 +751,175 @@ export interface operations {
                         page: number;
                         /** @description Number of tokens per page. */
                         pageSize: number;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getNativeClientAuthorization: {
+        parameters: {
+            query: {
+                /** @description Display name of the native client asking to sign in. Used as the name and purpose of the minted token. */
+                clientName: string;
+                /** @description Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`. */
+                client?: string;
+                /** @description Version of the client application, for example `v1.25.0`. */
+                clientVersion?: string;
+                /** @description Port on 127.0.0.1 where the native client listens for the callback. */
+                port: number;
+                /** @description PKCE code challenge, BASE64URL(SHA256(codeVerifier)) without padding. */
+                codeChallenge: string;
+                /** @description PKCE challenge method. Only S256 is accepted. */
+                codeChallengeMethod: "S256";
+                /** @description Opaque value from the native client, returned unchanged on the callback. */
+                state: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Redirect to the loopback callback carrying code and state. The callback's query parameters are described by NativeAuthorizationCallback. */
+            302: {
+                headers: {
+                    /** @description http://127.0.0.1:{port}/callback?code=...&state=..., whose query is a NativeAuthorizationCallback. */
+                    Location: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Update page; the client's version is below the provider's minimum for that client. */
+            426: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    exchangeNativeAuthorizationCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Single-use authorization code from the loopback callback. */
+                    code: string;
+                    /** @description PKCE code verifier (RFC 7636, 43 to 128 unreserved characters). */
+                    codeVerifier: string;
+                };
+            };
+        };
+        responses: {
+            /** @description API token minted for the native client */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the token.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description UUID of the user who owns the token.
+                         */
+                        owner: string;
+                        /** @description Authentication provider associated with the token. */
+                        provider: string;
+                        /** @description Access token value. */
+                        accessToken: string;
+                        /** @description Refresh token value when applicable. */
+                        refreshToken?: string;
+                        /** @description Human-readable token name. */
+                        name: string;
+                        /** @description Purpose for which the token was created. */
+                        purpose: string;
+                        /** @description Whether this entry represents an OAuth session. */
+                        isOauth: boolean;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the token was created.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the token was last updated.
+                         */
+                        updatedAt: string;
                     };
                 };
             };

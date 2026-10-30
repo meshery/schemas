@@ -8,12 +8,13 @@ import (
 	"fmt"
 
 	"github.com/gofrs/uuid"
-	core "github.com/meshery/schemas/models/core"
+	meshcore "github.com/meshery/schemas/models/core"
 	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
 	component "github.com/meshery/schemas/models/v1beta2/component"
 	corev1beta2 "github.com/meshery/schemas/models/v1beta2/core"
 	relationship "github.com/meshery/schemas/models/v1beta2/relationship"
 	userV1beta "github.com/meshery/schemas/models/v1beta2/user"
+	eventv1beta3 "github.com/meshery/schemas/models/v1beta3/event"
 	filterv1beta3 "github.com/meshery/schemas/models/v1beta3/filter"
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
@@ -45,6 +46,19 @@ const (
 	Filter  ContentSharePayloadContentType = "filter"
 	Pattern ContentSharePayloadContentType = "pattern"
 	View    ContentSharePayloadContentType = "view"
+)
+
+// Defines values for GithubImportPathType.
+const (
+	GithubImportPathTypeDir  GithubImportPathType = "dir"
+	GithubImportPathTypeFile GithubImportPathType = "file"
+)
+
+// Defines values for GithubImportPayloadOnExisting.
+const (
+	GithubImportPayloadOnExistingNew    GithubImportPayloadOnExisting = "new"
+	GithubImportPayloadOnExistingSkip   GithubImportPayloadOnExisting = "skip"
+	GithubImportPayloadOnExistingUpdate GithubImportPayloadOnExisting = "update"
 )
 
 // Defines values for MesheryPatternDesignType.
@@ -143,7 +157,7 @@ type CatalogRequest struct {
 	ContentClass *CatalogRequestContentClass `db:"content_class" json:"contentClass" yaml:"contentClass"`
 
 	// ContentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ContentID core.Uuid `db:"content_id" json:"contentId" yaml:"contentId"`
+	ContentID meshcore.Uuid `db:"content_id" json:"contentId" yaml:"contentId"`
 
 	// ContentName Human-readable name of the content at request time.
 	ContentName string `db:"content_name" json:"contentName" yaml:"contentName"`
@@ -152,7 +166,7 @@ type CatalogRequest struct {
 	// `content_type` column of the meshery-cloud `catalog_requests`
 	// table.
 	ContentType CatalogContentType `db:"content_type" json:"contentType" yaml:"contentType"`
-	CreatedAt   core.Time          `db:"created_at" json:"createdAt" yaml:"createdAt"`
+	CreatedAt   meshcore.Time      `db:"created_at" json:"createdAt" yaml:"createdAt"`
 
 	// Email Requesting user's email address at request time.
 	Email openapi_types.Email `json:"email" yaml:"email"`
@@ -161,7 +175,7 @@ type CatalogRequest struct {
 	FirstName string `db:"first_name" json:"firstName" yaml:"firstName"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID core.Uuid `json:"id" yaml:"id"`
+	ID meshcore.Uuid `json:"id" yaml:"id"`
 
 	// LastName Requesting user's last name at request time.
 	LastName string `db:"last_name" json:"lastName" yaml:"lastName"`
@@ -171,7 +185,7 @@ type CatalogRequest struct {
 	// a request that is no longer pending cannot be re-approved or
 	// re-denied.
 	Status    CatalogRequestStatus `json:"status" yaml:"status"`
-	UpdatedAt core.Time            `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+	UpdatedAt meshcore.Time        `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 
 	// User Represents a user
 	User *userV1beta.User `db:"-" json:"user,omitempty" yaml:"user,omitempty"`
@@ -209,7 +223,7 @@ type CatalogRequestsPage struct {
 // server dispatches on `contentType` to decide which entity to mutate.
 type ContentSharePayload struct {
 	// ContentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ContentId core.Uuid `json:"contentId" yaml:"contentId"`
+	ContentId meshcore.Uuid `json:"contentId" yaml:"contentId"`
 
 	// ContentType The kind of content being shared. Must match the entity the handler
 	// expects — `pattern` and `filter` are valid on the design share
@@ -231,17 +245,126 @@ type ContentSharePayloadContentType string
 
 // DeletePatternModel Reference to a design for bulk deletion by ID.
 type DeletePatternModel struct {
-	ID   core.Id   `json:"id,omitempty" yaml:"id,omitempty"`
-	Name core.Text `json:"name,omitempty" yaml:"name,omitempty"`
+	ID   meshcore.Id   `json:"id,omitempty" yaml:"id,omitempty"`
+	Name meshcore.Text `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// MesheryPattern Server-returned design (pattern) resource as persisted by meshery-cloud.
+// DesignSourceBindingPayload The GitHub file a design is bound to - what `refreshPatternFromSource` re-reads.
+type DesignSourceBindingPayload struct {
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionId meshcore.Uuid `json:"connectionId" yaml:"connectionId"`
+
+	// Host Repository as `github.com/<owner>/<repo>` - the same form `location.host` stores.
+	Host string `json:"host" yaml:"host"`
+
+	// Path Repository-relative path of a file (not a directory), with no leading slash.
+	Path string `json:"path" yaml:"path"`
+
+	// Ref Branch or tag the binding tracks, stored as `location.branch`. Empty or omitted means the repository's default branch.
+	Ref *string `json:"ref,omitempty" yaml:"ref,omitempty"`
+}
+
+// DesignSourceLocation The keys of a design's `location` (a MapObject on MesheryPattern) when the design is bound to a GitHub source. Written by `importGithubRepository`, `refreshPatternFromSource` and `updatePatternSource`. A design created by an upload or a URL import retains no source - it carries no `github` location and cannot be refreshed until it is bound to one.
+type DesignSourceLocation struct {
+	// Branch Ref the binding tracks (a branch or tag name). Empty means the repository's default branch.
+	Branch *string `json:"branch,omitempty" yaml:"branch,omitempty"`
+
+	// CommitSha The commit the design's stored content was last read from, by an import or a refresh. Absent when the content was not read from the current binding - after a remap without a refresh, or for a design imported before commits were recorded. Compare it with the head of `branch` to tell whether the source has drifted.
+	CommitSha *string `json:"commitSha,omitempty" yaml:"commitSha,omitempty"`
+
+	// Host Repository as `github.com/<owner>/<repo>`.
+	Host *string `json:"host,omitempty" yaml:"host,omitempty"`
+
+	// Path Repository-relative path of the source file.
+	Path *string `json:"path,omitempty" yaml:"path,omitempty"`
+
+	// Type Source kind; `github` for a design bound to a GitHub file.
+	Type                 *string                `json:"type,omitempty" yaml:"type,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+}
+
+// GithubBranch One branch of a GitHub repository.
+type GithubBranch struct {
+	// CommitSha Commit at the head of the branch.
+	CommitSha string `json:"commitSha" yaml:"commitSha"`
+
+	// Name Branch name.
+	Name string `json:"name" yaml:"name"`
+}
+
+// GithubBranchPage A page of a repository's branches. GitHub does not report a total, so the page says whether another follows instead of carrying a count.
+type GithubBranchPage struct {
+	Branches []GithubBranch `json:"branches" yaml:"branches"`
+
+	// DefaultBranch The repository's default branch.
+	DefaultBranch string `json:"defaultBranch" yaml:"defaultBranch"`
+
+	// HasMore True when another page of branches follows.
+	HasMore bool `json:"hasMore" yaml:"hasMore"`
+
+	// Page Zero-based page index served.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Page size served.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+}
+
+// GithubImportPath One selected file or directory in the repository tree.
+type GithubImportPath struct {
+	// Entry The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored.
+	Entry GithubImportPathEntry `json:"entry" yaml:"entry"`
+
+	// Type Tree item kind; a directory is imported recursively.
+	Type                 GithubImportPathType   `json:"type" yaml:"type"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+}
+
+// GithubImportPathType Tree item kind; a directory is imported recursively.
+type GithubImportPathType string
+
+// GithubImportPathEntry The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored.
+type GithubImportPathEntry struct {
+	// Path Repository-relative path of the file or directory.
+	Path string `json:"path" yaml:"path"`
+}
+
+// GithubImportPayload Files to import from one repository and how to treat files that were imported before.
+type GithubImportPayload struct {
+	// Name Repository as `<owner>/<repo>`.
+	Name string `json:"name" yaml:"name"`
+
+	// OnExisting What to do with a selected file that already identifies one of the caller's designs. `skip` (the default, "import new only") leaves it untouched and reports it in `skippedPaths`, so a request that omits `onExisting` never overwrites an existing design; `update` refreshes that design in place under the same ID (idempotent import); `new` imports it again as an additional design.
+	OnExisting *GithubImportPayloadOnExisting `json:"onExisting,omitempty" yaml:"onExisting,omitempty"`
+
+	// Paths Selected tree items, as served by `GET /api/integrations/github/scan`. The server reads only `type` and `entry.path`; the remaining scan fields are accepted and ignored.
+	Paths []GithubImportPath `json:"paths" yaml:"paths"`
+}
+
+// GithubImportPayloadOnExisting What to do with a selected file that already identifies one of the caller's designs. `skip` (the default, "import new only") leaves it untouched and reports it in `skippedPaths`, so a request that omits `onExisting` never overwrites an existing design; `update` refreshes that design in place under the same ID (idempotent import); `new` imports it again as an additional design.
+type GithubImportPayloadOnExisting string
+
+// GithubImportResponse Outcome of a GitHub repository import.
+type GithubImportResponse struct {
+	// Errors One Error-severity import event per selected path that failed.
+	Errors *[]eventv1beta3.Event `json:"errors,omitempty" yaml:"errors,omitempty"`
+
+	// Patterns Designs created or updated by this import, with `sourceContent`, `patternFile` and `catalogData` omitted.
+	Patterns *[]MesheryPattern `json:"patterns,omitempty" yaml:"patterns,omitempty"`
+
+	// SkippedPaths Repository-relative paths left untouched because `onExisting` was `skip` and a design already imports them.
+	SkippedPaths *[]string `json:"skippedPaths,omitempty" yaml:"skippedPaths,omitempty"`
+
+	// UpdatedIds IDs (all also present in `patterns`) of designs updated in place rather than created.
+	UpdatedIds *[]meshcore.Uuid `json:"updatedIds,omitempty" yaml:"updatedIds,omitempty"`
+}
+
+// MesheryPattern Server-returned design (pattern) resource as persisted in `meshery_patterns`. `organizationId` is required and read-only: the server assigns it from the session organization and clients never send it.
 type MesheryPattern struct {
 	CatalogData *catalogv1alpha2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
 
 	// CloneCount Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
-	CloneCount *int      `db:"clone_count" json:"cloneCount,omitempty" yaml:"cloneCount,omitempty"`
-	CreatedAt  core.Time `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	CloneCount *int          `db:"clone_count" json:"cloneCount,omitempty" yaml:"cloneCount,omitempty"`
+	CreatedAt  meshcore.Time `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
 
 	// DeploymentCount Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
 	DeploymentCount *int `db:"deployment_count" json:"deploymentCount,omitempty" yaml:"deploymentCount,omitempty"`
@@ -250,10 +373,13 @@ type MesheryPattern struct {
 	DesignType *MesheryPatternDesignType `db:"source_type" json:"designType" yaml:"designType"`
 
 	// DownloadCount Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
-	DownloadCount *int           `db:"download_count" json:"downloadCount,omitempty" yaml:"downloadCount,omitempty"`
-	ID            core.Id        `json:"id,omitempty" yaml:"id,omitempty"`
-	Location      core.MapObject `json:"location,omitempty" yaml:"location,omitempty"`
-	Name          core.Text      `json:"name,omitempty" yaml:"name,omitempty"`
+	DownloadCount *int               `db:"download_count" json:"downloadCount,omitempty" yaml:"downloadCount,omitempty"`
+	ID            meshcore.Id        `json:"id,omitempty" yaml:"id,omitempty"`
+	Location      meshcore.MapObject `json:"location,omitempty" yaml:"location,omitempty"`
+	Name          meshcore.Text      `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID meshcore.Uuid `db:"organization_id" json:"organizationId" yaml:"organizationId"`
 
 	// PatternFile Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
 	PatternFile *string `db:"pattern_file" json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
@@ -262,12 +388,12 @@ type MesheryPattern struct {
 	ShareCount *int `db:"share_count" json:"shareCount,omitempty" yaml:"shareCount,omitempty"`
 
 	// SourceContent Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
-	SourceContent *[]byte   `db:"source_content" json:"sourceContent,omitempty" yaml:"sourceContent,omitempty"`
-	UpdatedAt     core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+	SourceContent *[]byte       `db:"source_content" json:"sourceContent,omitempty" yaml:"sourceContent,omitempty"`
+	UpdatedAt     meshcore.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 
 	// User Represents a user
 	User   *userV1beta.User `db:"-" json:"user,omitempty" yaml:"user,omitempty"`
-	UserId core.Id          `db:"owner" json:"userId,omitempty" yaml:"userId,omitempty"`
+	UserId meshcore.Id      `db:"owner" json:"userId,omitempty" yaml:"userId,omitempty"`
 
 	// ViewCount Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
 	ViewCount *int `db:"view_count" json:"viewCount,omitempty" yaml:"viewCount,omitempty"`
@@ -281,6 +407,12 @@ type MesheryPatternDesignType string
 
 // MesheryPatternVisibility Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
 type MesheryPatternVisibility string
+
+// MesheryPatternClonePayload Payload for cloning a design. The optional name is applied to the cloned design; the server derives ownership and visibility from the request context.
+type MesheryPatternClonePayload struct {
+	// Name Optional name to apply to the cloned design.
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+}
 
 // MesheryPatternDeleteRequestBody Payload for bulk deleting designs by ID.
 type MesheryPatternDeleteRequestBody struct {
@@ -350,21 +482,21 @@ type MesheryPatternPage struct {
 	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
-// MesheryPatternPayload Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response.
+// MesheryPatternPayload Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (`organizationId`, createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded. The server assigns `organizationId` from the session organization, ignores any client value, and re-projects server-owned fields on the response.
 type MesheryPatternPayload struct {
 	CatalogData *catalogv1alpha2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
 
 	// DesignType Discriminator identifying the source format of the design body, stored in the `source_type` column. Optional on create (the server defaults missing values to `Design`).
 	DesignType *MesheryPatternPayloadDesignType `json:"designType" yaml:"designType"`
-	ID         core.Id                          `json:"id,omitempty" yaml:"id,omitempty"`
-	Location   core.MapObject                   `json:"location,omitempty" yaml:"location,omitempty"`
+	ID         meshcore.Id                      `json:"id,omitempty" yaml:"id,omitempty"`
+	Location   meshcore.MapObject               `json:"location,omitempty" yaml:"location,omitempty"`
 
 	// Name Human-readable design name.
 	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
 
 	// PatternFile Raw design body to persist into the `pattern_file` column. See MesheryPattern.patternFile for the transcode boundary note that applies on both writes and reads.
-	PatternFile *string `json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
-	UserId      core.Id `json:"userId,omitempty" yaml:"userId,omitempty"`
+	PatternFile *string     `json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
+	UserId      meshcore.Id `json:"userId,omitempty" yaml:"userId,omitempty"`
 
 	// Visibility Visibility scope of the design.
 	Visibility *MesheryPatternPayloadVisibility `json:"visibility,omitempty" yaml:"visibility,omitempty"`
@@ -379,30 +511,30 @@ type MesheryPatternPayloadVisibility string
 // MesheryPatternRequestBody Payload for upserting a design via POST /api/content/patterns.
 type MesheryPatternRequestBody struct {
 	// Name Human-readable design name.
-	Name *string   `json:"name,omitempty" yaml:"name,omitempty"`
-	Path core.Text `json:"path,omitempty" yaml:"path,omitempty"`
+	Name *string       `json:"name,omitempty" yaml:"name,omitempty"`
+	Path meshcore.Text `json:"path,omitempty" yaml:"path,omitempty"`
 
-	// PatternData Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response.
+	// PatternData Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (`organizationId`, createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded. The server assigns `organizationId` from the session organization, ignores any client value, and re-projects server-owned fields on the response.
 	PatternData *MesheryPatternPayload `json:"patternData,omitempty" yaml:"patternData,omitempty"`
 
 	// Save When true, persist the design in addition to parsing it.
-	Save *bool         `json:"save,omitempty" yaml:"save,omitempty"`
-	Url  core.Endpoint `json:"url,omitempty" yaml:"url,omitempty"`
+	Save *bool             `json:"save,omitempty" yaml:"save,omitempty"`
+	Url  meshcore.Endpoint `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
 // PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 type PatternFile struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID core.Uuid `json:"id" yaml:"id"`
+	ID meshcore.Uuid `json:"id" yaml:"id"`
 
 	// Name Name of the design; a descriptive, but concise title for the design document.
 	Name string `json:"name" yaml:"name"`
 
 	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
-	SchemaVersion core.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
+	SchemaVersion meshcore.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
 
 	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
-	Version core.SemverString `json:"version" yaml:"version"`
+	Version meshcore.SemverString `json:"version" yaml:"version"`
 
 	// Metadata Additional metadata associated with this resource.
 	Metadata *PatternFile_Metadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
@@ -433,8 +565,11 @@ type ResourceAccessActorsResponse struct {
 // ResourceAccessMapping defines model for ResourceAccessMapping.
 type ResourceAccessMapping map[string]interface{}
 
+// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type ConnectionId = meshcore.Uuid
+
 // DesignId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type DesignId = core.Uuid
+type DesignId = meshcore.Uuid
 
 // Order defines model for order.
 type Order = string
@@ -450,6 +585,12 @@ type PageSize = int
 
 // Search defines model for search.
 type Search = string
+
+// MeshcoreMeshkitError403 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type MeshcoreMeshkitError403 = meshcore.MeshkitError
+
+// MeshcoreMeshkitError502 A MeshKit error answered as a JSON body. `error` is the sentence the caller is shown; MeshKit's long description is never serialized. Use the `MeshkitError400`, `MeshkitError403`, `MeshkitError404`, `MeshkitError409`, `MeshkitError429`, `MeshkitError500` and `MeshkitError502` responses for an operation whose server answers its refusals this way.
+type MeshcoreMeshkitError502 = meshcore.MeshkitError
 
 // CatalogContentPayload defines model for catalogContentPayload.
 type CatalogContentPayload map[string]interface{}
@@ -529,6 +670,213 @@ func (a CatalogContentClass) MarshalJSON() ([]byte, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'description': %w", err)
 		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
+
+// Getter for additional properties for DesignSourceLocation. Returns the specified
+// element and whether it was found
+func (a DesignSourceLocation) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for DesignSourceLocation
+func (a *DesignSourceLocation) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for DesignSourceLocation to handle AdditionalProperties
+func (a *DesignSourceLocation) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["branch"]; found {
+		err = json.Unmarshal(raw, &a.Branch)
+		if err != nil {
+			return fmt.Errorf("error reading 'branch': %w", err)
+		}
+		delete(object, "branch")
+	}
+
+	if raw, found := object["commitSha"]; found {
+		err = json.Unmarshal(raw, &a.CommitSha)
+		if err != nil {
+			return fmt.Errorf("error reading 'commitSha': %w", err)
+		}
+		delete(object, "commitSha")
+	}
+
+	if raw, found := object["host"]; found {
+		err = json.Unmarshal(raw, &a.Host)
+		if err != nil {
+			return fmt.Errorf("error reading 'host': %w", err)
+		}
+		delete(object, "host")
+	}
+
+	if raw, found := object["path"]; found {
+		err = json.Unmarshal(raw, &a.Path)
+		if err != nil {
+			return fmt.Errorf("error reading 'path': %w", err)
+		}
+		delete(object, "path")
+	}
+
+	if raw, found := object["type"]; found {
+		err = json.Unmarshal(raw, &a.Type)
+		if err != nil {
+			return fmt.Errorf("error reading 'type': %w", err)
+		}
+		delete(object, "type")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for DesignSourceLocation to handle AdditionalProperties
+func (a DesignSourceLocation) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Branch != nil {
+		object["branch"], err = json.Marshal(a.Branch)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'branch': %w", err)
+		}
+	}
+
+	if a.CommitSha != nil {
+		object["commitSha"], err = json.Marshal(a.CommitSha)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'commitSha': %w", err)
+		}
+	}
+
+	if a.Host != nil {
+		object["host"], err = json.Marshal(a.Host)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'host': %w", err)
+		}
+	}
+
+	if a.Path != nil {
+		object["path"], err = json.Marshal(a.Path)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'path': %w", err)
+		}
+	}
+
+	if a.Type != nil {
+		object["type"], err = json.Marshal(a.Type)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'type': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
+
+// Getter for additional properties for GithubImportPath. Returns the specified
+// element and whether it was found
+func (a GithubImportPath) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for GithubImportPath
+func (a *GithubImportPath) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for GithubImportPath to handle AdditionalProperties
+func (a *GithubImportPath) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["entry"]; found {
+		err = json.Unmarshal(raw, &a.Entry)
+		if err != nil {
+			return fmt.Errorf("error reading 'entry': %w", err)
+		}
+		delete(object, "entry")
+	}
+
+	if raw, found := object["type"]; found {
+		err = json.Unmarshal(raw, &a.Type)
+		if err != nil {
+			return fmt.Errorf("error reading 'type': %w", err)
+		}
+		delete(object, "type")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for GithubImportPath to handle AdditionalProperties
+func (a GithubImportPath) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	object["entry"], err = json.Marshal(a.Entry)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'entry': %w", err)
+	}
+
+	object["type"], err = json.Marshal(a.Type)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'type': %w", err)
 	}
 
 	for fieldName, field := range a.AdditionalProperties {

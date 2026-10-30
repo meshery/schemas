@@ -1,0 +1,86 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Follower Demographics Schema
+description: |
+  Server-returned follower-breakdown snapshot row for one page, as
+  recorded in the `metadata` of an event on the events service (category
+  `blowhorn`, action `follower_demographics`); the event construct carries
+  the envelope and this construct names the metadata's own shape, which
+  Event leaves open. One row is one category of one breakdown of one page
+  on one day, keyed by (organizationId, platform, subject, readingDate,
+  dimension, category): the page's follower total on that snapshot day
+  falls into exactly one category of each dimension, so a dimension's
+  categories sum to the page's total. `followers` is a cumulative count
+  on the day, not a daily change, and is nullable: a blank figure in the
+  source export is not a zero.
+type: object
+additionalProperties: false
+required:
+  - organizationId
+  - platform
+  - subject
+  - readingDate
+  - dimension
+  - category
+properties:
+  organizationId:
+    type: string
+    format: uuid
+    description: Owning organization ID.
+    x-go-type: uuid.UUID
+    x-go-type-import:
+      path: github.com/gofrs/uuid
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 1
+  platform:
+    type: string
+    description: The platform the page belongs to (today only `linkedin` produces these exports).
+    x-oapi-codegen-extra-tags:
+      db: platform
+    x-order: 2
+  subject:
+    type: string
+    description: The page the figures describe, named as the source export names it.
+    x-oapi-codegen-extra-tags:
+      db: subject
+    x-order: 3
+  readingDate:
+    type: string
+    format: date
+    description: The day the snapshot describes, as an ISO calendar date.
+    x-oapi-codegen-extra-tags:
+      db: reading_date
+    x-order: 4
+  dimension:
+    type: string
+    enum:
+      - location
+      - job_function
+      - seniority
+      - industry
+      - company_size
+    description: The breakdown the category belongs to; one value per breakdown sheet the source export carries.
+    x-oapi-codegen-extra-tags:
+      db: dimension
+    x-order: 5
+  category:
+    type: string
+    description: The breakdown row's label, verbatim from the source export (e.g. a location or an industry name).
+    x-oapi-codegen-extra-tags:
+      db: category
+    x-order: 6
+  followers:
+    type: integer
+    nullable: true
+    minimum: 0
+    description: The page's cumulative followers in this category on the snapshot day; null when the export's cell is blank.
+    x-oapi-codegen-extra-tags:
+      db: followers
+    x-order: 7
+  sourceFile:
+    type: string
+    description: The export file the row was read from; empty when the row did not come from a file export.
+    x-oapi-codegen-extra-tags:
+      db: source_file
+    x-order: 8

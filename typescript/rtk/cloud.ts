@@ -1,5 +1,6 @@
 import { cloudBaseApi as api } from "./api";
 export const addTagTypes = [
+  "Diagnostics_Diagnostics",
   "Feature_Features",
   "Organization_SMTP_Configuration_OrganizationSmtp",
   "Support_Support",
@@ -17,21 +18,33 @@ export const addTagTypes = [
   "User_users",
   "View_views",
   "Academy_API_Academy",
+  "BlowhornHealth_blowhornHealth",
+  "Claim_claims",
   "Connection_API_Connections",
   "Connection_API_ConnectionDefinitions",
+  "ContentItem_contentItems",
   "Design_designs",
+  "Design_github",
   "Environment_environments",
   "Events_events",
   "Filter_filters",
+  "GitHub_github",
   "Invitation_Invitation",
+  "Ledger_ledgers",
+  "MediaAsset_mediaAssets",
+  "MentionAlias_mentionAliases",
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
+  "Profile_profiles",
+  "ProviderCapability_capabilities",
+  "Schedule_schedules",
   "Subscription_Subscriptions",
   "Subscription_Payment Processors",
   "token_tokens",
   "Workspace_workspaces",
   "Workspace_designs",
+  "Workspace_profiles",
   "Workspace_views",
 ] as const;
 const injectedRtkApi = api
@@ -40,6 +53,10 @@ const injectedRtkApi = api
   })
   .injectEndpoints({
     endpoints: (build) => ({
+      submitFailureDiagnostic: build.mutation<SubmitFailureDiagnosticApiResponse, SubmitFailureDiagnosticApiArg>({
+        query: (queryArg) => ({ url: `/api/diagnostics/failures`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Diagnostics_Diagnostics"],
+      }),
       getFeatures: build.query<GetFeaturesApiResponse, GetFeaturesApiArg>({
         query: (queryArg) => ({
           url: `/api/entitlement/features`,
@@ -149,6 +166,13 @@ const injectedRtkApi = api
       }),
       submitSupportRequest: build.mutation<SubmitSupportRequestApiResponse, SubmitSupportRequestApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/support`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Support_Support"],
+      }),
+      submitAnonymousSupportRequest: build.mutation<
+        SubmitAnonymousSupportRequestApiResponse,
+        SubmitAnonymousSupportRequestApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/support/anonymous`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Support_Support"],
       }),
       getSystemVersion: build.query<GetSystemVersionApiResponse, GetSystemVersionApiArg>({
@@ -362,9 +386,38 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Organization_Organizations"],
       }),
+      getChildOrgs: build.query<GetChildOrgsApiResponse, GetChildOrgsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Organization_Organizations"],
+      }),
+      createChildOrg: build.mutation<CreateChildOrgApiResponse, CreateChildOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/children`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
       getOrgPreferences: build.query<GetOrgPreferencesApiResponse, GetOrgPreferencesApiArg>({
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/preferences` }),
         providesTags: ["Organization_Organizations"],
+      }),
+      patchOrgPreferences: build.mutation<PatchOrgPreferencesApiResponse, PatchOrgPreferencesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/preferences`,
+          method: "PATCH",
+          body: queryArg.body,
+          headers: {
+            "If-Match": queryArg["If-Match"],
+          },
+        }),
+        invalidatesTags: ["Organization_Organizations"],
       }),
       addTeamToOrg: build.mutation<AddTeamToOrgApiResponse, AddTeamToOrgApiArg>({
         query: (queryArg) => ({
@@ -582,6 +635,10 @@ const injectedRtkApi = api
       getUser: build.query<GetUserApiResponse, GetUserApiArg>({
         query: () => ({ url: `/api/identity/users/profile` }),
         providesTags: ["User_users"],
+      }),
+      updateUserPreferences: build.mutation<UpdateUserPreferencesApiResponse, UpdateUserPreferencesApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/users/preferences`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["User_users"],
       }),
       getUserProfileOverview: build.query<GetUserProfileOverviewApiResponse, GetUserProfileOverviewApiArg>({
         query: () => ({ url: `/api/identity/users/profile/details` }),
@@ -831,6 +888,45 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
         providesTags: ["Academy_API_Academy"],
       }),
+      getBlowhornHealth: build.query<GetBlowhornHealthApiResponse, GetBlowhornHealthApiArg>({
+        query: () => ({ url: `/api/blowhorn/health` }),
+        providesTags: ["BlowhornHealth_blowhornHealth"],
+      }),
+      listClaims: build.query<ListClaimsApiResponse, ListClaimsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/claims`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            order: queryArg?.order,
+            resourceType: queryArg?.resourceType,
+            resourceId: queryArg?.resourceId,
+            claimantConnectionId: queryArg?.claimantConnectionId,
+            claimantUserId: queryArg?.claimantUserId,
+            status: queryArg?.status,
+            outcome: queryArg?.outcome,
+            claimedSince: queryArg?.claimedSince,
+            claimedUntil: queryArg?.claimedUntil,
+          },
+        }),
+        providesTags: ["Claim_claims"],
+      }),
+      createClaim: build.mutation<CreateClaimApiResponse, CreateClaimApiArg>({
+        query: (queryArg) => ({ url: `/api/claims`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Claim_claims"],
+      }),
+      getClaim: build.query<GetClaimApiResponse, GetClaimApiArg>({
+        query: (queryArg) => ({ url: `/api/claims/${queryArg.claimId}` }),
+        providesTags: ["Claim_claims"],
+      }),
+      renewClaim: build.mutation<RenewClaimApiResponse, RenewClaimApiArg>({
+        query: (queryArg) => ({ url: `/api/claims/${queryArg.claimId}/renew`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Claim_claims"],
+      }),
+      releaseClaim: build.mutation<ReleaseClaimApiResponse, ReleaseClaimApiArg>({
+        query: (queryArg) => ({ url: `/api/claims/${queryArg.claimId}/release`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Claim_claims"],
+      }),
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
         query: (queryArg) => ({
           url: `/api/integrations/connections`,
@@ -850,7 +946,14 @@ const injectedRtkApi = api
         providesTags: ["Connection_API_Connections"],
       }),
       registerConnection: build.mutation<RegisterConnectionApiResponse, RegisterConnectionApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/connections`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/integrations/connections`,
+          method: "POST",
+          body: queryArg.body,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+        }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
       getConnectionById: build.query<GetConnectionByIdApiResponse, GetConnectionByIdApiArg>({
@@ -873,6 +976,37 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/integrations/connections/meshery/${queryArg.mesheryServerId}`,
           method: "DELETE",
+        }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      getDesktopConnectionsOfOrganization: build.query<
+        GetDesktopConnectionsOfOrganizationApiResponse,
+        GetDesktopConnectionsOfOrganizationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/desktop`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            owner: queryArg?.owner,
+          },
+        }),
+        providesTags: ["Connection_API_Connections"],
+      }),
+      deregisterDesktopConnection: build.mutation<
+        DeregisterDesktopConnectionApiResponse,
+        DeregisterDesktopConnectionApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/desktop/${queryArg.installationId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      recordConnectionHeartbeat: build.mutation<RecordConnectionHeartbeatApiResponse, RecordConnectionHeartbeatApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/heartbeat`,
+          method: "POST",
         }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
@@ -946,6 +1080,47 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Connection_API_ConnectionDefinitions"],
       }),
+      listContentItems: build.query<ListContentItemsApiResponse, ListContentItemsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content-items`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            profile: queryArg?.profile,
+            threadId: queryArg?.threadId,
+          },
+        }),
+        providesTags: ["ContentItem_contentItems"],
+      }),
+      insertContentItem: build.mutation<InsertContentItemApiResponse, InsertContentItemApiArg>({
+        query: (queryArg) => ({ url: `/api/content-items`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["ContentItem_contentItems"],
+      }),
+      getContentItem: build.query<GetContentItemApiResponse, GetContentItemApiArg>({
+        query: (queryArg) => ({ url: `/api/content-items/${queryArg.contentItemId}` }),
+        providesTags: ["ContentItem_contentItems"],
+      }),
+      updateContentItem: build.mutation<UpdateContentItemApiResponse, UpdateContentItemApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content-items/${queryArg.contentItemId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["ContentItem_contentItems"],
+      }),
+      deleteContentItem: build.mutation<DeleteContentItemApiResponse, DeleteContentItemApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content-items/${queryArg.contentItemId}`,
+          method: "DELETE",
+          params: {
+            expectedFingerprint: queryArg?.expectedFingerprint,
+          },
+        }),
+        invalidatesTags: ["ContentItem_contentItems"],
+      }),
       getPatterns: build.query<GetPatternsApiResponse, GetPatternsApiArg>({
         query: (queryArg) => ({
           url: `/api/content/patterns`,
@@ -987,7 +1162,11 @@ const injectedRtkApi = api
         invalidatesTags: ["Design_designs"],
       }),
       clonePattern: build.mutation<ClonePatternApiResponse, ClonePatternApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns/clone/${queryArg.designId}`, method: "POST" }),
+        query: (queryArg) => ({
+          url: `/api/content/patterns/clone/${queryArg.designId}`,
+          method: "POST",
+          body: queryArg.body,
+        }),
         invalidatesTags: ["Design_designs"],
       }),
       getDesignPatternFile: build.query<GetDesignPatternFileApiResponse, GetDesignPatternFileApiArg>({
@@ -1005,9 +1184,54 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Design_designs"],
       }),
+      refreshPatternFromSource: build.mutation<RefreshPatternFromSourceApiResponse, RefreshPatternFromSourceApiArg>({
+        query: (queryArg) => ({ url: `/api/content/patterns/refresh/${queryArg.designId}`, method: "POST" }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      updatePatternSource: build.mutation<UpdatePatternSourceApiResponse, UpdatePatternSourceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content/patterns/${queryArg.designId}/source`,
+          method: "PATCH",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Design_designs"],
+      }),
       importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
         query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Design_designs"],
+      }),
+      getGithubImportedDesigns: build.query<GetGithubImportedDesignsApiResponse, GetGithubImportedDesignsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/designs/${queryArg.connectionId}`,
+          params: {
+            repository: queryArg?.repository,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Design_designs"],
+      }),
+      importGithubRepository: build.mutation<ImportGithubRepositoryApiResponse, ImportGithubRepositoryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/import/${queryArg.connectionId}`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      getGithubRepositoryBranches: build.query<
+        GetGithubRepositoryBranchesApiResponse,
+        GetGithubRepositoryBranchesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/branches/${queryArg.connectionId}`,
+          params: {
+            repository: queryArg?.repository,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Design_github"],
       }),
       getCatalogContent: build.query<GetCatalogContentApiResponse, GetCatalogContentApiArg>({
         query: (queryArg) => ({
@@ -1108,6 +1332,7 @@ const injectedRtkApi = api
             pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             orgId: queryArg?.orgId,
+            purpose: queryArg?.purpose,
           },
         }),
         providesTags: ["Environment_environments"],
@@ -1198,6 +1423,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             filter: queryArg?.filter,
+            scope: queryArg?.scope,
           },
         }),
         providesTags: ["Events_events"],
@@ -1272,6 +1498,80 @@ const injectedRtkApi = api
       getFilterFile: build.query<GetFilterFileApiResponse, GetFilterFileApiArg>({
         query: (queryArg) => ({ url: `/api/content/filters/download/${queryArg.filterId}` }),
         providesTags: ["Filter_filters"],
+      }),
+      getGithubAppStatus: build.query<GetGithubAppStatusApiResponse, GetGithubAppStatusApiArg>({
+        query: () => ({ url: `/api/integrations/github/status` }),
+        providesTags: ["GitHub_github"],
+      }),
+      getGithubInstallationRepositories: build.query<
+        GetGithubInstallationRepositoriesApiResponse,
+        GetGithubInstallationRepositoriesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/github`,
+          params: {
+            id: queryArg?.id,
+            page: queryArg?.page,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
+      scanGithubRepository: build.query<ScanGithubRepositoryApiResponse, ScanGithubRepositoryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/scan`,
+          params: {
+            name: queryArg?.name,
+            ref: queryArg?.ref,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
+      verifyGithubRepositoryWorkflow: build.mutation<
+        VerifyGithubRepositoryWorkflowApiResponse,
+        VerifyGithubRepositoryWorkflowApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/verify/${queryArg.owner}/${queryArg.repo}`,
+          method: "POST",
+          params: {
+            id: queryArg?.id,
+          },
+        }),
+        invalidatesTags: ["GitHub_github"],
+      }),
+      installGithubWorkflow: build.mutation<InstallGithubWorkflowApiResponse, InstallGithubWorkflowApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/install`,
+          method: "POST",
+          body: queryArg.body,
+          params: {
+            id: queryArg?.id,
+          },
+        }),
+        invalidatesTags: ["GitHub_github"],
+      }),
+      startGithubAuthorization: build.query<StartGithubAuthorizationApiResponse, StartGithubAuthorizationApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/authorize`,
+          params: {
+            flow: queryArg?.flow,
+          },
+        }),
+        providesTags: ["GitHub_github"],
+      }),
+      githubAppCallback: build.query<GithubAppCallbackApiResponse, GithubAppCallbackApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/github/callback`,
+          params: {
+            state: queryArg?.state,
+            code: queryArg?.code,
+            installation_id: queryArg?.installationId,
+            setup_action: queryArg?.setupAction,
+          },
+        }),
+        providesTags: ["GitHub_github"],
       }),
       getInvitation: build.query<GetInvitationApiResponse, GetInvitationApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}` }),
@@ -1384,6 +1684,122 @@ const injectedRtkApi = api
       >({
         query: () => ({ url: `/api/identity/users/request/notification` }),
         providesTags: ["Invitation_Invitation"],
+      }),
+      listLedgerEntries: build.query<ListLedgerEntriesApiResponse, ListLedgerEntriesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["Ledger_ledgers"],
+      }),
+      recordLedgerEntry: build.mutation<RecordLedgerEntryApiResponse, RecordLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Ledger_ledgers"],
+      }),
+      claimLedgerEntry: build.mutation<ClaimLedgerEntryApiResponse, ClaimLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/claims`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Ledger_ledgers"],
+      }),
+      getLedgerEntry: build.query<GetLedgerEntryApiResponse, GetLedgerEntryApiArg>({
+        query: (queryArg) => ({ url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}` }),
+        providesTags: ["Ledger_ledgers"],
+      }),
+      updateLedgerEntry: build.mutation<UpdateLedgerEntryApiResponse, UpdateLedgerEntryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Ledger_ledgers"],
+      }),
+      deleteLedgerEntry: build.mutation<DeleteLedgerEntryApiResponse, DeleteLedgerEntryApiArg>({
+        query: (queryArg) => ({
+          url: `/api/ledgers/${encodeURIComponent(queryArg.ledger)}/entries/${encodeURIComponent(queryArg.entryKey)}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Ledger_ledgers"],
+      }),
+      listMediaAssets: build.query<ListMediaAssetsApiResponse, ListMediaAssetsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/media-assets`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      createMediaAsset: build.mutation<CreateMediaAssetApiResponse, CreateMediaAssetApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMediaAssetQuota: build.query<GetMediaAssetQuotaApiResponse, GetMediaAssetQuotaApiArg>({
+        query: () => ({ url: `/api/media-assets/quota` }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMediaAsset: build.query<GetMediaAssetApiResponse, GetMediaAssetApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets/${queryArg.mediaAssetId}` }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      updateMediaAsset: build.mutation<UpdateMediaAssetApiResponse, UpdateMediaAssetApiArg>({
+        query: (queryArg) => ({
+          url: `/api/media-assets/${queryArg.mediaAssetId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["MediaAsset_mediaAssets"],
+      }),
+      deleteMediaAsset: build.mutation<DeleteMediaAssetApiResponse, DeleteMediaAssetApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets/${queryArg.mediaAssetId}`, method: "DELETE" }),
+        invalidatesTags: ["MediaAsset_mediaAssets"],
+      }),
+      completeMediaAsset: build.mutation<CompleteMediaAssetApiResponse, CompleteMediaAssetApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets/${queryArg.mediaAssetId}/complete`, method: "POST" }),
+        invalidatesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMediaAssetDownload: build.query<GetMediaAssetDownloadApiResponse, GetMediaAssetDownloadApiArg>({
+        query: (queryArg) => ({ url: `/api/media-assets/${queryArg.mediaAssetId}/download` }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMediaAssetContent: build.query<GetMediaAssetContentApiResponse, GetMediaAssetContentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/media-assets/${queryArg.mediaAssetId}/content`,
+          params: {
+            expires: queryArg?.expires,
+            signature: queryArg?.signature,
+          },
+        }),
+        providesTags: ["MediaAsset_mediaAssets"],
+      }),
+      getMentionAliases: build.query<GetMentionAliasesApiResponse, GetMentionAliasesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/mention-aliases`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            entity: queryArg?.entity,
+            platform: queryArg?.platform,
+          },
+        }),
+        providesTags: ["MentionAlias_mentionAliases"],
+      }),
+      upsertMentionAliases: build.mutation<UpsertMentionAliasesApiResponse, UpsertMentionAliasesApiArg>({
+        query: (queryArg) => ({ url: `/api/mention-aliases`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["MentionAlias_mentionAliases"],
+      }),
+      deleteMentionAlias: build.mutation<DeleteMentionAliasApiResponse, DeleteMentionAliasApiArg>({
+        query: (queryArg) => ({ url: `/api/mention-aliases/${queryArg.mentionAliasId}`, method: "DELETE" }),
+        invalidatesTags: ["MentionAlias_mentionAliases"],
       }),
       getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
         query: (queryArg) => ({
@@ -1499,6 +1915,170 @@ const injectedRtkApi = api
         }),
         providesTags: ["Plan_Plans"],
       }),
+      createProfile: build.mutation<CreateProfileApiResponse, CreateProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/profiles`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      getProfiles: build.query<GetProfilesApiResponse, GetProfilesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/profiles`,
+          params: {
+            search: queryArg?.search,
+            name: queryArg?.name,
+            order: queryArg?.order,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            orgId: queryArg?.orgId,
+            userId: queryArg?.userId,
+          },
+        }),
+        providesTags: ["Profile_profiles"],
+      }),
+      getProfileConnectionMappings: build.query<
+        GetProfileConnectionMappingsApiResponse,
+        GetProfileConnectionMappingsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/profiles/connections`,
+          params: {
+            orgId: queryArg?.orgId,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["Profile_profiles"],
+      }),
+      getProfileById: build.query<GetProfileByIdApiResponse, GetProfileByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/profiles/${queryArg.profileId}` }),
+        providesTags: ["Profile_profiles"],
+      }),
+      updateProfile: build.mutation<UpdateProfileApiResponse, UpdateProfileApiArg>({
+        query: (queryArg) => ({
+          url: `/api/profiles/${queryArg.profileId}`,
+          method: "PUT",
+          body: queryArg.body,
+          headers: {
+            "If-Match": queryArg["If-Match"],
+          },
+        }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      deleteProfile: build.mutation<DeleteProfileApiResponse, DeleteProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/profiles/${queryArg.profileId}`, method: "DELETE" }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      getProfileConnections: build.query<GetProfileConnectionsApiResponse, GetProfileConnectionsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/profiles/${queryArg.profileId}/connections`,
+          params: {
+            kind: queryArg?.kind,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+          },
+        }),
+        providesTags: ["Profile_profiles"],
+      }),
+      addConnectionToProfile: build.mutation<AddConnectionToProfileApiResponse, AddConnectionToProfileApiArg>({
+        query: (queryArg) => ({
+          url: `/api/profiles/${queryArg.profileId}/connections/${queryArg.connectionId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      removeConnectionFromProfile: build.mutation<
+        RemoveConnectionFromProfileApiResponse,
+        RemoveConnectionFromProfileApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/profiles/${queryArg.profileId}/connections/${queryArg.connectionId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Profile_profiles"],
+      }),
+      getProviderCapabilities: build.query<GetProviderCapabilitiesApiResponse, GetProviderCapabilitiesApiArg>({
+        query: (queryArg) => ({
+          url: `/${queryArg.version}/capabilities`,
+          headers: {
+            "X-Current-Orgid": queryArg["X-Current-Orgid"],
+          },
+          params: {
+            client: queryArg?.client,
+            os: queryArg?.os,
+          },
+        }),
+        providesTags: ["ProviderCapability_capabilities"],
+      }),
+      listSchedules: build.query<ListSchedulesApiResponse, ListSchedulesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/schedules`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            workspaceId: queryArg?.workspaceId,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["Schedule_schedules"],
+      }),
+      createSchedule: build.mutation<CreateScheduleApiResponse, CreateScheduleApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      getScheduleById: build.query<GetScheduleByIdApiResponse, GetScheduleByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}` }),
+        providesTags: ["Schedule_schedules"],
+      }),
+      updateSchedule: build.mutation<UpdateScheduleApiResponse, UpdateScheduleApiArg>({
+        query: (queryArg) => ({
+          url: `/api/schedules/${queryArg.scheduleId}`,
+          method: "PUT",
+          body: queryArg.body,
+          headers: {
+            "If-Match": queryArg["If-Match"],
+          },
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      deleteScheduleById: build.mutation<DeleteScheduleByIdApiResponse, DeleteScheduleByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/schedules/${queryArg.scheduleId}`, method: "DELETE" }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      getSchedulesOfWorkspace: build.query<GetSchedulesOfWorkspaceApiResponse, GetSchedulesOfWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/schedules`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["Schedule_schedules"],
+      }),
+      assignScheduleToWorkspace: build.mutation<AssignScheduleToWorkspaceApiResponse, AssignScheduleToWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/schedules/${queryArg.scheduleId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
+      unassignScheduleFromWorkspace: build.mutation<
+        UnassignScheduleFromWorkspaceApiResponse,
+        UnassignScheduleFromWorkspaceApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/schedules/${queryArg.scheduleId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Schedule_schedules"],
+      }),
       getSubscriptions: build.query<GetSubscriptionsApiResponse, GetSubscriptionsApiArg>({
         query: (queryArg) => ({
           url: `/api/entitlement/subscriptions`,
@@ -1559,6 +2139,7 @@ const injectedRtkApi = api
           url: `/api/identity/tokens`,
           params: {
             isOauth: queryArg?.isOauth,
+            purpose: queryArg?.purpose,
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
@@ -1605,6 +2186,31 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["token_tokens"],
+      }),
+      getNativeClientAuthorization: build.query<
+        GetNativeClientAuthorizationApiResponse,
+        GetNativeClientAuthorizationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/identity/native/authorize`,
+          params: {
+            clientName: queryArg?.clientName,
+            client: queryArg?.client,
+            clientVersion: queryArg?.clientVersion,
+            port: queryArg?.port,
+            codeChallenge: queryArg?.codeChallenge,
+            codeChallengeMethod: queryArg?.codeChallengeMethod,
+            state: queryArg?.state,
+          },
+        }),
+        providesTags: ["token_tokens"],
+      }),
+      exchangeNativeAuthorizationCode: build.mutation<
+        ExchangeNativeAuthorizationCodeApiResponse,
+        ExchangeNativeAuthorizationCodeApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/identity/native/token`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
       }),
       getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
         query: (queryArg) => ({
@@ -1769,6 +2375,37 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Workspace_workspaces", "Workspace_designs"],
       }),
+      getProfilesOfWorkspace: build.query<GetProfilesOfWorkspaceApiResponse, GetProfilesOfWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/profiles`,
+          params: {
+            search: queryArg?.search,
+            order: queryArg?.order,
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            pagesize: queryArg?.pagesize,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["Workspace_workspaces", "Workspace_profiles"],
+      }),
+      assignProfileToWorkspace: build.mutation<AssignProfileToWorkspaceApiResponse, AssignProfileToWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/profiles/${queryArg.profileId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Workspace_workspaces", "Workspace_profiles"],
+      }),
+      unassignProfileFromWorkspace: build.mutation<
+        UnassignProfileFromWorkspaceApiResponse,
+        UnassignProfileFromWorkspaceApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/profiles/${queryArg.profileId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Workspace_workspaces", "Workspace_profiles"],
+      }),
       getViewsOfWorkspace: build.query<GetViewsOfWorkspaceApiResponse, GetViewsOfWorkspaceApiArg>({
         query: (queryArg) => ({
           url: `/api/workspaces/${queryArg.workspaceId}/views`,
@@ -1801,6 +2438,60 @@ const injectedRtkApi = api
     overrideExisting: false,
   });
 export { injectedRtkApi as cloudApi };
+export type SubmitFailureDiagnosticApiResponse = /** status 201 Failure diagnostic stored */ {
+  /** The stored diagnostic's id: the client's own when it sent one, otherwise generated by the server. Send it as AnonymousSupportRequest.diagnosticId to link a human report to this diagnostic. */
+  diagnosticId: string;
+};
+export type SubmitFailureDiagnosticApiArg = {
+  body: {
+    /** Id generated by the client for this report. A human support request links back to it through AnonymousSupportRequest.diagnosticId. */
+    diagnosticId: string;
+    /** When this occurrence of the failure happened. */
+    occurredAt: string;
+    /** When this failure was first seen on this install, for the deduplication window the count covers. */
+    firstSeenAt: string;
+    /** How many times the same failure has occurred on this install within the deduplication window (per install per day). */
+    count: number;
+    client: {
+      /** The client that produced this report. */
+      kind: "blowhorn-desktop";
+      /** Client version, for example the app release version. */
+      version: string;
+      /** Source revision the client build came from. */
+      buildSha: string;
+      /** Release channel the client build belongs to. Kept a free string rather than an enum: channel names are release-process values, and a new channel must not make older clients' reports undecodable. */
+      channel: string;
+    };
+    os: {
+      /** Operating system name. */
+      name: string;
+      /** Operating system version. */
+      version: string;
+      /** Operating system architecture. */
+      arch: string;
+    };
+    failure: {
+      /** Where the failure first became visible to the person. */
+      surface: "tray" | "popover" | "console" | "service";
+      /** Stable machine-readable name for the cause. Deliberately a patterned string, not a closed enum: new failure causes are named by the client over time, and a closed enum would make the server reject reports carrying a cause it does not know yet. Consumers must treat an unknown cause as opaque, never as an error. Known causes today are the Blowhorn engine's StoreUnavailable.cause names: unavailable, not_configured, incomplete, bad_setting, config_unreadable, tunnel_refused, tunnel_silent, tunnel_off, not_postgres, auth_rejected, host_not_permitted, database_missing, timeout, version_unreadable, ledger_unreadable, schema_behind, schema_ahead, schema_edited, no_organization, unknown_organization, plus other named causes as clients add them. */
+      cause: string;
+      /** Machine-readable code for the failure, when the failure carries one beyond its cause (for example an exit or provider code). Kept a string so numeric and symbolic codes both fit; empty when the failure carries no code. */
+      code: string;
+      /** Redacted human-readable sentence for the failure: only the cause sentence survives, with paths, usernames, emails, profile names, post text, and tokens removed. */
+      message: string;
+      /** How many scheduled ticks the failure skipped, when the failure interrupted scheduled work. */
+      ticksSkipped: number;
+    };
+    compat: {
+      /** Schema version the client requires the server to speak for this report to be understood. */
+      requiresSchema: string;
+      /** Version of the client-server contract this report was built against. Kept a string so dotted versions and plain numbers both fit. */
+      contractVersion: string;
+    };
+    /** Optional per-install id, present only when the person has not opted out of failure reports. A random uuid4 minted once per install (Blowhorn's installationId, written beside cloud.yaml and reused), never a hardware id. Omitted entirely when opted out. */
+    installId?: string;
+  };
+};
 export type GetFeaturesApiResponse = /** status 200 Features response */ {
   /** Unique identifier for the feature. */
   id: string;
@@ -1830,8 +2521,20 @@ export type GetFeaturesApiResponse = /** status 200 Features response */ {
     | "DesignsInWorkspace"
     | "WorkspacesInOrganization"
     | "ImageSizeInDesign"
-    | "SizePerDesign";
-  /** Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited. */
+    | "SizePerDesign"
+    | "BlowhornProfiles"
+    | "BlowhornBrowserAutomation"
+    | "BlowhornScheduler"
+    | "BlowhornDevicesPerSeat"
+    | "BlowhornPlatformLinkedIn"
+    | "BlowhornPlatformX"
+    | "BlowhornPlatformReddit"
+    | "BlowhornPlatformHackerNews"
+    | "BlowhornPlatformSlack"
+    | "BlowhornPlatformBluesky"
+    | "BlowhornPlatformGitHub"
+    | "BlowhornPlatformBlog";
+  /** Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability. */
   quantity: number;
   /** Timestamp when the resource was created. */
   created_at: string;
@@ -1873,8 +2576,20 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features respo
     | "DesignsInWorkspace"
     | "WorkspacesInOrganization"
     | "ImageSizeInDesign"
-    | "SizePerDesign";
-  /** Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited. */
+    | "SizePerDesign"
+    | "BlowhornProfiles"
+    | "BlowhornBrowserAutomation"
+    | "BlowhornScheduler"
+    | "BlowhornDevicesPerSeat"
+    | "BlowhornPlatformLinkedIn"
+    | "BlowhornPlatformX"
+    | "BlowhornPlatformReddit"
+    | "BlowhornPlatformHackerNews"
+    | "BlowhornPlatformSlack"
+    | "BlowhornPlatformBluesky"
+    | "BlowhornPlatformGitHub"
+    | "BlowhornPlatformBlog";
+  /** Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability. */
   quantity: number;
   /** Timestamp when the resource was created. */
   created_at: string;
@@ -1907,13 +2622,13 @@ export type GetOrganizationSmtpEnvironmentApiResponse =
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
     
     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
     
     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
     
-    Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+    Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
     
     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -1975,6 +2690,7 @@ export type GetOrganizationSmtpConfigurationApiResponse = /** status 200 The org
     | "tls_failed"
     | "starttls_unsupported"
     | "auth_rejected"
+    | "auth_mechanism_unsupported"
     | "relay_rejected_sender"
     | "relay_rejected_recipient"
     | "delivery_failed"
@@ -2042,6 +2758,7 @@ export type CreateOrganizationSmtpConfigurationApiResponse = /** status 201 The 
     | "tls_failed"
     | "starttls_unsupported"
     | "auth_rejected"
+    | "auth_mechanism_unsupported"
     | "relay_rejected_sender"
     | "relay_rejected_recipient"
     | "delivery_failed"
@@ -2134,6 +2851,7 @@ export type UpdateOrganizationSmtpConfigurationApiResponse = /** status 200 The 
     | "tls_failed"
     | "starttls_unsupported"
     | "auth_rejected"
+    | "auth_mechanism_unsupported"
     | "relay_rejected_sender"
     | "relay_rejected_recipient"
     | "delivery_failed"
@@ -2222,6 +2940,7 @@ export type RotateOrganizationSmtpCredentialApiResponse =
       | "tls_failed"
       | "starttls_unsupported"
       | "auth_rejected"
+      | "auth_mechanism_unsupported"
       | "relay_rejected_sender"
       | "relay_rejected_recipient"
       | "delivery_failed"
@@ -2293,6 +3012,7 @@ export type SetOrganizationSmtpEnablementApiResponse = /** status 200 The stored
     | "tls_failed"
     | "starttls_unsupported"
     | "auth_rejected"
+    | "auth_mechanism_unsupported"
     | "relay_rejected_sender"
     | "relay_rejected_recipient"
     | "delivery_failed"
@@ -2327,6 +3047,7 @@ export type TestOrganizationSmtpConfigurationApiResponse =
       | "tls_failed"
       | "starttls_unsupported"
       | "auth_rejected"
+      | "auth_mechanism_unsupported"
       | "relay_rejected_sender"
       | "relay_rejected_recipient"
       | "delivery_failed"
@@ -2398,6 +3119,26 @@ export type SubmitSupportRequestApiArg = {
     message: string;
     /** Category that best represents the nature of the inquiry. */
     scope?: "Support" | "Community" | "Account" | "Commercial";
+  };
+};
+export type SubmitAnonymousSupportRequestApiResponse = /** status 200 Support request received and forwarded */ {
+  /** Always `received`. */
+  status: "received";
+  /** Echoes the request's diagnosticId; omitted when the request linked none. */
+  diagnosticId?: string;
+};
+export type SubmitAnonymousSupportRequestApiArg = {
+  body: {
+    /** Concise and descriptive title for the support request. */
+    subject: string;
+    /** Detailed description of the issue or question. */
+    message: string;
+    /** Category that best represents the nature of the inquiry. */
+    scope?: "Support" | "Community" | "Account" | "Commercial";
+    /** Optional email address the person typed in for a follow-up. Absent when they did not ask to be contacted; never inferred from an account, because this request may come from a signed-out client. */
+    email?: string;
+    /** Optional id of the FailureDiagnostic submitted for the same incident (schemas/constructs/v1beta1/diagnostics/api.yml), linking the human report to the automatic diagnostic. */
+    diagnosticId?: string;
   };
 };
 export type GetSystemVersionApiResponse = /** status 200 Server version metadata */ {
@@ -3046,6 +3787,9 @@ export type GetMeshModelModelsApiResponse = /** status 200 Model and capabilitie
       updated_at?: string;
       /** SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
+      /** The organization the connection belongs to. The server sets it from the session organization. A client-supplied value is ignored. Optional on this superseded shape, which live model responses still embed as `registrant` (`additionalProperties: false`, so the field has to be declared for the server to return it). v1beta3 Connection requires it. Not marked readOnly: this connection is inlined into `POST /api/registry/relationships/evaluate` through a component model's registrant, and readOnly there drops the design field from the generated RTK client.
+       */
+      organizationId?: string;
       /** Associated environments for this connection */
       environments?: {
         /** ID */
@@ -3359,6 +4103,17 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -3493,6 +4248,17 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -3603,6 +4369,13 @@ export type CreateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
     };
   };
 };
@@ -3746,6 +4519,17 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -3877,6 +4661,17 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
         };
         /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
         showAuthCarousel?: boolean;
+        /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+        schedulePause?: {
+          /** Whether every schedule in the organization is paused. */
+          paused?: boolean;
+          /** Reason given for the pause. Cleared when the pause is lifted. */
+          reason?: string;
+          /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedAt?: string;
+          /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+          pausedBy?: string;
+        };
       };
     };
     /** Timestamp when the organization was created. */
@@ -3989,6 +4784,292 @@ export type UpdateOrgApiArg = {
       };
       /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
       showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
+    };
+  };
+};
+export type GetChildOrgsApiResponse = /** status 200 Direct child organizations of the parent organization */ {
+  /** Direct child organizations in this page. */
+  organizations: {
+    /** Organization ID of the child. */
+    id: string;
+    /** Name of the child organization. */
+    name: string;
+    /** Description of the child organization. */
+    description?: string;
+    /** Country of the child organization. */
+    country?: string;
+    /** Region of the child organization. */
+    region?: string;
+    /** Custom domain assigned to the child organization, when configured. */
+    domain?: string;
+    /** ID of the parent organization. Stamped at creation and never changed; absent only on a top-level organization, which this listing never returns. */
+    parentId?: string;
+    /** Timestamp when the child organization was created. */
+    createdAt: string;
+    /** Timestamp when the child organization was last updated. */
+    updatedAt: string;
+  }[];
+  /** Total number of live direct children across all pages. */
+  totalCount: number;
+};
+export type GetChildOrgsApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Zero-based index of the result page to return. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+};
+export type CreateChildOrgApiResponse =
+  /** status 201 Single-organization page response for the created child organization */ {
+    /** Zero-based page index returned in this response. */
+    page?: number;
+    /** Maximum number of items returned on each page. */
+    pageSize?: number;
+    /** Total number of items across all pages. */
+    totalCount?: number;
+    /** Organizations returned in this single-item page wrapper. */
+    organizations?: {
+      /** Organization ID. */
+      id?: string;
+      /** Name of the organization. */
+      name?: string;
+      /** Description of the organization. */
+      description?: string;
+      /** Country of the organization. */
+      country?: string;
+      /** Region of the organization. */
+      region?: string;
+      /** Custom domain assigned to the organization, when configured. */
+      domain?: string;
+      /** Display name of the organization owner. */
+      owner?: string;
+      /** Free-form metadata associated with an organization, including preferences. */
+      metadata?: {
+        /** Organization-level user experience preferences. */
+        preferences: {
+          /** UI theme configured for an organization. */
+          theme: {
+            /** Theme identifier. */
+            id: string;
+            /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+            logo: {
+              /** Image asset anchored to a named location within an organization theme. */
+              desktopView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              mobileView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              darkDesktopView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** Image asset anchored to a named location within an organization theme. */
+              darkMobileView: {
+                /** SVG markup for the asset. */
+                svg: string;
+                /** Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+            };
+            /** Arbitrary theme variables keyed by name. */
+            vars?: {
+              [key: string]: any;
+            };
+          };
+          /** Preferences specific to dashboard behavior. */
+          dashboard: {
+            [key: string]: any;
+          };
+          /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+          authBranding?: {
+            /** Ordered slides rendered in the auth-page feature carousel. */
+            carousel?: {
+              /** URL of the slide image asset. */
+              imageUrl: string;
+              /** Slide title. */
+              title: string;
+              /** Slide description text. */
+              description: string;
+            }[];
+            /** FAQ entries rendered on the auth pages. */
+            faqs?: {
+              /** The question text. */
+              question: string;
+              /** The answer text. */
+              answer: string;
+            }[];
+          };
+          /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+          links?: {
+            /** URL of the organization's Terms of Service page. */
+            termsOfService?: string;
+            /** URL of the organization's Privacy Policy page. */
+            privacy?: string;
+            /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+            support?: {
+              [key: string]: string;
+            };
+            /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+            social?: {
+              /** URL of the organization's LinkedIn profile. */
+              linkedin?: string;
+              /** URL of the organization's X (formerly Twitter) profile. */
+              x?: string;
+              /** URL of the organization's YouTube channel. */
+              youtube?: string;
+            };
+          };
+          /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+          showAuthCarousel?: boolean;
+          /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+          schedulePause?: {
+            /** Whether every schedule in the organization is paused. */
+            paused?: boolean;
+            /** Reason given for the pause. Cleared when the pause is lifted. */
+            reason?: string;
+            /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+            pausedAt?: string;
+            /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+            pausedBy?: string;
+          };
+        };
+      };
+      /** Timestamp when the organization was created. */
+      createdAt?: string;
+      /** Timestamp when the organization was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the organization was soft-deleted. */
+      deletedAt?: string;
+    }[];
+  };
+export type CreateChildOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Body for creating or updating an organization */
+  body: {
+    /** Name of the organization. */
+    name?: string;
+    /** Country of the organization. */
+    country?: string;
+    /** Region of the organization. */
+    region?: string;
+    /** Description of the organization. */
+    description?: string;
+    /** Indicates whether organization members should be notified of this update. */
+    notifyOrgUpdate?: boolean;
+    /** Organization-level user experience preferences. */
+    preferences?: {
+      /** UI theme configured for an organization. */
+      theme: {
+        /** Theme identifier. */
+        id: string;
+        /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+        logo: {
+          /** Image asset anchored to a named location within an organization theme. */
+          desktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          mobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkDesktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkMobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+        };
+        /** Arbitrary theme variables keyed by name. */
+        vars?: {
+          [key: string]: any;
+        };
+      };
+      /** Preferences specific to dashboard behavior. */
+      dashboard: {
+        [key: string]: any;
+      };
+      /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+      authBranding?: {
+        /** Ordered slides rendered in the auth-page feature carousel. */
+        carousel?: {
+          /** URL of the slide image asset. */
+          imageUrl: string;
+          /** Slide title. */
+          title: string;
+          /** Slide description text. */
+          description: string;
+        }[];
+        /** FAQ entries rendered on the auth pages. */
+        faqs?: {
+          /** The question text. */
+          question: string;
+          /** The answer text. */
+          answer: string;
+        }[];
+      };
+      /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+      links?: {
+        /** URL of the organization's Terms of Service page. */
+        termsOfService?: string;
+        /** URL of the organization's Privacy Policy page. */
+        privacy?: string;
+        /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+        support?: {
+          [key: string]: string;
+        };
+        /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+        social?: {
+          /** URL of the organization's LinkedIn profile. */
+          linkedin?: string;
+          /** URL of the organization's X (formerly Twitter) profile. */
+          x?: string;
+          /** URL of the organization's YouTube channel. */
+          youtube?: string;
+        };
+      };
+      /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+      showAuthCarousel?: boolean;
+      /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+      schedulePause?: {
+        /** Whether every schedule in the organization is paused. */
+        paused: boolean;
+        /** Reason given for the pause. Cleared when the pause is lifted. */
+        reason?: string;
+      };
     };
   };
 };
@@ -4080,11 +5161,223 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
     };
     /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
     showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused?: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+      /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedAt?: string;
+      /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedBy?: string;
+    };
   };
 };
 export type GetOrgPreferencesApiArg = {
   /** Organization ID. */
   orgId: string;
+};
+export type PatchOrgPreferencesApiResponse = /** status 200 Organization metadata with the merged preferences */ {
+  /** Organization-level user experience preferences. */
+  preferences: {
+    /** UI theme configured for an organization. */
+    theme: {
+      /** Theme identifier. */
+      id: string;
+      /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+      logo: {
+        /** Image asset anchored to a named location within an organization theme. */
+        desktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        mobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkDesktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkMobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+      };
+      /** Arbitrary theme variables keyed by name. */
+      vars?: {
+        [key: string]: any;
+      };
+    };
+    /** Preferences specific to dashboard behavior. */
+    dashboard: {
+      [key: string]: any;
+    };
+    /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+    authBranding?: {
+      /** Ordered slides rendered in the auth-page feature carousel. */
+      carousel?: {
+        /** URL of the slide image asset. */
+        imageUrl: string;
+        /** Slide title. */
+        title: string;
+        /** Slide description text. */
+        description: string;
+      }[];
+      /** FAQ entries rendered on the auth pages. */
+      faqs?: {
+        /** The question text. */
+        question: string;
+        /** The answer text. */
+        answer: string;
+      }[];
+    };
+    /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+    links?: {
+      /** URL of the organization's Terms of Service page. */
+      termsOfService?: string;
+      /** URL of the organization's Privacy Policy page. */
+      privacy?: string;
+      /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+      support?: {
+        [key: string]: string;
+      };
+      /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+      social?: {
+        /** URL of the organization's LinkedIn profile. */
+        linkedin?: string;
+        /** URL of the organization's X (formerly Twitter) profile. */
+        x?: string;
+        /** URL of the organization's YouTube channel. */
+        youtube?: string;
+      };
+    };
+    /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+    showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitting schedulePause from a preferences write keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused?: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+      /** Time the pause was set. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedAt?: string;
+      /** Identity that set the pause. Server-managed; recorded when `paused` turns true and cleared when it is lifted. */
+      pausedBy?: string;
+    };
+  };
+};
+export type PatchOrgPreferencesApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Entity tag of the organization's preferences as last read, from the `ETag` header of getOrgPreferences or patchOrgPreferences. When present the write applies only if it still matches; otherwise 412. */
+  "If-Match"?: string;
+  body: {
+    /** UI theme configured for an organization. */
+    theme?: {
+      /** Theme identifier. */
+      id: string;
+      /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+      logo: {
+        /** Image asset anchored to a named location within an organization theme. */
+        desktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        mobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkDesktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkMobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+      };
+      /** Arbitrary theme variables keyed by name. */
+      vars?: {
+        [key: string]: any;
+      };
+    };
+    /** Preferences specific to dashboard behavior. */
+    dashboard?: {
+      [key: string]: any;
+    };
+    /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+    authBranding?: {
+      /** Ordered slides rendered in the auth-page feature carousel. */
+      carousel?: {
+        /** URL of the slide image asset. */
+        imageUrl: string;
+        /** Slide title. */
+        title: string;
+        /** Slide description text. */
+        description: string;
+      }[];
+      /** FAQ entries rendered on the auth pages. */
+      faqs?: {
+        /** The question text. */
+        question: string;
+        /** The answer text. */
+        answer: string;
+      }[];
+    };
+    /** Per-organization overrides for the legal, support, and social links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links; social carries the organization's brand profiles. Empty or omitted fields fall back to the platform defaults. */
+    links?: {
+      /** URL of the organization's Terms of Service page. */
+      termsOfService?: string;
+      /** URL of the organization's Privacy Policy page. */
+      privacy?: string;
+      /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+      support?: {
+        [key: string]: string;
+      };
+      /** The organization's social brand profiles. Deliberately a sibling of support rather than an entry in it: support renders as support contacts on the auth and error pages, where a brand profile does not belong. Each platform is a named, individually validated URL so consumers can render the matching platform icon. Empty or omitted fields fall back to the platform defaults. */
+      social?: {
+        /** URL of the organization's LinkedIn profile. */
+        linkedin?: string;
+        /** URL of the organization's X (formerly Twitter) profile. */
+        x?: string;
+        /** URL of the organization's YouTube channel. */
+        youtube?: string;
+      };
+    };
+    /** Whether the feature carousel renders on the organization's auth pages. Omitted keeps the stored value. */
+    showAuthCarousel?: boolean;
+    /** Organization-wide schedule pause. Only organization admins may set or lift it; a write from anyone else that changes it is refused with 403. Omitted keeps the current pause unchanged; it does not lift the pause. */
+    schedulePause?: {
+      /** Whether every schedule in the organization is paused. */
+      paused: boolean;
+      /** Reason given for the pause. Cleared when the pause is lifted. */
+      reason?: string;
+    };
+  };
 };
 export type AddTeamToOrgApiResponse = /** status 201 Team added to organization or team tombstoned */
   | {
@@ -4816,59 +6109,63 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   }[];
 };
@@ -5005,59 +6302,63 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   roleNames?: string[];
   /** Teams the user belongs to with role information */
   teams?: {
-    /** Team memberships for the user with their assigned roles. */
-    teamsWithRoles?: {
-      /** Unique identifier of the team. */
-      id: string;
-      /** Name of the team. */
-      name: string;
-      /** Human readable description of the team. */
-      description?: string;
-      /** Identifier of the team owner. */
-      owner?: string;
-      /** Free-form metadata associated with the team. */
-      metadata?: {
-        [key: string]: any;
-      };
-      /** Timestamp when the team was created. */
-      createdAt?: string;
-      /** Timestamp when the team was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the team was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of team memberships returned for the user. */
-    totalCount?: number;
+    /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    teamsWithRoles?:
+      | {
+          /** Unique identifier of the team. */
+          id: string;
+          /** Name of the team. */
+          name: string;
+          /** Human readable description of the team. */
+          description?: string;
+          /** Identifier of the team owner. */
+          owner?: string;
+          /** Free-form metadata associated with the team. */
+          metadata?: {
+            [key: string]: any;
+          };
+          /** Timestamp when the team was created. */
+          createdAt?: string;
+          /** Timestamp when the team was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the team was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
   /** Organizations the user belongs to with role information */
   organizations?: {
-    /** Organization memberships for the user with their assigned roles. */
-    organizationsWithRoles?: {
-      /** Unique identifier of the organization. */
-      id: string;
-      /** Name of the organization. */
-      name: string;
-      /** Human readable description of the organization. */
-      description?: string;
-      /** Country associated with the organization. */
-      country?: string;
-      /** Region associated with the organization. */
-      region?: string;
-      /** Identifier of the organization owner. */
-      owner?: string;
-      /** Timestamp when the organization was created. */
-      createdAt?: string;
-      /** Timestamp when the organization was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the organization was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of organization memberships returned for the user. */
-    totalCount?: number;
+    /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    organizationsWithRoles?:
+      | {
+          /** Unique identifier of the organization. */
+          id: string;
+          /** Name of the organization. */
+          name: string;
+          /** Human readable description of the organization. */
+          description?: string;
+          /** Country associated with the organization. */
+          country?: string;
+          /** Region associated with the organization. */
+          region?: string;
+          /** Identifier of the organization owner. */
+          owner?: string;
+          /** Timestamp when the organization was created. */
+          createdAt?: string;
+          /** Timestamp when the organization was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the organization was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
 };
 export type GetUserProfileByIdApiArg = {
@@ -5181,62 +6482,133 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   roleNames?: string[];
   /** Teams the user belongs to with role information */
   teams?: {
-    /** Team memberships for the user with their assigned roles. */
-    teamsWithRoles?: {
-      /** Unique identifier of the team. */
-      id: string;
-      /** Name of the team. */
-      name: string;
-      /** Human readable description of the team. */
-      description?: string;
-      /** Identifier of the team owner. */
-      owner?: string;
-      /** Free-form metadata associated with the team. */
-      metadata?: {
-        [key: string]: any;
-      };
-      /** Timestamp when the team was created. */
-      createdAt?: string;
-      /** Timestamp when the team was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the team was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of team memberships returned for the user. */
-    totalCount?: number;
+    /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    teamsWithRoles?:
+      | {
+          /** Unique identifier of the team. */
+          id: string;
+          /** Name of the team. */
+          name: string;
+          /** Human readable description of the team. */
+          description?: string;
+          /** Identifier of the team owner. */
+          owner?: string;
+          /** Free-form metadata associated with the team. */
+          metadata?: {
+            [key: string]: any;
+          };
+          /** Timestamp when the team was created. */
+          createdAt?: string;
+          /** Timestamp when the team was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the team was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
   /** Organizations the user belongs to with role information */
   organizations?: {
-    /** Organization memberships for the user with their assigned roles. */
-    organizationsWithRoles?: {
-      /** Unique identifier of the organization. */
-      id: string;
-      /** Name of the organization. */
-      name: string;
-      /** Human readable description of the organization. */
-      description?: string;
-      /** Country associated with the organization. */
-      country?: string;
-      /** Region associated with the organization. */
-      region?: string;
-      /** Identifier of the organization owner. */
-      owner?: string;
-      /** Timestamp when the organization was created. */
-      createdAt?: string;
-      /** Timestamp when the organization was last updated. */
-      updatedAt?: string;
-      /** Timestamp when the organization was soft-deleted (null if not deleted). */
-      deletedAt?: string | null;
-      /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-      roleNames: string[];
-    }[];
-    /** Total number of organization memberships returned for the user. */
-    totalCount?: number;
+    /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+    organizationsWithRoles?:
+      | {
+          /** Unique identifier of the organization. */
+          id: string;
+          /** Name of the organization. */
+          name: string;
+          /** Human readable description of the organization. */
+          description?: string;
+          /** Country associated with the organization. */
+          country?: string;
+          /** Region associated with the organization. */
+          region?: string;
+          /** Identifier of the organization owner. */
+          owner?: string;
+          /** Timestamp when the organization was created. */
+          createdAt?: string;
+          /** Timestamp when the organization was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the organization was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[]
+      | null;
+    /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+    totalCount?: number | null;
   };
 };
 export type GetUserApiArg = void;
+export type UpdateUserPreferencesApiResponse = unknown;
+export type UpdateUserPreferencesApiArg = {
+  body: {
+    /** The mesh adapters of the preference. */
+    meshAdapters?: object[];
+    grafana?: {
+      /** Grafana URL for the user configuration. */
+      grafanaUrl?: string;
+      /** Grafana API key for the user configuration. */
+      grafanaApiKey?: string;
+      /** Selected Grafana board configurations for the user. */
+      selectedBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        /** Panels selected for the Grafana board configuration. */
+        panels?: object[];
+        /** Template variables applied to the selected Grafana board configuration. */
+        templateVars?: string[];
+      }[];
+    };
+    prometheus?: {
+      /** The prometheus URL of the prometheus. */
+      prometheusUrl?: string;
+      /** The selected prometheus boards configs of the prometheus. */
+      selectedPrometheusBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        /** Panels selected for the Grafana board configuration. */
+        panels?: object[];
+        /** Template variables applied to the selected Grafana board configuration. */
+        templateVars?: string[];
+      }[];
+    };
+    loadTestPrefs?: {
+      /** Concurrent requests */
+      c?: number;
+      /** Queries per second */
+      qps?: number;
+      /** Duration */
+      t?: string;
+      /** Load generator */
+      gen?: string;
+    };
+    /** The anonymous usage stats of the preference. */
+    anonymousUsageStats?: boolean;
+    /** The anonymous perf results of the preference. */
+    anonymousPerfResults?: boolean;
+    /** The dashboard preferences of the preference. */
+    dashboardPreferences?: {
+      [key: string]: any;
+    };
+    /** ID of the organization to make the session's selected organization. */
+    selectedOrganizationId?: string;
+    /** The selected workspace for organizations of the preference. */
+    selectedWorkspaceForOrganizations?: {
+      [key: string]: string;
+    };
+    /** The users extension preferences of the preference. */
+    usersExtensionPreferences?: {
+      [key: string]: any;
+    };
+    /** The remote provider preferences of the preference. */
+    remoteProviderPreferences?: {
+      [key: string]: any;
+    };
+  };
+};
 export type GetUserProfileOverviewApiResponse = /** status 200 Profile overview counts for the caller */ {
   /** Number of Kubernetes contexts owned by the user. */
   k8sCount: number;
@@ -6466,6 +7838,12 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
     roles: string[];
     /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
     teams: string[];
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+    childOrganizationBranding?: "parent" | "provider" | "none";
+    /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+    childOrganizationName?: string;
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created. */
@@ -6681,6 +8059,12 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
     roles: string[];
     /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
     teams: string[];
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+    childOrganizationBranding?: "parent" | "provider" | "none";
+    /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+    childOrganizationName?: string;
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created. */
@@ -7743,6 +9127,317 @@ export type GetCertificateByIdApiArg = {
   /** The ID of the certificate to retrieve */
   certificateId: string;
 };
+export type GetBlowhornHealthApiResponse = /** status 200 Blowhorn health response */ {
+  /** Frozen Blowhorn contract version the server speaks. */
+  contractVersion: string;
+  /** Whether the organization is bound for Blowhorn operations. */
+  bound: boolean;
+  /** Organization whose binding was checked. */
+  organizationId?: string;
+  /** Time the binding was checked. */
+  checkedAt?: string;
+};
+export type GetBlowhornHealthApiArg = void;
+export type ListClaimsApiResponse = /** status 200 Claims page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Claims included on this page of results. */
+  claims: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantConnectionId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantUserId?: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+     */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time of the last renewal. Null until the claim is first renewed. */
+    renewedAt?: string | null;
+    /** Time the claim was released. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+     */
+    outcome?: "completed" | "failed" | "cancelled";
+    /** Error reported with a `failed` outcome. Omitted otherwise. */
+    outcomeError?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    outcomeEventId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    releasedBy?: string;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  }[];
+};
+export type ListClaimsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by claimed resource type. */
+  resourceType?: string;
+  /** Filter by claimed resource ID. */
+  resourceId?: string;
+  /** Filter by the connection that holds or held the claim. */
+  claimantConnectionId?: string;
+  /** Filter by the user whose session took the claim. */
+  claimantUserId?: string;
+  /** Filter by claim status, as read (a claim past `expiresAt` is `expired`). */
+  status?: "active" | "released" | "expired";
+  /** Filter by the outcome reported on release. */
+  outcome?: "completed" | "failed" | "cancelled";
+  /** Only claims taken at or after this time. */
+  claimedSince?: string;
+  /** Only claims taken before this time. */
+  claimedUntil?: string;
+};
+export type CreateClaimApiResponse = /** status 200 Replay - the same connection already holds the active claim */
+  | {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
+      /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+      resourceType: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      resourceId: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantConnectionId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantUserId?: string;
+      /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+       */
+      status: "active" | "released" | "expired";
+      /** Time the claim was taken. */
+      claimedAt: string;
+      /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+      expiresAt: string;
+      /** Time of the last renewal. Null until the claim is first renewed. */
+      renewedAt?: string | null;
+      /** Time the claim was released. Null while the claim is active or after it expired. */
+      releasedAt?: string | null;
+      /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+       */
+      outcome?: "completed" | "failed" | "cancelled";
+      /** Error reported with a `failed` outcome. Omitted otherwise. */
+      outcomeError?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      outcomeEventId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      releasedBy?: string;
+      /** Timestamp of claim creation. */
+      createdAt: string;
+      /** Timestamp of last claim modification. */
+      updatedAt: string;
+    }
+  | /** status 201 Claim taken */ {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
+      /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+      resourceType: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      resourceId: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantConnectionId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantUserId?: string;
+      /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+       */
+      status: "active" | "released" | "expired";
+      /** Time the claim was taken. */
+      claimedAt: string;
+      /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+      expiresAt: string;
+      /** Time of the last renewal. Null until the claim is first renewed. */
+      renewedAt?: string | null;
+      /** Time the claim was released. Null while the claim is active or after it expired. */
+      releasedAt?: string | null;
+      /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+       */
+      outcome?: "completed" | "failed" | "cancelled";
+      /** Error reported with a `failed` outcome. Omitted otherwise. */
+      outcomeError?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      outcomeEventId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      releasedBy?: string;
+      /** Timestamp of claim creation. */
+      createdAt: string;
+      /** Timestamp of last claim modification. */
+      updatedAt: string;
+    };
+export type CreateClaimApiArg = {
+  body: {
+    /** Type of the resource to claim, for example `content_item`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    connectionId: string;
+    /** Requested claim duration in minutes; the server applies its default (30) when omitted and may cap it. */
+    durationMinutes?: number;
+  };
+};
+export type GetClaimApiResponse = /** status 200 Claim response */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+  resourceType: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  resourceId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  claimantConnectionId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  claimantUserId?: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+   */
+  status: "active" | "released" | "expired";
+  /** Time the claim was taken. */
+  claimedAt: string;
+  /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+  expiresAt: string;
+  /** Time of the last renewal. Null until the claim is first renewed. */
+  renewedAt?: string | null;
+  /** Time the claim was released. Null while the claim is active or after it expired. */
+  releasedAt?: string | null;
+  /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+   */
+  outcome?: "completed" | "failed" | "cancelled";
+  /** Error reported with a `failed` outcome. Omitted otherwise. */
+  outcomeError?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  outcomeEventId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  releasedBy?: string;
+  /** Timestamp of claim creation. */
+  createdAt: string;
+  /** Timestamp of last claim modification. */
+  updatedAt: string;
+};
+export type GetClaimApiArg = {
+  /** Claim ID */
+  claimId: string;
+};
+export type RenewClaimApiResponse = /** status 200 Claim renewed */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+  resourceType: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  resourceId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  claimantConnectionId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  claimantUserId?: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+   */
+  status: "active" | "released" | "expired";
+  /** Time the claim was taken. */
+  claimedAt: string;
+  /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+  expiresAt: string;
+  /** Time of the last renewal. Null until the claim is first renewed. */
+  renewedAt?: string | null;
+  /** Time the claim was released. Null while the claim is active or after it expired. */
+  releasedAt?: string | null;
+  /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+   */
+  outcome?: "completed" | "failed" | "cancelled";
+  /** Error reported with a `failed` outcome. Omitted otherwise. */
+  outcomeError?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  outcomeEventId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  releasedBy?: string;
+  /** Timestamp of claim creation. */
+  createdAt: string;
+  /** Timestamp of last claim modification. */
+  updatedAt: string;
+};
+export type RenewClaimApiArg = {
+  /** Claim ID */
+  claimId: string;
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    connectionId: string;
+    /** Requested extension in minutes from now; the server applies its default (30) when omitted and may cap it. */
+    durationMinutes?: number;
+  };
+};
+export type ReleaseClaimApiResponse = /** status 200 Claim released */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+  resourceType: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  resourceId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  claimantConnectionId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  claimantUserId?: string;
+  /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+   */
+  status: "active" | "released" | "expired";
+  /** Time the claim was taken. */
+  claimedAt: string;
+  /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+  expiresAt: string;
+  /** Time of the last renewal. Null until the claim is first renewed. */
+  renewedAt?: string | null;
+  /** Time the claim was released. Null while the claim is active or after it expired. */
+  releasedAt?: string | null;
+  /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+   */
+  outcome?: "completed" | "failed" | "cancelled";
+  /** Error reported with a `failed` outcome. Omitted otherwise. */
+  outcomeError?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  outcomeEventId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  releasedBy?: string;
+  /** Timestamp of claim creation. */
+  createdAt: string;
+  /** Timestamp of last claim modification. */
+  updatedAt: string;
+};
+export type ReleaseClaimApiArg = {
+  /** Claim ID */
+  claimId: string;
+  body: {
+    /** What happened to the work the claim held. */
+    outcome: "completed" | "failed" | "cancelled";
+    /** Error behind a `failed` outcome. Refused with any other outcome. */
+    outcomeError?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    outcomeEventId?: string;
+  };
+};
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
   /** List of connections on this page */
   connections: {
@@ -7760,7 +9455,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     type: string;
     /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
     subType: string;
-    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
     kind: string;
     /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
     modelReference?: {
@@ -7984,6 +9679,9 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
     deletedAt?: string | null;
+    /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+     */
+    organizationId: string;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -8006,13 +9704,13 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       updatedAt?: string;
       /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
       deletedAt?: string | null;
-      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
             
             Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
             
             At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
             
-            Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
             
             The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
       purpose?: "user" | "administrative";
@@ -8062,225 +9760,213 @@ export type GetConnectionsApiArg = {
   /** Filter by connection name (partial match supported) */
   name?: string;
 };
-export type RegisterConnectionApiResponse = /** status 201 Connection registered */ {
-  /** Connection ID */
-  id: string;
-  /** Connection Name */
-  name: string;
-  /** Human-readable description of the connection and its purpose. */
-  description?: string;
-  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
-  url?: string;
-  /** Associated Credential ID */
-  credentialId?: string;
-  /** Connection Type (platform, telemetry, collaboration) */
-  type: string;
-  /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-  subType: string;
-  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
-  kind: string;
-  /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-  modelReference?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** The unique name for the model within the scope of a registrant. */
-    name: string;
-    /** Version of the model definition. */
-    version: string;
-    /** Human-readable name for the model. */
-    displayName: string;
-    /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-    model: {
-      /** Version of the model as defined by the registrant. */
-      version: string;
-    };
-    registrant: {
-      /** Kind of the registrant. */
+export type RegisterConnectionApiResponse = /** status 200 Existing desktop connection for this machine updated */
+  | {
+      /** Connection ID */
+      id: string;
+      /** Connection Name */
+      name: string;
+      /** Human-readable description of the connection and its purpose. */
+      description?: string;
+      /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+      url?: string;
+      /** Associated Credential ID */
+      credentialId?: string;
+      /** Connection Type (platform, telemetry, collaboration) */
+      type: string;
+      /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+      subType: string;
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
       kind: string;
-    };
-  };
-  /** Additional connection metadata */
-  metadata?: object;
-  /** Schema for the credential Associated with the connection */
-  credentialSchema?: object;
-  /** Schema for the connection */
-  connectionSchema?: object;
-  /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
-  styles?: {
-    /** Primary color of the component used for UI representation. */
-    primaryColor: string;
-    /** Secondary color of the entity used for UI representation. */
-    secondaryColor?: string;
-    /** White SVG of the entity used for UI representation on dark background. */
-    svgWhite: string;
-    /** Colored SVG of the entity used for UI representation on light background. */
-    svgColor: string;
-    /** Complete SVG of the entity used for UI representation, often inclusive of background. */
-    svgComplete: string;
-    /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-    color?: string;
-    /** The opacity of the label text, including its outline. */
-    textOpacity?: number;
-    /** A comma-separated list of font names to use on the label text. */
-    fontFamily?: string;
-    /** The size of the label text. */
-    fontSize?: string;
-    /** A CSS font style to be applied to the label text. */
-    fontStyle?: string;
-    /** A CSS font weight to be applied to the label text. */
-    fontWeight?: string;
-    /** A transformation to apply to the label text */
-    textTransform?: "none" | "uppercase" | "lowercase";
-    /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
-    opacity?: number;
-    /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-    zIndex?: number;
-    /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-    label?: string;
-    /** The animation to apply to the element. example ripple,bounce,etc */
-    animation?: object;
-    [key: string]: any;
-  } & {
-    /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
-    shape:
-      | "ellipse"
-      | "triangle"
-      | "round-triangle"
-      | "rectangle"
-      | "round-rectangle"
-      | "bottom-round-rectangle"
-      | "cut-rectangle"
-      | "barrel"
-      | "rhomboid"
-      | "diamond"
-      | "round-diamond"
-      | "pentagon"
-      | "round-pentagon"
-      | "hexagon"
-      | "round-hexagon"
-      | "concave-hexagon"
-      | "heptagon"
-      | "round-heptagon"
-      | "octagon"
-      | "round-octagon"
-      | "star"
-      | "tag"
-      | "round-tag"
-      | "vee"
-      | "polygon";
-    /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
-    position?: {
-      /** The x-coordinate of the node. */
-      x: number;
-      /** The y-coordinate of the node. */
-      y: number;
-    };
-    /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
-    bodyText?: string;
-    /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
-    bodyTextWrap?: "none" | "wrap" | "ellipsis";
-    /** The maximum width for wrapping text in the node. */
-    bodyTextMaxWidth?: string;
-    /** The opacity of the node's body text, including its outline. */
-    bodyTextOpacity?: number;
-    /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
-    bodyTextBackgroundColor?: string;
-    /** The size of the node's body text. */
-    bodyTextFontSize?: number;
-    /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
-    bodyTextColor?: string;
-    /** A CSS font weight to be applied to the node's body text. */
-    bodyTextFontWeight?: string;
-    /** A CSS horizontal alignment to be applied to the node's body text. */
-    bodyTextHorizontalAlign?: string;
-    /** A CSS text decoration to be applied to the node's body text. */
-    bodyTextDecoration?: string;
-    /** A CSS vertical alignment to be applied to the node's body text. */
-    bodyTextVerticalAlign?: string;
-    /** The width of the node's body or the width of an edge's line. */
-    width?: number;
-    /** The height of the node's body */
-    height?: number;
-    /** The URL that points to the image to show in the node. */
-    backgroundImage?: string;
-    /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
-    backgroundColor?: string;
-    /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
-    backgroundBlacken?: number;
-    /** The opacity level of the node's background colour */
-    backgroundOpacity?: number;
-    /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-    backgroundPositionX?: string;
-    /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-    backgroundPositionY?: string;
-    /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-    backgroundOffsetX?: string;
-    /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-    backgroundOffsetY?: string;
-    /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
-    backgroundFit?: "none" | "contain" | "cover";
-    /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
-    backgroundClip?: "none" | "node" | "node-border";
-    /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
-    backgroundWidthRelativeTo?: "none" | "inner" | "outer";
-    /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
-    backgroundHeightRelativeTo?: "none" | "inner" | "outer";
-    /** The size of the node's border. */
-    borderWidth?: number;
-    /** The style of the node's border */
-    borderStyle?: "solid" | "dotted" | "dashed" | "double";
-    /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
-    borderColor?: string;
-    /** The opacity of the node's border */
-    borderOpacity?: number;
-    /** The amount of padding around all sides of the node. */
-    padding?: number;
-    /** The horizontal alignment of a node's label */
-    textHalign?: "left" | "center" | "right";
-    /** The vertical alignment of a node's label */
-    textValign?: "top" | "center" | "bottom";
-    /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
-    ghost?: "yes" | "no";
-    /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-    activeBgColor?: string;
-    /** The opacity of the active background indicator. Selector needs to be *core*. */
-    activeBgOpacity?: string;
-    /** The opacity of the active background indicator. Selector needs to be *core*. */
-    activeBgSize?: string;
-    /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-    selectionBoxColor?: string;
-    /** The size of the border on the selection box. Selector needs to be *core* */
-    selectionBoxBorderWidth?: number;
-    /** The opacity of the selection box. Selector needs to be *core* */
-    selectionBoxOpacity?: number;
-    /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-    outsideTextureBgColor?: string;
-    /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
-    outsideTextureBgOpacity?: number;
-    /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
-    shapePolygonPoints?: string;
-    /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
-    menuBackgroundColor?: string;
-    /** The opacity of the background of the component menu. */
-    menuBackgroundOpacity?: number;
-    /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
-    menuForgroundColor?: string;
-  };
-  /** Connection Status */
-  status:
-    | "discovered"
-    | "registered"
-    | "connected"
-    | "ignored"
-    | "maintenance"
-    | "disconnected"
-    | "deleted"
-    | "not found";
-  /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
-  transitionMap?: {
-    [key: string]: {
-      /** Connection Status Value */
-      nextState:
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference?: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Additional connection metadata */
+      metadata?: object;
+      /** Schema for the credential Associated with the connection */
+      credentialSchema?: object;
+      /** Schema for the connection */
+      connectionSchema?: object;
+      /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Connection Status */
+      status:
         | "discovered"
         | "registered"
         | "connected"
@@ -8289,55 +9975,352 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
         | "disconnected"
         | "deleted"
         | "not found";
-      /** Human-readable explanation of when or why this transition occurs. */
-      description?: string;
-    }[];
-  };
-  /** User ID who owns this connection */
-  owner?: string;
-  /** Timestamp when the connection was created. */
-  createdAt?: string;
-  /** Timestamp when the connection was last updated. */
-  updatedAt?: string;
-  /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string | null;
-  /** Associated environments for this connection */
-  environments?: {
-    /** ID */
-    id: string;
-    /** Specifies the version of the schema to which the environment conforms. */
-    schemaVersion: string;
-    /** Environment name */
-    name: string;
-    /** Environment description */
-    description: string;
-    /** Environment organization ID */
-    organizationId: string;
-    /** Environment owner */
-    owner?: string;
-    /** Timestamp when the environment was created. */
-    createdAt?: string;
-    /** Additional metadata associated with the environment. */
-    metadata?: object;
-    /** Timestamp when the environment was last updated. */
-    updatedAt?: string;
-    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
-    deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+      /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+      transitionMap?: {
+        [key: string]: {
+          /** Connection Status Value */
+          nextState:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** Human-readable explanation of when or why this transition occurs. */
+          description?: string;
+        }[];
+      };
+      /** User ID who owns this connection */
+      owner?: string;
+      /** Timestamp when the connection was created. */
+      createdAt?: string;
+      /** Timestamp when the connection was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the connection was soft-deleted, if applicable. */
+      deletedAt?: string | null;
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+       */
+      organizationId: string;
+      /** Associated environments for this connection */
+      environments?: {
+        /** ID */
+        id: string;
+        /** Specifies the version of the schema to which the environment conforms. */
+        schemaVersion: string;
+        /** Environment name */
+        name: string;
+        /** Environment description */
+        description: string;
+        /** Environment organization ID */
+        organizationId: string;
+        /** Environment owner */
+        owner?: string;
+        /** Timestamp when the environment was created. */
+        createdAt?: string;
+        /** Additional metadata associated with the environment. */
+        metadata?: object;
+        /** Timestamp when the environment was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+        deletedAt?: string | null;
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
-    purpose?: "user" | "administrative";
-  }[];
-  /** Specifies the version of the schema used for the definition. */
-  schemaVersion: string;
-};
+        purpose?: "user" | "administrative";
+      }[];
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+    }
+  | /** status 201 Connection registered */ {
+      /** Connection ID */
+      id: string;
+      /** Connection Name */
+      name: string;
+      /** Human-readable description of the connection and its purpose. */
+      description?: string;
+      /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+      url?: string;
+      /** Associated Credential ID */
+      credentialId?: string;
+      /** Connection Type (platform, telemetry, collaboration) */
+      type: string;
+      /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+      subType: string;
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+      kind: string;
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference?: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Additional connection metadata */
+      metadata?: object;
+      /** Schema for the credential Associated with the connection */
+      credentialSchema?: object;
+      /** Schema for the connection */
+      connectionSchema?: object;
+      /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Connection Status */
+      status:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+      transitionMap?: {
+        [key: string]: {
+          /** Connection Status Value */
+          nextState:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** Human-readable explanation of when or why this transition occurs. */
+          description?: string;
+        }[];
+      };
+      /** User ID who owns this connection */
+      owner?: string;
+      /** Timestamp when the connection was created. */
+      createdAt?: string;
+      /** Timestamp when the connection was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the connection was soft-deleted, if applicable. */
+      deletedAt?: string | null;
+      /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+       */
+      organizationId: string;
+      /** Associated environments for this connection */
+      environments?: {
+        /** ID */
+        id: string;
+        /** Specifies the version of the schema to which the environment conforms. */
+        schemaVersion: string;
+        /** Environment name */
+        name: string;
+        /** Environment description */
+        description: string;
+        /** Environment organization ID */
+        organizationId: string;
+        /** Environment owner */
+        owner?: string;
+        /** Timestamp when the environment was created. */
+        createdAt?: string;
+        /** Additional metadata associated with the environment. */
+        metadata?: object;
+        /** Timestamp when the environment was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+        deletedAt?: string | null;
+        /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+        purpose?: "user" | "administrative";
+      }[];
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+    };
 export type RegisterConnectionApiArg = {
+  /** Session organization. The server assigns `Connection.organizationId` from this header when it is present, and from the caller's selected organization when it is absent. Kind `desktop` requires the header: a desktop registration without it is refused with 400.
+   */
+  "X-Current-Orgid"?: string;
   body: {
     /** Connection ID */
     id?: string;
@@ -8535,7 +10518,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   type: string;
   /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
   subType: string;
-  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
   kind: string;
   /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
   modelReference?: {
@@ -8759,6 +10742,9 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+   */
+  organizationId: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -8781,13 +10767,13 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -8814,7 +10800,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   type: string;
   /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
   subType: string;
-  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
   kind: string;
   /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
   modelReference?: {
@@ -9038,6 +11024,9 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
   deletedAt?: string | null;
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+   */
+  organizationId: string;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -9060,13 +11049,13 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -9268,6 +11257,326 @@ export type DeleteMesheryConnectionApiResponse = unknown;
 export type DeleteMesheryConnectionApiArg = {
   /** Meshery server ID */
   mesheryServerId: string;
+};
+export type GetDesktopConnectionsOfOrganizationApiResponse = /** status 200 Desktop connections of the organization */ {
+  /** Connection summaries on this page. */
+  connections: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** Connection name. */
+    name: string;
+    /** Connection kind, for example `desktop`. */
+    kind: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    owner?: string;
+    /** Connection status as read, for example `connected` or `disconnected`. */
+    status: string;
+    /** Time of the connection's last heartbeat (`metadata.lastSeenAt`). Null when it never sent one. */
+    lastSeenAt?: string | null;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+  }[];
+  /** Total number of connections on all pages. */
+  totalCount: number;
+  /** Current page number. */
+  page: number;
+  /** Number of elements per page. */
+  pageSize: number;
+};
+export type GetDesktopConnectionsOfOrganizationApiArg = {
+  /** Page number */
+  page?: number;
+  /** Number of items per page */
+  pageSize?: number;
+  /** Only connections registered by this user. */
+  owner?: string;
+};
+export type DeregisterDesktopConnectionApiResponse = unknown;
+export type DeregisterDesktopConnectionApiArg = {
+  /** Installation identifier from `metadata.installationId`. */
+  installationId: string;
+};
+export type RecordConnectionHeartbeatApiResponse = /** status 200 Connection after the heartbeat */ {
+  /** Connection ID */
+  id: string;
+  /** Connection Name */
+  name: string;
+  /** Human-readable description of the connection and its purpose. */
+  description?: string;
+  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+  url?: string;
+  /** Associated Credential ID */
+  credentialId?: string;
+  /** Connection Type (platform, telemetry, collaboration) */
+  type: string;
+  /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+  subType: string;
+  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+  kind: string;
+  /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+  modelReference?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** The unique name for the model within the scope of a registrant. */
+    name: string;
+    /** Version of the model definition. */
+    version: string;
+    /** Human-readable name for the model. */
+    displayName: string;
+    /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+    model: {
+      /** Version of the model as defined by the registrant. */
+      version: string;
+    };
+    registrant: {
+      /** Kind of the registrant. */
+      kind: string;
+    };
+  };
+  /** Additional connection metadata */
+  metadata?: object;
+  /** Schema for the credential Associated with the connection */
+  credentialSchema?: object;
+  /** Schema for the connection */
+  connectionSchema?: object;
+  /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+  styles?: {
+    /** Primary color of the component used for UI representation. */
+    primaryColor: string;
+    /** Secondary color of the entity used for UI representation. */
+    secondaryColor?: string;
+    /** White SVG of the entity used for UI representation on dark background. */
+    svgWhite: string;
+    /** Colored SVG of the entity used for UI representation on light background. */
+    svgColor: string;
+    /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+    svgComplete: string;
+    /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+    color?: string;
+    /** The opacity of the label text, including its outline. */
+    textOpacity?: number;
+    /** A comma-separated list of font names to use on the label text. */
+    fontFamily?: string;
+    /** The size of the label text. */
+    fontSize?: string;
+    /** A CSS font style to be applied to the label text. */
+    fontStyle?: string;
+    /** A CSS font weight to be applied to the label text. */
+    fontWeight?: string;
+    /** A transformation to apply to the label text */
+    textTransform?: "none" | "uppercase" | "lowercase";
+    /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+    opacity?: number;
+    /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+    zIndex?: number;
+    /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+    label?: string;
+    /** The animation to apply to the element. example ripple,bounce,etc */
+    animation?: object;
+    [key: string]: any;
+  } & {
+    /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+    shape:
+      | "ellipse"
+      | "triangle"
+      | "round-triangle"
+      | "rectangle"
+      | "round-rectangle"
+      | "bottom-round-rectangle"
+      | "cut-rectangle"
+      | "barrel"
+      | "rhomboid"
+      | "diamond"
+      | "round-diamond"
+      | "pentagon"
+      | "round-pentagon"
+      | "hexagon"
+      | "round-hexagon"
+      | "concave-hexagon"
+      | "heptagon"
+      | "round-heptagon"
+      | "octagon"
+      | "round-octagon"
+      | "star"
+      | "tag"
+      | "round-tag"
+      | "vee"
+      | "polygon";
+    /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+    position?: {
+      /** The x-coordinate of the node. */
+      x: number;
+      /** The y-coordinate of the node. */
+      y: number;
+    };
+    /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+    bodyText?: string;
+    /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+    bodyTextWrap?: "none" | "wrap" | "ellipsis";
+    /** The maximum width for wrapping text in the node. */
+    bodyTextMaxWidth?: string;
+    /** The opacity of the node's body text, including its outline. */
+    bodyTextOpacity?: number;
+    /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+    bodyTextBackgroundColor?: string;
+    /** The size of the node's body text. */
+    bodyTextFontSize?: number;
+    /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+    bodyTextColor?: string;
+    /** A CSS font weight to be applied to the node's body text. */
+    bodyTextFontWeight?: string;
+    /** A CSS horizontal alignment to be applied to the node's body text. */
+    bodyTextHorizontalAlign?: string;
+    /** A CSS text decoration to be applied to the node's body text. */
+    bodyTextDecoration?: string;
+    /** A CSS vertical alignment to be applied to the node's body text. */
+    bodyTextVerticalAlign?: string;
+    /** The width of the node's body or the width of an edge's line. */
+    width?: number;
+    /** The height of the node's body */
+    height?: number;
+    /** The URL that points to the image to show in the node. */
+    backgroundImage?: string;
+    /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+    backgroundColor?: string;
+    /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+    backgroundBlacken?: number;
+    /** The opacity level of the node's background colour */
+    backgroundOpacity?: number;
+    /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+    backgroundPositionX?: string;
+    /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+    backgroundPositionY?: string;
+    /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+    backgroundOffsetX?: string;
+    /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+    backgroundOffsetY?: string;
+    /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+    backgroundFit?: "none" | "contain" | "cover";
+    /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+    backgroundClip?: "none" | "node" | "node-border";
+    /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+    backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+    /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+    backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+    /** The size of the node's border. */
+    borderWidth?: number;
+    /** The style of the node's border */
+    borderStyle?: "solid" | "dotted" | "dashed" | "double";
+    /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+    borderColor?: string;
+    /** The opacity of the node's border */
+    borderOpacity?: number;
+    /** The amount of padding around all sides of the node. */
+    padding?: number;
+    /** The horizontal alignment of a node's label */
+    textHalign?: "left" | "center" | "right";
+    /** The vertical alignment of a node's label */
+    textValign?: "top" | "center" | "bottom";
+    /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+    ghost?: "yes" | "no";
+    /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+    activeBgColor?: string;
+    /** The opacity of the active background indicator. Selector needs to be *core*. */
+    activeBgOpacity?: string;
+    /** The opacity of the active background indicator. Selector needs to be *core*. */
+    activeBgSize?: string;
+    /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+    selectionBoxColor?: string;
+    /** The size of the border on the selection box. Selector needs to be *core* */
+    selectionBoxBorderWidth?: number;
+    /** The opacity of the selection box. Selector needs to be *core* */
+    selectionBoxOpacity?: number;
+    /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+    outsideTextureBgColor?: string;
+    /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+    outsideTextureBgOpacity?: number;
+    /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+    shapePolygonPoints?: string;
+    /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+    menuBackgroundColor?: string;
+    /** The opacity of the background of the component menu. */
+    menuBackgroundOpacity?: number;
+    /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+    menuForgroundColor?: string;
+  };
+  /** Connection Status */
+  status:
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found";
+  /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+  transitionMap?: {
+    [key: string]: {
+      /** Connection Status Value */
+      nextState:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      /** Human-readable explanation of when or why this transition occurs. */
+      description?: string;
+    }[];
+  };
+  /** User ID who owns this connection */
+  owner?: string;
+  /** Timestamp when the connection was created. */
+  createdAt?: string;
+  /** Timestamp when the connection was last updated. */
+  updatedAt?: string;
+  /** Timestamp when the connection was soft-deleted, if applicable. */
+  deletedAt?: string | null;
+  /** The organization the connection belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization when that header is absent) when the connection is registered, and keeps it on later updates. Never accepted from clients on connection write payloads. Not marked readOnly: `RegistrantData` inlines this entity into registry registration requests, and readOnly there drops the connection field from the generated RTK client. A value sent on that inlined connection is ignored. With the owner and `metadata.installationId`, it is the deduplication key for `desktop` connections.
+   */
+  organizationId: string;
+  /** Associated environments for this connection */
+  environments?: {
+    /** ID */
+    id: string;
+    /** Specifies the version of the schema to which the environment conforms. */
+    schemaVersion: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organizationId: string;
+    /** Environment owner */
+    owner?: string;
+    /** Timestamp when the environment was created. */
+    createdAt?: string;
+    /** Additional metadata associated with the environment. */
+    metadata?: object;
+    /** Timestamp when the environment was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+    deletedAt?: string | null;
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+        
+        Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+        
+        At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+        
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        
+        The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+    purpose?: "user" | "administrative";
+  }[];
+  /** Specifies the version of the schema used for the definition. */
+  schemaVersion: string;
+};
+export type RecordConnectionHeartbeatApiArg = {
+  /** Connection ID */
+  connectionId: string;
 };
 export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context */ {
   /** Zero-based page index returned in this response. */
@@ -9834,6 +12143,454 @@ export type DeleteConnectionDefinitionApiArg = {
   /** Connection definition ID */
   connectionDefinitionId: string;
 };
+export type ListContentItemsApiResponse = /** status 200 Content item page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Content items included on this page of results. */
+  contentItems?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Subject of the owning profile. */
+    profile: string;
+    /** Row number of the content item, unique across the live content items of the organization. */
+    rowNumber: number;
+    /** Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates.
+     */
+    fingerprint: string;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Timestamp of content item creation. */
+    createdAt: string;
+    /** Timestamp of last content item modification. */
+    updatedAt: string;
+    /** Timestamp when the content item was soft-deleted. */
+    deletedAt?: string | null;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    createdBy?: string;
+    /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+     */
+    rulesOfEngagement?: {
+      /** The preset the item asks for. It applies only when it is at
+            least as cautious as the preset its profile and platform
+            resolve to.
+             */
+      preset: "cautious" | "standard" | "brisk";
+      /** Dials changed for this item only. Omitted when none were
+            changed; present, the item's rules read as adjusted.
+             */
+      dials?: {
+        /** Typing and interaction pace. */
+        pace?: "slow" | "normal" | "fast";
+        /** Least time, in seconds, between two public actions on one platform for one profile. */
+        minDelaySeconds?: number;
+        /** Local hours with no public actions. */
+        quietHours?: {
+          /** Local hour the window opens. */
+          start: number;
+          /** Local hour the window closes. */
+          end: number;
+        };
+        /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+        capFraction?: number;
+        /** Whether the item runs without pointer movement. */
+        noMouseMove?: boolean;
+      };
+    };
+    /** ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+     */
+    threadId?: string;
+    /** ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+     */
+    replyToId?: string;
+    /** Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only.
+     */
+    threadIndex?: number;
+    /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
+     */
+    mediaAssetIds?: string[];
+  }[];
+};
+export type ListContentItemsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+  /** Number of items per page. Deprecated alias of pageSize;
+    canonical `pageSize` wins when both are present.
+     */
+  pagesize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by owning profile subject (exact match). */
+  profile?: string;
+  /** Return one thread: the root item this ID names and every live item
+    whose `threadId` names it.
+     */
+  threadId?: string;
+};
+export type InsertContentItemApiResponse = /** status 201 Content item created */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Subject of the owning profile. */
+  profile: string;
+  /** Row number of the content item, unique across the live content items of the organization. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates.
+   */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of content item creation. */
+  createdAt: string;
+  /** Timestamp of last content item modification. */
+  updatedAt: string;
+  /** Timestamp when the content item was soft-deleted. */
+  deletedAt?: string | null;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string;
+  /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+   */
+  rulesOfEngagement?: {
+    /** The preset the item asks for. It applies only when it is at
+        least as cautious as the preset its profile and platform
+        resolve to.
+         */
+    preset: "cautious" | "standard" | "brisk";
+    /** Dials changed for this item only. Omitted when none were
+        changed; present, the item's rules read as adjusted.
+         */
+    dials?: {
+      /** Typing and interaction pace. */
+      pace?: "slow" | "normal" | "fast";
+      /** Least time, in seconds, between two public actions on one platform for one profile. */
+      minDelaySeconds?: number;
+      /** Local hours with no public actions. */
+      quietHours?: {
+        /** Local hour the window opens. */
+        start: number;
+        /** Local hour the window closes. */
+        end: number;
+      };
+      /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+      capFraction?: number;
+      /** Whether the item runs without pointer movement. */
+      noMouseMove?: boolean;
+    };
+  };
+  /** ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+   */
+  threadId?: string;
+  /** ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+   */
+  replyToId?: string;
+  /** Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only.
+   */
+  threadIndex?: number;
+  /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
+   */
+  mediaAssetIds?: string[];
+};
+export type InsertContentItemApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** Subject of the owning profile. */
+    profile: string;
+    /** Row number of the content item, unique across the live content
+        items of the organization. Optional: omitted on insert, the
+        server assigns the next row number of the organization; omitted
+        on update, the stored row number is kept.
+         */
+    rowNumber?: number;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        insert.
+         */
+    expectedFingerprint?: string;
+    /** The item's own rules of engagement, which can only tighten the
+        rules its profile and platform run under. Omitted on insert, the
+        item has none; omitted on update, the stored rules are kept;
+        `null` on update clears them.
+         */
+    rulesOfEngagement?: {
+      /** The preset the item asks for. It applies only when it is at
+            least as cautious as the preset its profile and platform
+            resolve to.
+             */
+      preset: "cautious" | "standard" | "brisk";
+      /** Dials changed for this item only. Omitted when none were
+            changed; present, the item's rules read as adjusted.
+             */
+      dials?: {
+        /** Typing and interaction pace. */
+        pace?: "slow" | "normal" | "fast";
+        /** Least time, in seconds, between two public actions on one platform for one profile. */
+        minDelaySeconds?: number;
+        /** Local hours with no public actions. */
+        quietHours?: {
+          /** Local hour the window opens. */
+          start: number;
+          /** Local hour the window closes. */
+          end: number;
+        };
+        /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+        capFraction?: number;
+        /** Whether the item runs without pointer movement. */
+        noMouseMove?: boolean;
+      };
+    } | null;
+    /** ID of the thread's root item. Read on insert; on update it must
+        be omitted or equal the stored value.
+         */
+    threadId?: string;
+    /** ID of the item this item answers directly: the root named by
+        `threadId` or an item of the same thread. Requires `threadId`.
+        Read on insert; on update it must be omitted or equal the stored
+        value.
+         */
+    replyToId?: string;
+    /** Position of the item in its thread, the root counting as 0.
+        Required exactly when `threadId` is given. Read on insert; on
+        update it must be omitted or equal the stored value.
+         */
+    threadIndex?: number;
+    /** The media assets the item posts, in posting order. Omitted on
+        insert means none; omitted on update keeps the stored list (old
+        clients send the whole item without it); an empty array clears it.
+         */
+    mediaAssetIds?: string[];
+  };
+};
+export type GetContentItemApiResponse = /** status 200 Content item response */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Subject of the owning profile. */
+  profile: string;
+  /** Row number of the content item, unique across the live content items of the organization. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates.
+   */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of content item creation. */
+  createdAt: string;
+  /** Timestamp of last content item modification. */
+  updatedAt: string;
+  /** Timestamp when the content item was soft-deleted. */
+  deletedAt?: string | null;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string;
+  /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+   */
+  rulesOfEngagement?: {
+    /** The preset the item asks for. It applies only when it is at
+        least as cautious as the preset its profile and platform
+        resolve to.
+         */
+    preset: "cautious" | "standard" | "brisk";
+    /** Dials changed for this item only. Omitted when none were
+        changed; present, the item's rules read as adjusted.
+         */
+    dials?: {
+      /** Typing and interaction pace. */
+      pace?: "slow" | "normal" | "fast";
+      /** Least time, in seconds, between two public actions on one platform for one profile. */
+      minDelaySeconds?: number;
+      /** Local hours with no public actions. */
+      quietHours?: {
+        /** Local hour the window opens. */
+        start: number;
+        /** Local hour the window closes. */
+        end: number;
+      };
+      /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+      capFraction?: number;
+      /** Whether the item runs without pointer movement. */
+      noMouseMove?: boolean;
+    };
+  };
+  /** ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+   */
+  threadId?: string;
+  /** ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+   */
+  replyToId?: string;
+  /** Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only.
+   */
+  threadIndex?: number;
+  /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
+   */
+  mediaAssetIds?: string[];
+};
+export type GetContentItemApiArg = {
+  /** Content item ID */
+  contentItemId: string;
+};
+export type UpdateContentItemApiResponse = /** status 200 Content item updated */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Subject of the owning profile. */
+  profile: string;
+  /** Row number of the content item, unique across the live content items of the organization. */
+  rowNumber: number;
+  /** Hex digest over the canonical content values (`data`, `profile`, `rowNumber` and, when set, `rulesOfEngagement` and `mediaAssetIds`), typed so null, empty string, zero and false differ. An item without them hashes exactly as it did before the fields existed. The thread fields are fixed at insert and are not part of it. Server-computed; used for conditional updates.
+   */
+  fingerprint: string;
+  /** Content values, stored as a JSON blob. */
+  data?: object;
+  /** Timestamp of content item creation. */
+  createdAt: string;
+  /** Timestamp of last content item modification. */
+  updatedAt: string;
+  /** Timestamp when the content item was soft-deleted. */
+  deletedAt?: string | null;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string;
+  /** The item's own rules of engagement, set by the order that wrote it. They can only tighten: the client that runs the item applies the stricter of these and the rules that apply to the item's profile and platform without them, and the warm-up and the pause after a sign-in challenge always apply. The server validates the shape and stores the value; it does not resolve it. Omitted when the item has none, in which case the item runs under the rules that apply without them.
+   */
+  rulesOfEngagement?: {
+    /** The preset the item asks for. It applies only when it is at
+        least as cautious as the preset its profile and platform
+        resolve to.
+         */
+    preset: "cautious" | "standard" | "brisk";
+    /** Dials changed for this item only. Omitted when none were
+        changed; present, the item's rules read as adjusted.
+         */
+    dials?: {
+      /** Typing and interaction pace. */
+      pace?: "slow" | "normal" | "fast";
+      /** Least time, in seconds, between two public actions on one platform for one profile. */
+      minDelaySeconds?: number;
+      /** Local hours with no public actions. */
+      quietHours?: {
+        /** Local hour the window opens. */
+        start: number;
+        /** Local hour the window closes. */
+        end: number;
+      };
+      /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+      capFraction?: number;
+      /** Whether the item runs without pointer movement. */
+      noMouseMove?: boolean;
+    };
+  };
+  /** ID of the root item of the thread this item belongs to: the first post of a split thread, or the first transmission of a conversation between profiles. Omitted on a standalone item and on a root itself; a root is the item other items name here. Set on insert only.
+   */
+  threadId?: string;
+  /** ID of the item this item answers directly: the thread root or another item of the same thread. A split thread's part names the part before it; a reply in a conversation between profiles names the transmission above it. Omitted when the item answers nothing. Never set without `threadId`. Set on insert only.
+   */
+  replyToId?: string;
+  /** Position of the item in its thread, counting the root as 0. Present exactly when `threadId` is, unique among the live items of the thread, and greater than the position of the item named by `replyToId`. Set on insert only.
+   */
+  threadIndex?: number;
+  /** The media assets the item posts, in posting order. Ids only, never URLs. Omitted when the item posts no file.
+   */
+  mediaAssetIds?: string[];
+};
+export type UpdateContentItemApiArg = {
+  /** Content item ID */
+  contentItemId: string;
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** Subject of the owning profile. */
+    profile: string;
+    /** Row number of the content item, unique across the live content
+        items of the organization. Optional: omitted on insert, the
+        server assigns the next row number of the organization; omitted
+        on update, the stored row number is kept.
+         */
+    rowNumber?: number;
+    /** Content values, stored as a JSON blob. */
+    data?: object;
+    /** Optimistic-concurrency precondition for update: when supplied,
+        the update applies only when the stored fingerprint still
+        matches, and is refused with a 409 otherwise. Ignored on
+        insert.
+         */
+    expectedFingerprint?: string;
+    /** The item's own rules of engagement, which can only tighten the
+        rules its profile and platform run under. Omitted on insert, the
+        item has none; omitted on update, the stored rules are kept;
+        `null` on update clears them.
+         */
+    rulesOfEngagement?: {
+      /** The preset the item asks for. It applies only when it is at
+            least as cautious as the preset its profile and platform
+            resolve to.
+             */
+      preset: "cautious" | "standard" | "brisk";
+      /** Dials changed for this item only. Omitted when none were
+            changed; present, the item's rules read as adjusted.
+             */
+      dials?: {
+        /** Typing and interaction pace. */
+        pace?: "slow" | "normal" | "fast";
+        /** Least time, in seconds, between two public actions on one platform for one profile. */
+        minDelaySeconds?: number;
+        /** Local hours with no public actions. */
+        quietHours?: {
+          /** Local hour the window opens. */
+          start: number;
+          /** Local hour the window closes. */
+          end: number;
+        };
+        /** Share of each built-in daily cap the item may use, above 0 and at most 1. */
+        capFraction?: number;
+        /** Whether the item runs without pointer movement. */
+        noMouseMove?: boolean;
+      };
+    } | null;
+    /** ID of the thread's root item. Read on insert; on update it must
+        be omitted or equal the stored value.
+         */
+    threadId?: string;
+    /** ID of the item this item answers directly: the root named by
+        `threadId` or an item of the same thread. Requires `threadId`.
+        Read on insert; on update it must be omitted or equal the stored
+        value.
+         */
+    replyToId?: string;
+    /** Position of the item in its thread, the root counting as 0.
+        Required exactly when `threadId` is given. Read on insert; on
+        update it must be omitted or equal the stored value.
+         */
+    threadIndex?: number;
+    /** The media assets the item posts, in posting order. Omitted on
+        insert means none; omitted on update keeps the stored list (old
+        clients send the whole item without it); an empty array clears it.
+         */
+    mediaAssetIds?: string[];
+  };
+};
+export type DeleteContentItemApiResponse = unknown;
+export type DeleteContentItemApiArg = {
+  /** Content item ID */
+  contentItemId: string;
+  /** Optional optimistic-concurrency precondition for delete: the
+    delete applies only when the stored fingerprint still matches.
+     */
+  expectedFingerprint?: string;
+};
 export type GetPatternsApiResponse = /** status 200 Designs response */ {
   /** Current page number of the result set. */
   page?: number;
@@ -9851,8 +12608,8 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -9870,10 +12627,13 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -9993,62 +12753,67 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
-    /** Optional structured location metadata (branch, host, path, ...). */
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
     location?: {
       [key: string]: string;
     };
@@ -10120,8 +12885,8 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -10139,10 +12904,13 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Owning user ID. */
   userId?: string;
+  /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+   */
+  organizationId: string;
   /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
    */
   user?: {
@@ -10262,62 +13030,67 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
-  /** Optional structured location metadata (branch, host, path, ...). */
+  /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+   */
   location?: {
     [key: string]: string;
   };
@@ -10369,8 +13142,8 @@ export type UpsertPatternApiArg = {
       catalogData?: {
         /** Tracks the specific content version that has been made available in the Catalog. */
         publishedVersion?: string;
-        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-        class?: "official" | "verified" | "reference architecture";
+        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+        contentClass?: "official" | "verified" | "community";
         /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
         compatibility: "kubernetes"[];
         /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -10388,7 +13161,7 @@ export type UpsertPatternApiArg = {
           | "Troubleshooting"
           | "Workloads";
         /** Contains reference to the dark and light mode snapshots of the design. */
-        snapshotURL?: string[];
+        imageURL?: string[];
       };
       /** Optional structured location metadata (branch, host, path, ...). */
       location?: {
@@ -10432,8 +13205,8 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -10451,10 +13224,13 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Owning user ID. */
   userId?: string;
+  /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+   */
+  organizationId: string;
   /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
    */
   user?: {
@@ -10574,62 +13350,67 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
-  /** Optional structured location metadata (branch, host, path, ...). */
+  /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+   */
   location?: {
     [key: string]: string;
   };
@@ -10685,8 +13466,8 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -10704,10 +13485,13 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Owning user ID. */
   userId?: string;
+  /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+   */
+  organizationId: string;
   /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
    */
   user?: {
@@ -10827,62 +13611,67 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
-  /** Optional structured location metadata (branch, host, path, ...). */
+  /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+   */
   location?: {
     [key: string]: string;
   };
@@ -10921,6 +13710,10 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
 export type ClonePatternApiArg = {
   /** Design (Pattern) ID */
   designId: string;
+  body: {
+    /** Optional name to apply to the cloned design. */
+    name?: string;
+  };
 };
 export type GetDesignPatternFileApiResponse = unknown;
 export type GetDesignPatternFileApiArg = {
@@ -10933,8 +13726,9 @@ export type UpsertPatternSourceContentApiArg = {
   designId: string;
   body: Blob;
 };
-export type ImportDesignApiResponse =
-  /** status 200 Successful import. The response body is a JSON array of the saved designs, not a message envelope. The import path saves exactly one design, so the array carries a single element and consumers read the imported design as the first element. */ {
+export type RefreshPatternFromSourceApiResponse =
+  /** status 200 Design refreshed. `sourceContent` and `patternFile` are omitted from the response body (they can be megabytes), as on import.
+   */ {
     /** Server-generated design ID. */
     id?: string;
     /** Human-readable design name. */
@@ -10943,8 +13737,8 @@ export type ImportDesignApiResponse =
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -10962,10 +13756,13 @@ export type ImportDesignApiResponse =
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -11085,62 +13882,591 @@ export type ImportDesignApiResponse =
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
-    /** Optional structured location metadata (branch, host, path, ...). */
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
+    location?: {
+      [key: string]: string;
+    };
+    /** Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
+     */
+    patternFile?: string;
+    /** Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+     */
+    visibility?: "private" | "public" | "published";
+    /** Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+     */
+    designType?: ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest") | null;
+    /** Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+     */
+    sourceContent?: string | null;
+    /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+     */
+    viewCount?: number;
+    /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+     */
+    downloadCount?: number;
+    /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+     */
+    cloneCount?: number;
+    /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+     */
+    deploymentCount?: number;
+    /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+     */
+    shareCount?: number;
+    /** Timestamp of design creation. */
+    createdAt?: string;
+    /** Timestamp of last design modification. */
+    updatedAt?: string;
+  };
+export type RefreshPatternFromSourceApiArg = {
+  /** Design (Pattern) ID */
+  designId: string;
+};
+export type UpdatePatternSourceApiResponse =
+  /** status 200 Source binding updated. `sourceContent` and `patternFile` are omitted from the response body, as on refresh and import.
+   */ {
+    /** Server-generated design ID. */
+    id?: string;
+    /** Human-readable design name. */
+    name?: string;
+    /** Catalog metadata attached to the design when published. */
+    catalogData?: {
+      /** Tracks the specific content version that has been made available in the Catalog. */
+      publishedVersion?: string;
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
+      /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
+      compatibility: "kubernetes"[];
+      /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
+      patternCaveats: string;
+      /** Purpose of the design along with its intended and unintended uses. */
+      patternInfo: string;
+      /** Categorization of the type of design or operational flow depicted in this design. */
+      type:
+        | "Deployment"
+        | "Observability"
+        | "Resiliency"
+        | "Scaling"
+        | "Security"
+        | "Traffic-management"
+        | "Troubleshooting"
+        | "Workloads";
+      /** Contains reference to the dark and light mode snapshots of the design. */
+      imageURL?: string[];
+    };
+    /** Owning user ID. */
+    userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
+    /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
+     */
+    user?: {
+      /** Unique identifier for the user */
+      id: string;
+      /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
+      userId: string;
+      /** Authentication provider (e.g., Google, Github) */
+      provider: string;
+      /** User's email address */
+      email: string;
+      /** User's first name */
+      firstName: string;
+      /** User's last name */
+      lastName: string;
+      /** URL to user's avatar image */
+      avatarUrl?: string;
+      /** User account status */
+      status: "active" | "inactive" | "pending" | "anonymous";
+      /** User's biography or description */
+      bio?: string;
+      /** User's country information stored as JSONB */
+      country?: {
+        [key: string]: any;
+      };
+      /** User's region information stored as JSONB */
+      region?: {
+        [key: string]: any;
+      };
+      /** User preferences stored as JSONB */
+      preferences?: {
+        /** The mesh adapters of the preference. */
+        meshAdapters?: object[];
+        grafana?: {
+          /** Grafana URL for the user configuration. */
+          grafanaUrl?: string;
+          /** Grafana API key for the user configuration. */
+          grafanaApiKey?: string;
+          /** Selected Grafana board configurations for the user. */
+          selectedBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        prometheus?: {
+          /** The prometheus URL of the prometheus. */
+          prometheusUrl?: string;
+          /** The selected prometheus boards configs of the prometheus. */
+          selectedPrometheusBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        loadTestPrefs?: {
+          /** Concurrent requests */
+          c?: number;
+          /** Queries per second */
+          qps?: number;
+          /** Duration */
+          t?: string;
+          /** Load generator */
+          gen?: string;
+        };
+        /** The anonymous usage stats of the preference. */
+        anonymousUsageStats: boolean;
+        /** The anonymous perf results of the preference. */
+        anonymousPerfResults: boolean;
+        /** Timestamp of when the resource was last updated. */
+        updatedAt: string;
+        /** The dashboard preferences of the preference. */
+        dashboardPreferences: {
+          [key: string]: any;
+        };
+        /** ID of the associated selectedOrganization. */
+        selectedOrganizationId: string;
+        /** The selected workspace for organizations of the preference. */
+        selectedWorkspaceForOrganizations: {
+          [key: string]: string;
+        };
+        /** The users extension preferences of the preference. */
+        usersExtensionPreferences: {
+          [key: string]: any;
+        };
+        /** The remote provider preferences of the preference. */
+        remoteProviderPreferences: {
+          [key: string]: any;
+        };
+      };
+      /** Timestamp when user accepted terms and conditions */
+      acceptedTermsAt?: string;
+      /** Timestamp of user's first login */
+      firstLoginTime?: string;
+      /** Timestamp of user's most recent login */
+      lastLoginTime: string;
+      /** Timestamp when the user record was created */
+      createdAt: string;
+      /** Timestamp when the user record was last updated */
+      updatedAt: string;
+      /** Various online profiles associated with the user account */
+      socials?: {
+        /** The site of the social. */
+        site: string;
+        /** The link of the social. */
+        link: string;
+      }[];
+      /** Timestamp when the user record was soft-deleted (null if not deleted) */
+      deletedAt: string | null;
+      /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+      roleNames?: string[];
+      /** Teams the user belongs to with role information */
+      teams?: {
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
+      };
+      /** Organizations the user belongs to with role information */
+      organizations?: {
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
+      };
+    } | null;
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
+    location?: {
+      [key: string]: string;
+    };
+    /** Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
+     */
+    patternFile?: string;
+    /** Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+     */
+    visibility?: "private" | "public" | "published";
+    /** Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+     */
+    designType?: ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest") | null;
+    /** Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+     */
+    sourceContent?: string | null;
+    /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+     */
+    viewCount?: number;
+    /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+     */
+    downloadCount?: number;
+    /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+     */
+    cloneCount?: number;
+    /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+     */
+    deploymentCount?: number;
+    /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+     */
+    shareCount?: number;
+    /** Timestamp of design creation. */
+    createdAt?: string;
+    /** Timestamp of last design modification. */
+    updatedAt?: string;
+  };
+export type UpdatePatternSourceApiArg = {
+  /** Design (Pattern) ID */
+  designId: string;
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    connectionId: string;
+    /** Repository as `github.com/<owner>/<repo>` - the same form `location.host` stores.
+     */
+    host: string;
+    /** Repository-relative path of a file (not a directory), with no leading slash.
+     */
+    path: string;
+    /** Branch or tag the binding tracks, stored as `location.branch`. Empty or omitted means the repository's default branch.
+     */
+    ref?: string;
+  };
+};
+export type ImportDesignApiResponse =
+  /** status 200 Successful import. The response body is a JSON array of the saved designs, not a message envelope. The import path saves exactly one design, so the array carries a single element and consumers read the imported design as the first element. */ {
+    /** Server-generated design ID. */
+    id?: string;
+    /** Human-readable design name. */
+    name?: string;
+    /** Catalog metadata attached to the design when published. */
+    catalogData?: {
+      /** Tracks the specific content version that has been made available in the Catalog. */
+      publishedVersion?: string;
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
+      /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
+      compatibility: "kubernetes"[];
+      /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
+      patternCaveats: string;
+      /** Purpose of the design along with its intended and unintended uses. */
+      patternInfo: string;
+      /** Categorization of the type of design or operational flow depicted in this design. */
+      type:
+        | "Deployment"
+        | "Observability"
+        | "Resiliency"
+        | "Scaling"
+        | "Security"
+        | "Traffic-management"
+        | "Troubleshooting"
+        | "Workloads";
+      /** Contains reference to the dark and light mode snapshots of the design. */
+      imageURL?: string[];
+    };
+    /** Owning user ID. */
+    userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
+    /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
+     */
+    user?: {
+      /** Unique identifier for the user */
+      id: string;
+      /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
+      userId: string;
+      /** Authentication provider (e.g., Google, Github) */
+      provider: string;
+      /** User's email address */
+      email: string;
+      /** User's first name */
+      firstName: string;
+      /** User's last name */
+      lastName: string;
+      /** URL to user's avatar image */
+      avatarUrl?: string;
+      /** User account status */
+      status: "active" | "inactive" | "pending" | "anonymous";
+      /** User's biography or description */
+      bio?: string;
+      /** User's country information stored as JSONB */
+      country?: {
+        [key: string]: any;
+      };
+      /** User's region information stored as JSONB */
+      region?: {
+        [key: string]: any;
+      };
+      /** User preferences stored as JSONB */
+      preferences?: {
+        /** The mesh adapters of the preference. */
+        meshAdapters?: object[];
+        grafana?: {
+          /** Grafana URL for the user configuration. */
+          grafanaUrl?: string;
+          /** Grafana API key for the user configuration. */
+          grafanaApiKey?: string;
+          /** Selected Grafana board configurations for the user. */
+          selectedBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        prometheus?: {
+          /** The prometheus URL of the prometheus. */
+          prometheusUrl?: string;
+          /** The selected prometheus boards configs of the prometheus. */
+          selectedPrometheusBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        loadTestPrefs?: {
+          /** Concurrent requests */
+          c?: number;
+          /** Queries per second */
+          qps?: number;
+          /** Duration */
+          t?: string;
+          /** Load generator */
+          gen?: string;
+        };
+        /** The anonymous usage stats of the preference. */
+        anonymousUsageStats: boolean;
+        /** The anonymous perf results of the preference. */
+        anonymousPerfResults: boolean;
+        /** Timestamp of when the resource was last updated. */
+        updatedAt: string;
+        /** The dashboard preferences of the preference. */
+        dashboardPreferences: {
+          [key: string]: any;
+        };
+        /** ID of the associated selectedOrganization. */
+        selectedOrganizationId: string;
+        /** The selected workspace for organizations of the preference. */
+        selectedWorkspaceForOrganizations: {
+          [key: string]: string;
+        };
+        /** The users extension preferences of the preference. */
+        usersExtensionPreferences: {
+          [key: string]: any;
+        };
+        /** The remote provider preferences of the preference. */
+        remoteProviderPreferences: {
+          [key: string]: any;
+        };
+      };
+      /** Timestamp when user accepted terms and conditions */
+      acceptedTermsAt?: string;
+      /** Timestamp of user's first login */
+      firstLoginTime?: string;
+      /** Timestamp of user's most recent login */
+      lastLoginTime: string;
+      /** Timestamp when the user record was created */
+      createdAt: string;
+      /** Timestamp when the user record was last updated */
+      updatedAt: string;
+      /** Various online profiles associated with the user account */
+      socials?: {
+        /** The site of the social. */
+        site: string;
+        /** The link of the social. */
+        link: string;
+      }[];
+      /** Timestamp when the user record was soft-deleted (null if not deleted) */
+      deletedAt: string | null;
+      /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+      roleNames?: string[];
+      /** Teams the user belongs to with role information */
+      teams?: {
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
+      };
+      /** Organizations the user belongs to with role information */
+      organizations?: {
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
+      };
+    } | null;
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
     location?: {
       [key: string]: string;
     };
@@ -11193,14 +14519,14 @@ export type ImportDesignApiArg = {
         name?: string;
       };
 };
-export type GetCatalogContentApiResponse = /** status 200 Catalog content page */ {
+export type GetGithubImportedDesignsApiResponse = /** status 200 Imported designs page. */ {
   /** Current page number of the result set. */
   page?: number;
   /** Number of items per page. */
   pageSize?: number;
   /** Total number of items available. */
   totalCount?: number;
-  /** Published designs included on this page. */
+  /** Designs included on this page of results. */
   patterns?: {
     /** Server-generated design ID. */
     id?: string;
@@ -11210,8 +14536,8 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -11229,10 +14555,13 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Owning user ID. */
     userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
     /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
      */
     user?: {
@@ -11352,62 +14681,686 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
-    /** Optional structured location metadata (branch, host, path, ...). */
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
+    location?: {
+      [key: string]: string;
+    };
+    /** Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
+     */
+    patternFile?: string;
+    /** Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+     */
+    visibility?: "private" | "public" | "published";
+    /** Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+     */
+    designType?: ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest") | null;
+    /** Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+     */
+    sourceContent?: string | null;
+    /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+     */
+    viewCount?: number;
+    /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+     */
+    downloadCount?: number;
+    /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+     */
+    cloneCount?: number;
+    /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+     */
+    deploymentCount?: number;
+    /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+     */
+    shareCount?: number;
+    /** Timestamp of design creation. */
+    createdAt?: string;
+    /** Timestamp of last design modification. */
+    updatedAt?: string;
+  }[];
+  /** Optional discriminator describing which collection the page represents. */
+  resultType?: string;
+};
+export type GetGithubImportedDesignsApiArg = {
+  /** ID of a GitHub App connection. */
+  connectionId: string;
+  /** Restrict to one repository, as `<owner>/<repo>` (case-insensitive). */
+  repository?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+};
+export type ImportGithubRepositoryApiResponse =
+  /** status 200 Import outcome. Per-file failures are reported in `errors`, not as a non-2xx status. */ {
+    /** Designs created or updated by this import, with `sourceContent`, `patternFile` and `catalogData` omitted.
+     */
+    patterns?: {
+      /** Server-generated design ID. */
+      id?: string;
+      /** Human-readable design name. */
+      name?: string;
+      /** Catalog metadata attached to the design when published. */
+      catalogData?: {
+        /** Tracks the specific content version that has been made available in the Catalog. */
+        publishedVersion?: string;
+        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+        contentClass?: "official" | "verified" | "community";
+        /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
+        compatibility: "kubernetes"[];
+        /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
+        patternCaveats: string;
+        /** Purpose of the design along with its intended and unintended uses. */
+        patternInfo: string;
+        /** Categorization of the type of design or operational flow depicted in this design. */
+        type:
+          | "Deployment"
+          | "Observability"
+          | "Resiliency"
+          | "Scaling"
+          | "Security"
+          | "Traffic-management"
+          | "Troubleshooting"
+          | "Workloads";
+        /** Contains reference to the dark and light mode snapshots of the design. */
+        imageURL?: string[];
+      };
+      /** Owning user ID. */
+      userId?: string;
+      /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+       */
+      organizationId: string;
+      /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
+       */
+      user?: {
+        /** Unique identifier for the user */
+        id: string;
+        /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
+        userId: string;
+        /** Authentication provider (e.g., Google, Github) */
+        provider: string;
+        /** User's email address */
+        email: string;
+        /** User's first name */
+        firstName: string;
+        /** User's last name */
+        lastName: string;
+        /** URL to user's avatar image */
+        avatarUrl?: string;
+        /** User account status */
+        status: "active" | "inactive" | "pending" | "anonymous";
+        /** User's biography or description */
+        bio?: string;
+        /** User's country information stored as JSONB */
+        country?: {
+          [key: string]: any;
+        };
+        /** User's region information stored as JSONB */
+        region?: {
+          [key: string]: any;
+        };
+        /** User preferences stored as JSONB */
+        preferences?: {
+          /** The mesh adapters of the preference. */
+          meshAdapters?: object[];
+          grafana?: {
+            /** Grafana URL for the user configuration. */
+            grafanaUrl?: string;
+            /** Grafana API key for the user configuration. */
+            grafanaApiKey?: string;
+            /** Selected Grafana board configurations for the user. */
+            selectedBoardsConfigs?: {
+              /** Placeholder for GrafanaBoard definition (define fields as needed) */
+              board?: object;
+              /** Panels selected for the Grafana board configuration. */
+              panels?: object[];
+              /** Template variables applied to the selected Grafana board configuration. */
+              templateVars?: string[];
+            }[];
+          };
+          prometheus?: {
+            /** The prometheus URL of the prometheus. */
+            prometheusUrl?: string;
+            /** The selected prometheus boards configs of the prometheus. */
+            selectedPrometheusBoardsConfigs?: {
+              /** Placeholder for GrafanaBoard definition (define fields as needed) */
+              board?: object;
+              /** Panels selected for the Grafana board configuration. */
+              panels?: object[];
+              /** Template variables applied to the selected Grafana board configuration. */
+              templateVars?: string[];
+            }[];
+          };
+          loadTestPrefs?: {
+            /** Concurrent requests */
+            c?: number;
+            /** Queries per second */
+            qps?: number;
+            /** Duration */
+            t?: string;
+            /** Load generator */
+            gen?: string;
+          };
+          /** The anonymous usage stats of the preference. */
+          anonymousUsageStats: boolean;
+          /** The anonymous perf results of the preference. */
+          anonymousPerfResults: boolean;
+          /** Timestamp of when the resource was last updated. */
+          updatedAt: string;
+          /** The dashboard preferences of the preference. */
+          dashboardPreferences: {
+            [key: string]: any;
+          };
+          /** ID of the associated selectedOrganization. */
+          selectedOrganizationId: string;
+          /** The selected workspace for organizations of the preference. */
+          selectedWorkspaceForOrganizations: {
+            [key: string]: string;
+          };
+          /** The users extension preferences of the preference. */
+          usersExtensionPreferences: {
+            [key: string]: any;
+          };
+          /** The remote provider preferences of the preference. */
+          remoteProviderPreferences: {
+            [key: string]: any;
+          };
+        };
+        /** Timestamp when user accepted terms and conditions */
+        acceptedTermsAt?: string;
+        /** Timestamp of user's first login */
+        firstLoginTime?: string;
+        /** Timestamp of user's most recent login */
+        lastLoginTime: string;
+        /** Timestamp when the user record was created */
+        createdAt: string;
+        /** Timestamp when the user record was last updated */
+        updatedAt: string;
+        /** Various online profiles associated with the user account */
+        socials?: {
+          /** The site of the social. */
+          site: string;
+          /** The link of the social. */
+          link: string;
+        }[];
+        /** Timestamp when the user record was soft-deleted (null if not deleted) */
+        deletedAt: string | null;
+        /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+        roleNames?: string[];
+        /** Teams the user belongs to with role information */
+        teams?: {
+          /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+          teamsWithRoles?:
+            | {
+                /** Unique identifier of the team. */
+                id: string;
+                /** Name of the team. */
+                name: string;
+                /** Human readable description of the team. */
+                description?: string;
+                /** Identifier of the team owner. */
+                owner?: string;
+                /** Free-form metadata associated with the team. */
+                metadata?: {
+                  [key: string]: any;
+                };
+                /** Timestamp when the team was created. */
+                createdAt?: string;
+                /** Timestamp when the team was last updated. */
+                updatedAt?: string;
+                /** Timestamp when the team was soft-deleted (null if not deleted). */
+                deletedAt?: string | null;
+                /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                roleNames: string[];
+              }[]
+            | null;
+          /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+          totalCount?: number | null;
+        };
+        /** Organizations the user belongs to with role information */
+        organizations?: {
+          /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+          organizationsWithRoles?:
+            | {
+                /** Unique identifier of the organization. */
+                id: string;
+                /** Name of the organization. */
+                name: string;
+                /** Human readable description of the organization. */
+                description?: string;
+                /** Country associated with the organization. */
+                country?: string;
+                /** Region associated with the organization. */
+                region?: string;
+                /** Identifier of the organization owner. */
+                owner?: string;
+                /** Timestamp when the organization was created. */
+                createdAt?: string;
+                /** Timestamp when the organization was last updated. */
+                updatedAt?: string;
+                /** Timestamp when the organization was soft-deleted (null if not deleted). */
+                deletedAt?: string | null;
+                /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                roleNames: string[];
+              }[]
+            | null;
+          /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+          totalCount?: number | null;
+        };
+      } | null;
+      /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+       */
+      location?: {
+        [key: string]: string;
+      };
+      /** Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
+       */
+      patternFile?: string;
+      /** Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+       */
+      visibility?: "private" | "public" | "published";
+      /** Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+       */
+      designType?: ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest") | null;
+      /** Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+       */
+      sourceContent?: string | null;
+      /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+       */
+      viewCount?: number;
+      /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+       */
+      downloadCount?: number;
+      /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+       */
+      cloneCount?: number;
+      /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+       */
+      deploymentCount?: number;
+      /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+       */
+      shareCount?: number;
+      /** Timestamp of design creation. */
+      createdAt?: string;
+      /** Timestamp of last design modification. */
+      updatedAt?: string;
+    }[];
+    /** IDs (all also present in `patterns`) of designs updated in place rather than created. */
+    updatedIds?: string[];
+    /** Repository-relative paths left untouched because `onExisting` was `skip` and a design already imports them. */
+    skippedPaths?: string[];
+    /** One Error-severity import event per selected path that failed. */
+    errors?: {
+      /** Event ID. */
+      id: string;
+      /** ID of the entity on which the event was performed. */
+      actedUpon: string;
+      /** Action taken on the resource, for example `import`. */
+      action: string;
+      /** Resource kind the operation was invoked on, for example `pattern`. */
+      category: string;
+      /** Human-readable summary of what happened. */
+      description: string;
+      /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+       */
+      metadata: {
+        [key: string]: any;
+      } | null;
+      /** ID correlating the events one operation emitted. */
+      operationId: string;
+      /** Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+       */
+      severity: string;
+      /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
+       */
+      status: string;
+      /** ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+       */
+      systemId: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      owner?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
+      /** Timestamp when the event was recorded. */
+      createdAt: string;
+      /** Timestamp when the event was last updated. */
+      updatedAt: string;
+      /** Timestamp when the event was soft-deleted; omitted when it was not. */
+      deletedAt?: string | null;
+    }[];
+  };
+export type ImportGithubRepositoryApiArg = {
+  /** ID of a GitHub App connection. */
+  connectionId: string;
+  body: {
+    /** Repository as `<owner>/<repo>`. */
+    name: string;
+    /** Selected tree items, as served by `GET /api/integrations/github/scan`. The server reads only `type` and `entry.path`; the remaining scan fields are accepted and ignored.
+     */
+    paths: {
+      /** Tree item kind; a directory is imported recursively. */
+      type: "file" | "dir";
+      /** The repository entry a selected tree item points at. Only `path` is read; the other scan fields on the entry are accepted and ignored.
+       */
+      entry: {
+        /** Repository-relative path of the file or directory. */
+        path: string;
+      };
+      [key: string]: any;
+    }[];
+    /** What to do with a selected file that already identifies one of the caller's designs. `skip` (the default, "import new only") leaves it untouched and reports it in `skippedPaths`, so a request that omits `onExisting` never overwrites an existing design; `update` refreshes that design in place under the same ID (idempotent import); `new` imports it again as an additional design.
+     */
+    onExisting?: "update" | "skip" | "new";
+  };
+};
+export type GetGithubRepositoryBranchesApiResponse = /** status 200 Repository branches page. */ {
+  /** The repository's default branch. */
+  defaultBranch: string;
+  branches: {
+    /** Branch name. */
+    name: string;
+    /** Commit at the head of the branch. */
+    commitSha: string;
+  }[];
+  /** Zero-based page index served. */
+  page: number;
+  /** Page size served. */
+  pageSize: number;
+  /** True when another page of branches follows. */
+  hasMore: boolean;
+};
+export type GetGithubRepositoryBranchesApiArg = {
+  /** ID of a GitHub App connection. */
+  connectionId: string;
+  /** Repository as `<owner>/<repo>` (case-insensitive). */
+  repository: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
+};
+export type GetCatalogContentApiResponse = /** status 200 Catalog content page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Published designs included on this page. */
+  patterns?: {
+    /** Server-generated design ID. */
+    id?: string;
+    /** Human-readable design name. */
+    name?: string;
+    /** Catalog metadata attached to the design when published. */
+    catalogData?: {
+      /** Tracks the specific content version that has been made available in the Catalog. */
+      publishedVersion?: string;
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
+      /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
+      compatibility: "kubernetes"[];
+      /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
+      patternCaveats: string;
+      /** Purpose of the design along with its intended and unintended uses. */
+      patternInfo: string;
+      /** Categorization of the type of design or operational flow depicted in this design. */
+      type:
+        | "Deployment"
+        | "Observability"
+        | "Resiliency"
+        | "Scaling"
+        | "Security"
+        | "Traffic-management"
+        | "Troubleshooting"
+        | "Workloads";
+      /** Contains reference to the dark and light mode snapshots of the design. */
+      imageURL?: string[];
+    };
+    /** Owning user ID. */
+    userId?: string;
+    /** The organization the design belongs to. The server sets it from the session organization (`X-Current-Orgid`, or the caller's selected organization) on create, including import. Never accepted from clients. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId: string;
+    /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
+     */
+    user?: {
+      /** Unique identifier for the user */
+      id: string;
+      /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
+      userId: string;
+      /** Authentication provider (e.g., Google, Github) */
+      provider: string;
+      /** User's email address */
+      email: string;
+      /** User's first name */
+      firstName: string;
+      /** User's last name */
+      lastName: string;
+      /** URL to user's avatar image */
+      avatarUrl?: string;
+      /** User account status */
+      status: "active" | "inactive" | "pending" | "anonymous";
+      /** User's biography or description */
+      bio?: string;
+      /** User's country information stored as JSONB */
+      country?: {
+        [key: string]: any;
+      };
+      /** User's region information stored as JSONB */
+      region?: {
+        [key: string]: any;
+      };
+      /** User preferences stored as JSONB */
+      preferences?: {
+        /** The mesh adapters of the preference. */
+        meshAdapters?: object[];
+        grafana?: {
+          /** Grafana URL for the user configuration. */
+          grafanaUrl?: string;
+          /** Grafana API key for the user configuration. */
+          grafanaApiKey?: string;
+          /** Selected Grafana board configurations for the user. */
+          selectedBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        prometheus?: {
+          /** The prometheus URL of the prometheus. */
+          prometheusUrl?: string;
+          /** The selected prometheus boards configs of the prometheus. */
+          selectedPrometheusBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        loadTestPrefs?: {
+          /** Concurrent requests */
+          c?: number;
+          /** Queries per second */
+          qps?: number;
+          /** Duration */
+          t?: string;
+          /** Load generator */
+          gen?: string;
+        };
+        /** The anonymous usage stats of the preference. */
+        anonymousUsageStats: boolean;
+        /** The anonymous perf results of the preference. */
+        anonymousPerfResults: boolean;
+        /** Timestamp of when the resource was last updated. */
+        updatedAt: string;
+        /** The dashboard preferences of the preference. */
+        dashboardPreferences: {
+          [key: string]: any;
+        };
+        /** ID of the associated selectedOrganization. */
+        selectedOrganizationId: string;
+        /** The selected workspace for organizations of the preference. */
+        selectedWorkspaceForOrganizations: {
+          [key: string]: string;
+        };
+        /** The users extension preferences of the preference. */
+        usersExtensionPreferences: {
+          [key: string]: any;
+        };
+        /** The remote provider preferences of the preference. */
+        remoteProviderPreferences: {
+          [key: string]: any;
+        };
+      };
+      /** Timestamp when user accepted terms and conditions */
+      acceptedTermsAt?: string;
+      /** Timestamp of user's first login */
+      firstLoginTime?: string;
+      /** Timestamp of user's most recent login */
+      lastLoginTime: string;
+      /** Timestamp when the user record was created */
+      createdAt: string;
+      /** Timestamp when the user record was last updated */
+      updatedAt: string;
+      /** Various online profiles associated with the user account */
+      socials?: {
+        /** The site of the social. */
+        site: string;
+        /** The link of the social. */
+        link: string;
+      }[];
+      /** Timestamp when the user record was soft-deleted (null if not deleted) */
+      deletedAt: string | null;
+      /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+      roleNames?: string[];
+      /** Teams the user belongs to with role information */
+      teams?: {
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
+      };
+      /** Organizations the user belongs to with role information */
+      organizations?: {
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
+      };
+    } | null;
+    /** Optional structured location metadata (branch, host, path, ...). For a design bound to a GitHub source the keys are those of DesignSourceLocation, including commitSha.
+     */
     location?: {
       [key: string]: string;
     };
@@ -11470,8 +15423,8 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -11489,7 +15442,7 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Timestamp of filter creation. */
     createdAt: string;
@@ -11664,59 +15617,63 @@ export type PublishCatalogContentApiResponse = /** status 200 Catalog request re
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
   /** Approval status of the request. */
@@ -11871,59 +15828,63 @@ export type UnPublishCatalogContentApiResponse = /** status 200 Catalog request 
     roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+      /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      teamsWithRoles?:
+        | {
+            /** Unique identifier of the team. */
+            id: string;
+            /** Name of the team. */
+            name: string;
+            /** Human readable description of the team. */
+            description?: string;
+            /** Identifier of the team owner. */
+            owner?: string;
+            /** Free-form metadata associated with the team. */
+            metadata?: {
+              [key: string]: any;
+            };
+            /** Timestamp when the team was created. */
+            createdAt?: string;
+            /** Timestamp when the team was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the team was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+      /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+      organizationsWithRoles?:
+        | {
+            /** Unique identifier of the organization. */
+            id: string;
+            /** Name of the organization. */
+            name: string;
+            /** Human readable description of the organization. */
+            description?: string;
+            /** Country associated with the organization. */
+            country?: string;
+            /** Region associated with the organization. */
+            region?: string;
+            /** Identifier of the organization owner. */
+            owner?: string;
+            /** Timestamp when the organization was created. */
+            createdAt?: string;
+            /** Timestamp when the organization was last updated. */
+            updatedAt?: string;
+            /** Timestamp when the organization was soft-deleted (null if not deleted). */
+            deletedAt?: string | null;
+            /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+          }[]
+        | null;
+      /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+      totalCount?: number | null;
     };
   } | null;
   /** Approval status of the request. */
@@ -12155,59 +16116,63 @@ export type GetCatalogRequestApiResponse = /** status 200 Catalog requests page 
       roleNames?: string[];
       /** Teams the user belongs to with role information */
       teams?: {
-        /** Team memberships for the user with their assigned roles. */
-        teamsWithRoles?: {
-          /** Unique identifier of the team. */
-          id: string;
-          /** Name of the team. */
-          name: string;
-          /** Human readable description of the team. */
-          description?: string;
-          /** Identifier of the team owner. */
-          owner?: string;
-          /** Free-form metadata associated with the team. */
-          metadata?: {
-            [key: string]: any;
-          };
-          /** Timestamp when the team was created. */
-          createdAt?: string;
-          /** Timestamp when the team was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the team was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of team memberships returned for the user. */
-        totalCount?: number;
+        /** Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        teamsWithRoles?:
+          | {
+              /** Unique identifier of the team. */
+              id: string;
+              /** Name of the team. */
+              name: string;
+              /** Human readable description of the team. */
+              description?: string;
+              /** Identifier of the team owner. */
+              owner?: string;
+              /** Free-form metadata associated with the team. */
+              metadata?: {
+                [key: string]: any;
+              };
+              /** Timestamp when the team was created. */
+              createdAt?: string;
+              /** Timestamp when the team was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the team was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
       /** Organizations the user belongs to with role information */
       organizations?: {
-        /** Organization memberships for the user with their assigned roles. */
-        organizationsWithRoles?: {
-          /** Unique identifier of the organization. */
-          id: string;
-          /** Name of the organization. */
-          name: string;
-          /** Human readable description of the organization. */
-          description?: string;
-          /** Country associated with the organization. */
-          country?: string;
-          /** Region associated with the organization. */
-          region?: string;
-          /** Identifier of the organization owner. */
-          owner?: string;
-          /** Timestamp when the organization was created. */
-          createdAt?: string;
-          /** Timestamp when the organization was last updated. */
-          updatedAt?: string;
-          /** Timestamp when the organization was soft-deleted (null if not deleted). */
-          deletedAt?: string | null;
-          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-          roleNames: string[];
-        }[];
-        /** Total number of organization memberships returned for the user. */
-        totalCount?: number;
+        /** Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
+        organizationsWithRoles?:
+          | {
+              /** Unique identifier of the organization. */
+              id: string;
+              /** Name of the organization. */
+              name: string;
+              /** Human readable description of the organization. */
+              description?: string;
+              /** Country associated with the organization. */
+              country?: string;
+              /** Region associated with the organization. */
+              region?: string;
+              /** Identifier of the organization owner. */
+              owner?: string;
+              /** Timestamp when the organization was created. */
+              createdAt?: string;
+              /** Timestamp when the organization was last updated. */
+              updatedAt?: string;
+              /** Timestamp when the organization was soft-deleted (null if not deleted). */
+              deletedAt?: string | null;
+              /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+              roleNames: string[];
+            }[]
+          | null;
+        /** Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+        totalCount?: number | null;
       };
     } | null;
     /** Approval status of the request. */
@@ -12250,13 +16215,13 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   updatedAt?: string;
   /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
   deletedAt?: string | null;
-  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+  /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
     
     Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
     
     At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
     
-    Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+    Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
     
     The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
   purpose?: "user" | "administrative";
@@ -12270,6 +16235,12 @@ export type CreateEnvironmentApiArg = {
     description?: string;
     /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
     organizationId: string;
+    /** Free-form settings stored with the environment. */
+    metadata?: {
+      [key: string]: any;
+    };
+    /** The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
+    purpose?: "user";
   };
 };
 export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
@@ -12301,13 +16272,13 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -12326,6 +16297,8 @@ export type GetEnvironmentsApiArg = {
   pagesize?: number;
   /** User's organization ID */
   orgId: string;
+  /** Return only environments with this purpose; absent returns every purpose the caller may see. The filter only narrows the environments the caller can already list and grants no visibility - a caller who cannot see administrative environments receives an empty page for purpose=administrative. */
+  purpose?: "user" | "administrative";
 };
 export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
   /** Zero-based page index returned in this response. */
@@ -12356,13 +16329,13 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -12403,13 +16376,13 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -12426,6 +16399,12 @@ export type UpdateEnvironmentApiArg = {
     description?: string;
     /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
     organizationId: string;
+    /** Free-form settings stored with the environment. */
+    metadata?: {
+      [key: string]: any;
+    };
+    /** The purpose a client may give an environment on create or update: `user` (an ordinary environment). Profiles are not environments; they are their own construct at `/api/profiles`, assigned to workspaces. Omitted means `user` on create and unchanged on update. A server refuses any other value with 400, and never lets this field change an environment that already carries a privileged purpose. */
+    purpose?: "user";
   };
 };
 export type DeleteEnvironmentApiResponse = unknown;
@@ -12515,8 +16494,12 @@ export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */
   data?: {
     /** UUID of the user associated with the event. */
     owner: string;
-    /** System identifier of the event source. */
+    /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
+     */
     systemId?: string;
+    /** The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+     */
+    organizationId?: string;
     /** The category of the event. */
     category: string;
     /** The action of the event. */
@@ -12558,7 +16541,85 @@ export type GetEventsAggregateApiArg = {
   /** When true, return cumulative aggregate counts across all time. */
   cumulative?: boolean;
 };
-export type CreateEventApiResponse = unknown;
+export type CreateEventApiResponse =
+  /** status 200 An event with this `idempotencyKey` was already recorded by the same caller; it is returned unchanged and no new event is recorded.
+     */
+    | {
+        /** Event ID. */
+        id: string;
+        /** ID of the entity on which the event was performed. */
+        actedUpon: string;
+        /** Action taken on the resource, for example `import`. */
+        action: string;
+        /** Resource kind the operation was invoked on, for example `pattern`. */
+        category: string;
+        /** Human-readable summary of what happened. */
+        description: string;
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+         */
+        metadata: {
+          [key: string]: any;
+        } | null;
+        /** ID correlating the events one operation emitted. */
+        operationId: string;
+        /** Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+         */
+        severity: string;
+        /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
+         */
+        status: string;
+        /** ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+         */
+        systemId: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        owner?: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        organizationId: string;
+        /** Timestamp when the event was recorded. */
+        createdAt: string;
+        /** Timestamp when the event was last updated. */
+        updatedAt: string;
+        /** Timestamp when the event was soft-deleted; omitted when it was not. */
+        deletedAt?: string | null;
+      }
+    | /** status 201 Event created */ {
+        /** Event ID. */
+        id: string;
+        /** ID of the entity on which the event was performed. */
+        actedUpon: string;
+        /** Action taken on the resource, for example `import`. */
+        action: string;
+        /** Resource kind the operation was invoked on, for example `pattern`. */
+        category: string;
+        /** Human-readable summary of what happened. */
+        description: string;
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+         */
+        metadata: {
+          [key: string]: any;
+        } | null;
+        /** ID correlating the events one operation emitted. */
+        operationId: string;
+        /** Event level. MeshKit's producers set one of `emergency`, `alert`, `critical`, `error`, `warning`, `informational`, `debug` or `success`. The set is not closed on the wire - the event write APIs persist the value they are given - so consumers must tolerate other values.
+         */
+        severity: string;
+        /** Read state of the event. MeshKit records new events as `unread`, and acknowledged ones become `read`; the event status APIs persist any value they are given, so consumers must tolerate other values.
+         */
+        status: string;
+        /** ID of the system instance that emitted the event. A Meshery Server sends its server instance ID; an event the provider emits itself carries the nil UUID. A client that registered a connection for its machine (for example a desktop client) sets its connection ID, so an event that records a run names the computer that ran it and can be joined to the claim it released (`Claim.outcomeEventId`) and to the connection (`connections.id`). The value is asserted by the sender and is not checked against the caller's connections.
+         */
+        systemId: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        owner?: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        organizationId: string;
+        /** Timestamp when the event was recorded. */
+        createdAt: string;
+        /** Timestamp when the event was last updated. */
+        updatedAt: string;
+        /** Timestamp when the event was soft-deleted; omitted when it was not. */
+        deletedAt?: string | null;
+      };
 export type CreateEventApiArg = {
   body: {
     /** UUID of the user associated with the event. */
@@ -12569,6 +16630,9 @@ export type CreateEventApiArg = {
     action?: string;
     /** Description of the event. */
     description?: string;
+    /** Optional client-chosen key that makes recording this event safe to retry. Keys are scoped to the authenticated caller (organization and user), never to the client-settable `owner` field, so `owner` may be omitted without affecting deduplication. The first event a caller records with a key is kept, and a later create with the same key records nothing and answers 200 with that event, whatever the rest of the payload says. Use a value that names the occurrence, for example a run id, so a client replaying a local queue after a timeout never records a duplicate. Omit it for events that need no deduplication.
+     */
+    idempotencyKey?: string;
     [key: string]: any;
   };
 };
@@ -12583,8 +16647,12 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
   data?: {
     /** UUID of the user associated with the event. */
     owner: string;
-    /** System identifier of the event source. */
+    /** System identifier of the event source: a Meshery Server instance ID, the nil UUID for an event the provider emits itself, or the connection ID of the client machine that emitted it (for example a desktop client recording a run). Asserted by the sender, not checked.
+     */
     systemId?: string;
+    /** The organization the event belongs to (see Event.organizationId). Set by the server; lets an organization-scope listing show each row's tenant.
+     */
+    organizationId?: string;
     /** The category of the event. */
     category: string;
     /** The action of the event. */
@@ -12614,6 +16682,9 @@ export type GetEventsApiArg = {
   order?: string;
   /** Get filtered reponses */
   filter?: string;
+  /** Which events are returned. `user` (default): only the caller's own events (unchanged behavior). `organization`: every member's events in the caller's session organization. Requires organization administration permission in the session organization; callers without it get 403.
+   */
+  scope?: "user" | "organization";
 };
 export type GetEventSummaryByUserApiResponse = /** status 200 Event summary page */ {
   /** Current page number of the result set. */
@@ -12687,8 +16758,8 @@ export type GetFiltersApiResponse = /** status 200 Filters response */ {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12706,7 +16777,7 @@ export type GetFiltersApiResponse = /** status 200 Filters response */ {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     /** Timestamp of filter creation. */
     createdAt: string;
@@ -12758,8 +16829,8 @@ export type UpsertFilterApiResponse = /** status 200 Filter saved */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12777,7 +16848,7 @@ export type UpsertFilterApiResponse = /** status 200 Filter saved */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Timestamp of filter creation. */
   createdAt: string;
@@ -12828,8 +16899,8 @@ export type UpsertFilterApiArg = {
       catalogData?: {
         /** Tracks the specific content version that has been made available in the Catalog. */
         publishedVersion?: string;
-        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-        class?: "official" | "verified" | "reference architecture";
+        /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+        contentClass?: "official" | "verified" | "community";
         /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
         compatibility: "kubernetes"[];
         /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12847,7 +16918,7 @@ export type UpsertFilterApiArg = {
           | "Troubleshooting"
           | "Workloads";
         /** Contains reference to the dark and light mode snapshots of the design. */
-        snapshotURL?: string[];
+        imageURL?: string[];
       };
     };
     /** Optional opaque configuration string passed through to the
@@ -12899,8 +16970,8 @@ export type GetFilterApiResponse = /** status 200 Filter response */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12918,7 +16989,7 @@ export type GetFilterApiResponse = /** status 200 Filter response */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Timestamp of filter creation. */
   createdAt: string;
@@ -12955,8 +17026,8 @@ export type UpdateFilterApiResponse = /** status 200 Filter updated */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -12974,7 +17045,7 @@ export type UpdateFilterApiResponse = /** status 200 Filter updated */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Timestamp of filter creation. */
   createdAt: string;
@@ -13016,8 +17087,8 @@ export type UpdateFilterApiArg = {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -13035,7 +17106,7 @@ export type UpdateFilterApiArg = {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
   };
 };
@@ -13070,8 +17141,8 @@ export type CloneFilterApiResponse = /** status 200 Filter cloned */ {
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
-    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-    class?: "official" | "verified" | "reference architecture";
+    /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+    contentClass?: "official" | "verified" | "community";
     /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
     compatibility: "kubernetes"[];
     /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
@@ -13089,7 +17160,7 @@ export type CloneFilterApiResponse = /** status 200 Filter cloned */ {
       | "Troubleshooting"
       | "Workloads";
     /** Contains reference to the dark and light mode snapshots of the design. */
-    snapshotURL?: string[];
+    imageURL?: string[];
   };
   /** Timestamp of filter creation. */
   createdAt: string;
@@ -13110,6 +17181,109 @@ export type GetFilterFileApiResponse = unknown;
 export type GetFilterFileApiArg = {
   /** Filter ID */
   filterId: string;
+};
+export type GetGithubAppStatusApiResponse = unknown;
+export type GetGithubAppStatusApiArg = void;
+export type GetGithubInstallationRepositoriesApiResponse =
+  /** status 200 One page of the installation's repositories. */ {
+    [key: string]: any;
+  };
+export type GetGithubInstallationRepositoriesApiArg = {
+  /** GitHub App installation id; must be one of the caller's verified installations. */
+  id: string;
+  /** Get responses by page */
+  page?: number;
+};
+export type ScanGithubRepositoryApiResponse = /** status 200 Tree page. */
+  | {
+      /** Identifier of the tree item, for the UI's tree view. */
+      id?: string;
+      /** Display name of the file or directory. */
+      label?: string;
+      /** Kind of the tree item, such as a file or a directory. */
+      type?: string;
+      /** GitHub's tree entry for the item, passed through as GitHub returns it. */
+      entry?: {
+        [key: string]: any;
+      };
+      /** The items under a directory, each shaped as a `GithubRepositoryTreeItem`. */
+      children?: {
+        [key: string]: any;
+      }[];
+    }[]
+  | /** status 206 Tree page of a tree that has further pages. */ {
+      /** Identifier of the tree item, for the UI's tree view. */
+      id?: string;
+      /** Display name of the file or directory. */
+      label?: string;
+      /** Kind of the tree item, such as a file or a directory. */
+      type?: string;
+      /** GitHub's tree entry for the item, passed through as GitHub returns it. */
+      entry?: {
+        [key: string]: any;
+      };
+      /** The items under a directory, each shaped as a `GithubRepositoryTreeItem`. */
+      children?: {
+        [key: string]: any;
+      }[];
+    }[];
+export type ScanGithubRepositoryApiArg = {
+  /** Repository as `<owner>/<repo>`. */
+  name: string;
+  /** Branch or tag to scan. Empty or omitted scans the repository's default branch. A ref that names no commit answers 409. */
+  ref?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+};
+export type VerifyGithubRepositoryWorkflowApiResponse = /** status 200 Workflow presence. */ {
+  /** `ok` when no workflow is present; `error` when one is (`fileUrl` names it) or the check failed (`error` says why). */
+  status: "ok" | "error";
+  /** URL of the workflow file already present. */
+  fileUrl?: string;
+  /** Why the repository cannot take the workflow. */
+  error?: string;
+};
+export type VerifyGithubRepositoryWorkflowApiArg = {
+  /** Login of the account that owns the repository. */
+  owner: string;
+  /** Repository name, without its owner. */
+  repo: string;
+  /** Ignored. Accepted for compatibility; the server resolves the installation itself. */
+  id?: string;
+};
+export type InstallGithubWorkflowApiResponse = /** status 200 One entry per requested repository. */ {
+  [key: string]: {
+    /** HTTP-style status of the repository's outcome; `400` for a malformed repository identifier. */
+    code?: number;
+    /** The outcome, in words. */
+    description?: string;
+  };
+}[];
+export type InstallGithubWorkflowApiArg = {
+  /** Ignored. Accepted for compatibility; the server resolves the installation itself. */
+  id?: string;
+  body: {
+    /** Repositories as `<owner>/<repo>`. */
+    repositories: string[];
+  };
+};
+export type StartGithubAuthorizationApiResponse = unknown;
+export type StartGithubAuthorizationApiArg = {
+  /** `install` sends the browser to the GitHub App's installation page; `authorize` sends it to GitHub's user-authorization page for the App. */
+  flow: "install" | "authorize";
+};
+export type GithubAppCallbackApiResponse = unknown;
+export type GithubAppCallbackApiArg = {
+  /** The single-use state `startGithubAuthorization` issued. */
+  state: string;
+  /** GitHub's one-time authorization code. */
+  code?: string;
+  /** The installation GitHub names on return (GitHub's parameter name). It is stored only when it is one of the installations GitHub lists for the authorizing account. */
+  installationId?: string;
+  /** GitHub's setup action (GitHub's parameter name). */
+  setupAction?: "install" | "update" | "request";
 };
 export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   /** Unique identifier for the invitation, also used as the invitation code. */
@@ -13136,6 +17310,12 @@ export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   roles: string[];
   /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
   teams: string[];
+  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+  acceptanceOutcome?: "direct_membership" | "child_organization";
+  /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+  childOrganizationBranding?: "parent" | "provider" | "none";
+  /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+  childOrganizationName?: string;
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -13179,6 +17359,12 @@ export type UpdateInvitationApiResponse = /** status 200 Invitation updated */ {
   roles: string[];
   /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
   teams: string[];
+  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+  acceptanceOutcome?: "direct_membership" | "child_organization";
+  /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+  childOrganizationBranding?: "parent" | "provider" | "none";
+  /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+  childOrganizationName?: string;
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -13200,20 +17386,26 @@ export type UpdateInvitationApiArg = {
     isDefault?: boolean;
     /** Name of the invitation. */
     name: string;
-    /** Description of the invitation. */
-    description: string;
-    /** Email addresses or patterns this invitation is valid for. */
-    emails: string[];
+    /** Description of the invitation. Optional; omitting it stores an empty description. */
+    description?: string;
+    /** Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation. */
+    emails?: string[];
     /** ID of the organization to which the user is invited. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. */
     expiresAt?: string;
     /** Quota for the invitation; limits the number of users that can accept it. */
     quota?: number;
-    /** Roles that the user will have when accepting the invitation. */
-    roles: string[];
-    /** Teams that the user will be added to when accepting the invitation. */
-    teams: string[];
+    /** Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles. */
+    roles?: string[];
+    /** Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
+    teams?: string[];
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+    childOrganizationBranding?: "parent" | "provider" | "none";
+    /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+    childOrganizationName?: string;
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
   };
@@ -13251,6 +17443,12 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
     roles: string[];
     /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
     teams: string[];
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+    childOrganizationBranding?: "parent" | "provider" | "none";
+    /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+    childOrganizationName?: string;
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created. */
@@ -13298,6 +17496,12 @@ export type CreateInvitationApiResponse = /** status 201 Invitation created */ {
   roles: string[];
   /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
   teams: string[];
+  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+  acceptanceOutcome?: "direct_membership" | "child_organization";
+  /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+  childOrganizationBranding?: "parent" | "provider" | "none";
+  /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+  childOrganizationName?: string;
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -13317,20 +17521,26 @@ export type CreateInvitationApiArg = {
     isDefault?: boolean;
     /** Name of the invitation. */
     name: string;
-    /** Description of the invitation. */
-    description: string;
-    /** Email addresses or patterns this invitation is valid for. */
-    emails: string[];
+    /** Description of the invitation. Optional; omitting it stores an empty description. */
+    description?: string;
+    /** Email addresses or patterns this invitation is valid for. Optional; omitting it or sending an empty list means any email address may accept the invitation. */
+    emails?: string[];
     /** ID of the organization to which the user is invited. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. */
     expiresAt?: string;
     /** Quota for the invitation; limits the number of users that can accept it. */
     quota?: number;
-    /** Roles that the user will have when accepting the invitation. */
-    roles: string[];
-    /** Teams that the user will be added to when accepting the invitation. */
-    teams: string[];
+    /** Roles that the user will have when accepting the invitation. Optional; omitting it or sending an empty list grants no roles. */
+    roles?: string[];
+    /** Teams that the user will be added to when accepting the invitation. Optional; omitting it or sending an empty list adds the user to no teams. */
+    teams?: string[];
+    /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+    acceptanceOutcome?: "direct_membership" | "child_organization";
+    /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+    childOrganizationBranding?: "parent" | "provider" | "none";
+    /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+    childOrganizationName?: string;
     /** Activation status of the invitation. */
     status: "enabled" | "disabled";
   };
@@ -13360,6 +17570,12 @@ export type AcceptInvitationApiResponse = /** status 200 Invitation accepted */ 
   roles: string[];
   /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
   teams: string[];
+  /** Determines what accepting this invitation does for the accepting user, for new and existing accounts alike. direct_membership (the default, and the behavior of every invitation that omits this property) adds the user to the inviting organization. child_organization creates a new child organization for the user whose parent is always the inviting organization; the child follows the standard organization-creation procedure (a My Team team, a My Workspace workspace, and the accepting user as its owner with organization administrator privileges). The child's display name is set by childOrganizationName when present and non-empty; otherwise it defaults to "My Organization". With child_organization the invitation's roles and teams apply in the child organization, not in the inviting organization. */
+  acceptanceOutcome?: "direct_membership" | "child_organization";
+  /** Determines what branding a child organization created by accepting this invitation starts with. Applies only when acceptanceOutcome is child_organization; ignored otherwise. parent (the default, including every invitation that omits this property) copies the inviting organization's branding into the child at creation: theme (logos and colors), authentication-page branding, email branding (sender name, templates, and footer), links (including social profiles), and the authentication-page carousel setting. provider copies the provider organization's branding instead. none gives the child no branding of its own. Every copy is a snapshot: later changes to the source do not propagate, and the child's administrators can change its branding afterwards without affecting the source. */
+  childOrganizationBranding?: "parent" | "provider" | "none";
+  /** Display name for the child organization created when acceptanceOutcome is child_organization. Applies only when acceptanceOutcome is child_organization; ignored otherwise. When this property is omitted or empty, the child is named "My Organization". When present and non-empty, that string is the child organization's name at creation. Administrators can rename the child afterward. */
+  childOrganizationName?: string;
   /** Activation status of the invitation. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created. */
@@ -13503,6 +17719,786 @@ export type GetSignupRequestNotificationApiResponse = /** status 200 Signup requ
   preProcessed: boolean;
 };
 export type GetSignupRequestNotificationApiArg = void;
+export type ListLedgerEntriesApiResponse = /** status 200 Ledger entries page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Ledger entries included on this page of results. */
+  ledgerEntries: {
+    /** Server-generated ledger entry ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** Name of the ledger (the idempotent set) the entry belongs to. */
+    ledger: string;
+    /** Key within the ledger. Unique per (organization, ledger). */
+    entryKey: string;
+    /** Entry value, stored as a JSON blob. */
+    value?: object;
+    /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+     */
+    claimedByConnectionId?: string;
+    /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+    claimedAt?: string | null;
+    /** Timestamp of ledger entry creation. */
+    createdAt: string;
+    /** Timestamp of last ledger entry modification; advances on every update. */
+    updatedAt: string;
+  }[];
+};
+export type ListLedgerEntriesApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type RecordLedgerEntryApiResponse = /** status 200 The key was already recorded; the stored entry, unchanged */
+  | {
+      /** Server-generated ledger entry ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Name of the ledger (the idempotent set) the entry belongs to. */
+      ledger: string;
+      /** Key within the ledger. Unique per (organization, ledger). */
+      entryKey: string;
+      /** Entry value, stored as a JSON blob. */
+      value?: object;
+      /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+       */
+      claimedByConnectionId?: string;
+      /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+      claimedAt?: string | null;
+      /** Timestamp of ledger entry creation. */
+      createdAt: string;
+      /** Timestamp of last ledger entry modification; advances on every update. */
+      updatedAt: string;
+    }
+  | /** status 201 The key was recorded */ {
+      /** Server-generated ledger entry ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Name of the ledger (the idempotent set) the entry belongs to. */
+      ledger: string;
+      /** Key within the ledger. Unique per (organization, ledger). */
+      entryKey: string;
+      /** Entry value, stored as a JSON blob. */
+      value?: object;
+      /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+       */
+      claimedByConnectionId?: string;
+      /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+      claimedAt?: string | null;
+      /** Timestamp of ledger entry creation. */
+      createdAt: string;
+      /** Timestamp of last ledger entry modification; advances on every update. */
+      updatedAt: string;
+    };
+export type RecordLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  body: {
+    /** Key within the ledger. */
+    entryKey: string;
+    /** Entry value, stored as a JSON object. */
+    value?: object;
+  };
+};
+export type ClaimLedgerEntryApiResponse = /** status 200 The caller's connection now holds the existing entry */
+  | {
+      /** Server-generated ledger entry ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Name of the ledger (the idempotent set) the entry belongs to. */
+      ledger: string;
+      /** Key within the ledger. Unique per (organization, ledger). */
+      entryKey: string;
+      /** Entry value, stored as a JSON blob. */
+      value?: object;
+      /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+       */
+      claimedByConnectionId?: string;
+      /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+      claimedAt?: string | null;
+      /** Timestamp of ledger entry creation. */
+      createdAt: string;
+      /** Timestamp of last ledger entry modification; advances on every update. */
+      updatedAt: string;
+    }
+  | /** status 201 The key was absent; it was recorded and claimed */ {
+      /** Server-generated ledger entry ID. */
+      id: string;
+      /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+      organizationId: string;
+      /** Name of the ledger (the idempotent set) the entry belongs to. */
+      ledger: string;
+      /** Key within the ledger. Unique per (organization, ledger). */
+      entryKey: string;
+      /** Entry value, stored as a JSON blob. */
+      value?: object;
+      /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+       */
+      claimedByConnectionId?: string;
+      /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+      claimedAt?: string | null;
+      /** Timestamp of ledger entry creation. */
+      createdAt: string;
+      /** Timestamp of last ledger entry modification; advances on every update. */
+      updatedAt: string;
+    };
+export type ClaimLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  body: {
+    /** Key to claim. */
+    entryKey: string;
+    /** ID of the connection taking the key: the caller's own live connection in the session organization (for example the connection a desktop client registered for its machine).
+     */
+    connectionId: string;
+    /** Value stored when the claim creates the entry; ignored when the entry already exists. */
+    value?: object;
+  };
+};
+export type GetLedgerEntryApiResponse = /** status 200 Ledger entry */ {
+  /** Server-generated ledger entry ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Name of the ledger (the idempotent set) the entry belongs to. */
+  ledger: string;
+  /** Key within the ledger. Unique per (organization, ledger). */
+  entryKey: string;
+  /** Entry value, stored as a JSON blob. */
+  value?: object;
+  /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+   */
+  claimedByConnectionId?: string;
+  /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+  claimedAt?: string | null;
+  /** Timestamp of ledger entry creation. */
+  createdAt: string;
+  /** Timestamp of last ledger entry modification; advances on every update. */
+  updatedAt: string;
+};
+export type GetLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
+  entryKey: string;
+};
+export type UpdateLedgerEntryApiResponse = /** status 200 The updated ledger entry */ {
+  /** Server-generated ledger entry ID. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** Name of the ledger (the idempotent set) the entry belongs to. */
+  ledger: string;
+  /** Key within the ledger. Unique per (organization, ledger). */
+  entryKey: string;
+  /** Entry value, stored as a JSON blob. */
+  value?: object;
+  /** ID of the connection that holds the entry, if any. Set only by claim-if-absent and never changed afterwards. References a connection (`connections.id`); a claim held by a connection that is later deleted is released, so the key may be claimed again. Omitted when the entry is unclaimed.
+   */
+  claimedByConnectionId?: string;
+  /** Time the current or most recent claim was taken. Set only by claim-if-absent; null when the entry was never claimed. An entry whose claimedByConnectionId is omitted is unclaimed whatever this holds. */
+  claimedAt?: string | null;
+  /** Timestamp of ledger entry creation. */
+  createdAt: string;
+  /** Timestamp of last ledger entry modification; advances on every update. */
+  updatedAt: string;
+};
+export type UpdateLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
+  entryKey: string;
+  body: {
+    /** The new entry value, stored as a JSON object. Replaces the stored value wholesale. */
+    value: object;
+    /** Optional precondition. When present, including as an empty object, the update applies only if the stored value equals this object (JSON equality; key order and whitespace do not matter). Omit the property to skip this check. Absence is distinct from an empty object.
+     */
+    expectedValue?: object;
+    /** Optional precondition. When present, the update applies only if the stored entry's updatedAt equals this instant exactly. Clients echo the updatedAt they last read. Omit the property to skip this check.
+     */
+    expectedUpdatedAt?: string;
+  };
+};
+export type DeleteLedgerEntryApiResponse = unknown;
+export type DeleteLedgerEntryApiArg = {
+  /** Name of the ledger, for example `processed-profiles`. */
+  ledger: string;
+  /** Key within the ledger. URL-encode keys that contain reserved characters such as `/`. */
+  entryKey: string;
+};
+export type ListMediaAssetsApiResponse = /** status 200 Media asset page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Media assets included on this page of results. */
+  mediaAssets?: {
+    /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+     */
+    createdBy?: string;
+    /** Where the bytes are stored (`r2` or `gdrive`). */
+    backend: "r2" | "gdrive";
+    /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+     */
+    connectionId?: string;
+    /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+     */
+    externalId?: string;
+    /** Image or video, derived by the server from `contentType`. */
+    kind: "image" | "video";
+    /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+    contentType:
+      | "image/png"
+      | "image/jpeg"
+      | "image/gif"
+      | "image/webp"
+      | "image/heic"
+      | "video/mp4"
+      | "video/quicktime"
+      | "video/webm";
+    /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+     */
+    bytes: number;
+    /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+     */
+    sha256: string;
+    /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+     */
+    name?: string;
+    /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+     */
+    locationStripped: boolean;
+    /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+     */
+    status: "pending" | "ready" | "rejected" | "expired";
+    /** Why the upload was rejected. Set only on a `rejected` asset. */
+    rejectionReason?: "missing" | "size" | "type" | "checksum";
+    /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+     */
+    retainUntil?: string | null;
+    /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+    completedAt?: string | null;
+    /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+     */
+    expiresAt: string;
+    /** Timestamp of media asset creation. */
+    createdAt: string;
+    /** Timestamp of last media asset modification. */
+    updatedAt: string;
+    /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+    deletedAt?: string | null;
+  }[];
+};
+export type ListMediaAssetsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter by status, evaluated at read time (a `ready` asset past `expiresAt` matches `expired`). */
+  status?: "pending" | "ready" | "rejected" | "expired";
+};
+export type CreateMediaAssetApiResponse = /** status 201 Media asset created */ {
+  /** Server-returned media asset: one image or video file an organization
+    uploaded so that a content item can post it without a link. A content
+    item refers to an asset by its `id`, never by a URL; a short-lived
+    download URL is minted only when the file is about to be used
+    (`getMediaAssetDownload`) and is never stored.
+    An asset is created `pending` with a short-lived upload URL, becomes
+    `ready` once `completeMediaAsset` has checked the stored bytes against
+    the declared size, type and SHA-256, or `rejected` when they do not
+    match. A `pending` asset that is never completed, and a `ready` asset
+    whose retention ended, read as `expired` from `expiresAt` on: expiry is
+    evaluated when the asset is read, so an asset never reads `pending` or
+    `ready` past its `expiresAt`.
+    No field carries a storage credential, a bucket name, an object key or a
+    signed URL. The bytes live in the backend `backend` names, under a
+    location only the server knows.
+     */
+  mediaAsset: {
+    /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+     */
+    createdBy?: string;
+    /** Where the bytes are stored (`r2` or `gdrive`). */
+    backend: "r2" | "gdrive";
+    /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+     */
+    connectionId?: string;
+    /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+     */
+    externalId?: string;
+    /** Image or video, derived by the server from `contentType`. */
+    kind: "image" | "video";
+    /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+    contentType:
+      | "image/png"
+      | "image/jpeg"
+      | "image/gif"
+      | "image/webp"
+      | "image/heic"
+      | "video/mp4"
+      | "video/quicktime"
+      | "video/webm";
+    /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+     */
+    bytes: number;
+    /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+     */
+    sha256: string;
+    /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+     */
+    name?: string;
+    /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+     */
+    locationStripped: boolean;
+    /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+     */
+    status: "pending" | "ready" | "rejected" | "expired";
+    /** Why the upload was rejected. Set only on a `rejected` asset. */
+    rejectionReason?: "missing" | "size" | "type" | "checksum";
+    /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+     */
+    retainUntil?: string | null;
+    /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+    completedAt?: string | null;
+    /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+     */
+    expiresAt: string;
+    /** Timestamp of media asset creation. */
+    createdAt: string;
+    /** Timestamp of last media asset modification. */
+    updatedAt: string;
+    /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+    deletedAt?: string | null;
+  };
+  /** A short-lived grant to move one file's bytes: send one request with `method` to `url` carrying exactly `headers`, before `expiresAt`. The URL is the only credential, it covers this one file, and it must be treated as a secret: never store it, log it or put it in a content item.
+   */
+  upload: {
+    /** HTTP method to use. `PUT` for an upload, `GET` for a download. */
+    method: "PUT" | "GET";
+    /** Absolute HTTPS URL to send the request to. */
+    url: string;
+    /** Headers the request must carry, verbatim (for an upload, at least `Content-Type`, and any integrity header the signature binds). Empty when none are needed. Never contains an authorization header.
+     */
+    headers: {
+      [key: string]: string;
+    };
+    /** Time the URL stops working. */
+    expiresAt: string;
+  };
+};
+export type CreateMediaAssetApiArg = {
+  body: {
+    /** Media type of the file, from a closed allowlist. The server sniffs the stored bytes on completion and rejects an upload whose real type differs. A provider may accept fewer types than this list (`MediaAssetQuota.contentTypes`).
+     */
+    contentType:
+      | "image/png"
+      | "image/jpeg"
+      | "image/gif"
+      | "image/webp"
+      | "image/heic"
+      | "video/mp4"
+      | "video/quicktime"
+      | "video/webm";
+    /** Size of the file in bytes. Must not exceed the quota's limit for its kind. */
+    bytes: number;
+    /** Lowercase hex SHA-256 of the exact bytes that will be uploaded. */
+    sha256: string;
+    /** Display name of the file, typically its original file name. */
+    name?: string;
+    /** Whether the client removed location metadata (EXIF and XMP GPS, maker notes, device serial numbers) from the file before hashing and uploading it. Recorded as sent.
+     */
+    locationStripped: boolean;
+    /** Where to store the file. Required, with no default: the client picks one of the backends `getMediaAssetQuota` lists in `backends`, and a create naming any other answers `400`.
+     */
+    backend: "r2" | "gdrive";
+    /** The caller's own live Google Drive connection in the session organization. Required when `backend` is `gdrive`, refused otherwise.
+     */
+    connectionId?: string;
+    /** Time the asset must stay downloadable until, for example a little after the post that uses it is scheduled. Omitted, the organization's default retention applies from completion.
+     */
+    retainUntil?: string;
+  };
+};
+export type GetMediaAssetQuotaApiResponse = /** status 200 Media asset quota */ {
+  /** Backends this provider serves for the organization, and the only statement of what it serves. A create must name one of them in `backend` (there is no default); naming another is refused with 400.
+   */
+  backends: ("r2" | "gdrive")[];
+  /** Content types this provider accepts. */
+  contentTypes: (
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/webp"
+    | "image/heic"
+    | "video/mp4"
+    | "video/quicktime"
+    | "video/webm"
+  )[];
+  /** Largest image a create accepts, in bytes. */
+  maxImageBytes: number;
+  /** Largest video a create accepts, in bytes. */
+  maxVideoBytes: number;
+  /** How long a `pending` asset waits for its upload and completion before it expires, in seconds. */
+  uploadWindowSeconds: number;
+  /** Days a `ready` asset is kept after completion when no `retainUntil` was set. */
+  defaultRetentionDays: number;
+  /** Furthest `retainUntil` may lie from now, in days. */
+  maxRetentionDays: number;
+  /** Total bytes the organization's live `pending` and `ready` assets may hold. Null when the organization has no storage limit. */
+  bytesLimit: number | null;
+  /** Total bytes of the organization's live `pending` and `ready` assets. Null when it could not be measured, which must be presented as unknown; a number, including 0, is a measurement.
+   */
+  bytesUsed: number | null;
+};
+export type GetMediaAssetQuotaApiArg = void;
+export type GetMediaAssetApiResponse = /** status 200 Media asset response */ {
+  /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+   */
+  createdBy?: string;
+  /** Where the bytes are stored (`r2` or `gdrive`). */
+  backend: "r2" | "gdrive";
+  /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+   */
+  connectionId?: string;
+  /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+   */
+  externalId?: string;
+  /** Image or video, derived by the server from `contentType`. */
+  kind: "image" | "video";
+  /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+  contentType:
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/webp"
+    | "image/heic"
+    | "video/mp4"
+    | "video/quicktime"
+    | "video/webm";
+  /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+   */
+  bytes: number;
+  /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+   */
+  sha256: string;
+  /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+   */
+  name?: string;
+  /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+   */
+  locationStripped: boolean;
+  /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+   */
+  status: "pending" | "ready" | "rejected" | "expired";
+  /** Why the upload was rejected. Set only on a `rejected` asset. */
+  rejectionReason?: "missing" | "size" | "type" | "checksum";
+  /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+   */
+  retainUntil?: string | null;
+  /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+  completedAt?: string | null;
+  /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+   */
+  expiresAt: string;
+  /** Timestamp of media asset creation. */
+  createdAt: string;
+  /** Timestamp of last media asset modification. */
+  updatedAt: string;
+  /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+  deletedAt?: string | null;
+};
+export type GetMediaAssetApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+};
+export type UpdateMediaAssetApiResponse = /** status 200 Media asset updated */ {
+  /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+   */
+  createdBy?: string;
+  /** Where the bytes are stored (`r2` or `gdrive`). */
+  backend: "r2" | "gdrive";
+  /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+   */
+  connectionId?: string;
+  /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+   */
+  externalId?: string;
+  /** Image or video, derived by the server from `contentType`. */
+  kind: "image" | "video";
+  /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+  contentType:
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/webp"
+    | "image/heic"
+    | "video/mp4"
+    | "video/quicktime"
+    | "video/webm";
+  /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+   */
+  bytes: number;
+  /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+   */
+  sha256: string;
+  /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+   */
+  name?: string;
+  /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+   */
+  locationStripped: boolean;
+  /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+   */
+  status: "pending" | "ready" | "rejected" | "expired";
+  /** Why the upload was rejected. Set only on a `rejected` asset. */
+  rejectionReason?: "missing" | "size" | "type" | "checksum";
+  /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+   */
+  retainUntil?: string | null;
+  /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+  completedAt?: string | null;
+  /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+   */
+  expiresAt: string;
+  /** Timestamp of media asset creation. */
+  createdAt: string;
+  /** Timestamp of last media asset modification. */
+  updatedAt: string;
+  /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+  deletedAt?: string | null;
+};
+export type UpdateMediaAssetApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+  body: {
+    /** New time the asset must stay downloadable until. Must be in the future and within `maxRetentionDays` from now. */
+    retainUntil: string;
+  };
+};
+export type DeleteMediaAssetApiResponse = unknown;
+export type DeleteMediaAssetApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+};
+export type CompleteMediaAssetApiResponse = /** status 200 Media asset ready */ {
+  /** Server-generated media asset ID. Reveals nothing about the file or where it is stored. */
+  id: string;
+  /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+  organizationId: string;
+  /** ID of the user whose session created the asset. Derived from the authenticated session, never client-settable. Omitted when that user was later purged.
+   */
+  createdBy?: string;
+  /** Where the bytes are stored (`r2` or `gdrive`). */
+  backend: "r2" | "gdrive";
+  /** ID of the Google Drive connection (`connections.id`) the file was uploaded through. Set only when `backend` is `gdrive`; omitted for `r2`, and when that connection was later deleted.
+   */
+  connectionId?: string;
+  /** Identifier of the file in the person's own storage: the Google Drive file ID when `backend` is `gdrive`. Server-written once the upload is completed; omitted for `r2`, whose storage location is never on the wire, and while a `gdrive` asset is `pending`.
+   */
+  externalId?: string;
+  /** Image or video, derived by the server from `contentType`. */
+  kind: "image" | "video";
+  /** Media type of the file, from the closed allowlist; checked against the sniffed bytes on completion. */
+  contentType:
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/webp"
+    | "image/heic"
+    | "video/mp4"
+    | "video/quicktime"
+    | "video/webm";
+  /** Size of the file in bytes, as declared at create. `completeMediaAsset` refuses an upload whose stored size differs.
+   */
+  bytes: number;
+  /** Lowercase hex SHA-256 of the file's bytes as uploaded (after any metadata stripping), as declared at create. `completeMediaAsset` refuses an upload whose stored bytes hash differently, and a reader compares the bytes it downloads against it before posting them.
+   */
+  sha256: string;
+  /** Display name of the file, typically its original file name. Shown to people only; the type is never inferred from it.
+   */
+  name?: string;
+  /** Whether the uploading client removed location metadata (EXIF and XMP GPS, plus maker notes and device serial numbers) from the file before uploading it. Declared by the client and recorded as sent; the server does not inspect the bytes for metadata. `false` records that the bytes may still carry where they were captured, for example a video whose location the client could not remove.
+   */
+  locationStripped: boolean;
+  /** Lifecycle of the asset. `pending` from create until it is completed; `ready` once the stored bytes matched the declaration; `rejected` when they did not (see `rejectionReason`); `expired` once `expiresAt` passed, whether the upload was never completed or the retention of a `ready` asset ended. Evaluated when the asset is read.
+   */
+  status: "pending" | "ready" | "rejected" | "expired";
+  /** Why the upload was rejected. Set only on a `rejected` asset. */
+  rejectionReason?: "missing" | "size" | "type" | "checksum";
+  /** Time the client asked the asset to stay downloadable until, from the create payload or the last `updateMediaAsset`. Null when the client never asked, in which case the organization's default retention applies once the asset is completed.
+   */
+  retainUntil?: string | null;
+  /** Time `completeMediaAsset` accepted the upload. Null until the asset is `ready`, and on a `rejected` asset. */
+  completedAt?: string | null;
+  /** Time the asset stops being usable. Always set by the server. While `pending` it is the end of the upload window (`uploadWindowSeconds` of the quota after creation). Once `ready` it is `retainUntil` when the client set one, otherwise `completedAt` plus the organization's `defaultRetentionDays`. Past it the asset reads `expired`, no download is minted, and the stored bytes of an `r2` asset are removed.
+   */
+  expiresAt: string;
+  /** Timestamp of media asset creation. */
+  createdAt: string;
+  /** Timestamp of last media asset modification. */
+  updatedAt: string;
+  /** Timestamp when the media asset was deleted. A deleted asset is never returned by the API. */
+  deletedAt?: string | null;
+};
+export type CompleteMediaAssetApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+};
+export type GetMediaAssetDownloadApiResponse = /** status 200 Media asset download */ {
+  /** HTTP method to use. `PUT` for an upload, `GET` for a download. */
+  method: "PUT" | "GET";
+  /** Absolute HTTPS URL to send the request to. */
+  url: string;
+  /** Headers the request must carry, verbatim (for an upload, at least `Content-Type`, and any integrity header the signature binds). Empty when none are needed. Never contains an authorization header.
+   */
+  headers: {
+    [key: string]: string;
+  };
+  /** Time the URL stops working. */
+  expiresAt: string;
+};
+export type GetMediaAssetDownloadApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+};
+export type GetMediaAssetContentApiResponse = /** status 200 Media asset bytes */ Blob;
+export type GetMediaAssetContentApiArg = {
+  /** Media asset ID */
+  mediaAssetId: string;
+  /** Time the grant lapses, in seconds since the Unix epoch. */
+  expires: number;
+  /** Server-computed signature over the asset ID and `expires`. Opaque to clients. */
+  signature: string;
+};
+export type GetMentionAliasesApiResponse = /** status 200 Mention alias page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Mention aliases included on this page of results. */
+  mentionAliases: {
+    /** Server-generated mention alias ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** The tag as written after `@`, without the `@` (`kate`). Compared ignoring case: `Kate` and `kate` are the same entity, and the alias keeps the casing of the write that last stored it. The pattern is the tag grammar a message is read with: letters, digits, `_`, `.` and `-`, starting and ending with a letter, digit or `_`.
+     */
+    entity: string;
+    /** A platform whose messages can tag an entity: `linkedin`, `x`, `bluesky`, `reddit` or `slack`. A server refuses any other value with 400. A platform joins by adding a value here.
+     */
+    platform: "linkedin" | "x" | "bluesky" | "reddit" | "slack";
+    /** The entity's form on `platform`, stored as confirmed: `@kate_ops` on X, `@kate.example.org` on Bluesky, `u/kate` or `r/kate` on Reddit, a member ID such as `U012AB3CD` on Slack, or a plain-text name on LinkedIn. An empty string is a confirmed answer, not a missing one: it means the entity is sent as its name in plain text on that platform. The server checks length and surrounding whitespace only; whether a value is a valid handle on its platform is the client's check.
+     */
+    handle: string;
+    /** ID of the user whose session last wrote the alias. Derived from the authenticated session on every write, never client-settable. Omitted when that user was later purged.
+     */
+    confirmedBy?: string;
+    /** Timestamp the alias was first confirmed. */
+    createdAt: string;
+    /** Timestamp the alias was last confirmed. Every write of the alias's key advances it, including one that stores the same handle again.
+     */
+    updatedAt: string;
+  }[];
+};
+export type GetMentionAliasesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Return only the aliases of these entities (repeatable), each compared ignoring case. */
+  entity?: string[];
+  /** Return only the aliases on these platforms (repeatable). */
+  platform?: ("linkedin" | "x" | "bluesky" | "reddit" | "slack")[];
+};
+export type UpsertMentionAliasesApiResponse =
+  /** status 200 The stored mention aliases, one per request entry, in request order */ {
+    /** Server-generated mention alias ID. */
+    id: string;
+    /** Owning organization ID. Derived from the authenticated session, never client-settable. */
+    organizationId: string;
+    /** The tag as written after `@`, without the `@` (`kate`). Compared ignoring case: `Kate` and `kate` are the same entity, and the alias keeps the casing of the write that last stored it. The pattern is the tag grammar a message is read with: letters, digits, `_`, `.` and `-`, starting and ending with a letter, digit or `_`.
+     */
+    entity: string;
+    /** A platform whose messages can tag an entity: `linkedin`, `x`, `bluesky`, `reddit` or `slack`. A server refuses any other value with 400. A platform joins by adding a value here.
+     */
+    platform: "linkedin" | "x" | "bluesky" | "reddit" | "slack";
+    /** The entity's form on `platform`, stored as confirmed: `@kate_ops` on X, `@kate.example.org` on Bluesky, `u/kate` or `r/kate` on Reddit, a member ID such as `U012AB3CD` on Slack, or a plain-text name on LinkedIn. An empty string is a confirmed answer, not a missing one: it means the entity is sent as its name in plain text on that platform. The server checks length and surrounding whitespace only; whether a value is a valid handle on its platform is the client's check.
+     */
+    handle: string;
+    /** ID of the user whose session last wrote the alias. Derived from the authenticated session on every write, never client-settable. Omitted when that user was later purged.
+     */
+    confirmedBy?: string;
+    /** Timestamp the alias was first confirmed. */
+    createdAt: string;
+    /** Timestamp the alias was last confirmed. Every write of the alias's key advances it, including one that stores the same handle again.
+     */
+    updatedAt: string;
+  }[];
+export type UpsertMentionAliasesApiArg = {
+  body: {
+    /** Aliases to write, at most one per (`entity`, `platform`) key with `entity` compared ignoring case. A key named twice refuses the whole request with 400.
+     */
+    mentionAliases: {
+      /** The tag as written after `@`, without the `@`. Compared ignoring case; the stored alias keeps this casing.
+       */
+      entity: string;
+      /** A platform whose messages can tag an entity: `linkedin`, `x`, `bluesky`, `reddit` or `slack`. A server refuses any other value with 400. A platform joins by adding a value here.
+       */
+      platform: "linkedin" | "x" | "bluesky" | "reddit" | "slack";
+      /** The entity's form on `platform`. Required, because the write replaces the stored handle: an empty string is the confirmed answer "send the name as plain text", never "keep what is stored".
+       */
+      handle: string;
+    }[];
+  };
+};
+export type DeleteMentionAliasApiResponse = unknown;
+export type DeleteMentionAliasApiArg = {
+  /** Mention alias ID */
+  mentionAliasId: string;
+};
 export type GetPatternResourcesApiResponse = /** status 200 Pattern resources page */ {
   /** Current page number of the result set. */
   page?: number;
@@ -14125,6 +19121,1783 @@ export type GetPlansApiArg = {
   /** Get responses by pagesize */
   pagesize?: number;
 };
+export type CreateProfileApiResponse = /** status 201 Created profile */ {
+  /** Server-generated profile ID. */
+  id: string;
+  /** Specifies the version of the schema to which the profile conforms. */
+  schemaVersion: string;
+  /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+  name: string;
+  /** Description of the profile. */
+  description?: string;
+  /** Owning organization ID. Fixed at creation. */
+  organizationId: string;
+  /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+  owner: string;
+  /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+  userId?: string;
+  /** Free-form settings of the profile, stored as a JSON blob. */
+  metadata?: object;
+  /** Timestamp when the profile was created. */
+  createdAt: string;
+  /** Timestamp when the profile was last updated. */
+  updatedAt: string;
+  /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+  deletedAt?: string | null;
+};
+export type CreateProfileApiArg = {
+  /** Body for creating or updating a profile */
+  body: {
+    /** Name of the profile, typically its short handle. Not unique. */
+    name: string;
+    /** Description of the profile. */
+    description?: string;
+    /** Organization in which to create the profile. Cannot change after creation. */
+    organizationId: string;
+    /** ID of the user who owns the profile. Only the owner or a holder of Edit Profile in a workspace the profile is assigned to may change it. */
+    owner?: string;
+    /** ID of the user this profile represents, when it represents a user. The user must be a member of the organization. */
+    userId?: string;
+    /** Free-form settings of the profile. */
+    metadata?: {
+      [key: string]: any;
+    };
+  };
+};
+export type GetProfilesApiResponse = /** status 200 Profiles */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of items across all pages. */
+  totalCount: number;
+  /** Profiles in this page. */
+  profiles: {
+    /** Server-generated profile ID. */
+    id: string;
+    /** Specifies the version of the schema to which the profile conforms. */
+    schemaVersion: string;
+    /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+    name: string;
+    /** Description of the profile. */
+    description?: string;
+    /** Owning organization ID. Fixed at creation. */
+    organizationId: string;
+    /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+    owner: string;
+    /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+    userId?: string;
+    /** Free-form settings of the profile, stored as a JSON blob. */
+    metadata?: object;
+    /** Timestamp when the profile was created. */
+    createdAt: string;
+    /** Timestamp when the profile was last updated. */
+    updatedAt: string;
+    /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetProfilesApiArg = {
+  /** Get responses that match search param value */
+  search?: string;
+  /** Return only live profiles whose name equals this value, ignoring case. */
+  name?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
+  pagesize?: number;
+  /** Organization ID used to scope the listing. Defaults to the organization the session resolved to. */
+  orgId?: string;
+  /** Return only the profile that represents this user. */
+  userId?: string;
+};
+export type GetProfileConnectionMappingsApiResponse = /** status 200 Profile connection links */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of items across all pages. */
+  totalCount: number;
+  /** Profile-to-connection links in this page. */
+  mappings: {
+    /** Mapping record ID. */
+    id: string;
+    /** ID of the linked profile. */
+    profileId: string;
+    /** ID of the linked connection. */
+    connectionId: string;
+    /** Timestamp when the mapping was created. */
+    createdAt?: string;
+    /** Timestamp when the mapping was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the mapping was soft-deleted. Null while the mapping remains active. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetProfileConnectionMappingsApiArg = {
+  /** Organization ID used to scope the listing. Defaults to the organization the session resolved to. */
+  orgId?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+};
+export type GetProfileByIdApiResponse = /** status 200 Profile */ {
+  /** Server-generated profile ID. */
+  id: string;
+  /** Specifies the version of the schema to which the profile conforms. */
+  schemaVersion: string;
+  /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+  name: string;
+  /** Description of the profile. */
+  description?: string;
+  /** Owning organization ID. Fixed at creation. */
+  organizationId: string;
+  /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+  owner: string;
+  /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+  userId?: string;
+  /** Free-form settings of the profile, stored as a JSON blob. */
+  metadata?: object;
+  /** Timestamp when the profile was created. */
+  createdAt: string;
+  /** Timestamp when the profile was last updated. */
+  updatedAt: string;
+  /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+  deletedAt?: string | null;
+};
+export type GetProfileByIdApiArg = {
+  /** Profile ID */
+  profileId: string;
+};
+export type UpdateProfileApiResponse = /** status 200 Updated profile */ {
+  /** Server-generated profile ID. */
+  id: string;
+  /** Specifies the version of the schema to which the profile conforms. */
+  schemaVersion: string;
+  /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+  name: string;
+  /** Description of the profile. */
+  description?: string;
+  /** Owning organization ID. Fixed at creation. */
+  organizationId: string;
+  /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+  owner: string;
+  /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+  userId?: string;
+  /** Free-form settings of the profile, stored as a JSON blob. */
+  metadata?: object;
+  /** Timestamp when the profile was created. */
+  createdAt: string;
+  /** Timestamp when the profile was last updated. */
+  updatedAt: string;
+  /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+  deletedAt?: string | null;
+};
+export type UpdateProfileApiArg = {
+  /** Profile ID */
+  profileId: string;
+  /** Entity tag of the profile as last read, from the `ETag` header of getProfileById or updateProfile. When present the write applies only if it still matches; otherwise 412. */
+  "If-Match"?: string;
+  /** Body for creating or updating a profile */
+  body: {
+    /** Name of the profile, typically its short handle. Not unique. */
+    name: string;
+    /** Description of the profile. */
+    description?: string;
+    /** Organization in which to create the profile. Cannot change after creation. */
+    organizationId: string;
+    /** ID of the user who owns the profile. Only the owner or a holder of Edit Profile in a workspace the profile is assigned to may change it. */
+    owner?: string;
+    /** ID of the user this profile represents, when it represents a user. The user must be a member of the organization. */
+    userId?: string;
+    /** Free-form settings of the profile. */
+    metadata?: {
+      [key: string]: any;
+    };
+  };
+};
+export type DeleteProfileApiResponse = unknown;
+export type DeleteProfileApiArg = {
+  /** Profile ID */
+  profileId: string;
+};
+export type GetProfileConnectionsApiResponse = /** status 200 Profile connections */ {
+  /** List of connections on this page */
+  connections: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** Connection Name */
+    name: string;
+    /** Human-readable description of the connection and its purpose. */
+    description?: string;
+    /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+    url?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    credentialId?: string;
+    /** Connection Type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+    subType: string;
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github, desktop) */
+    kind: string;
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Additional connection metadata */
+    metadata?: object;
+    /** Schema for the credential Associated with the connection */
+    credentialSchema?: object;
+    /** Schema for the connection */
+    connectionSchema?: object;
+    /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Connection Status */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+    transitionMap?: {
+      [key: string]: {
+        /** The connection state reachable from the current state. */
+        nextState:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** Human-readable explanation of when or why this transition occurs. */
+        description?: string;
+      }[];
+    };
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    owner?: string;
+    /** Timestamp when the connection was created. */
+    createdAt?: string;
+    /** Timestamp when the connection was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the connection was soft-deleted, if applicable. */
+    deletedAt?: string | null;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Associated environments for this connection */
+    environments?: {
+      /** ID */
+      id: string;
+      /** Specifies the version of the schema to which the environment conforms. */
+      schemaVersion: string;
+      /** Environment name */
+      name: string;
+      /** Environment description */
+      description: string;
+      /** Environment organization ID */
+      organizationId: string;
+      /** Environment owner */
+      owner?: string;
+      /** Timestamp when the environment was created. */
+      createdAt?: string;
+      /** Additional metadata associated with the environment. */
+      metadata?: object;
+      /** Timestamp when the environment was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+      deletedAt?: string | null;
+      /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
+            
+            Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
+            
+            At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
+            
+            Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+            
+            The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
+      purpose?: "user" | "administrative";
+    }[];
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
+  }[];
+  /** Total number of connections on all pages */
+  totalCount: number;
+  /** Current page number */
+  page: number;
+  /** Number of elements per page */
+  pageSize: number;
+  /** Aggregate count of connections grouped by status */
+  statusSummary?: {
+    [key: string]: number;
+  };
+};
+export type GetProfileConnectionsApiArg = {
+  /** Profile ID */
+  profileId: string;
+  /** Return only connections of these kinds (repeatable), as getConnections does. */
+  kind?: string[];
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
+  pagesize?: number;
+};
+export type AddConnectionToProfileApiResponse = /** status 201 Connection linked to profile */ {
+  /** Mapping record ID. */
+  id: string;
+  /** ID of the linked profile. */
+  profileId: string;
+  /** ID of the linked connection. */
+  connectionId: string;
+  /** Timestamp when the mapping was created. */
+  createdAt?: string;
+  /** Timestamp when the mapping was last updated. */
+  updatedAt?: string;
+  /** Timestamp when the mapping was soft-deleted. Null while the mapping remains active. */
+  deletedAt?: string | null;
+};
+export type AddConnectionToProfileApiArg = {
+  /** Profile ID */
+  profileId: string;
+  /** Connection ID */
+  connectionId: string;
+};
+export type RemoveConnectionFromProfileApiResponse = unknown;
+export type RemoveConnectionFromProfileApiArg = {
+  /** Profile ID */
+  profileId: string;
+  /** Connection ID */
+  connectionId: string;
+};
+export type GetProviderCapabilitiesApiResponse = /** status 200 The capabilities document */ {
+  /** Provider type, for example `remote`. */
+  providerType: string;
+  /** Version of the extension package the provider offers this client. */
+  packageVersion?: string;
+  /** Download URL of that package. */
+  packageUrl?: string;
+  /** Display name of the provider. */
+  providerName?: string;
+  /** Lines describing the provider. */
+  providerDescription?: string[];
+  /** Home page URL of the provider. */
+  providerUrl?: string;
+  /** Redirect targets the provider serves to this client, keyed by name. */
+  redirects?: {
+    [key: string]: string;
+  };
+  /** Version of the provider's REST contract for native clients, as
+    `MAJOR.MINOR`. A client refuses a provider whose major differs from the
+    one it was built against. A provider that predates this field omits
+    it, which a client treats as not serving the contract.
+     */
+  contractVersion?: string;
+  /** Whether the authenticated caller is a live member of the organization
+    named by `X-Current-Orgid`. Present only on an authenticated request
+    that carried that header.
+     */
+  membership?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** True when the caller is a live member of the organization. */
+    bound: boolean;
+  };
+  /** Whether a client application's version meets the provider's minimum for that client. A client whose `compatible` is false must update before it registers or keeps a connection alive; the provider answers those calls with 426. A client the provider has no minimum for is compatible and has no `minimumVersion`.
+   */
+  compatibility?: {
+    /** Identifier of a client application, for example the product name of a desktop app, lowercase. It is a value chosen by the client; the provider keys its minimum client versions by it.
+     */
+    clientName: string;
+    /** The client's version as it reported it, as `MAJOR.MINOR.PATCH` with an optional leading `v`, for example `v1.25.0`. Versions are ordered by their numeric parts, so `v1.9.0` is older than `v1.25.0`. */
+    clientVersion: string;
+    /** Oldest client version the provider accepts for this client. Absent when the provider sets no minimum. */
+    minimumVersion?: string;
+    /** True when `clientVersion` is at or above `minimumVersion`, or when there is no minimum. */
+    compatible: boolean;
+    /** Where the client can get an update, when the provider knows one. */
+    upgradeUrl?: string;
+  };
+  /** The authenticated caller's session as the provider sees it: who the caller is, the caller's roles, and, for the organization named by `X-Current-Orgid` when the caller is a live member of it, that organization's roles, plan, entitlements and device usage. Present only on an authenticated request.
+   */
+  session?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId: string;
+    /** The caller's provider-wide role names. */
+    providerRoles: string[];
+    /** The caller's role names in the organization. */
+    organizationRoles?: string[];
+    /** The plan of the organization's active subscription, when it has one. */
+    plan?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Display name of the plan. */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      /** Billing cadence for the plan (monthly, annually, or none). */
+      cadence: "none" | "monthly" | "annually";
+      /** Unit of consumption this plan charges against (e.g. user). */
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan. */
+      minimumUnits: number;
+      /** Price per unit of the plan. */
+      pricePerUnit: number;
+      /** Currency in which the plan is priced. */
+      currency: "usd";
+    };
+    /** The features the organization's active subscriptions entitle it to. */
+    entitlements?: {
+      /** Unique identifier for the feature. */
+      id: string;
+      /** Identifier of the plan granting this feature. */
+      plan_id: string;
+      /** The plan granting this feature. Populated only when the association is explicitly loaded. */
+      plan?: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** Display name of the plan. */
+        name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+        /** Billing cadence for the plan (monthly, annually, or none). */
+        cadence: "none" | "monthly" | "annually";
+        /** Unit of consumption this plan charges against (e.g. user). */
+        unit: "user" | "free";
+        /** Minimum number of units required for the plan. */
+        minimumUnits: number;
+        /** Price per unit of the plan. */
+        pricePerUnit: number;
+        /** Currency in which the plan is priced. */
+        currency: "usd";
+      };
+      /** Name of the entitled feature. */
+      name:
+        | "ComponentsInDesign"
+        | "RelationshipsInDesign"
+        | "DesignsInWorkspace"
+        | "WorkspacesInOrganization"
+        | "ImageSizeInDesign"
+        | "SizePerDesign"
+        | "BlowhornProfiles"
+        | "BlowhornBrowserAutomation"
+        | "BlowhornScheduler"
+        | "BlowhornDevicesPerSeat"
+        | "BlowhornPlatformLinkedIn"
+        | "BlowhornPlatformX"
+        | "BlowhornPlatformReddit"
+        | "BlowhornPlatformHackerNews"
+        | "BlowhornPlatformSlack"
+        | "BlowhornPlatformBluesky"
+        | "BlowhornPlatformGitHub"
+        | "BlowhornPlatformBlog";
+      /** Quantity of the feature granted by the plan. For a cap-style feature this is the maximum, and the sentinel value 999999999999 denotes unlimited. For a capability-style feature any value greater than 0 grants the capability. */
+      quantity: number;
+      /** Timestamp when the resource was created. */
+      created_at: string;
+      /** Timestamp when the resource was updated. */
+      updated_at: string;
+    }[];
+    /** Registered devices (live `desktop` connections) in the organization against the organization's device limit. Registrations over the limit are accepted; `overLimit` flags the organization instead.
+     */
+    deviceUsage?: {
+      /** Live `desktop` connections registered in the organization. */
+      registered: number;
+      /** Devices the organization's subscriptions allow. Absent when unlimited or when no subscription sets a device limit. */
+      limit?: number;
+      /** True when `limit` is present and `registered` exceeds it. */
+      overLimit: boolean;
+    };
+  };
+  /** Extension points; shape owned by the provider. */
+  extensions?: {
+    [key: string]: any;
+  };
+  /** Features the provider serves and their endpoints. Clients read paths from here instead of hard-coding them. A provider serving desktop connections lists `register-connection`, `connection-heartbeat` and `deregister-desktop-connection`; an endpoint may hold `{connectionId}` or `{installationId}` placeholders.
+   */
+  capabilities?: {
+    /** Feature name, for example `persist-connection`. */
+    feature: string;
+    /** Path that serves the feature, relative to the provider's base URL. */
+    endpoint?: string;
+  }[];
+  /** Access restrictions applied to this client; shape owned by the provider. */
+  restrictedAccess?: {
+    [key: string]: any;
+  };
+};
+export type GetProviderCapabilitiesApiArg = {
+  /** Version of the requesting client, for example `v0.8.0`. */
+  version: string;
+  /** Organization whose membership the caller wants reported. */
+  "X-Current-Orgid"?: string;
+  /** Identifier of the requesting client application, for example the product name of a desktop app. When present, the document carries `compatibility` for this client at the `{version}` path parameter.
+   */
+  client?: string;
+  /** Operating system of the client, used to select packages. */
+  os?: string;
+};
+export type ListSchedulesApiResponse = /** status 200 Schedules page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Schedules included on this page of results. */
+  schedules: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    createdBy?: string;
+    /** Human-readable name for the schedule. */
+    name: string;
+    /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+    action: string;
+    /** Type of the resource the schedule acts on, named the way a claim's
+        `resourceType` is (lowercase snake_case construct name, for example
+        `content_item` or `profile`). A server verifies the target types it
+        serves and refuses others with 400. Set together with `targetId` or
+        not at all.
+         */
+    targetType?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    targetId?: string;
+    /** Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here. */
+    params?: object;
+    /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+    enabled: boolean;
+    /** Time the schedule first becomes due. */
+    runAt?: string | null;
+    /** Next time the schedule becomes due. Null when it is never due again. */
+    nextRunAt?: string | null;
+    /** How the schedule repeats once it has run. Empty, `once` and `none`
+        mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+        `monthly` repeat at the same wall-clock time one calendar day, week
+        or month later in the schedule's `timezone`, so a daily schedule
+        keeps its local time across daylight-saving changes. `every:<n>`
+        repeats every `n` minutes (1 to 999999). Occurrences are counted
+        from `runAt` (else from the current `nextRunAt`); the next due time
+        is the first occurrence after the run is released, so missed runs
+        are not replayed.
+         */
+    recurrence?: string;
+    /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+        `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+        time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+        refuses a name it does not know with 400.
+         */
+    timezone: string;
+    /** Lifecycle status of a schedule. `pending`: created, not yet
+        due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+        designated for a particular worker but not yet claimed. `claimed`: a
+        worker holds the claim and has not started. `running`: the claim
+        holder is executing it. `retrying`: the last attempt failed and
+        another is due. `completed`, `failed` and `cancelled` are terminal
+        for a run-once schedule; a recurring schedule returns to `scheduled`
+        when its claim is released with a `completed` outcome.
+         */
+    status:
+      | "pending"
+      | "scheduled"
+      | "assigned"
+      | "claimed"
+      | "running"
+      | "retrying"
+      | "completed"
+      | "failed"
+      | "cancelled";
+    /** Attempts already retried for the current run. */
+    retryCount: number;
+    /** Maximum retries before the run is marked failed. */
+    maxRetries: number;
+    /** Minutes to wait before a retry becomes due. */
+    retryDelayMinutes?: number;
+    /** Time the most recent attempt ended (the release time of its claim). Server-managed. */
+    lastRunAt?: string | null;
+    /** Error reported by the most recent attempt; empty after a successful one. Server-managed. */
+    lastError?: string;
+    /** The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed. */
+    claim?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
+      /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+      resourceType: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      resourceId: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantConnectionId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantUserId?: string;
+      /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+       */
+      status: "active" | "released" | "expired";
+      /** Time the claim was taken. */
+      claimedAt: string;
+      /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+      expiresAt: string;
+      /** Time of the last renewal. Null until the claim is first renewed. */
+      renewedAt?: string | null;
+      /** Time the claim was released. Null while the claim is active or after it expired. */
+      releasedAt?: string | null;
+      /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+       */
+      outcome?: "completed" | "failed" | "cancelled";
+      /** Error reported with a `failed` outcome. Omitted otherwise. */
+      outcomeError?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      outcomeEventId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      releasedBy?: string;
+      /** Timestamp of claim creation. */
+      createdAt: string;
+      /** Timestamp of last claim modification. */
+      updatedAt: string;
+    };
+    /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+    pausedAt?: string | null;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    pausedBy?: string;
+    /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+    pauseReason?: string;
+    /** Timestamp of schedule creation. */
+    createdAt: string;
+    /** Timestamp of last schedule modification. */
+    updatedAt: string;
+    /** Timestamp when the schedule was soft-deleted. Null while live. */
+    deletedAt?: string | null;
+    /** Optional Posture this schedule runs under, resolved above the
+        profile x platform resolution and below an explicit per-run flag.
+        Omitted when the schedule has no override: it then runs under whatever
+        profile x platform, configuration, environment, account or default
+        resolves to, exactly as before. Any value outside the Posture
+        enum is refused with 400.
+         */
+    posture?: "cautious" | "standard" | "brisk";
+  }[];
+};
+export type ListSchedulesApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Only schedules linked to this workspace. */
+  workspaceId?: string;
+  /** Only schedules in this status. */
+  status?:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+};
+export type CreateScheduleApiResponse = /** status 201 Schedule created */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Type of the resource the schedule acts on, named the way a claim's
+    `resourceType` is (lowercase snake_case construct name, for example
+    `content_item` or `profile`). A server verifies the target types it
+    serves and refuses others with 400. Set together with `targetId` or
+    not at all.
+     */
+  targetType?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  targetId?: string;
+  /** Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time the schedule becomes due. Null when it is never due again. */
+  nextRunAt?: string | null;
+  /** How the schedule repeats once it has run. Empty, `once` and `none`
+    mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+    `monthly` repeat at the same wall-clock time one calendar day, week
+    or month later in the schedule's `timezone`, so a daily schedule
+    keeps its local time across daylight-saving changes. `every:<n>`
+    repeats every `n` minutes (1 to 999999). Occurrences are counted
+    from `runAt` (else from the current `nextRunAt`); the next due time
+    is the first occurrence after the run is released, so missed runs
+    are not replayed.
+     */
+  recurrence?: string;
+  /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+    `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+    time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+    refuses a name it does not know with 400.
+     */
+  timezone: string;
+  /** Lifecycle status of a schedule. `pending`: created, not yet
+    due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+    designated for a particular worker but not yet claimed. `claimed`: a
+    worker holds the claim and has not started. `running`: the claim
+    holder is executing it. `retrying`: the last attempt failed and
+    another is due. `completed`, `failed` and `cancelled` are terminal
+    for a run-once schedule; a recurring schedule returns to `scheduled`
+    when its claim is released with a `completed` outcome.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time the most recent attempt ended (the release time of its claim). Server-managed. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt; empty after a successful one. Server-managed. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantConnectionId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantUserId?: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+     */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time of the last renewal. Null until the claim is first renewed. */
+    renewedAt?: string | null;
+    /** Time the claim was released. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+     */
+    outcome?: "completed" | "failed" | "cancelled";
+    /** Error reported with a `failed` outcome. Omitted otherwise. */
+    outcomeError?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    outcomeEventId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    releasedBy?: string;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+  /** Optional Posture this schedule runs under, resolved above the
+    profile x platform resolution and below an explicit per-run flag.
+    Omitted when the schedule has no override: it then runs under whatever
+    profile x platform, configuration, environment, account or default
+    resolves to, exactly as before. Any value outside the Posture
+    enum is refused with 400.
+     */
+  posture?: "cautious" | "standard" | "brisk";
+};
+export type CreateScheduleApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** Human-readable name for the schedule. */
+    name: string;
+    /** The action the worker runs, for example a command name. */
+    action: string;
+    /** Type of the resource the schedule acts on, named the way a claim's
+        `resourceType` is (lowercase snake_case construct name, for example
+        `content_item` or `profile`). A server verifies the target types it
+        serves and refuses others with 400. Set together with `targetId` or
+        not at all.
+         */
+    targetType?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    targetId?: string;
+    /** Action parameters, stored as a JSON blob. */
+    params?: object;
+    /** Whether the schedule is eligible to run. */
+    enabled?: boolean;
+    /** Time the schedule first becomes due. */
+    runAt?: string | null;
+    /** Next time the schedule becomes due. Omitted on create, it defaults to `runAt`; omitted on update, it is kept. Send null for never due again. */
+    nextRunAt?: string | null;
+    /** How the schedule repeats once it has run. Empty, `once` and `none`
+        mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+        `monthly` repeat at the same wall-clock time one calendar day, week
+        or month later in the schedule's `timezone`, so a daily schedule
+        keeps its local time across daylight-saving changes. `every:<n>`
+        repeats every `n` minutes (1 to 999999). Occurrences are counted
+        from `runAt` (else from the current `nextRunAt`); the next due time
+        is the first occurrence after the run is released, so missed runs
+        are not replayed.
+         */
+    recurrence?: string;
+    /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+        `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+        time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+        refuses a name it does not know with 400.
+         */
+    timezone?: string;
+    /** Lifecycle status of a schedule. `pending`: created, not yet
+        due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+        designated for a particular worker but not yet claimed. `claimed`: a
+        worker holds the claim and has not started. `running`: the claim
+        holder is executing it. `retrying`: the last attempt failed and
+        another is due. `completed`, `failed` and `cancelled` are terminal
+        for a run-once schedule; a recurring schedule returns to `scheduled`
+        when its claim is released with a `completed` outcome.
+         */
+    status?:
+      | "pending"
+      | "scheduled"
+      | "assigned"
+      | "claimed"
+      | "running"
+      | "retrying"
+      | "completed"
+      | "failed"
+      | "cancelled";
+    /** Retries used so far for the current run, for example 0 to re-arm a schedule. Omitted on update, it is kept. */
+    retryCount?: number;
+    /** Maximum retries before the run is marked failed. */
+    maxRetries?: number;
+    /** Minutes to wait before a retry becomes due. */
+    retryDelayMinutes?: number;
+    /** `true` pauses the schedule so it is never claimed; `false`
+        resumes it. Omit to leave the pause unchanged. The server records
+        `pausedAt` and `pausedBy`.
+         */
+    paused?: boolean;
+    /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
+    pauseReason?: string;
+    /** Optional Posture this schedule runs under, resolved above
+        the profile x platform resolution and below an explicit per-run
+        flag. Omit to inherit: the schedule then runs under whatever
+        profile x platform, configuration, environment, account or
+        default resolves to, exactly as before.
+         */
+    posture?: "cautious" | "standard" | "brisk";
+  };
+};
+export type GetScheduleByIdApiResponse = /** status 200 Schedule response */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Type of the resource the schedule acts on, named the way a claim's
+    `resourceType` is (lowercase snake_case construct name, for example
+    `content_item` or `profile`). A server verifies the target types it
+    serves and refuses others with 400. Set together with `targetId` or
+    not at all.
+     */
+  targetType?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  targetId?: string;
+  /** Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time the schedule becomes due. Null when it is never due again. */
+  nextRunAt?: string | null;
+  /** How the schedule repeats once it has run. Empty, `once` and `none`
+    mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+    `monthly` repeat at the same wall-clock time one calendar day, week
+    or month later in the schedule's `timezone`, so a daily schedule
+    keeps its local time across daylight-saving changes. `every:<n>`
+    repeats every `n` minutes (1 to 999999). Occurrences are counted
+    from `runAt` (else from the current `nextRunAt`); the next due time
+    is the first occurrence after the run is released, so missed runs
+    are not replayed.
+     */
+  recurrence?: string;
+  /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+    `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+    time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+    refuses a name it does not know with 400.
+     */
+  timezone: string;
+  /** Lifecycle status of a schedule. `pending`: created, not yet
+    due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+    designated for a particular worker but not yet claimed. `claimed`: a
+    worker holds the claim and has not started. `running`: the claim
+    holder is executing it. `retrying`: the last attempt failed and
+    another is due. `completed`, `failed` and `cancelled` are terminal
+    for a run-once schedule; a recurring schedule returns to `scheduled`
+    when its claim is released with a `completed` outcome.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time the most recent attempt ended (the release time of its claim). Server-managed. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt; empty after a successful one. Server-managed. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantConnectionId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantUserId?: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+     */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time of the last renewal. Null until the claim is first renewed. */
+    renewedAt?: string | null;
+    /** Time the claim was released. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+     */
+    outcome?: "completed" | "failed" | "cancelled";
+    /** Error reported with a `failed` outcome. Omitted otherwise. */
+    outcomeError?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    outcomeEventId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    releasedBy?: string;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+  /** Optional Posture this schedule runs under, resolved above the
+    profile x platform resolution and below an explicit per-run flag.
+    Omitted when the schedule has no override: it then runs under whatever
+    profile x platform, configuration, environment, account or default
+    resolves to, exactly as before. Any value outside the Posture
+    enum is refused with 400.
+     */
+  posture?: "cautious" | "standard" | "brisk";
+};
+export type GetScheduleByIdApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+};
+export type UpdateScheduleApiResponse = /** status 200 Schedule updated */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Type of the resource the schedule acts on, named the way a claim's
+    `resourceType` is (lowercase snake_case construct name, for example
+    `content_item` or `profile`). A server verifies the target types it
+    serves and refuses others with 400. Set together with `targetId` or
+    not at all.
+     */
+  targetType?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  targetId?: string;
+  /** Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time the schedule becomes due. Null when it is never due again. */
+  nextRunAt?: string | null;
+  /** How the schedule repeats once it has run. Empty, `once` and `none`
+    mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+    `monthly` repeat at the same wall-clock time one calendar day, week
+    or month later in the schedule's `timezone`, so a daily schedule
+    keeps its local time across daylight-saving changes. `every:<n>`
+    repeats every `n` minutes (1 to 999999). Occurrences are counted
+    from `runAt` (else from the current `nextRunAt`); the next due time
+    is the first occurrence after the run is released, so missed runs
+    are not replayed.
+     */
+  recurrence?: string;
+  /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+    `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+    time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+    refuses a name it does not know with 400.
+     */
+  timezone: string;
+  /** Lifecycle status of a schedule. `pending`: created, not yet
+    due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+    designated for a particular worker but not yet claimed. `claimed`: a
+    worker holds the claim and has not started. `running`: the claim
+    holder is executing it. `retrying`: the last attempt failed and
+    another is due. `completed`, `failed` and `cancelled` are terminal
+    for a run-once schedule; a recurring schedule returns to `scheduled`
+    when its claim is released with a `completed` outcome.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time the most recent attempt ended (the release time of its claim). Server-managed. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt; empty after a successful one. Server-managed. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantConnectionId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantUserId?: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+     */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time of the last renewal. Null until the claim is first renewed. */
+    renewedAt?: string | null;
+    /** Time the claim was released. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+     */
+    outcome?: "completed" | "failed" | "cancelled";
+    /** Error reported with a `failed` outcome. Omitted otherwise. */
+    outcomeError?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    outcomeEventId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    releasedBy?: string;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+  /** Optional Posture this schedule runs under, resolved above the
+    profile x platform resolution and below an explicit per-run flag.
+    Omitted when the schedule has no override: it then runs under whatever
+    profile x platform, configuration, environment, account or default
+    resolves to, exactly as before. Any value outside the Posture
+    enum is refused with 400.
+     */
+  posture?: "cautious" | "standard" | "brisk";
+};
+export type UpdateScheduleApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+  /** Entity tag of the schedule as last read, from the `ETag` header of getScheduleById, createSchedule or updateSchedule. When present the write applies only if it still matches; otherwise 412. */
+  "If-Match"?: string;
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** Human-readable name for the schedule. */
+    name: string;
+    /** The action the worker runs, for example a command name. */
+    action: string;
+    /** Type of the resource the schedule acts on, named the way a claim's
+        `resourceType` is (lowercase snake_case construct name, for example
+        `content_item` or `profile`). A server verifies the target types it
+        serves and refuses others with 400. Set together with `targetId` or
+        not at all.
+         */
+    targetType?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    targetId?: string;
+    /** Action parameters, stored as a JSON blob. */
+    params?: object;
+    /** Whether the schedule is eligible to run. */
+    enabled?: boolean;
+    /** Time the schedule first becomes due. */
+    runAt?: string | null;
+    /** Next time the schedule becomes due. Omitted on create, it defaults to `runAt`; omitted on update, it is kept. Send null for never due again. */
+    nextRunAt?: string | null;
+    /** How the schedule repeats once it has run. Empty, `once` and `none`
+        mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+        `monthly` repeat at the same wall-clock time one calendar day, week
+        or month later in the schedule's `timezone`, so a daily schedule
+        keeps its local time across daylight-saving changes. `every:<n>`
+        repeats every `n` minutes (1 to 999999). Occurrences are counted
+        from `runAt` (else from the current `nextRunAt`); the next due time
+        is the first occurrence after the run is released, so missed runs
+        are not replayed.
+         */
+    recurrence?: string;
+    /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+        `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+        time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+        refuses a name it does not know with 400.
+         */
+    timezone?: string;
+    /** Lifecycle status of a schedule. `pending`: created, not yet
+        due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+        designated for a particular worker but not yet claimed. `claimed`: a
+        worker holds the claim and has not started. `running`: the claim
+        holder is executing it. `retrying`: the last attempt failed and
+        another is due. `completed`, `failed` and `cancelled` are terminal
+        for a run-once schedule; a recurring schedule returns to `scheduled`
+        when its claim is released with a `completed` outcome.
+         */
+    status?:
+      | "pending"
+      | "scheduled"
+      | "assigned"
+      | "claimed"
+      | "running"
+      | "retrying"
+      | "completed"
+      | "failed"
+      | "cancelled";
+    /** Retries used so far for the current run, for example 0 to re-arm a schedule. Omitted on update, it is kept. */
+    retryCount?: number;
+    /** Maximum retries before the run is marked failed. */
+    maxRetries?: number;
+    /** Minutes to wait before a retry becomes due. */
+    retryDelayMinutes?: number;
+    /** `true` pauses the schedule so it is never claimed; `false`
+        resumes it. Omit to leave the pause unchanged. The server records
+        `pausedAt` and `pausedBy`.
+         */
+    paused?: boolean;
+    /** Reason for pausing; stored only while `paused` is true and cleared on resume. */
+    pauseReason?: string;
+    /** Optional Posture this schedule runs under, resolved above
+        the profile x platform resolution and below an explicit per-run
+        flag. Omit to inherit: the schedule then runs under whatever
+        profile x platform, configuration, environment, account or
+        default resolves to, exactly as before.
+         */
+    posture?: "cautious" | "standard" | "brisk";
+  };
+};
+export type DeleteScheduleByIdApiResponse = unknown;
+export type DeleteScheduleByIdApiArg = {
+  /** Schedule ID */
+  scheduleId: string;
+};
+export type GetSchedulesOfWorkspaceApiResponse = /** status 200 Schedules page */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Schedules included on this page of results. */
+  schedules: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    createdBy?: string;
+    /** Human-readable name for the schedule. */
+    name: string;
+    /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+    action: string;
+    /** Type of the resource the schedule acts on, named the way a claim's
+        `resourceType` is (lowercase snake_case construct name, for example
+        `content_item` or `profile`). A server verifies the target types it
+        serves and refuses others with 400. Set together with `targetId` or
+        not at all.
+         */
+    targetType?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    targetId?: string;
+    /** Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here. */
+    params?: object;
+    /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+    enabled: boolean;
+    /** Time the schedule first becomes due. */
+    runAt?: string | null;
+    /** Next time the schedule becomes due. Null when it is never due again. */
+    nextRunAt?: string | null;
+    /** How the schedule repeats once it has run. Empty, `once` and `none`
+        mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+        `monthly` repeat at the same wall-clock time one calendar day, week
+        or month later in the schedule's `timezone`, so a daily schedule
+        keeps its local time across daylight-saving changes. `every:<n>`
+        repeats every `n` minutes (1 to 999999). Occurrences are counted
+        from `runAt` (else from the current `nextRunAt`); the next due time
+        is the first occurrence after the run is released, so missed runs
+        are not replayed.
+         */
+    recurrence?: string;
+    /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+        `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+        time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+        refuses a name it does not know with 400.
+         */
+    timezone: string;
+    /** Lifecycle status of a schedule. `pending`: created, not yet
+        due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+        designated for a particular worker but not yet claimed. `claimed`: a
+        worker holds the claim and has not started. `running`: the claim
+        holder is executing it. `retrying`: the last attempt failed and
+        another is due. `completed`, `failed` and `cancelled` are terminal
+        for a run-once schedule; a recurring schedule returns to `scheduled`
+        when its claim is released with a `completed` outcome.
+         */
+    status:
+      | "pending"
+      | "scheduled"
+      | "assigned"
+      | "claimed"
+      | "running"
+      | "retrying"
+      | "completed"
+      | "failed"
+      | "cancelled";
+    /** Attempts already retried for the current run. */
+    retryCount: number;
+    /** Maximum retries before the run is marked failed. */
+    maxRetries: number;
+    /** Minutes to wait before a retry becomes due. */
+    retryDelayMinutes?: number;
+    /** Time the most recent attempt ended (the release time of its claim). Server-managed. */
+    lastRunAt?: string | null;
+    /** Error reported by the most recent attempt; empty after a successful one. Server-managed. */
+    lastError?: string;
+    /** The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed. */
+    claim?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      organizationId: string;
+      /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+      resourceType: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      resourceId: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantConnectionId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      claimantUserId?: string;
+      /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+       */
+      status: "active" | "released" | "expired";
+      /** Time the claim was taken. */
+      claimedAt: string;
+      /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+      expiresAt: string;
+      /** Time of the last renewal. Null until the claim is first renewed. */
+      renewedAt?: string | null;
+      /** Time the claim was released. Null while the claim is active or after it expired. */
+      releasedAt?: string | null;
+      /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+       */
+      outcome?: "completed" | "failed" | "cancelled";
+      /** Error reported with a `failed` outcome. Omitted otherwise. */
+      outcomeError?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      outcomeEventId?: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      releasedBy?: string;
+      /** Timestamp of claim creation. */
+      createdAt: string;
+      /** Timestamp of last claim modification. */
+      updatedAt: string;
+    };
+    /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+    pausedAt?: string | null;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    pausedBy?: string;
+    /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+    pauseReason?: string;
+    /** Timestamp of schedule creation. */
+    createdAt: string;
+    /** Timestamp of last schedule modification. */
+    updatedAt: string;
+    /** Timestamp when the schedule was soft-deleted. Null while live. */
+    deletedAt?: string | null;
+    /** Optional Posture this schedule runs under, resolved above the
+        profile x platform resolution and below an explicit per-run flag.
+        Omitted when the schedule has no override: it then runs under whatever
+        profile x platform, configuration, environment, account or default
+        resolves to, exactly as before. Any value outside the Posture
+        enum is refused with 400.
+         */
+    posture?: "cautious" | "standard" | "brisk";
+  }[];
+};
+export type GetSchedulesOfWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Only schedules in this status. */
+  status?:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+};
+export type AssignScheduleToWorkspaceApiResponse = /** status 200 The linked schedule */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  workspaceId?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  createdBy?: string;
+  /** Human-readable name for the schedule. */
+  name: string;
+  /** The action the worker runs when it holds the schedule's claim, for example a command name. */
+  action: string;
+  /** Type of the resource the schedule acts on, named the way a claim's
+    `resourceType` is (lowercase snake_case construct name, for example
+    `content_item` or `profile`). A server verifies the target types it
+    serves and refuses others with 400. Set together with `targetId` or
+    not at all.
+     */
+  targetType?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  targetId?: string;
+  /** Action parameters, stored as a JSON blob. What the schedule acts on belongs in `targetType` and `targetId`, not here. */
+  params?: object;
+  /** Whether the schedule is eligible to run. A disabled schedule is never claimed. */
+  enabled: boolean;
+  /** Time the schedule first becomes due. */
+  runAt?: string | null;
+  /** Next time the schedule becomes due. Null when it is never due again. */
+  nextRunAt?: string | null;
+  /** How the schedule repeats once it has run. Empty, `once` and `none`
+    mean run once. `hourly` repeats every hour; `daily`, `weekly` and
+    `monthly` repeat at the same wall-clock time one calendar day, week
+    or month later in the schedule's `timezone`, so a daily schedule
+    keeps its local time across daylight-saving changes. `every:<n>`
+    repeats every `n` minutes (1 to 999999). Occurrences are counted
+    from `runAt` (else from the current `nextRunAt`); the next due time
+    is the first occurrence after the run is released, so missed runs
+    are not replayed.
+     */
+  recurrence?: string;
+  /** IANA time zone name (for example `UTC` or `America/Chicago`) in which
+    `daily`, `weekly` and `monthly` recurrences keep their wall-clock
+    time. Instants (`runAt`, `nextRunAt`) are always absolute. The server
+    refuses a name it does not know with 400.
+     */
+  timezone: string;
+  /** Lifecycle status of a schedule. `pending`: created, not yet
+    due-scheduled. `scheduled`: waiting for its due time. `assigned`:
+    designated for a particular worker but not yet claimed. `claimed`: a
+    worker holds the claim and has not started. `running`: the claim
+    holder is executing it. `retrying`: the last attempt failed and
+    another is due. `completed`, `failed` and `cancelled` are terminal
+    for a run-once schedule; a recurring schedule returns to `scheduled`
+    when its claim is released with a `completed` outcome.
+     */
+  status:
+    | "pending"
+    | "scheduled"
+    | "assigned"
+    | "claimed"
+    | "running"
+    | "retrying"
+    | "completed"
+    | "failed"
+    | "cancelled";
+  /** Attempts already retried for the current run. */
+  retryCount: number;
+  /** Maximum retries before the run is marked failed. */
+  maxRetries: number;
+  /** Minutes to wait before a retry becomes due. */
+  retryDelayMinutes?: number;
+  /** Time the most recent attempt ended (the release time of its claim). Server-managed. */
+  lastRunAt?: string | null;
+  /** Error reported by the most recent attempt; empty after a successful one. Server-managed. */
+  lastError?: string;
+  /** The schedule's live claim, when one is held. A read-only view of the claim construct; omitted when the schedule is unclaimed. */
+  claim?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organizationId: string;
+    /** Type of the claimed resource, the construct name in snake_case, for example `content_item` or `schedule`. */
+    resourceType: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    resourceId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantConnectionId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    claimantUserId?: string;
+    /** Lifecycle of the claim. `active` while held, `released` once the holder (or a member allowed to release it) lets it go, `expired` once `expiresAt` passed without a renewal or the holding connection was deleted. Expiry is evaluated when the claim is read, so a claim never reads `active` past its `expiresAt`.
+     */
+    status: "active" | "released" | "expired";
+    /** Time the claim was taken. */
+    claimedAt: string;
+    /** Time the claim lapses unless the holder renews it. Always set by the server; a claim past this time is stale. */
+    expiresAt: string;
+    /** Time of the last renewal. Null until the claim is first renewed. */
+    renewedAt?: string | null;
+    /** Time the claim was released. Null while the claim is active or after it expired. */
+    releasedAt?: string | null;
+    /** What the releaser reported when the claim was released: `completed` when the work behind it finished, `failed` when it was attempted and did not succeed, `cancelled` when it was let go without the work being done (including a release by another member). Omitted while the claim is active and on an expired claim.
+     */
+    outcome?: "completed" | "failed" | "cancelled";
+    /** Error reported with a `failed` outcome. Omitted otherwise. */
+    outcomeError?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    outcomeEventId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    releasedBy?: string;
+    /** Timestamp of claim creation. */
+    createdAt: string;
+    /** Timestamp of last claim modification. */
+    updatedAt: string;
+  };
+  /** Time the schedule was paused. Null when the schedule is not paused. Server-managed. */
+  pausedAt?: string | null;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  pausedBy?: string;
+  /** Reason given for pausing the schedule, set with `paused` on create or update. Empty when not paused. */
+  pauseReason?: string;
+  /** Timestamp of schedule creation. */
+  createdAt: string;
+  /** Timestamp of last schedule modification. */
+  updatedAt: string;
+  /** Timestamp when the schedule was soft-deleted. Null while live. */
+  deletedAt?: string | null;
+  /** Optional Posture this schedule runs under, resolved above the
+    profile x platform resolution and below an explicit per-run flag.
+    Omitted when the schedule has no override: it then runs under whatever
+    profile x platform, configuration, environment, account or default
+    resolves to, exactly as before. Any value outside the Posture
+    enum is refused with 400.
+     */
+  posture?: "cautious" | "standard" | "brisk";
+};
+export type AssignScheduleToWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Schedule ID */
+  scheduleId: string;
+};
+export type UnassignScheduleFromWorkspaceApiResponse = unknown;
+export type UnassignScheduleFromWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Schedule ID */
+  scheduleId: string;
+};
 export type GetSubscriptionsApiResponse = /** status 200 Subscriptions response */ {
   /** Current page number of the result set. */
   page: number;
@@ -14478,6 +21251,8 @@ export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
 export type GetUserTokensApiArg = {
   /** Whether to retrieve OAuth-backed sessions instead of API tokens. */
   isOauth?: boolean;
+  /** Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
+  purpose?: string;
   /** Get responses by page */
   page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
@@ -14523,7 +21298,7 @@ export type GenerateTokenApiResponse = /** status 201 Token generated */ {
 export type GenerateTokenApiArg = {
   /** Name of the token. */
   name: string;
-  /** Purpose for which the token is generated. */
+  /** Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
   purpose?: string;
 };
 export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
@@ -14623,6 +21398,53 @@ export type IssueIndefiniteLifetimeTokenApiArg = {
   userId: string;
   /** Authentication provider to associate with the indefinite token. */
   provider: string;
+};
+export type GetNativeClientAuthorizationApiResponse = unknown;
+export type GetNativeClientAuthorizationApiArg = {
+  /** Display name of the native client asking to sign in. Used as the name and purpose of the minted token. */
+  clientName: string;
+  /** Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`. */
+  client?: string;
+  /** Version of the client application, for example `v1.25.0`. */
+  clientVersion?: string;
+  /** Port on 127.0.0.1 where the native client listens for the callback. */
+  port: number;
+  /** PKCE code challenge, BASE64URL(SHA256(codeVerifier)) without padding. */
+  codeChallenge: string;
+  /** PKCE challenge method. Only S256 is accepted. */
+  codeChallengeMethod: "S256";
+  /** Opaque value from the native client, returned unchanged on the callback. */
+  state: string;
+};
+export type ExchangeNativeAuthorizationCodeApiResponse = /** status 201 API token minted for the native client */ {
+  /** Unique identifier for the token. */
+  id: string;
+  /** UUID of the user who owns the token. */
+  owner: string;
+  /** Authentication provider associated with the token. */
+  provider: string;
+  /** Access token value. */
+  accessToken: string;
+  /** Refresh token value when applicable. */
+  refreshToken?: string;
+  /** Human-readable token name. */
+  name: string;
+  /** Purpose for which the token was created. */
+  purpose: string;
+  /** Whether this entry represents an OAuth session. */
+  isOauth: boolean;
+  /** Timestamp when the token was created. */
+  createdAt: string;
+  /** Timestamp when the token was last updated. */
+  updatedAt: string;
+};
+export type ExchangeNativeAuthorizationCodeApiArg = {
+  body: {
+    /** Single-use authorization code from the loopback callback. */
+    code: string;
+    /** PKCE code verifier (RFC 7636, 43 to 128 unreserved characters). */
+    codeVerifier: string;
+  };
 };
 export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
   /** Current page number of the result set. */
@@ -14883,9 +21705,12 @@ export type DeleteWorkspaceApiArg = {
   workspaceId: string;
 };
 export type GetTeamsOfWorkspaceApiResponse = /** status 200 Teams */ {
+  /** Current page number of the result set. */
   page?: number;
-  page_size?: number;
-  total_count?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
   /** The teams of the teampage. */
   teams?: {
     /** Team ID */
@@ -14898,10 +21723,12 @@ export type GetTeamsOfWorkspaceApiResponse = /** status 200 Teams */ {
     owner?: string;
     /** Additional metadata for the team */
     metadata?: object;
-    created_at?: string;
-    updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
+    /** Timestamp when the team was created. */
+    createdAt: string;
+    /** Timestamp when the team was last updated. */
+    updatedAt: string;
+    /** Timestamp when the team was soft-deleted, if applicable. */
+    deletedAt?: string;
   }[];
 };
 export type GetTeamsOfWorkspaceApiArg = {
@@ -14984,13 +21811,13 @@ export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments 
     updatedAt?: string;
     /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
     deletedAt?: string | null;
-    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust.
+    /** What the environment exists for. `user` is an ordinary environment that people create to logically group Connections and their Credentials. `administrative` designates an environment the platform itself provisions to hold organization-level configuration, and which resolvers of that configuration therefore trust. Profiles are not environments: they are their own construct (`schemas/constructs/v1beta3/profile`, served at `/api/profiles` and assigned to workspaces under `/api/workspaces/{workspaceId}/profiles`).
         
         Absent means `user`. Nothing may read an unset or unrecognised value as administrative: test for the administrative value explicitly rather than for "not user", so the property fails closed.
         
         At most one live environment per organization may carry any single privileged purpose - `administrative`, and each privileged value a later version adds. Name those values explicitly wherever the rule is enforced, including the database index predicate: a "not `user`" test also matches the empty value that unmigrated rows and un-normalised writes read back as, which means ordinary. A resolver that selects an environment by purpose MUST fail closed when more than one live row matches: return an error rather than whichever row the database happened to return first.
         
-        Server-owned and not client-settable. It is absent from `EnvironmentPayload`, which every environment POST and PUT requestBody references, and from the create-or-edit form, so the environment create and update endpoints have no field for it. That exclusion is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
+        Privileged values are server-owned and never client-settable. `EnvironmentPayload`, which every environment POST and PUT requestBody references, accepts only the non-privileged value `user`, and the create-or-edit form has no field for it, so the environment create and update endpoints cannot designate an environment administrative. That restriction is a codegen guarantee, never access control: the registrant connection inlines the full environment entity, so `registerRegistryComponent` and `registerRegistryRelationship` do carry `purpose` in a request type and consumers MUST refuse it on input there too. Whatever surface a value arrives on, every consumer MUST assign this property only from server-side provisioning or a data migration. Permission to create an environment does not confer the ability to make one administrative.
         
         The database index that enforces the uniqueness invariant, the migration path for environments that are administrative by naming convention today, and each consumer's obligations are specified in https://github.com/meshery/schemas/blob/master/docs/environment-purpose-contract.md. */
     purpose?: "user" | "administrative";
@@ -15059,14 +21886,14 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
-      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-      class?: "official" | "verified" | "reference architecture";
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. */
+      contentClass?: "official" | "verified" | "community";
       /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
       compatibility: "kubernetes"[];
       /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
-      pattern_caveats: string;
+      patternCaveats: string;
       /** Purpose of the design along with its intended and unintended uses. */
-      pattern_info: string;
+      patternInfo: string;
       /** Categorization of the type of design or operational flow depicted in this design. */
       type:
         | "Deployment"
@@ -15078,10 +21905,13 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
         | "Troubleshooting"
         | "Workloads";
       /** Contains reference to the dark and light mode snapshots of the design. */
-      snapshotURL?: string[];
+      imageURL?: string[];
     };
     created_at?: string;
     user_id?: string;
+    /** The organization the design belongs to. The server sets it from the session organization. Never accepted from clients. Optional on this superseded shape, which workspace design lists still return. v1beta3 MesheryPattern requires it. A client value on the deprecated design write is ignored. A workspace this design is assigned to must belong to this same organization.
+     */
+    organizationId?: string;
     location?: {
       [key: string]: string;
     };
@@ -15181,6 +22011,8 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
             updated_at?: string;
             /** SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+            organizationId?: string;
             /** Associated environments for this connection */
             environments?: {
               /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -16117,6 +22949,91 @@ export type UnassignDesignFromWorkspaceApiArg = {
   /** Design ID */
   designId: string;
 };
+export type GetProfilesOfWorkspaceApiResponse = /** status 200 Profiles */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of items across all pages. */
+  totalCount: number;
+  /** Profiles in this page. */
+  profiles: {
+    /** Server-generated profile ID. */
+    id: string;
+    /** Specifies the version of the schema to which the profile conforms. */
+    schemaVersion: string;
+    /** Name of the profile, typically its short handle. Not unique; like environment names, two profiles may share one. */
+    name: string;
+    /** Description of the profile. */
+    description?: string;
+    /** Owning organization ID. Fixed at creation. */
+    organizationId: string;
+    /** ID of the user who owns the profile. Defaults to the creating user. The owner, or a holder of the Edit Profile key in a workspace the profile is assigned to, may transfer it. When the owner's account is deleted, ownership passes on by the same succession rule that applies to designs. */
+    owner: string;
+    /** ID of the user this profile represents, when it represents a user. Absent for a profile that represents no user account, such as a brand. Not unique: a user may be represented by more than one profile. */
+    userId?: string;
+    /** Free-form settings of the profile, stored as a JSON blob. */
+    metadata?: object;
+    /** Timestamp when the profile was created. */
+    createdAt: string;
+    /** Timestamp when the profile was last updated. */
+    updatedAt: string;
+    /** Timestamp when the profile was soft-deleted. Null while the profile remains active. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetProfilesOfWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
+  pagesize?: number;
+  /** JSON-encoded filter string used for assignment and soft-delete filters. */
+  filter?: string;
+};
+export type AssignProfileToWorkspaceApiResponse = /** status 200 Workspace profile mappings */ {
+  /** Zero-based page index returned in this response. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+  /** Total number of items across all pages. */
+  totalCount?: number;
+  /** Workspace-profile mapping entries. */
+  workspacesProfilesMapping?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspaceId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    profileId: string;
+    /** Timestamp when the mapping was created. */
+    createdAt?: string;
+    /** Timestamp when the mapping was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the mapping was soft-deleted. */
+    deletedAt?: string | null;
+  }[];
+};
+export type AssignProfileToWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Profile ID */
+  profileId: string;
+};
+export type UnassignProfileFromWorkspaceApiResponse = unknown;
+export type UnassignProfileFromWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Profile ID */
+  profileId: string;
+};
 export type GetViewsOfWorkspaceApiResponse = /** status 200 Views */ {
   page?: number;
   page_size?: number;
@@ -16202,6 +23119,7 @@ export type UnassignViewFromWorkspaceApiArg = {
   viewId: string;
 };
 export const {
+  useSubmitFailureDiagnosticMutation,
   useGetFeaturesQuery,
   useLazyGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
@@ -16220,6 +23138,7 @@ export const {
   useLazyGetOrganizationSmtpDomainVerificationQuery,
   useVerifyOrganizationSmtpDomainMutation,
   useSubmitSupportRequestMutation,
+  useSubmitAnonymousSupportRequestMutation,
   useGetSystemVersionQuery,
   useLazyGetSystemVersionQuery,
   useSendTestEmailMutation,
@@ -16267,8 +23186,12 @@ export const {
   useLazyGetOrgQuery,
   useDeleteOrgMutation,
   useUpdateOrgMutation,
+  useGetChildOrgsQuery,
+  useLazyGetChildOrgsQuery,
+  useCreateChildOrgMutation,
   useGetOrgPreferencesQuery,
   useLazyGetOrgPreferencesQuery,
+  usePatchOrgPreferencesMutation,
   useAddTeamToOrgMutation,
   useGetTeamByIdQuery,
   useLazyGetTeamByIdQuery,
@@ -16308,6 +23231,7 @@ export const {
   useLazyGetUserProfileByIdQuery,
   useGetUserQuery,
   useLazyGetUserQuery,
+  useUpdateUserPreferencesMutation,
   useGetUserProfileOverviewQuery,
   useLazyGetUserProfileOverviewQuery,
   useGetUserRecentActivitiesQuery,
@@ -16355,6 +23279,15 @@ export const {
   useLazyGetAcademyAdminRegistrationsQuery,
   useGetCertificateByIdQuery,
   useLazyGetCertificateByIdQuery,
+  useGetBlowhornHealthQuery,
+  useLazyGetBlowhornHealthQuery,
+  useListClaimsQuery,
+  useLazyListClaimsQuery,
+  useCreateClaimMutation,
+  useGetClaimQuery,
+  useLazyGetClaimQuery,
+  useRenewClaimMutation,
+  useReleaseClaimMutation,
   useGetConnectionsQuery,
   useLazyGetConnectionsQuery,
   useRegisterConnectionMutation,
@@ -16363,6 +23296,10 @@ export const {
   useUpdateConnectionMutation,
   useDeleteConnectionMutation,
   useDeleteMesheryConnectionMutation,
+  useGetDesktopConnectionsOfOrganizationQuery,
+  useLazyGetDesktopConnectionsOfOrganizationQuery,
+  useDeregisterDesktopConnectionMutation,
+  useRecordConnectionHeartbeatMutation,
   useGetKubernetesContextQuery,
   useLazyGetKubernetesContextQuery,
   useAddConnectionToEnvironmentMutation,
@@ -16374,6 +23311,13 @@ export const {
   useLazyGetConnectionDefinitionQuery,
   useUpdateConnectionDefinitionMutation,
   useDeleteConnectionDefinitionMutation,
+  useListContentItemsQuery,
+  useLazyListContentItemsQuery,
+  useInsertContentItemMutation,
+  useGetContentItemQuery,
+  useLazyGetContentItemQuery,
+  useUpdateContentItemMutation,
+  useDeleteContentItemMutation,
   useGetPatternsQuery,
   useLazyGetPatternsQuery,
   useUpsertPatternMutation,
@@ -16385,7 +23329,14 @@ export const {
   useGetDesignPatternFileQuery,
   useLazyGetDesignPatternFileQuery,
   useUpsertPatternSourceContentMutation,
+  useRefreshPatternFromSourceMutation,
+  useUpdatePatternSourceMutation,
   useImportDesignMutation,
+  useGetGithubImportedDesignsQuery,
+  useLazyGetGithubImportedDesignsQuery,
+  useImportGithubRepositoryMutation,
+  useGetGithubRepositoryBranchesQuery,
+  useLazyGetGithubRepositoryBranchesQuery,
   useGetCatalogContentQuery,
   useLazyGetCatalogContentQuery,
   usePublishCatalogContentMutation,
@@ -16435,6 +23386,18 @@ export const {
   useCloneFilterMutation,
   useGetFilterFileQuery,
   useLazyGetFilterFileQuery,
+  useGetGithubAppStatusQuery,
+  useLazyGetGithubAppStatusQuery,
+  useGetGithubInstallationRepositoriesQuery,
+  useLazyGetGithubInstallationRepositoriesQuery,
+  useScanGithubRepositoryQuery,
+  useLazyScanGithubRepositoryQuery,
+  useVerifyGithubRepositoryWorkflowMutation,
+  useInstallGithubWorkflowMutation,
+  useStartGithubAuthorizationQuery,
+  useLazyStartGithubAuthorizationQuery,
+  useGithubAppCallbackQuery,
+  useLazyGithubAppCallbackQuery,
   useGetInvitationQuery,
   useLazyGetInvitationQuery,
   useDeleteInvitationMutation,
@@ -16451,6 +23414,32 @@ export const {
   useDenySignupRequestMutation,
   useGetSignupRequestNotificationQuery,
   useLazyGetSignupRequestNotificationQuery,
+  useListLedgerEntriesQuery,
+  useLazyListLedgerEntriesQuery,
+  useRecordLedgerEntryMutation,
+  useClaimLedgerEntryMutation,
+  useGetLedgerEntryQuery,
+  useLazyGetLedgerEntryQuery,
+  useUpdateLedgerEntryMutation,
+  useDeleteLedgerEntryMutation,
+  useListMediaAssetsQuery,
+  useLazyListMediaAssetsQuery,
+  useCreateMediaAssetMutation,
+  useGetMediaAssetQuotaQuery,
+  useLazyGetMediaAssetQuotaQuery,
+  useGetMediaAssetQuery,
+  useLazyGetMediaAssetQuery,
+  useUpdateMediaAssetMutation,
+  useDeleteMediaAssetMutation,
+  useCompleteMediaAssetMutation,
+  useGetMediaAssetDownloadQuery,
+  useLazyGetMediaAssetDownloadQuery,
+  useGetMediaAssetContentQuery,
+  useLazyGetMediaAssetContentQuery,
+  useGetMentionAliasesQuery,
+  useLazyGetMentionAliasesQuery,
+  useUpsertMentionAliasesMutation,
+  useDeleteMentionAliasMutation,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,
@@ -16472,6 +23461,32 @@ export const {
   useLazyGetPerformanceResultsQuery,
   useGetPlansQuery,
   useLazyGetPlansQuery,
+  useCreateProfileMutation,
+  useGetProfilesQuery,
+  useLazyGetProfilesQuery,
+  useGetProfileConnectionMappingsQuery,
+  useLazyGetProfileConnectionMappingsQuery,
+  useGetProfileByIdQuery,
+  useLazyGetProfileByIdQuery,
+  useUpdateProfileMutation,
+  useDeleteProfileMutation,
+  useGetProfileConnectionsQuery,
+  useLazyGetProfileConnectionsQuery,
+  useAddConnectionToProfileMutation,
+  useRemoveConnectionFromProfileMutation,
+  useGetProviderCapabilitiesQuery,
+  useLazyGetProviderCapabilitiesQuery,
+  useListSchedulesQuery,
+  useLazyListSchedulesQuery,
+  useCreateScheduleMutation,
+  useGetScheduleByIdQuery,
+  useLazyGetScheduleByIdQuery,
+  useUpdateScheduleMutation,
+  useDeleteScheduleByIdMutation,
+  useGetSchedulesOfWorkspaceQuery,
+  useLazyGetSchedulesOfWorkspaceQuery,
+  useAssignScheduleToWorkspaceMutation,
+  useUnassignScheduleFromWorkspaceMutation,
   useGetSubscriptionsQuery,
   useLazyGetSubscriptionsQuery,
   useUpsertSubscriptionMutation,
@@ -16490,6 +23505,9 @@ export const {
   useLazyDownloadTokenQuery,
   useIssueIndefiniteLifetimeTokenQuery,
   useLazyIssueIndefiniteLifetimeTokenQuery,
+  useGetNativeClientAuthorizationQuery,
+  useLazyGetNativeClientAuthorizationQuery,
+  useExchangeNativeAuthorizationCodeMutation,
   useGetUsersQuery,
   useLazyGetUsersQuery,
   useSearchUsersQuery,
@@ -16515,6 +23533,10 @@ export const {
   useLazyGetDesignsOfWorkspaceQuery,
   useAssignDesignToWorkspaceMutation,
   useUnassignDesignFromWorkspaceMutation,
+  useGetProfilesOfWorkspaceQuery,
+  useLazyGetProfilesOfWorkspaceQuery,
+  useAssignProfileToWorkspaceMutation,
+  useUnassignProfileFromWorkspaceMutation,
   useGetViewsOfWorkspaceQuery,
   useLazyGetViewsOfWorkspaceQuery,
   useAssignViewToWorkspaceMutation,

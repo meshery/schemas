@@ -6,7 +6,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "074bfd49fc94fbe7125cfac2215c0844135ca66e378e6e1bfa6a8a9de7ca1be8"
+const IndexID = "e0e93dd7284f2834f1d2b5683e27025aa3747e63ff4d78d8624039dc9fa9232a"
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -152,6 +152,18 @@ var (
 
 	// CatalogManagementDeleteWasmFilter - Delete WASM filter permanently from catalog.
 	CatalogManagementDeleteWasmFilter = PermissionKey(uuid.Must(uuid.FromString("9225d5a7-7255-49be-9233-daeabefae306")))
+
+	// CatalogManagementViewContentItems - View the content items of the organization
+	CatalogManagementViewContentItems = PermissionKey(uuid.Must(uuid.FromString("5cd87dc9-02c6-44a0-a019-281f7295ad08")))
+
+	// CatalogManagementCreateContentItem - Create a content item in the organization
+	CatalogManagementCreateContentItem = PermissionKey(uuid.Must(uuid.FromString("5fb97ae1-49ed-490c-b17a-377bf5558585")))
+
+	// CatalogManagementEditContentItem - Edit a content item of the organization
+	CatalogManagementEditContentItem = PermissionKey(uuid.Must(uuid.FromString("06858261-c7eb-464a-a4b7-e29792a7ae54")))
+
+	// CatalogManagementDeleteContentItem - Delete a content item of the organization
+	CatalogManagementDeleteContentItem = PermissionKey(uuid.Must(uuid.FromString("129d0297-1091-40e4-8d4a-5262b3378305")))
 
 	// CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers - Invite any Meshery Cloud user, or all Meshery users, to work with you on a public design that control – including making changes and releasing new versions.
 	CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers = PermissionKey(uuid.Must(uuid.FromString("ccc4bc8d-f484-42b3-8a62-2667284605c3")))
@@ -1092,6 +1104,12 @@ var (
 	// WorkspaceManagementRemoveDesignsFromWorkspaces - Remove designs from workspaces
 	WorkspaceManagementRemoveDesignsFromWorkspaces = PermissionKey(uuid.Must(uuid.FromString("076515f1-f696-4211-ae27-58d5463a229e")))
 
+	// WorkspaceManagementAssignProfileToWorkspace - Add a profile to a workspace
+	WorkspaceManagementAssignProfileToWorkspace = PermissionKey(uuid.Must(uuid.FromString("d02cab86-8c22-411e-a82a-50b7a8446b6c")))
+
+	// WorkspaceManagementRemoveProfileFromWorkspace - Remove a profile from a workspace
+	WorkspaceManagementRemoveProfileFromWorkspace = PermissionKey(uuid.Must(uuid.FromString("1d8adb54-5e28-419f-83b6-2ea5ab6843a0")))
+
 	// WorkspaceManagementConnectGithubAccountToWorkspace - No description available
 	WorkspaceManagementConnectGithubAccountToWorkspace = PermissionKey(uuid.Must(uuid.FromString("410b2d3c-8194-44d1-9f80-7b5fea689b4f")))
 
@@ -1118,6 +1136,18 @@ var (
 
 	// WorkspaceManagementRemoveConnectionsFromEnvironment - Remove connections from environment,
 	WorkspaceManagementRemoveConnectionsFromEnvironment = PermissionKey(uuid.Must(uuid.FromString("65648682-e47f-43d7-a5ad-dc042803f951")))
+
+	// WorkspaceManagementViewProfiles - See profiles assigned to your workspaces. Org admins see every profile in the organization.
+	WorkspaceManagementViewProfiles = PermissionKey(uuid.Must(uuid.FromString("77f8a444-f9ac-4cb5-bb26-832b53addf01")))
+
+	// WorkspaceManagementCreateProfile - Create a new profile
+	WorkspaceManagementCreateProfile = PermissionKey(uuid.Must(uuid.FromString("b71221e9-3247-4510-9175-14b9de4fb06e")))
+
+	// WorkspaceManagementDeleteProfile - Delete a profile and its workspace and connection memberships. Leave associated connections intact.
+	WorkspaceManagementDeleteProfile = PermissionKey(uuid.Must(uuid.FromString("cad76a9d-5718-4503-8293-570b495d82bc")))
+
+	// WorkspaceManagementEditProfile - Edit a profile, transfer its owner, and link or unlink its connections
+	WorkspaceManagementEditProfile = PermissionKey(uuid.Must(uuid.FromString("b8f0c75c-39f6-488f-92c0-ab6add761266")))
 
 	// WorkspaceManagementViewProjects - View all of your projects
 	WorkspaceManagementViewProjects = PermissionKey(uuid.Must(uuid.FromString("141a5f3d-b5e2-4f36-8f83-df7f73744ee1")))
@@ -1290,6 +1320,33 @@ var (
 	// WorkflowManagementSingleAndMultipleApprovers - No description available
 	WorkflowManagementSingleAndMultipleApprovers = PermissionKey(uuid.Must(uuid.FromString("8b8b8eb2-00d5-4501-8c94-529f1b0b0f27")))
 
+	// WorkflowManagementViewClaims - See the claims in your organization, active and past, and which connection and member holds each.
+	WorkflowManagementViewClaims = PermissionKey(uuid.Must(uuid.FromString("93696d4c-48db-415e-aac9-778390896093")))
+
+	// WorkflowManagementTakeAndRenewClaims - Take a claim on a resource of your organization with one of your own connections, and renew it.
+	WorkflowManagementTakeAndRenewClaims = PermissionKey(uuid.Must(uuid.FromString("1450f30c-6664-4107-9818-eca7508182d5")))
+
+	// WorkflowManagementReleaseClaim - Release a claim you hold and record its outcome.
+	WorkflowManagementReleaseClaim = PermissionKey(uuid.Must(uuid.FromString("6789de53-1b28-407f-90dc-bf290eb28cf6")))
+
+	// WorkflowManagementReleaseClaimsOfOtherMembers - Release a claim another member of your organization holds, for example a hold left by a computer that went offline.
+	WorkflowManagementReleaseClaimsOfOtherMembers = PermissionKey(uuid.Must(uuid.FromString("2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7")))
+
+	// WorkflowManagementViewSchedules - View the schedules of the organization, when each runs next and which connection holds each one
+	WorkflowManagementViewSchedules = PermissionKey(uuid.Must(uuid.FromString("9eba0b6a-08d1-42a2-a2fa-dd5fc5aeb542")))
+
+	// WorkflowManagementCreateSchedule - Create a schedule in the organization
+	WorkflowManagementCreateSchedule = PermissionKey(uuid.Must(uuid.FromString("135c39f9-0a98-4db6-a7cd-42e903ab9d32")))
+
+	// WorkflowManagementEditSchedule - Change a schedule of the organization, including pausing and resuming it
+	WorkflowManagementEditSchedule = PermissionKey(uuid.Must(uuid.FromString("6767b9a0-d138-4672-a8ba-26ce6e217c48")))
+
+	// WorkflowManagementDeleteSchedule - Delete a schedule of the organization
+	WorkflowManagementDeleteSchedule = PermissionKey(uuid.Must(uuid.FromString("d2ab90ab-7abb-4aa3-a38a-24ed4b6b1665")))
+
+	// WorkflowManagementAssignSchedulesToWorkspaces - Link a schedule of the organization to a workspace, or remove the link
+	WorkflowManagementAssignSchedulesToWorkspaces = PermissionKey(uuid.Must(uuid.FromString("264bda82-2676-41a2-bfff-2d90c7bf52f0")))
+
 	// BusinessPerformanceShoppingCartBasedRealTimeDiscount - No description available
 	BusinessPerformanceShoppingCartBasedRealTimeDiscount = PermissionKey(uuid.Must(uuid.FromString("b1e81301-0726-4d62-a920-c10ee5d563b0")))
 
@@ -1361,4 +1418,7 @@ var (
 
 	// ChaosManagementAsDaemonsets - No description available
 	ChaosManagementAsDaemonsets = PermissionKey(uuid.Must(uuid.FromString("b73d71ec-f5b2-4d0b-83de-6e2dccff5041")))
+
+	// BlowhornAccessDiagnostics - Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
+	BlowhornAccessDiagnostics = PermissionKey(uuid.Must(uuid.FromString("afb597fc-a027-4ade-b5f9-c5f82b67b053")))
 )

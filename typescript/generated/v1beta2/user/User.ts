@@ -58,6 +58,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/identity/users/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update the current user's preferences
+         * @description Merges the payload onto the signed-in user's stored preferences. A key the payload names replaces the stored value; a key it leaves out keeps the stored value. Setting selectedOrganizationId switches the organization the user's session has selected, as Meshery Cloud's and Meshery's organization switchers do. Badges are server-owned and are never changed through this operation.
+         */
+        put: operations["updateUserPreferences"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/identity/users/profile/details": {
         parameters: {
             query?: never;
@@ -379,7 +399,7 @@ export interface components {
             roleNames?: string[];
             /** @description Teams the user belongs to with role information */
             teams?: {
-                /** @description Team memberships for the user with their assigned roles. */
+                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                 teamsWithRoles?: {
                     /**
                      * Format: uuid
@@ -416,13 +436,13 @@ export interface components {
                     deletedAt?: string | null;
                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                     roleNames: string[];
-                }[];
-                /** @description Total number of team memberships returned for the user. */
-                totalCount?: number;
+                }[] | null;
+                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                totalCount?: number | null;
             };
             /** @description Organizations the user belongs to with role information */
             organizations?: {
-                /** @description Organization memberships for the user with their assigned roles. */
+                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                 organizationsWithRoles?: {
                     /**
                      * Format: uuid
@@ -459,9 +479,9 @@ export interface components {
                     deletedAt?: string | null;
                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                     roleNames: string[];
-                }[];
-                /** @description Total number of organization memberships returned for the user. */
-                totalCount?: number;
+                }[] | null;
+                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                totalCount?: number | null;
             };
         };
         /** @description One email address associated with a user account. A user has exactly one primary address (mirrored in users.email) and any number of secondary addresses accumulated from account consolidation or explicit addition. Uniqueness across live addresses is enforced case-insensitively. */
@@ -767,7 +787,7 @@ export interface components {
                 roleNames?: string[];
                 /** @description Teams the user belongs to with role information */
                 teams?: {
-                    /** @description Team memberships for the user with their assigned roles. */
+                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                     teamsWithRoles?: {
                         /**
                          * Format: uuid
@@ -804,13 +824,13 @@ export interface components {
                         deletedAt?: string | null;
                         /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                         roleNames: string[];
-                    }[];
-                    /** @description Total number of team memberships returned for the user. */
-                    totalCount?: number;
+                    }[] | null;
+                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                    totalCount?: number | null;
                 };
                 /** @description Organizations the user belongs to with role information */
                 organizations?: {
-                    /** @description Organization memberships for the user with their assigned roles. */
+                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                     organizationsWithRoles?: {
                         /**
                          * Format: uuid
@@ -847,9 +867,9 @@ export interface components {
                         deletedAt?: string | null;
                         /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                         roleNames: string[];
-                    }[];
-                    /** @description Total number of organization memberships returned for the user. */
-                    totalCount?: number;
+                    }[] | null;
+                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                    totalCount?: number | null;
                 };
             }[];
         };
@@ -1041,7 +1061,7 @@ export interface components {
                 roleNames?: string[];
                 /** @description Teams the user belongs to with role information */
                 teams?: {
-                    /** @description Team memberships for the user with their assigned roles. */
+                    /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                     teamsWithRoles?: {
                         /**
                          * Format: uuid
@@ -1078,13 +1098,13 @@ export interface components {
                         deletedAt?: string | null;
                         /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                         roleNames: string[];
-                    }[];
-                    /** @description Total number of team memberships returned for the user. */
-                    totalCount?: number;
+                    }[] | null;
+                    /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                    totalCount?: number | null;
                 };
                 /** @description Organizations the user belongs to with role information */
                 organizations?: {
-                    /** @description Organization memberships for the user with their assigned roles. */
+                    /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                     organizationsWithRoles?: {
                         /**
                          * Format: uuid
@@ -1121,9 +1141,9 @@ export interface components {
                         deletedAt?: string | null;
                         /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                         roleNames: string[];
-                    }[];
-                    /** @description Total number of organization memberships returned for the user. */
-                    totalCount?: number;
+                    }[] | null;
+                    /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                    totalCount?: number | null;
                 };
             }[];
         };
@@ -1196,6 +1216,74 @@ export interface components {
             };
             /** @description The remote provider preferences of the preference. */
             remoteProviderPreferences: {
+                [key: string]: unknown;
+            };
+        };
+        /** @description The client-settable fields of Preference for updateUserPreferences. Every field is optional: the server merges the ones present onto the stored preferences and keeps the rest. updatedAt is server-recorded and is not settable. */
+        PreferencePayload: {
+            /** @description The mesh adapters of the preference. */
+            meshAdapters?: Record<string, never>[];
+            grafana?: {
+                /** @description Grafana URL for the user configuration. */
+                grafanaUrl?: string;
+                /** @description Grafana API key for the user configuration. */
+                grafanaApiKey?: string;
+                /** @description Selected Grafana board configurations for the user. */
+                selectedBoardsConfigs?: {
+                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                    board?: Record<string, never>;
+                    /** @description Panels selected for the Grafana board configuration. */
+                    panels?: Record<string, never>[];
+                    /** @description Template variables applied to the selected Grafana board configuration. */
+                    templateVars?: string[];
+                }[];
+            };
+            prometheus?: {
+                /** @description The prometheus URL of the prometheus. */
+                prometheusUrl?: string;
+                /** @description The selected prometheus boards configs of the prometheus. */
+                selectedPrometheusBoardsConfigs?: {
+                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                    board?: Record<string, never>;
+                    /** @description Panels selected for the Grafana board configuration. */
+                    panels?: Record<string, never>[];
+                    /** @description Template variables applied to the selected Grafana board configuration. */
+                    templateVars?: string[];
+                }[];
+            };
+            loadTestPrefs?: {
+                /** @description Concurrent requests */
+                c?: number;
+                /** @description Queries per second */
+                qps?: number;
+                /** @description Duration */
+                t?: string;
+                /** @description Load generator */
+                gen?: string;
+            };
+            /** @description The anonymous usage stats of the preference. */
+            anonymousUsageStats?: boolean;
+            /** @description The anonymous perf results of the preference. */
+            anonymousPerfResults?: boolean;
+            /** @description The dashboard preferences of the preference. */
+            dashboardPreferences?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: uuid
+             * @description ID of the organization to make the session's selected organization.
+             */
+            selectedOrganizationId?: string;
+            /** @description The selected workspace for organizations of the preference. */
+            selectedWorkspaceForOrganizations?: {
+                [key: string]: string;
+            };
+            /** @description The users extension preferences of the preference. */
+            usersExtensionPreferences?: {
+                [key: string]: unknown;
+            };
+            /** @description The remote provider preferences of the preference. */
+            remoteProviderPreferences?: {
                 [key: string]: unknown;
             };
         };
@@ -1778,7 +1866,7 @@ export interface operations {
                             roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
+                                /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 teamsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -1815,13 +1903,13 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
+                                /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                                 organizationsWithRoles?: {
                                     /**
                                      * Format: uuid
@@ -1858,9 +1946,9 @@ export interface operations {
                                     deletedAt?: string | null;
                                     /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                     roleNames: string[];
-                                }[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
+                                }[] | null;
+                                /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                                totalCount?: number | null;
                             };
                         }[];
                     };
@@ -2107,7 +2195,7 @@ export interface operations {
                         roleNames?: string[];
                         /** @description Teams the user belongs to with role information */
                         teams?: {
-                            /** @description Team memberships for the user with their assigned roles. */
+                            /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                             teamsWithRoles?: {
                                 /**
                                  * Format: uuid
@@ -2144,13 +2232,13 @@ export interface operations {
                                 deletedAt?: string | null;
                                 /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                 roleNames: string[];
-                            }[];
-                            /** @description Total number of team memberships returned for the user. */
-                            totalCount?: number;
+                            }[] | null;
+                            /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                            totalCount?: number | null;
                         };
                         /** @description Organizations the user belongs to with role information */
                         organizations?: {
-                            /** @description Organization memberships for the user with their assigned roles. */
+                            /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                             organizationsWithRoles?: {
                                 /**
                                  * Format: uuid
@@ -2187,9 +2275,9 @@ export interface operations {
                                 deletedAt?: string | null;
                                 /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                 roleNames: string[];
-                            }[];
-                            /** @description Total number of organization memberships returned for the user. */
-                            totalCount?: number;
+                            }[] | null;
+                            /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                            totalCount?: number | null;
                         };
                     };
                 };
@@ -2432,7 +2520,7 @@ export interface operations {
                         roleNames?: string[];
                         /** @description Teams the user belongs to with role information */
                         teams?: {
-                            /** @description Team memberships for the user with their assigned roles. */
+                            /** @description Team memberships for the user with their assigned roles. null means the team memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                             teamsWithRoles?: {
                                 /**
                                  * Format: uuid
@@ -2469,13 +2557,13 @@ export interface operations {
                                 deletedAt?: string | null;
                                 /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
                                 roleNames: string[];
-                            }[];
-                            /** @description Total number of team memberships returned for the user. */
-                            totalCount?: number;
+                            }[] | null;
+                            /** @description Total number of team memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                            totalCount?: number | null;
                         };
                         /** @description Organizations the user belongs to with role information */
                         organizations?: {
-                            /** @description Organization memberships for the user with their assigned roles. */
+                            /** @description Organization memberships for the user with their assigned roles. null means the organization memberships were not measured: the read failed, so the list is unknown. An empty array is only ever a measured absence of memberships. */
                             organizationsWithRoles?: {
                                 /**
                                  * Format: uuid
@@ -2512,9 +2600,9 @@ export interface operations {
                                 deletedAt?: string | null;
                                 /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
                                 roleNames: string[];
-                            }[];
-                            /** @description Total number of organization memberships returned for the user. */
-                            totalCount?: number;
+                            }[] | null;
+                            /** @description Total number of organization memberships for the user. null means the count was not measured: the membership read failed, so the value is unknown and must be presented as unknown, never as 0. A number, including 0, is always a measured value. */
+                            totalCount?: number | null;
                         };
                     };
                 };
@@ -2530,6 +2618,112 @@ export interface operations {
             };
             /** @description Forbidden */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updateUserPreferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The mesh adapters of the preference. */
+                    meshAdapters?: Record<string, never>[];
+                    grafana?: {
+                        /** @description Grafana URL for the user configuration. */
+                        grafanaUrl?: string;
+                        /** @description Grafana API key for the user configuration. */
+                        grafanaApiKey?: string;
+                        /** @description Selected Grafana board configurations for the user. */
+                        selectedBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    prometheus?: {
+                        /** @description The prometheus URL of the prometheus. */
+                        prometheusUrl?: string;
+                        /** @description The selected prometheus boards configs of the prometheus. */
+                        selectedPrometheusBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    loadTestPrefs?: {
+                        /** @description Concurrent requests */
+                        c?: number;
+                        /** @description Queries per second */
+                        qps?: number;
+                        /** @description Duration */
+                        t?: string;
+                        /** @description Load generator */
+                        gen?: string;
+                    };
+                    /** @description The anonymous usage stats of the preference. */
+                    anonymousUsageStats?: boolean;
+                    /** @description The anonymous perf results of the preference. */
+                    anonymousPerfResults?: boolean;
+                    /** @description The dashboard preferences of the preference. */
+                    dashboardPreferences?: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * Format: uuid
+                     * @description ID of the organization to make the session's selected organization.
+                     */
+                    selectedOrganizationId?: string;
+                    /** @description The selected workspace for organizations of the preference. */
+                    selectedWorkspaceForOrganizations?: {
+                        [key: string]: string;
+                    };
+                    /** @description The users extension preferences of the preference. */
+                    usersExtensionPreferences?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description The remote provider preferences of the preference. */
+                    remoteProviderPreferences?: {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Preferences updated */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };

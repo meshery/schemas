@@ -1,8 +1,9 @@
 {
   "publishedVersion": "",
+  "contentClass": "",
   "compatibility": [],
   "patternCaveats": "",
   "patternInfo": "",
   "type": "Deployment",
-  "snapshotURL": []
+  "imageURL": []
 }
