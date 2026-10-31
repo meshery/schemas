@@ -202,15 +202,14 @@ function resolveOAuthScopes(scopeFile, permissions, keychains) {
 
 /**
  * Load the OAuth scope grants for a permissions source
- * @param {string} source - Local file path, URL, or Google Sheets URL
- * @param {Object} [options] - Load options (gid, skipRows)
+ * @param {string} csvContent - Permissions CSV content, already loaded once by the caller
+ * @param {Object} [options] - Parse options (skipRows)
  * @param {string} [scopeFilePath] - Path to oauth-scopes.json
- * @returns {Promise<Array>} Resolved scopes, empty when there is no scope file
+ * @returns {Array} Resolved scopes, empty when there is no scope file
  */
-async function loadOAuthScopes(source, options = {}, scopeFilePath) {
+function loadOAuthScopes(csvContent, options = {}, scopeFilePath) {
   const file = scopeFilePath || paths.fromRoot("build/oauth-scopes.json");
   if (!fs.existsSync(file)) return [];
-  const csvContent = await loadCSV(source, options);
   const permissions = parsePermissions(csvContent, options);
   const keychains = parseKeychains(csvContent, options);
   return resolveOAuthScopes(JSON.parse(fs.readFileSync(file, "utf-8")), permissions, keychains);
@@ -317,6 +316,20 @@ async function loadPermissions(source, options = {}) {
   const lines = csvContent.split("\n").length;
   logger.info(`Loaded CSV content (${lines} lines)`);
   return parsePermissions(csvContent, options);
+}
+
+/**
+ * Load the permissions source once and parse it, returning the raw CSV too so
+ * the OAuth scope map resolves against the same revision of the source.
+ * @param {string} source - Local file path, URL, or Google Sheets URL
+ * @param {Object} [options] - Load options (gid, skipRows)
+ * @returns {Promise<{csvContent: string, permissions: Array}>}
+ */
+async function loadPermissionsSource(source, options = {}) {
+  const csvContent = await loadCSV(source, options);
+  const lines = csvContent.split("\n").length;
+  logger.info(`Loaded CSV content (${lines} lines)`);
+  return { csvContent, permissions: parsePermissions(csvContent, options) };
 }
 
 /**
@@ -601,6 +614,7 @@ module.exports = {
   parseKeychains,
   resolveOAuthScopes,
   loadOAuthScopes,
+  loadPermissionsSource,
   loadPermissions,
   generateGoFile,
   generateTypeScriptFile,
