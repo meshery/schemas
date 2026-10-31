@@ -1142,6 +1142,58 @@ func TestFreeFormFallbackEndsOnceTypedFieldWritten(t *testing.T) {
 	}
 }
 
+// A keychain-scoped token cannot create tokens. Each of the three routes that
+// mint a token or its authorization code declares 403 (the shared response) and
+// states the rule, and the contract doc names all three routes.
+func TestKeychainScopedTokenCannotCreateTokens(t *testing.T) {
+	doc := loadSpec(t, tokenSpec)
+	routes := []struct {
+		operationID string
+		op          *openapi3.Operation
+	}{
+		{"generateToken", doc.Paths.Find("/api/identity/tokens").Post},
+		{"issueIndefiniteLifetimeToken", doc.Paths.Find("/api/identity/tokens/infinite").Get},
+		{"getNativeClientAuthorization", doc.Paths.Find("/api/identity/native/authorize").Get},
+	}
+	const rule = "A request authenticated with a keychain-scoped token (keychainScoped true, or a non-empty keychainIds) answers 403 and mints nothing"
+	for _, r := range routes {
+		if r.op == nil {
+			t.Fatalf("%s is not declared", r.operationID)
+		}
+		if r.op.OperationID != r.operationID {
+			t.Errorf("operation declared with operationId %q, want %q", r.op.OperationID, r.operationID)
+		}
+		resp := r.op.Responses.Status(403)
+		if resp == nil {
+			t.Errorf("%s must declare 403: a keychain-scoped token is refused", r.operationID)
+		} else if resp.Ref != "#/components/responses/403" {
+			t.Errorf("%s 403 must reference the shared response, got %q", r.operationID, resp.Ref)
+		}
+		desc := squash(strings.ReplaceAll(r.op.Description, "`", ""))
+		for _, phrase := range []string{rule, "A session or unrestricted token is unchanged"} {
+			if !strings.Contains(desc, phrase) {
+				t.Errorf("%s description must state the token creation rule: missing %q", r.operationID, phrase)
+			}
+		}
+	}
+	contract, err := os.ReadFile(filepath.Join(repoRootDir(t), "docs", "token-scoping-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := squash(strings.ReplaceAll(string(contract), "`", ""))
+	for _, phrase := range []string{
+		"## Token creation",
+		"POST /api/identity/tokens",
+		"GET /api/identity/tokens/infinite",
+		"GET /api/identity/native/authorize",
+		"answered 403 and mints nothing",
+	} {
+		if !strings.Contains(text, phrase) {
+			t.Errorf("docs/token-scoping-contract.md must state the token creation rule: missing %q", phrase)
+		}
+	}
+}
+
 // None of the new identifiers may name a product, and the new docs must be
 // linked from AGENTS.md.
 func TestHostedAuthShapesAreProductNeutral(t *testing.T) {

@@ -66,8 +66,9 @@ records. They answer different questions and must not be derived from each
 other at request time.
 
 - **Set at creation.** A create with a non-empty `keychainIds` stores
-  `keychainScoped = true` (column `user_tokens.keychain_scoped`). A create whose
-  `keychainIds` is empty or absent stores `false`: the token is unscoped. A
+  `keychainScoped = true` (column `user_tokens.keychain_scoped`). A create without
+  `keychainIds` stores `false`: the token is unscoped (an explicit empty list
+  is refused with `400`). A
   server that stores `keychainIds` always stores `keychainScoped` true.
 - **Changed only from false to true, by re-consent.** A re-consent that narrows
   an unrestricted token (`keychainScoped` false) sets it to true; see
@@ -136,6 +137,22 @@ API tokens, native client sign-in tokens, and OAuth access tokens - not only OAu
 6. A token is scoped when its stored `keychainScoped` flag is true or it has any
    keychain mapping; it is unrestricted only when both say so. A scoped token
    with no keychains left has no keys.
+
+## Token creation
+
+A keychain-scoped token cannot create tokens. A request authenticated with a
+token that is scoped (`keychainScoped` true, or a non-empty `keychainIds`) is
+answered `403` and mints nothing, whatever the body or query. This applies to
+all three routes that mint a token or a token's authorization code:
+
+- `POST /api/identity/tokens` (`generateToken`)
+- `GET /api/identity/tokens/infinite` (`issueIndefiniteLifetimeToken`)
+- `GET /api/identity/native/authorize` (`getNativeClientAuthorization`), which
+  issues no authorization code to a scoped token
+
+A session or an unrestricted token is unchanged on all three. The rule is
+declared on each route in `schemas/constructs/v1beta3/token/api.yml`, with the
+shared `403` response.
 
 ## Compatibility
 

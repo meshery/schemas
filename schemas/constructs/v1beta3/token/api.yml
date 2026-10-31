@@ -64,8 +64,11 @@ paths:
         the token: `keychainIds` restricts it to the keys of those keychains,
         and `expiresAt` ends its life. Omit the body, or both fields, for an
         unrestricted token that never expires. An unknown keychain ID, an
-        `expiresAt` in the past, or a keychain the caller cannot see is
-        refused with 400. See docs/token-scoping-contract.md.
+        explicit empty `keychainIds`, an `expiresAt` in the past, or a
+        keychain the caller cannot see is refused with 400. A request authenticated with a keychain-scoped token
+        (`keychainScoped` true, or a non-empty `keychainIds`) answers 403 and
+        mints nothing, whatever the body. A session or unrestricted token is
+        unchanged. See docs/token-scoping-contract.md.
       parameters:
       - $ref: '#/components/parameters/name'
       - $ref: '#/components/parameters/purpose'
@@ -86,6 +89,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
         '500':
           $ref: '#/components/responses/500'
     delete:
@@ -143,7 +148,12 @@ paths:
       - tokens
       summary: Issue indefinite lifetime token
       operationId: issueIndefiniteLifetimeToken
-      description: Creates a non-expiring user token for provider admin use cases.
+      description: >-
+        Creates a non-expiring user token for provider admin use cases. A
+        request authenticated with a keychain-scoped token (`keychainScoped`
+        true, or a non-empty `keychainIds`) answers 403 and mints nothing,
+        whatever the query. A session or unrestricted token is unchanged. See
+        docs/token-scoping-contract.md.
       parameters:
       - $ref: '#/components/parameters/userIdQuery'
       - $ref: '#/components/parameters/providerQuery'
@@ -158,6 +168,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
         '500':
           $ref: '#/components/responses/500'
   /api/identity/native/authorize:
@@ -180,7 +192,11 @@ paths:
         challenge, and redirects the browser to
         http://127.0.0.1:{port}/callback with code and state query parameters.
         Only the 127.0.0.1 loopback IP literal is ever used; no token or cookie
-        is placed in the redirect; no consent page is shown.
+        is placed in the redirect; no consent page is shown. A request
+        authenticated with a keychain-scoped token (`keychainScoped` true, or a
+        non-empty `keychainIds`) answers 403 and mints nothing, including no
+        authorization code, whatever the query. A session or unrestricted token
+        is unchanged. See docs/token-scoping-contract.md.
       parameters:
       - $ref: '#/components/parameters/nativeClientName'
       - $ref: '#/components/parameters/nativeClient'
