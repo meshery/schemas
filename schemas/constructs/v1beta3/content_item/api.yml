@@ -16,9 +16,11 @@ info:
     in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until
     the upstream policies exist, `inherit` or absent resolves to `required`.
     A content edit that resolves to required resets an approved item to
-    unapproved and opens a pending request (see updateContentItem).
-    Only a person holding Decide Content Item Approvals may write an
-    `approvalPolicy` value that changes the stored one.
+    unapproved and supersedes its open request, if any, with a fresh pending
+    request (see updateContentItem). A change to `approvalPolicy` alone that
+    makes approval required does the same to an approved item. Only a person
+    holding Decide Content Item Approvals may write an `approvalPolicy` value
+    that changes the stored one.
     Organization scope: every operation acts only in the organization the
     session resolved to (X-Current-Orgid, then the user's selected
     organization), and only when the caller is a live member of it.
@@ -120,7 +122,8 @@ paths:
         that has never had a content item is assigned row number 1 first
         (an explicit `rowNumber` of 0 is still accepted). A supplied
         `rowNumber` that another live content item of the organization
-        already holds refuses the insert with a 409.
+        already holds refuses the insert with a 409 (`code`
+        `row_number_taken`).
         A `rulesOfEngagement` outside its schema (an unknown preset or
         dial, or a value out of range) is refused with a 400, on insert
         and on update alike.
@@ -141,14 +144,20 @@ paths:
         (the root counts as 0). An item of another organization, a deleted
         item and a missing one receive the same 400. A `threadIndex` that
         another live item of the same thread already holds refuses the
-        insert with a 409.
+        insert with a 409 (`code` `thread_index_taken`).
         The optional `Idempotency-Key` header makes the insert safe to
         retry: within 24 hours the same key with the same request hash
         returns the first response without inserting again, and the same
         key with a different request hash answers 422 and inserts nothing.
         A retry with the same key that arrives while the first request with
-        that key is still being processed answers 409 and inserts nothing;
-        the client retries later and then receives the stored response.
+        that key is still being processed answers 409 with the body `code`
+        `idempotency_key_in_flight` and inserts nothing; the client retries
+        later and then receives the stored response. An in-flight claim on a
+        request that never finished expires 24 hours after it was taken, the
+        same TTL as the stored response (no shorter in-flight lease applies),
+        and a retry after that is processed as new. The permanent 409s of
+        this operation carry `row_number_taken` and `thread_index_taken`, so
+        a client tells the in-flight case by its `code`.
         A caller whose effective keys lack Decide Content Item Approvals in
         the session organization who sends `approvalPolicy` `required` or
         `not_required` gets a 403 and nothing is inserted; a caller holding
@@ -182,7 +191,7 @@ paths:
         "404":
           $ref: "#/components/responses/404"
         "409":
-          $ref: "#/components/responses/409"
+          $ref: "#/components/responses/InsertConflict"
         "422":
           $ref: "#/components/responses/422"
         "429":
@@ -241,10 +250,9 @@ paths:
         clears it. The thread fields are fixed at insert: omitted, or equal to the
         stored values, they are kept; any other value is refused with a 400.
         `approved` is not in the payload, and no update sets it to true;
-        only `approveRequest` does. A content edit can reset it, as described
-        below. Changing `approvalPolicy` alone changes the stored policy and
-        nothing else: `approved` and any existing request keep their state.
-        A caller without Decide Content Item
+        only `approveRequest` does. A content edit, or an `approvalPolicy`
+        change that makes approval required, can reset it, as described
+        below. A caller without Decide Content Item
         Approvals gets a 403 if it sends an `approvalPolicy` different from
         the stored one (absent, null and `inherit` are the same value, since
         the server stores `inherit` as null);
@@ -260,16 +268,29 @@ paths:
         `rulesOfEngagement` and `mediaAssetIds`, the fields the fingerprint
         covers, compared with the stored values, so a write-back that sends
         them unchanged is not an edit. These never trigger it: the
-        `approvalPolicy` (a change to it alone only changes the stored policy),
+        `approvalPolicy` (a change to it alone is handled below),
         `expectedFingerprint`, `id` and the thread fields (`threadId`,
         `replyToId`, `threadIndex`, fixed at insert).
         When approval resolves to required, an item that was `approved` is set
-        to `approved` false and a pending `content_item_approval` request is
-        opened. An item that is not approved and already has a pending request
-        keeps that request and opens no second one; an item that is not
-        approved and has none gets one, so an unapproved item always has its
-        request. When approval resolves to not required, `approved` is
-        unchanged and no request opens. A failed write keeps neither change.
+        to `approved` false. The item's open `content_item_approval` request,
+        if it has one, is superseded: it is closed with `status` `superseded`,
+        `decidedAt` set to the edit time, and no `decidedBy` and no `note`. A
+        fresh pending request then opens for the content as it now is, so an
+        unapproved item always has an open request. When approval resolves to
+        not required, an open request is superseded the same way and no new
+        request opens; `approved` is unchanged, and an unapproved item stays
+        unapproved, since an update never approves. A failed write keeps every
+        change, the item and its requests alike.
+        Approval on an `approvalPolicy` change. A write that changes the stored
+        policy and no content re-resolves the approval the same way, in the
+        same transaction. When the result is required and the item was
+        `approved`, `approved` is set to false and a pending request opens,
+        unless one is already pending. Any other result changes no `approved`
+        and closes no request: loosening the requirement leaves an unapproved
+        item unapproved, and its open request stays pending for a decider. The
+        stored `approvalRequired` and `approvalPolicySource` are rewritten to
+        the new result. Sending back the unchanged stored policy re-resolves
+        nothing.
         This applies to every writer, a person included.
       parameters:
         - $ref: "#/components/parameters/contentItemId"
@@ -352,11 +373,22 @@ components:
     403:
       $ref: "../../v1beta2/core/api.yml#/components/responses/403"
     409:
-      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, another live content item of the organization already holds the same rowNumber, another live item of the same thread already holds the same threadIndex, or the same Idempotency-Key is still being processed by an earlier request (nothing is inserted; retry later to receive the stored response)
+      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, or another live content item of the organization already holds the same rowNumber. Nothing changes.
       content:
         text/plain:
           schema:
             type: string
+    InsertConflict:
+      description: >
+        Conflict on insert. The body's `code` says which: `row_number_taken`
+        or `thread_index_taken` is permanent for this payload, and
+        `idempotency_key_in_flight` is a retry whose first request with the
+        same Idempotency-Key is still being processed (retry later to receive
+        the stored response). Nothing is inserted in any case.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ContentItemInsertConflict"
     MeshkitError429:
       $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
     500:
@@ -569,7 +601,8 @@ components:
         https://github.com/layer5io/meshery-cloud/issues/6365. When no level
         sets a value, approval is required (fail closed); this fallback is
         still open for confirmation in that issue. The effective result is
-        resolved at insert and again at each content edit. AI apps can never set
+        resolved at insert, again at each content edit, and again when the
+        stored value changes. AI apps can never set
         `approved`; this value only says whether approval is needed.
         Interim: until the upstream platform, workspace and profile policies
         exist, `inherit` and an absent value resolve to `required`, with
@@ -583,6 +616,31 @@ components:
         - ApprovalPolicyRequired
         - ApprovalPolicyNotRequired
         - ApprovalPolicyInherit
+
+    ContentItemInsertConflict:
+      type: object
+      description: Body of a refused insert. `code` is the machine-readable reason and `message` the sentence the caller is shown.
+      additionalProperties: false
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: >
+            `row_number_taken`: a live item of the organization holds the
+            `rowNumber`. `thread_index_taken`: a live item of the same thread
+            holds the `threadIndex`. `idempotency_key_in_flight`: an earlier
+            request with the same Idempotency-Key is still being processed; it
+            is a retry, not a conflict with the content.
+          enum:
+            - row_number_taken
+            - thread_index_taken
+            - idempotency_key_in_flight
+        message:
+          type: string
+          minLength: 1
+          description: The sentence the caller is shown.
 
     ContentItemRulesOfEngagement:
       type: object

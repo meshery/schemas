@@ -11,7 +11,9 @@ info:
     way a content item's `approved` becomes true; ContentItemPayload has no
     `approved`. A request names its subject by type and ID, so any construct
     can be the subject of a kind. Requests are created by the server, not by
-    a client call, and are decided once. Decided requests are kept as
+    a client call, and are decided once, or superseded when a content edit
+    changes the subject before a decision (the approval then applies to the
+    content as of the new open request). Closed requests are kept as
     history.
     Each kind names the permission key that may decide it (`x-decision-key`
     on RequestKind). Deciding is a human act: approveRequest and denyRequest
@@ -123,7 +125,9 @@ paths:
         item's `approved` to true in the same transaction; this is the only
         operation that does, since no content item request body carries
         `approved`. A request that is
-        not `pending` answers 409 and is never changed. When the subject
+        not `pending` answers 409 and is never changed: a decided request, and
+        a `superseded` one, whose content has changed since it opened, so an
+        approval always applies to the content as of the open request. When the subject
         content item no longer exists (hard-deleted) the answer is 404, and
         when it is soft-deleted (`deletedAt` set) the answer is 409; in both
         cases nothing changes and the request stays as it was. The body may be
@@ -170,7 +174,8 @@ paths:
         note. The caller must hold the deciding permission key of the
         request's `kind`, else 403 and nothing changes. For
         `content_item_approval` the subject content item stays unapproved. A
-        request that is not `pending` answers 409 and is never changed. When
+        request that is not `pending` answers 409 and is never changed, a
+        `superseded` one included. When
         the subject content item no longer exists (hard-deleted) the answer is
         404, and when it is soft-deleted (`deletedAt` set) the answer is 409;
         in both cases nothing changes and the request stays as it was. The
@@ -227,7 +232,7 @@ components:
           schema:
             type: string
     409:
-      description: Conflict - the request is not pending, so it was already decided and is never changed, or its subject content item is soft-deleted (deletedAt set). Nothing changes; the request stays as it was.
+      description: Conflict - the request is not pending, so it was already decided or superseded by a content edit and is never changed, or its subject content item is soft-deleted (deletedAt set). Nothing changes; the request stays as it was.
       content:
         text/plain:
           schema:
@@ -267,7 +272,7 @@ components:
       name: status
       in: query
       required: false
-      description: Filter by request status.
+      description: Filter by request status, for example `superseded` for the requests a content edit closed before a decision.
       schema:
         $ref: "#/components/schemas/RequestStatus"
 
@@ -299,16 +304,22 @@ components:
     RequestStatus:
       type: string
       description: >
-        Lifecycle of a request. `pending` until it is decided; `approved` or
-        `denied` once, and then final.
+        Lifecycle of a request. `pending` until it is decided. `approved` or
+        `denied` once, by a person with the kind's deciding key. `superseded`
+        when a content edit changes the subject before a decision: the
+        request is closed with `decidedAt` set, no `decidedBy` and no note,
+        and a fresh pending request opens if approval is still required. Each
+        of `approved`, `denied` and `superseded` is final.
       enum:
         - pending
         - approved
         - denied
+        - superseded
       x-enum-varnames:
         - RequestStatusPending
         - RequestStatusApproved
         - RequestStatusDenied
+        - RequestStatusSuperseded
 
     RequestDecisionPayload:
       type: object

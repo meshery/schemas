@@ -153,11 +153,32 @@ for 24 hours:
   later and then receives the stored response;
 - no key means no deduplication.
 
-Both operations declare the `422` and the `409` responses (plain text). The
-`409` is the shared `IdempotencyKeyInFlight` response in `v1beta2/core`;
-`insertContentItem` declares its own `409` whose description also covers the
-thread and row-number conflicts. A test pins that only those two operations
-declare the header, and that both declare the `409`.
+**In-flight expiry.** An in-flight claim lasts 24 hours from when it was taken,
+the same TTL as the stored response. The repository has no shorter in-flight
+lease. If the first request never finishes (its process died, say), its claim
+expires after those 24 hours, and a retry after that is processed as new. Until
+then, every retry with that key answers `409`.
+
+**The `409` body.** The in-flight `409` is a JSON body of its own,
+`IdempotencyKeyInFlightError` in `v1beta2/core`: `code` is always
+`idempotency_key_in_flight` and `message` is the sentence the caller is shown.
+It is not a `MeshkitError`, because a MeshKit `code` is an unstable
+component-scoped identifier and cannot carry a contract value. Clients tell the
+in-flight case by that `code`.
+
+- `createSchedule` declares the shared `IdempotencyKeyInFlight` response, which
+  carries that body.
+- `insertContentItem` declares its own `InsertConflict` response, whose `code`
+  is one of `idempotency_key_in_flight`, `row_number_taken` or
+  `thread_index_taken`. The two permanent codes are the insert's other `409`s:
+  `row_number_taken` for a `rowNumber` a live item holds, and
+  `thread_index_taken` for a `threadIndex` a live item of the same thread holds.
+  The in-flight code is distinct from both.
+
+Both operations declare the `422` and the `409` responses. A test pins that
+only those two operations declare the header, that both declare the `409`, and
+that the in-flight code is declared on both and is distinct from the permanent
+insert codes.
 
 ## Adding a tool
 

@@ -67,26 +67,45 @@ type itemEditState struct {
 	source   string
 }
 
-// itemEditOutcome is what the update leaves stored.
+// itemEditOutcome is what the update leaves stored. supersede is set when the
+// write closes the item's open request as superseded.
 type itemEditOutcome struct {
 	approved    bool
 	required    bool
 	source      string
 	openRequest bool
+	supersede   bool
 }
 
-// itemEditApproval is the reference for an update. Without a content edit,
-// nothing is re-resolved and the stored approval stays. With one, the approval
-// is resolved as insert resolves it. Required resets approved to false and opens
-// a request unless one is pending. Not required keeps approved and opens none.
-// An update never sets approved to true.
+// itemEditApproval is the reference for a content edit. Without one, nothing is
+// re-resolved and the stored approval stays. With one, the approval is resolved
+// as insert resolves it, and the open request, if any, is superseded in the same
+// transaction. Required resets approved to false and opens a fresh request.
+// Not required keeps approved and opens none. An update never sets approved to
+// true.
 func itemEditApproval(s itemEditState, changed bool) itemEditOutcome {
 	if !changed {
 		return itemEditOutcome{approved: s.approved, required: s.required, source: s.source}
 	}
 	required, source := itemInterimResolve(s.policy)
-	out := itemEditOutcome{approved: s.approved, required: required, source: source}
+	out := itemEditOutcome{approved: s.approved, required: required, source: source, supersede: s.pending}
 	if required {
+		out.approved = false
+		out.openRequest = true
+	}
+	return out
+}
+
+// itemPolicyApproval is the reference for a write that changes the stored
+// approvalPolicy and no content. The approval is re-resolved, but only tightening
+// changes approved: required on an approved item resets it and opens a request
+// unless one is pending. Loosening, and any change on an unapproved item, leaves
+// approved and the open request as they are. Nothing is superseded, since the
+// content did not change.
+func itemPolicyApproval(s itemEditState) itemEditOutcome {
+	required, source := itemInterimResolve(s.policy)
+	out := itemEditOutcome{approved: s.approved, required: required, source: source}
+	if required && s.approved {
 		out.approved = false
 		out.openRequest = !s.pending
 	}
@@ -118,12 +137,15 @@ func TestContentItemUpdateApprovalRule(t *testing.T) {
 	api := loadOpenAPIDocument(t, filepath.Join(dir, "api.yml"))
 	entity := loadOpenAPIDocument(t, filepath.Join(dir, "content_item.yaml"))
 
-	const phrase = "resolved at insert and again at each content edit"
+	const phrase = "resolved at insert, again at each content edit, and again when `approvalPolicy` changes"
 	for _, field := range []string{"approved", "approvalRequired", "approvalPolicySource"} {
 		desc := itemFlatten(itemDescription(t, mustLookup(t, entity, "properties", field, "description")))
 		if !strings.Contains(desc, phrase) {
 			t.Errorf("ContentItem.%s description must say %q", field, phrase)
 		}
+	}
+	if desc := itemFlatten(itemDescription(t, mustLookup(t, entity, "properties", "approved", "description"))); !strings.Contains(desc, "supersedes an open request") {
+		t.Error("ContentItem.approved description must say a content edit supersedes an open request")
 	}
 
 	update := itemFlatten(itemDescription(t, mustLookup(t, api, "paths", "/api/content-items/{contentItemId}", "put", "description")))
@@ -132,11 +154,17 @@ func TestContentItemUpdateApprovalRule(t *testing.T) {
 		"re-resolves its effective approval in the same transaction",
 		"with the same rule as insert",
 		"the `approvalPolicy` the update stores",
-		"`approved` false and a pending `content_item_approval` request is opened",
-		"already has a pending request keeps that request and opens no second one",
-		"When approval resolves to not required, `approved` is unchanged and no request opens",
+		"`approved` false",
+		"The item's open `content_item_approval` request, if it has one, is superseded",
+		"A fresh pending request then opens for the content as it now is",
+		"an unapproved item always has an open request",
+		"When approval resolves to not required, an open request is superseded the same way and no new request opens",
+		"`approved` is unchanged, and an unapproved item stays unapproved",
 		"no update sets it to true",
-		"A failed write keeps neither change",
+		"A failed write keeps every change",
+		"Approval on an `approvalPolicy` change.",
+		"Any other result changes no `approved` and closes no request",
+		"The stored `approvalRequired` and `approvalPolicySource` are rewritten to the new result",
 		"This applies to every writer, a person included.",
 		"a write-back that sends them unchanged is not an edit",
 	} {
@@ -170,7 +198,7 @@ func TestContentItemEditApprovalOutcomes(t *testing.T) {
 		want    itemEditOutcome
 	}{
 		{
-			name:    "approved item, content edit, required: reset to unapproved and a request opens",
+			name:    "approved item, content edit, required: reset to unapproved and a fresh request opens",
 			state:   itemEditState{approved: true, policy: "required", required: false, source: "item"},
 			changed: true,
 			want:    itemEditOutcome{approved: false, required: true, source: "item", openRequest: true},
@@ -188,10 +216,16 @@ func TestContentItemEditApprovalOutcomes(t *testing.T) {
 			want:    itemEditOutcome{approved: true, required: false, source: "item", openRequest: false},
 		},
 		{
-			name:    "unapproved item with a pending request, content edit: still unapproved, no second request",
+			name:    "unapproved item with a pending request, content edit, required: old request superseded, new one opened",
 			state:   itemEditState{approved: false, pending: true, policy: "required", required: true, source: "item"},
 			changed: true,
-			want:    itemEditOutcome{approved: false, required: true, source: "item", openRequest: false},
+			want:    itemEditOutcome{approved: false, required: true, source: "item", openRequest: true, supersede: true},
+		},
+		{
+			name:    "unapproved item with a pending request, content edit, not_required: old request superseded, none opened",
+			state:   itemEditState{approved: false, pending: true, policy: "not_required", required: true, source: "item"},
+			changed: true,
+			want:    itemEditOutcome{approved: false, required: false, source: "item", openRequest: false, supersede: true},
 		},
 		{
 			name:    "unapproved item with no pending request, content edit, required: a request opens",
@@ -227,6 +261,55 @@ func TestContentItemEditApprovalOutcomes(t *testing.T) {
 	}
 }
 
+// Each row is one outcome of a write that changes approvalPolicy and no content.
+// Only tightening resets an approved item; loosening never changes approved and
+// never supersedes a request.
+func TestContentItemPolicyChangeOutcomes(t *testing.T) {
+	cases := []struct {
+		name  string
+		state itemEditState
+		want  itemEditOutcome
+	}{
+		{
+			name:  "approved item, not_required to required: reset and a request opens",
+			state: itemEditState{approved: true, policy: "required", required: false, source: "item"},
+			want:  itemEditOutcome{approved: false, required: true, source: "item", openRequest: true},
+		},
+		{
+			name:  "approved item, not_required to inherit: interim fallback resolves to required, reset and a request opens",
+			state: itemEditState{approved: true, policy: "inherit", required: false, source: "fallback"},
+			want:  itemEditOutcome{approved: false, required: true, source: "fallback", openRequest: true},
+		},
+		{
+			name:  "approved item, not_required to absent: interim fallback resolves to required, reset and a request opens",
+			state: itemEditState{approved: true, policy: "", required: false, source: "fallback"},
+			want:  itemEditOutcome{approved: false, required: true, source: "fallback", openRequest: true},
+		},
+		{
+			name:  "approved item, required to not_required: stays approved and no request opens",
+			state: itemEditState{approved: true, policy: "not_required", required: true, source: "item"},
+			want:  itemEditOutcome{approved: true, required: false, source: "item", openRequest: false},
+		},
+		{
+			name:  "unapproved item with a pending request, required to not_required: stays unapproved, request kept pending",
+			state: itemEditState{approved: false, pending: true, policy: "not_required", required: true, source: "item"},
+			want:  itemEditOutcome{approved: false, required: false, source: "item", openRequest: false},
+		},
+		{
+			name:  "unapproved item with a pending request, not_required to required: request kept as is, no second one",
+			state: itemEditState{approved: false, pending: true, policy: "required", required: false, source: "item"},
+			want:  itemEditOutcome{approved: false, required: true, source: "item", openRequest: false},
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := itemPolicyApproval(tc.state); got != tc.want {
+				t.Errorf("itemPolicyApproval(%+v) = %+v, want %+v", tc.state, got, tc.want)
+			}
+		})
+	}
+}
+
 // Which writes are content edits. The Approved? mirror, the policy, the
 // precondition and the thread fields never are; a write-back of stored content
 // is not one either, so an older client that sends the whole item does not
@@ -253,7 +336,7 @@ func TestContentItemEditChangesContent(t *testing.T) {
 		{"mediaAssetIds changed", map[string]any{"mediaAssetIds": []any{"a2"}}, true},
 		{"mediaAssetIds cleared with an empty list", map[string]any{"mediaAssetIds": []any{}}, true},
 		{"Approved? mirror alone is bookkeeping", map[string]any{"data": map[string]any{"Approved?": "true", "body": "hello"}}, false},
-		{"approvalPolicy alone is bookkeeping", map[string]any{"approvalPolicy": "required"}, false},
+		{"approvalPolicy alone is not a content edit", map[string]any{"approvalPolicy": "required"}, false},
 		{"expectedFingerprint and id are bookkeeping", map[string]any{"expectedFingerprint": "x", "id": "y"}, false},
 		{"thread fields are bookkeeping", map[string]any{"threadId": "t", "replyToId": "r", "threadIndex": float64(2)}, false},
 		{"a write-back of the stored content is not an edit", map[string]any{

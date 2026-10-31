@@ -845,6 +845,30 @@ components:
         - docker-compose
         - k8s-kustomize
 
+    # Mirror of v1beta2/core IdempotencyKeyInFlightError, for the same reason as
+    # MeshkitError below: a v1beta2/core schema that another construct refers
+    # to resolves to models/core. Keep the two definitions identical
+    # (TestIdempotencyKeyInFlightIsDeclared pins it).
+    IdempotencyKeyInFlightError:
+      type: object
+      description: >-
+        A retry whose Idempotency-Key is still in flight. Nothing was created
+        by this request; retry later to receive the stored response.
+      required:
+        - code
+        - message
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          description: Machine-readable reason. Always `idempotency_key_in_flight` for this body.
+          enum:
+            - idempotency_key_in_flight
+        message:
+          type: string
+          minLength: 1
+          description: The sentence the caller is shown.
+
     # Mirror of v1beta2/core MeshkitError: the unversioned models/core Go
     # package is generated from this file, and every $ref to a v1beta2/core
     # schema resolves to models/core. Keep the two definitions identical
