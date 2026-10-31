@@ -46,7 +46,8 @@ paths:
       operationId: getOauthConsents
       description: |
         Returns a page of the live OAuth consents of the signed-in user, one
-        entry per client, most recently granted first. Revoked consents are
+        entry per client, ordered by updatedAt descending (a re-consent moves
+        a consent to the top). Revoked consents are
         not listed. A user with no consented client receives an empty page.
       parameters:
         - $ref: "#/components/parameters/page"
