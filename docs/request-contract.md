@@ -59,11 +59,14 @@ key.
 
 ## `content_item_approval`
 
-1. Any client writes a content item, a person in the app or an AI app
-   (`createdByClient` set). `approved` is not in `ContentItemPayload`, so the
-   item always lands `approved` false, and Cloud creates a `pending` request
-   whose subject is the item and whose `requesterId` and `createdByClient` come
-   from the session or token.
+1. Any client inserts a content item, a person in the app or an AI app
+   (`createdByClient` set). `approved` is not in `ContentItemPayload`. The
+   insert resolves the item's effective approval
+   ([Approval policy](content-item-contract.md#approval-policy)). When it is
+   required, the item lands `approved` false and Cloud creates a `pending`
+   request whose subject is the item and whose `requesterId` and
+   `createdByClient` come from the session or token. When it is not required,
+   the item lands `approved` true and no request is created.
 2. A person with the deciding key calls `approveRequest`. In one transaction the
    request becomes `approved` and the item's `approved` becomes true. `denyRequest`
    makes the request `denied` and leaves the item unapproved.
@@ -81,7 +84,8 @@ A request is decided once. A second decision answers `409` and changes nothing.
 
 ## Consumers
 
-- **Cloud** creates a request for every inserted content item, decides them in a transaction with the
+- **Cloud** creates a request for each inserted content item whose effective
+  approval is required, decides them in a transaction with the
   subject, checks the kind's deciding key in the session organization, and
   serves the four routes.
 - **Desktop and web apps** list pending requests and call approve or deny.

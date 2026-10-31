@@ -169,6 +169,97 @@ posts, in posting order. An item refers to an asset by id, never by URL.
 - The fingerprint covers it when set; an item without it hashes as before.
 - The generated Go payload omits an empty `mediaAssetIds`, so a Go client cannot clear the list through it, while TypeScript clients can send `[]`.
 
+## Approval policy
+
+`approvalPolicy` says whether an item needs a person's approval before it
+runs. Its values are `required`, `not_required` and `inherit`, defined once as
+the `ApprovalPolicy` schema in `content_item/api.yml`, which higher-level
+settings reuse. The schema declares no default: an absent value means
+`inherit`.
+
+**The rules (target model).**
+
+- An explicit `required` or `not_required` on the item always wins. Nothing
+  higher overrides it.
+- `inherit`, or an absent value, inherits from higher-level settings
+  (platform, workspace, profile), hierarchy defined in
+  https://github.com/layer5io/meshery-cloud/issues/6365. This page does not fix
+  their order; the server reads them in the order that issue defines.
+- The user preference `agentsActWithoutApproval` is one profile-level source
+  in that hierarchy, for activities written by AI apps: `true` means
+  `not_required`, `false` means `required`, and an absent value sets nothing.
+  It is not yet in the v1beta3 Preference schema of this repository, and a
+  separate PR adds it. Where it sits relative to platform and workspace
+  settings is defined in the same issue.
+- If no level sets a value, approval is required (fail closed). This fallback
+  is still open for confirmation in the same issue.
+- AI apps can never set `approved`. `approvalPolicy` only says whether
+  approval is needed; `approved` is still set only as described under
+  [Approval and the client that created an item](#approval-and-the-client-that-created-an-item).
+
+**Interim behavior.** The upstream platform, workspace and profile policies do
+not exist yet, so the server applies this interim rule until they do, and this
+PR is not blocked on the hierarchy issue:
+
+- An explicit `required` or `not_required` wins, as above. Its source is `item`.
+- `inherit`, or an absent value, resolves to `required` with source `fallback`.
+- No higher level is read. `agentsActWithoutApproval` is not consulted during
+  the interim, even when a profile sets it.
+- So during the interim `approvalPolicySource` is only `item` or `fallback`.
+  The other sources (`platform`, `workspace`, `profile`) stay in the enum for
+  the target model and appear once those policies exist.
+
+**Who may write it.** Only a person holding Decide Content Item Approvals in
+the session organization may write a value that changes the stored
+`approvalPolicy`. Any other caller who sends a changing value gets `403`, and
+nothing changes. No OAuth scope keychain carries that key, so an AI app token
+can never change the policy.
+
+- **Insert.** Any value other than absent is a change, so a caller without the
+  key who sends `approvalPolicy` on insert gets `403` and nothing is inserted.
+  Omitted stores nothing, so the item inherits.
+- **Update.** Omitted keeps the stored value. A value different from the stored
+  one is a change, and `inherit` returns the item to inheriting. An absent
+  stored value equals an absent value sent.
+- **Write-back.** A caller without the key that reads an item and writes it back
+  whole is not refused when the policy comes back unchanged. Sending back the
+  stored value is accepted and changes nothing. Only a different value, or any
+  value on insert, is refused with `403`.
+
+**The insert effect.** The effective approval is resolved once, when the item
+is inserted:
+
+- Effective required: `approved` is false and a `pending`
+  `content_item_approval` request is opened (see
+  [`request-contract.md`](request-contract.md)).
+- Effective not required: the server sets `approved` true itself and opens no
+  request.
+
+Changing `approvalPolicy` later never changes `approved` and never decides an
+existing request. The result is returned read-only as `approvalRequired` (the
+effective value) and `approvalPolicySource` (the level that decided it:
+`item`, `platform`, `workspace`, `profile` or `fallback`; the higher levels as
+ordered in the hierarchy issue). Both are stored when the item is inserted, in
+the `approval_required` and `approval_policy_source` columns, and are never
+recomputed, so a later change to `approvalPolicy` or to a higher level leaves
+them as they were. Neither is in any write payload. Items inserted before this
+field shipped have neither.
+
+The table below is the target model. During the interim, the only sources are
+`item` and `fallback`, so the rows that name a higher level do not occur yet.
+
+| Item `approvalPolicy` | Higher level sets | `approvalRequired` | `approvalPolicySource` | Insert effect |
+| --- | --- | --- | --- | --- |
+| `required` | `not_required` | true | `item` | `approved` false, pending request |
+| `not_required` | `required` | false | `item` | `approved` true, no request |
+| absent or `inherit` | `not_required` | false | the level that set it | `approved` true, no request |
+| absent or `inherit` | nothing, or `inherit` only | true | `fallback` | `approved` false, pending request |
+
+The higher level in the examples stands for whichever level the hierarchy
+issue places there; the table does not fix the order. The interim rows are the
+`item` rows and the absent-or-`inherit` `fallback` row: an explicit value
+decides with source `item`, and `inherit` or absent resolves to `required`.
+
 ## Approval and the client that created an item
 
 Two typed fields carry what the hosted MCP server and the apps need to read
@@ -182,16 +273,19 @@ without parsing `data`:
 **`approved` is in the entity only, never in a request body.**
 `ContentItemPayload`, the body of both `insertContentItem` and
 `updateContentItem`, has no `approved` property, so no client, person or AI
-app, can approve an item by writing it. Every inserted item lands `approved`
-false. An update never changes `approved`. A server ignores an `approved` that
+app, can approve an item by writing it. An insert sets `approved` from its
+effective approval (see [Approval policy](#approval-policy)): false when
+approval is required, true with no request when it is not. An update never
+changes `approved`. A server ignores an `approved` that
 an older client still sends, because the payload is not closed. The generated
 Go and TypeScript payloads have no such field.
 
-**Approval goes only through the request construct.** Inserting an item creates
-a `pending` `content_item_approval` request for it (see
-[`request-contract.md`](request-contract.md)). `approveRequest` is the only
-operation that sets the item's `approved` to true, in the same transaction that
-decides the request; `denyRequest` leaves it false. Both need the Decide Content
+**Approval goes only through the request construct.** Inserting an item whose
+effective approval is required creates a `pending` `content_item_approval`
+request for it (see [`request-contract.md`](request-contract.md)). An item
+whose approval is not required opens no request. After insert, `approveRequest`
+is the only operation that sets the item's `approved` to true, in the same
+transaction that decides the request; `denyRequest` leaves it false. Both need the Decide Content
 Item Approvals key and carry no `x-mcp`, and no OAuth scope keychain carries
 that key, so an AI app can never approve an item, its own or another's. The
 request is never what the queue reads.
@@ -230,12 +324,24 @@ backfilled. The backfill is the only time `Approved?` sets `approved`.
 - **layer5io/meshery-cloud** must add the columns (`approved` boolean not null
   default false, `created_by_client` text, `rules_of_engagement`
   jsonb, `thread_id` and `reply_to_id` uuid referencing `content_items`,
-  `thread_index` integer, `media_asset_ids` uuid[]), indexes on `(organization_id, thread_id)` and
+  `thread_index` integer, `media_asset_ids` uuid[], `approval_policy` text
+  nullable, with a check constraint that admits only `required`,
+  `not_required` and `inherit`; null means inherit, `approval_required`
+  boolean nullable, and `approval_policy_source` text nullable, with a check
+  constraint that admits only `item`, `platform`, `workspace`, `profile` and
+  `fallback`; the two approval results are null on rows inserted before this
+  field shipped), indexes on `(organization_id, thread_id)` and
   `(organization_id, reply_to_id)`, and a partial unique index on
   `(organization_id, thread_id, thread_index)` over live rows. It must also
   enforce the insert and update rules above (never take `approved` from a
   request body, open the item's pending `content_item_approval` request on
-  insert, and own `data["Approved?"]` while it is mirrored), tell an omitted
+  insert only when the effective approval is required and set `approved`
+  true with no request when it is not, resolve `approvalPolicy` at insert
+  and write `approval_required` and `approval_policy_source` once, at insert,
+  so a later policy change never alters them, refuse with a 403 an
+  `approvalPolicy` change from a caller without Decide Content Item Approvals
+  (any value on insert; on update, a value different from the stored one),
+  and own `data["Approved?"]` while it is mirrored), tell an omitted
   `rulesOfEngagement` from `null` on update, extend the fingerprint, and
   serve the `threadId` filter.
 - **The posting client** vendors the release, adds the fields to its `ContentItem`
