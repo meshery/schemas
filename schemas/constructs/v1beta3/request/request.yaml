@@ -9,7 +9,10 @@ description: |
   A request is created `pending` by the server when the thing that needs a
   decision happens (it is not created by a client call), and is decided once:
   `approved` or `denied`, by a user holding the kind's deciding permission
-  key. Decided requests are kept as history. See docs/request-contract.md.
+  key. A content edit that changes the subject before it is decided closes
+  the request as `superseded`, so an approval always applies to the content
+  as of the open request. Closed requests are kept as history. See
+  docs/request-contract.md.
 type: object
 additionalProperties: false
 required:
@@ -81,13 +84,14 @@ properties:
     $ref: ./api.yml#/components/schemas/RequestStatus
     description: >
       Lifecycle of the request. `pending` until it is decided; `approved` or
-      `denied` once, and then final.
+      `denied` once, `superseded` when a content edit closes it first. Each of
+      these is final.
     x-oapi-codegen-extra-tags:
       db: status
     x-order: 8
   decidedBy:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
-    description: ID of the user who approved or denied the request. Derived from the session; omitted while the request is pending.
+    description: ID of the user who approved or denied the request. Derived from the session; omitted while the request is pending and when it is superseded, since no user decided it.
     x-go-name: DecidedBy
     x-oapi-codegen-extra-tags:
       db: decided_by
@@ -96,7 +100,7 @@ properties:
   decidedAt:
     type: string
     format: date-time
-    description: Time the request was decided. Null while the request is pending.
+    description: Time the request was decided, or superseded by a content edit (decidedBy and note are then omitted). Null while the request is pending.
     nullable: true
     x-go-type: core.NullTime
     x-go-type-import:
@@ -107,7 +111,7 @@ properties:
     x-order: 10
   note:
     type: string
-    description: The note the decider left with the decision. Omitted while the request is pending and when the decider left none.
+    description: The note the decider left with the decision. Omitted while the request is pending, when it is superseded, and when the decider left none.
     maxLength: 2000
     x-oapi-codegen-extra-tags:
       db: note

@@ -16,8 +16,8 @@ later change; this construct is defined here only once.
 | `subjectType`, `subjectId` | The subject, by construct name in snake_case and ID. Fixed by the kind. |
 | `requesterId` | The user on whose behalf the write was made. |
 | `createdByClient` | OAuth client ID of the AI app behind the write. Empty for a person. |
-| `status` | `pending`, `approved` or `denied`. Decided once, then final. |
-| `decidedBy`, `decidedAt` | The deciding user and time. Absent while pending. |
+| `status` | `pending`, `approved`, `denied` or `superseded`. Decided once, or superseded once, then final. |
+| `decidedBy`, `decidedAt` | The deciding user and time. Absent while pending. A superseded request has `decidedAt` (the edit time) and no `decidedBy`. |
 | `note` | The note the decider left. Optional. |
 | `createdAt`, `updatedAt` | Timestamps. |
 
@@ -33,8 +33,8 @@ no create operation and no create payload. The only payload is
 | --- | --- | --- |
 | `listRequests` | `GET /api/requests` | Filters `kind` and `status`. Paged with `page` and `pageSize`, newest first. |
 | `getRequest` | `GET /api/requests/{requestId}` | |
-| `approveRequest` | `POST /api/requests/{requestId}/approve` | Optional note. `409` when not pending or when the subject is soft-deleted; `404` when the subject is gone. |
-| `denyRequest` | `POST /api/requests/{requestId}/deny` | Optional note. `409` when not pending or when the subject is soft-deleted; `404` when the subject is gone. |
+| `approveRequest` | `POST /api/requests/{requestId}/approve` | Optional note. `409` when not pending (decided or superseded) or when the subject is soft-deleted; `404` when the subject is gone. |
+| `denyRequest` | `POST /api/requests/{requestId}/deny` | Optional note. `409` when not pending (decided or superseded) or when the subject is soft-deleted; `404` when the subject is gone. |
 
 All four are `x-internal: ["cloud"]` and carry no `x-mcp`. The schema lint
 (Rule 48) refuses `x-mcp` on `approveRequest` and `denyRequest`: deciding is a
@@ -70,9 +70,12 @@ key.
    token. When it is not required, the item lands `approved` true and no
    request is created. A content edit re-resolves the approval the same way
    ([Approval on a content edit](content-item-contract.md#approval-on-a-content-edit)):
-   one that resolves to required resets an approved item to unapproved and
-   opens a new pending request, and opens one for an unapproved item only when
-   none is pending.
+   one that resolves to required supersedes the open request, if any, and opens
+   a fresh pending one; one that resolves to not required supersedes the open
+   request and opens none. A change to `approvalPolicy` alone re-resolves the
+   approval too ([Approval on an `approvalPolicy` change](content-item-contract.md#approval-on-an-approvalpolicy-change)):
+   only one that makes approval required resets an approved item, which then
+   opens a pending request unless one is pending.
 2. A person with the deciding key calls `approveRequest`. In one transaction the
    request becomes `approved` and the item's `approved` becomes true. `denyRequest`
    makes the request `denied` and leaves the item unapproved.
@@ -86,7 +89,22 @@ sets it (see
 Deciding needs Decide Content Item Approvals and is never an AI app tool, so an
 AI app cannot approve any item, including one it wrote.
 
-A request is decided once. A second decision answers `409` and changes nothing.
+A request is decided once, or superseded once (see below). A decision on a
+request that is not `pending` answers `409` and changes nothing.
+
+## Superseded requests
+
+A content edit changes what the request is about, so the request no longer
+describes the content. In the same transaction as the edit, the server closes
+the item's open request as `superseded`: `decidedAt` is set to the edit time,
+`decidedBy` and `note` are omitted, and nothing is approved. When approval is
+still required after the edit, a fresh pending request opens for the content as
+it now is. When approval is no longer required, no new request opens and the
+item stays unapproved.
+
+Approving or denying a superseded request answers `409` and changes nothing, so
+an approval always applies to the content as of the open request. A policy change
+alone never supersedes a request, because the content did not change.
 
 ## Deciding a request whose subject is gone
 
@@ -97,7 +115,7 @@ nothing: the request stays as it was.
 | The request | The subject content item | Answer |
 | --- | --- | --- |
 | Pending | Live | `200`, decided |
-| Not pending (decided) | Any | `409` |
+| Not pending (decided or superseded) | Any | `409` |
 | Pending | Soft-deleted (`deletedAt` set) | `409` |
 | Pending | Hard-deleted (no row) | `404` |
 | Unknown, or in another organization | Any | `404` |
@@ -110,9 +128,12 @@ Neither case approves anything: `approved` is set only on a live subject.
 ## Consumers
 
 - **Cloud** creates a request for each inserted content item whose effective
-  approval is required, and for each content edit that resolves to required
-  when none is pending. It decides them in a transaction with the subject,
+  approval is required, for each content edit that resolves to required (after
+  superseding the open request), and for each policy change that makes approval
+  required on an approved item. It supersedes the open request on each content
+  edit, and decides requests in a transaction with the subject,
   answers `404` and `409` as in the table above, checks the kind's deciding key
   in the session organization, and serves the four routes.
-- **Desktop and web apps** list pending requests and call approve or deny.
+- **Desktop and web apps** list pending requests and call approve or deny. A
+  superseded request is shown as closed, with no decider.
 - **The hosted MCP server** never exposes these operations.

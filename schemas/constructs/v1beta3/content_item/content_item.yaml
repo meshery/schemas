@@ -194,13 +194,15 @@ properties:
     description: >
       Whether a person approved the item to run. Server-set and read-only:
       it is not in ContentItemPayload. At insert the server sets it from the
-      effective approval, which is resolved at insert and again at each
-      content edit: `false` with a pending `content_item_approval` request
+      effective approval, which is resolved at insert, again at each content
+      edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request
       when `approvalRequired` is true, and `true` with no request when it is
       false. Afterwards only `approveRequest` in the request construct sets it
       to true; that operation needs the Decide Content Item Approvals key and
       is never an AI app tool. A content edit that resolves to required sets
-      it back to false and opens a pending request (see updateContentItem).
+      it back to false and supersedes an open request with a fresh pending
+      one (see updateContentItem). A change to `approvalPolicy` that makes
+      approval required does the same to an approved item.
       The client that runs the queue reads this field.
       For one release after this field ships, servers mirror it into the
       free-form `Approved?` column in `data` for older readers; a reader
@@ -235,8 +237,9 @@ properties:
       the upstream policies exist, `inherit` or absent resolves to
       `required`. Only a person with Decide Content Item Approvals may write
       a value that changes the stored one; an AI app never can. Changing it
-      alone never changes `approved` or an existing request; the next content
-      edit resolves approval again (see updateContentItem). Stored in the
+      alone re-resolves the approval, and changes `approved` and an open
+      request only when the requirement is tightened (see updateContentItem).
+      Stored in the
       nullable `approval_policy` column; null means inherit, and a written
       `inherit` is stored as null, so reads return it absent.
     x-oapi-codegen-extra-tags:
@@ -248,13 +251,13 @@ properties:
     readOnly: true
     description: >
       Server-computed and read-only: whether the item needs a person's
-      approval, resolved at insert and again at each content edit (see
-      updateContentItem) from its `approvalPolicy` and the higher-level
+      approval, resolved at insert, again at each content edit, and again
+      when `approvalPolicy` changes (see updateContentItem) from its `approvalPolicy` and the higher-level
       settings (hierarchy defined in
       https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the
       `approval_required` column. Never in a payload. A change to
-      `approvalPolicy` or a higher-level setting alone does not change it;
-      the next content edit resolves it again. Interim: until the upstream
+      `approvalPolicy` alone re-resolves it; a higher-level setting alone does
+      not, and the next content edit resolves it again. Interim: until the upstream
       policies exist, an absent or `inherit` policy resolves to `true`
       (approval source `fallback`). Absent on items inserted before this
       field shipped.
@@ -267,8 +270,8 @@ properties:
     readOnly: true
     description: >
       Server-computed and read-only: the level that decided
-      `approvalRequired`, resolved at insert and again at each content edit
-      (see updateContentItem), stored in the `approval_policy_source` column.
+      `approvalRequired`, resolved at insert, again at each content edit, and
+      again when `approvalPolicy` changes (see updateContentItem), stored in the `approval_policy_source` column.
       `item` when the item's own `approvalPolicy` was explicit; `fallback`
       when no level set a value and approval is required. The other levels
       name the higher level that set the value: `workspace`, `profile`,

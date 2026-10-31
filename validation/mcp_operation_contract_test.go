@@ -189,6 +189,19 @@ func TestSharedHeaderParameters(t *testing.T) {
 			t.Errorf("Idempotency-Key description must document the replay rule, missing %q", want)
 		}
 	}
+	// The in-flight claim expires on the same 24-hour TTL as the stored response,
+	// no shorter lease applies, and a retry after expiry is processed as new.
+	flat := strings.Join(strings.Fields(desc), " ")
+	for _, want := range []string{
+		"expires 24 hours after it was taken, the same TTL as the stored response",
+		"no shorter in-flight lease applies",
+		"A retry after that expiry is processed as new",
+		"`code` `idempotency_key_in_flight`",
+	} {
+		if !strings.Contains(flat, want) {
+			t.Errorf("Idempotency-Key description must document the in-flight expiry, missing %q", want)
+		}
+	}
 
 	// Every construct alias of currentOrgId / idempotencyKey is a $ref to the core.
 	wantRef := func(name string) string {
@@ -252,23 +265,62 @@ func TestSharedHeaderParameters(t *testing.T) {
 }
 
 // A retry that arrives while the first request with its key is still being
-// processed answers 409, and both operations that take Idempotency-Key declare
-// it: insertContentItem in its own 409 (which also covers the thread and row
-// conflicts) and createSchedule through the shared IdempotencyKeyInFlight
-// response in v1beta2 core.
+// processed answers 409 with the distinct in-flight body, and both operations
+// that take Idempotency-Key declare it. createSchedule reaches it through the
+// shared IdempotencyKeyInFlight response in v1beta2 core. insertContentItem
+// declares its own InsertConflict, whose code is the in-flight code or one of
+// its two permanent conflicts, so a client tells the cases apart by code.
 func TestIdempotencyKeyInFlightIsDeclared(t *testing.T) {
 	root := repoRootDir(t)
 	core := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta2/core/api.yml"))
-	if desc := fmt.Sprint(mustLookup(t, core, "components", "responses", "IdempotencyKeyInFlight", "description")); !strings.Contains(desc, "still being processed") {
-		t.Errorf("core IdempotencyKeyInFlight must say the earlier request is still being processed, got %q", desc)
+	const inFlight = "idempotency_key_in_flight"
+
+	// The core body: its code is the in-flight code only, and it is required.
+	body := mustLookup(t, core, "components", "schemas", "IdempotencyKeyInFlightError")
+	// models/core is generated from v1alpha1/core, and a v1beta2/core schema that
+	// a construct refers to resolves there, so the mirror must be identical.
+	v1alpha1 := loadOpenAPIDocument(t, filepath.Join(root, coreV1alpha1Spec))
+	if mirror := mustLookup(t, v1alpha1, "components", "schemas", "IdempotencyKeyInFlightError"); !reflect.DeepEqual(body, mirror) {
+		t.Error("v1alpha1/core IdempotencyKeyInFlightError differs from v1beta2/core; keep the mirror identical")
+	}
+	if got := anyStrings(mustLookup(t, body, "properties", "code", "enum")); !reflect.DeepEqual(got, []string{inFlight}) {
+		t.Errorf("IdempotencyKeyInFlightError code enum = %v, want [%s]", got, inFlight)
+	}
+	if got := anyStrings(mustLookup(t, body, "required")); !reflect.DeepEqual(got, []string{"code", "message"}) {
+		t.Errorf("IdempotencyKeyInFlightError required = %v, want [code message]", got)
+	}
+	if desc := fmt.Sprint(mustLookup(t, core, "components", "responses", "IdempotencyKeyInFlight", "description")); !strings.Contains(desc, "still being processed") || !strings.Contains(desc, "`code` is `idempotency_key_in_flight`") {
+		t.Errorf("core IdempotencyKeyInFlight must say the earlier request is still being processed and name its code, got %q", desc)
+	}
+	if got := mustValue(mustLookup(t, core, "components", "responses", "IdempotencyKeyInFlight", "content", "application/json", "schema"), "$ref"); got != "../../v1beta2/core/api.yml#/components/schemas/IdempotencyKeyInFlightError" {
+		t.Errorf("core IdempotencyKeyInFlight must carry the in-flight body, got %v", got)
 	}
 
+	// insertContentItem: its own 409 body, whose permanent codes differ from the in-flight code.
 	content := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/content_item/api.yml"))
-	if got := mustValue(mustLookup(t, content, "paths", "/api/content-items", "post", "responses", "409"), "$ref"); got != "#/components/responses/409" {
-		t.Errorf("insertContentItem 409 $ref = %v, want the construct 409", got)
+	if got := mustValue(mustLookup(t, content, "paths", "/api/content-items", "post", "responses", "409"), "$ref"); got != "#/components/responses/InsertConflict" {
+		t.Errorf("insertContentItem 409 $ref = %v, want InsertConflict", got)
 	}
-	if desc := fmt.Sprint(mustLookup(t, content, "components", "responses", "409", "description")); !strings.Contains(desc, "still being processed") {
-		t.Errorf("the insertContentItem 409 must cover an Idempotency-Key still in flight, got %q", desc)
+	if got := mustValue(mustLookup(t, content, "components", "responses", "InsertConflict", "content", "application/json", "schema"), "$ref"); got != "#/components/schemas/ContentItemInsertConflict" {
+		t.Errorf("InsertConflict must carry ContentItemInsertConflict, got %v", got)
+	}
+	codes := anyStrings(mustLookup(t, content, "components", "schemas", "ContentItemInsertConflict", "properties", "code", "enum"))
+	want := []string{"row_number_taken", "thread_index_taken", inFlight}
+	if !reflect.DeepEqual(codes, want) {
+		t.Errorf("insertContentItem 409 codes = %v, want %v", codes, want)
+	}
+	permanent := 0
+	for _, c := range codes {
+		if c != inFlight {
+			permanent++
+		}
+	}
+	if permanent != 2 {
+		t.Errorf("insert has %d permanent conflict codes, want 2 (row_number_taken, thread_index_taken)", permanent)
+	}
+	// The shared update/delete 409 no longer claims the in-flight case.
+	if desc := fmt.Sprint(mustLookup(t, content, "components", "responses", "409", "description")); strings.Contains(desc, "still being processed") {
+		t.Errorf("the shared content item 409 must not cover an in-flight Idempotency-Key, got %q", desc)
 	}
 
 	schedule := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/schedule/api.yml"))
@@ -576,8 +628,8 @@ func TestRequestConstruct(t *testing.T) {
 		t.Errorf("RequestKind enum = %v, want [content_item_approval]", got)
 	}
 	status := mustLookup(t, doc, "components", "schemas", "RequestStatus")
-	if got := anyStrings(mustValue(status, "enum")); !reflect.DeepEqual(got, []string{"pending", "approved", "denied"}) {
-		t.Errorf("RequestStatus enum = %v, want [pending approved denied]", got)
+	if got := anyStrings(mustValue(status, "enum")); !reflect.DeepEqual(got, []string{"pending", "approved", "denied", "superseded"}) {
+		t.Errorf("RequestStatus enum = %v, want [pending approved denied superseded]", got)
 	}
 
 	// Each kind names the key that may decide it, and the key exists and is
