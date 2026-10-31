@@ -136,14 +136,20 @@ paths:
         interim rule (inherit, including absent, resolves to required), the
         stored value is not consulted by approval resolution until the profile
         level is placed in the hierarchy; see
-        docs/agent-approval-preference.md. A request authenticated by an AI app
-        token (any token issued to an OAuth client, scoped or not) may not
-        change agentsActWithoutApproval. If its payload sends a value that
-        differs from the stored state (true, false, or absent for null), the
-        request answers 403 and no part of the payload is applied. Sending back
-        the stored state is accepted, and so is null while the value is absent.
-        Only a person's own session can change it. Badges are server-owned and
-        are never changed through this operation. Moved here from v1beta2 with
+        docs/agent-approval-preference.md. A request authenticated by an API
+        token, of any kind (a token issued to an OAuth client or MCP app, or a
+        user's personal API token from generateToken), cannot change
+        agentsActWithoutApproval; only a request authenticated by the person's
+        signed-in session can. The rule turns on how the request is
+        authenticated, a token or a session, not on the token's isOauth flag or
+        its scopes. A token-authenticated request whose payload sends a value
+        that differs from the stored state (true, false, or absent for null) is
+        answered 403, and no part of the payload is applied. Sending back the
+        stored state is accepted, and so is null while the value is absent. The
+        same 403 applies when a token-authenticated request would set, change or
+        remove any remoteProviderPreferences.<provider>.agentsActWithoutApproval
+        value. Badges are server-owned and are never changed through this
+        operation. Moved here from v1beta2 with
         the same route, operationId and response; the v1beta3
         PreferencePayload adds agentsActWithoutApproval.
       requestBody:
@@ -953,7 +959,10 @@ components:
             keyed by provider. A provider's `agentsActWithoutApproval` entry
             is deprecated in favor of the typed `agentsActWithoutApproval`
             field and is read for one release only, when the typed field is
-            absent.
+            absent. A token-authenticated request cannot set, change or remove
+            that entry: it is answered 403, as for the typed field. See
+            docs/agent-approval-preference.md (Migration from the free-form
+            value).
         agentsActWithoutApproval:
           type: boolean
           description: >-
@@ -984,11 +993,11 @@ components:
             remoteProviderPreferences.<provider>.agentsActWithoutApproval: when
             this field is present it wins, and the free-form value is read only
             while this field is absent. On read, absent means not set (inherit);
-            the stored value is never null. An AI app token (any token issued to
-            an OAuth client, scoped or not) cannot change this field: an
-            updateUserPreferences request from one that sends a value other than
-            the stored state is answered 403. Only a person's own session can
-            set it. See PreferencePayload.agentsActWithoutApproval and
+            the stored value is never null. An API token, of any kind, cannot
+            change this field: a token-authenticated updateUserPreferences
+            request that sends a value other than the stored state is answered
+            403. Only a request authenticated by the signed-in session can set
+            it. See PreferencePayload.agentsActWithoutApproval and
             docs/agent-approval-preference.md.
 
     PreferencePayload:
@@ -1045,7 +1054,9 @@ components:
           description: >-
             The remote provider preferences of the preference. Writers set the
             typed agentsActWithoutApproval field, not a provider's free-form
-            agentsActWithoutApproval entry.
+            agentsActWithoutApproval entry. A token-authenticated request that
+            would set, change or remove a provider's agentsActWithoutApproval
+            entry is answered 403, and no part of the payload is applied.
         agentsActWithoutApproval:
           type: boolean
           nullable: true
@@ -1064,12 +1075,12 @@ components:
             false means required, and absent sets nothing. Three states on write:
             true or false stores that value; null clears the stored value back
             to absent (inherit); omitted keeps the stored value. No schema
-            default is declared. An AI app token (any token issued to an OAuth
-            client, scoped or not) cannot set this field: when its payload sends
-            a value that differs from the stored state (true, false, or absent
-            for null), the request is answered 403 and no part of the payload is
-            applied. Sending back the stored state is accepted. Only a person's
-            own session can set it. See docs/agent-approval-preference.md.
+            default is declared. An API token, of any kind, cannot set this
+            field: a token-authenticated request whose payload sends a value
+            that differs from the stored state (true, false, or absent for null)
+            is answered 403 and no part of the payload is applied. Sending back
+            the stored state is accepted. Only a request authenticated by the
+            signed-in session can set it. See docs/agent-approval-preference.md.
           x-oapi-codegen-extra-tags:
             json: "agentsActWithoutApproval,omitempty"
 

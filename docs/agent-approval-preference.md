@@ -102,19 +102,28 @@ the key's presence before it treats an absent pointer as "keep" rather than
 "clear".
 
 The operation answers `201` with no body on success, as before, and `403` in the
-case below.
+cases below.
 
 ## Who can write it
 
-Only a person's own session can change `agentsActWithoutApproval`. A request
-authenticated by an AI app token (any token issued to an OAuth client, scoped or
-not) cannot change it:
+Only a request authenticated by the person's signed-in session can change
+`agentsActWithoutApproval`. A request authenticated by an API token, of any kind,
+cannot. That covers a token issued to an OAuth client or MCP app, and a user's
+personal API token from `generateToken`.
 
-- If its payload sends a value that differs from the stored state (`true`,
-  `false`, or absent for `null`), the request answers `403` and changes nothing.
-  No part of the payload is applied, not even the other fields.
+The discriminator is how the request is authenticated: a token or a session. It
+is not the token's `isOauth` flag, and it is not the token's scopes.
+
+- A token-authenticated request whose payload sends a value that differs from
+  the stored state (`true`, `false`, or absent for `null`) answers `403` and
+  changes nothing. No part of the payload is applied, not even the other fields.
 - Sending back the stored state is accepted. That includes `null` while the
   value is absent.
+- The same `403` applies to the free-form value. A token-authenticated request
+  that would set, change or remove any
+  `remoteProviderPreferences.<provider>.agentsActWithoutApproval` answers `403`,
+  with the same no-partial-apply rule. See
+  [Migration from the free-form value](#migration-from-the-free-form-value).
 
 This keeps an agent from granting itself `not_required` approval by writing the
 preference. The rule is enforced by the server on each request, not by the
@@ -146,9 +155,14 @@ value is consulted, so an AI app's `inherit` write always needs approval):
 
 Writers move to the typed field and set it through `updateUserPreferences`
 as above. Servers may copy a free-form value into the
-typed field on the user's next preferences write; they must not write the
-free-form value again. After the release, the free-form value is no longer read
-and may be deleted from stored preferences.
+typed field on the user's next preferences write made from the signed-in
+session; they must not write the free-form value again. A token-authenticated
+write never performs that copy, because the copy changes the typed value, which
+[Who can write it](#who-can-write-it) forbids to a token. A token-authenticated
+request that would set, change or remove a provider's free-form
+`agentsActWithoutApproval` is answered `403`, as for the typed field. After the
+release, the free-form value is no longer read and may be deleted from stored
+preferences.
 
 The free-form object stays `additionalProperties: true`, so no stored value
 becomes invalid.

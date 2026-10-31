@@ -389,6 +389,7 @@ func TestOauthConsentEntityShape(t *testing.T) {
 		{"clientId need not be a uuid", withFields(valid, map[string]any{"clientId": "not-a-uuid"}), false},
 		{"missing clientId", without("clientId"), true},
 		{"missing scopes", without("scopes"), true},
+		{"empty scopes: a consent always names a keychain scope", withFields(valid, map[string]any{"scopes": []any{}}), true},
 		{"missing organizationId", without("organizationId"), true},
 		{"scope with whitespace", withFields(valid, map[string]any{"scopes": []any{"a b"}}), true},
 		{"organizationId not a uuid", withFields(valid, map[string]any{"organizationId": "x"}), true},
@@ -651,9 +652,10 @@ func squash(s string) string {
 	return strings.Join(strings.Fields(s), " ")
 }
 
-// An AI app token may not change agentsActWithoutApproval. updateUserPreferences
-// must declare the 403 it answers, and the descriptions must state the rule, so
-// the spec, the docs and the server agree on it.
+// An API token, of any kind, may not change agentsActWithoutApproval, and
+// neither may it change a provider's free-form agentsActWithoutApproval entry.
+// updateUserPreferences must declare the 403 it answers, and the descriptions
+// and the doc must state the rule, so the spec, the docs and the server agree.
 func TestUpdateUserPreferencesAgentTokenRule(t *testing.T) {
 	v3 := loadSpec(t, userV1beta3Spec)
 	item := v3.Paths.Find("/api/identity/users/preferences")
@@ -661,22 +663,42 @@ func TestUpdateUserPreferencesAgentTokenRule(t *testing.T) {
 		t.Fatal("v1beta3 user must declare updateUserPreferences")
 	}
 	if item.Put.Responses.Status(403) == nil {
-		t.Fatal("updateUserPreferences must declare 403 for an AI app token that changes agentsActWithoutApproval")
+		t.Fatal("updateUserPreferences must declare 403 for a token-authenticated request that changes agentsActWithoutApproval")
 	}
 	if item.Put.Responses.Status(403).Value == nil {
 		t.Fatal("updateUserPreferences 403 must resolve to a response")
 	}
 	op := squash(item.Put.Description)
-	for _, word := range []string{"AI app token", "OAuth client", "403", "stored state", "no part of the payload is applied", "Only a person's own session"} {
+	for _, word := range []string{
+		"authenticated by an API token, of any kind", "OAuth client or MCP app", "generateToken",
+		"signed-in session", "isOauth", "403", "stored state", "no part of the payload is applied",
+		"remoteProviderPreferences.<provider>.agentsActWithoutApproval",
+	} {
 		if !strings.Contains(op, word) {
-			t.Errorf("updateUserPreferences description must state the agent-token rule: missing %q", word)
+			t.Errorf("updateUserPreferences description must state the token rule: missing %q", word)
 		}
 	}
+	if strings.Contains(op, "AI app token") {
+		t.Error("updateUserPreferences description must key the rule on the API token, not on an AI app token")
+	}
+
 	for _, owner := range []string{"Preference", "PreferencePayload"} {
 		desc := squash(schemaOf(t, v3, owner).Properties["agentsActWithoutApproval"].Value.Description)
-		for _, word := range []string{"AI app token", "OAuth client", "403", "Only a person's own session"} {
+		for _, word := range []string{"API token, of any kind", "403", "signed-in session"} {
 			if !strings.Contains(desc, word) {
-				t.Errorf("%s.agentsActWithoutApproval description must state the agent-token rule: missing %q", owner, word)
+				t.Errorf("%s.agentsActWithoutApproval description must state the token rule: missing %q", owner, word)
+			}
+		}
+		if strings.Contains(desc, "AI app token") {
+			t.Errorf("%s.agentsActWithoutApproval must key the rule on the API token, not on an AI app token", owner)
+		}
+	}
+	// The free-form entry has the same rule, on the read side and the write side.
+	for _, owner := range []string{"Preference", "PreferencePayload"} {
+		desc := squash(schemaOf(t, v3, owner).Properties["remoteProviderPreferences"].Value.Description)
+		for _, word := range []string{"token-authenticated", "403", "agentsActWithoutApproval"} {
+			if !strings.Contains(desc, word) {
+				t.Errorf("%s.remoteProviderPreferences description must state the free-form token rule: missing %q", owner, word)
 			}
 		}
 	}
@@ -690,35 +712,105 @@ func TestUpdateUserPreferencesAgentTokenRule(t *testing.T) {
 	if read := squash(schemaOf(t, v3, "Preference").Properties["agentsActWithoutApproval"].Value.Description); !strings.Contains(read, "absent means not set") {
 		t.Error("Preference.agentsActWithoutApproval must say absent means not set")
 	}
+
+	// The doc states the same rule, and the copy-on-write migration never runs
+	// on a token write.
+	raw, err := os.ReadFile(filepath.Join(repoRootDir(t), "docs", "agent-approval-preference.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	doc := squash(string(raw))
+	for _, word := range []string{
+		"authenticated by an API token, of any kind", "signed-in session", "isOauth",
+		"403", "No part of the payload is applied",
+		"remoteProviderPreferences.<provider>.agentsActWithoutApproval",
+		"A token-authenticated write never performs that copy",
+	} {
+		if !strings.Contains(doc, word) {
+			t.Errorf("docs/agent-approval-preference.md must state the token rule: missing %q", word)
+		}
+	}
 }
 
-// Re-consent that changes scopes changes the client's existing tokens. The rules
-// are pinned in the consent schema and the list operation, which the docs echo.
+// Re-consent that changes scopes changes the client's existing tokens. The
+// authoritative rule is in docs/oauth-consent-contract.md and the OauthConsent
+// schema description; the list operation, the consent info and the token doc
+// only summarize it and point there.
 func TestOauthConsentReConsentScopeRules(t *testing.T) {
 	doc := loadSpec(t, oauthConsentSpec)
 	consent := squash(schemaOf(t, doc, "OauthConsent").Description)
-	for _, word := range []string{
-		"Narrowing:", "Broadening:",
+	rule := []string{
+		"at least one keychain scope",
 		"in the same transaction as the consent update",
-		"narrows every token previously issued to that client for that user",
-		"intersection of its",
-		"revoked instead",
+		"intersection of its keychains and the keychains of the new scopes",
+		"keychainScoped",
+		"never adds keychains to a scoped token",
+		"revoked, not left with an empty list",
 		"empty keychain list means unrestricted",
-		"never widens existing tokens",
+		"exactly the keychains of the new scopes",
+		"set to true",
+		"keychains were all deleted",
+		"never gains keys",
+		"no keychain scope",
+		"every token issued to that client for that user is revoked",
 		"takes effect only for tokens issued after that consent",
-	} {
+	}
+	for _, word := range rule {
 		if !strings.Contains(consent, word) {
 			t.Errorf("OauthConsent description must state the re-consent rule: missing %q", word)
 		}
 	}
-	list := squash(doc.Paths.Find("/api/identity/oauth/consents").Get.Description)
-	for _, word := range []string{"narrows scopes", "in the same transaction", "never widens"} {
-		if !strings.Contains(list, word) {
-			t.Errorf("getOauthConsents description must point at the re-consent rule: missing %q", word)
+	scopes := schemaOf(t, doc, "OauthConsent").Properties["scopes"].Value
+	if scopes.MinItems != 1 {
+		t.Errorf("OauthConsent.scopes minItems = %d, want 1: a consent always names a keychain scope", scopes.MinItems)
+	}
+
+	contract, err := os.ReadFile(filepath.Join(repoRootDir(t), "docs", "oauth-consent-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	authoritative := squash(string(contract))
+	for _, word := range []string{
+		"authoritative statement of the re-consent rule",
+		"in the same transaction as the consent update",
+		"intersection of its keychains and the keychains of the new scopes",
+		"exactly the keychains of the new scopes",
+		"**revoked**, not left with an empty list",
+		"keychains were all deleted",
+		"grants no keychain scope",
+		"takes effect only for tokens issued after that consent",
+		"minItems: 1",
+	} {
+		if !strings.Contains(authoritative, word) {
+			t.Errorf("docs/oauth-consent-contract.md must state the re-consent rule: missing %q", word)
 		}
 	}
-	if info := squash(doc.Info.Description); !strings.Contains(info, "never widens existing tokens") {
-		t.Error("the oauth_consent info description must state that broadening never widens existing tokens")
+
+	// One-sentence summaries that point at the authoritative text, not copies of it.
+	list := squash(doc.Paths.Find("/api/identity/oauth/consents").Get.Description)
+	if !strings.Contains(list, "OauthConsent schema description") {
+		t.Error("getOauthConsents description must point at the OauthConsent schema description for the re-consent rule")
+	}
+	info := squash(doc.Info.Description)
+	if !strings.Contains(info, "the description of the OauthConsent schema") {
+		t.Error("the oauth_consent info description must point at the OauthConsent schema description for the re-consent rule")
+	}
+	for name, text := range map[string]string{"getOauthConsents description": list, "oauth_consent info description": info} {
+		if strings.Contains(text, "intersection") || strings.Contains(text, "Narrowing") {
+			t.Errorf("%s must summarize the re-consent rule, not repeat it", name)
+		}
+	}
+
+	tokenDoc, err := os.ReadFile(filepath.Join(repoRootDir(t), "docs", "token-scoping-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	tokens := squash(string(tokenDoc))
+	if !strings.Contains(tokens, "oauth-consent-contract.md#scope-changes-and-existing-tokens") {
+		t.Error("docs/token-scoping-contract.md must point at the authoritative re-consent rule")
+	}
+	if strings.Contains(tokens, "**Narrowing**") || strings.Contains(tokens, "**Broadening**") {
+		t.Error("docs/token-scoping-contract.md must summarize the re-consent rule, not repeat it")
 	}
 }
 
