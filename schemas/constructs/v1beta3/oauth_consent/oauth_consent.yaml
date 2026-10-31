@@ -77,6 +77,10 @@ properties:
       pattern: '^\S+$'
     maxItems: 100
     uniqueItems: true
+    x-go-type: pq.StringArray
+    x-go-type-import:
+      path: github.com/lib/pq
+    x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:
       db: scopes
     x-order: 6
