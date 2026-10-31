@@ -58,11 +58,16 @@ them; the rule is in [oauth-consent-contract.md](oauth-consent-contract.md#scope
 records. They answer different questions and must not be derived from each
 other at request time.
 
-- **Set once, at creation.** A create with a non-empty `keychainIds` stores
+- **Set at creation.** A create with a non-empty `keychainIds` stores
   `keychainScoped = true` (column `user_tokens.keychain_scoped`). A create whose
   `keychainIds` is empty or absent stores `false`: the token is unscoped.
-- **Never reset.** Once true, `keychainScoped` is never set back to false. No
-  operation widens a scoped token into an unrestricted one.
+- **Changed only from false to true, by re-consent.** A re-consent that narrows
+  an unrestricted token (`keychainScoped` false) sets it to true; see
+  [`oauth-consent-contract.md`](oauth-consent-contract.md). No other operation
+  changes it.
+- **Never reset to false.** Once true, `keychainScoped` is never set back to
+  false. No operation widens a scoped token into an unrestricted one.
+- It is read-only to clients, whatever the server stores.
 - **Never inferred from mapping rows.** The token's keychain mappings can shrink
   after creation when a keychain is deleted. If scoping were inferred from the
   mappings, a scoped token whose keychains were all deleted would have none left

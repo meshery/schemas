@@ -122,6 +122,36 @@ func TestTokenScopingFieldsAreOptionalOnTheEntity(t *testing.T) {
 	})
 }
 
+// keychainScoped is set at creation and changes only from false to true, when a
+// re-consent narrows an unrestricted token. It is never reset to false. The
+// schema and the contract doc must say so, and must not keep the old wording.
+func TestTokenKeychainScopedChangesOnlyToTrue(t *testing.T) {
+	spec := loadSpec(t, tokenSpec)
+	desc := squash(schemaOf(t, spec, "UserToken").Properties["keychainScoped"].Value.Description)
+	for _, word := range []string{"at creation", "changes it to true", "no other operation changes it", "never reset to false", "read-only to clients"} {
+		if !strings.Contains(desc, word) {
+			t.Errorf("UserToken.keychainScoped description must state its rule: missing %q", word)
+		}
+	}
+	if strings.Contains(desc, "afterwards") {
+		t.Error("UserToken.keychainScoped description must not keep the old 'never reset to false afterwards' wording")
+	}
+
+	raw, err := os.ReadFile(filepath.Join(repoRootDir(t), "docs", "token-scoping-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	contract := squash(string(raw))
+	for _, word := range []string{"Set at creation.", "Changed only from false to true, by re-consent.", "Never reset to false."} {
+		if !strings.Contains(contract, word) {
+			t.Errorf("docs/token-scoping-contract.md must state the keychainScoped rule: missing %q", word)
+		}
+	}
+	if strings.Contains(contract, "Set once") {
+		t.Error("docs/token-scoping-contract.md must not keep the old 'Set once' wording")
+	}
+}
+
 // keychainScoped is the server's stored record of a keychain limit: optional
 // and read-only on the entity, and never client-settable through TokenPayload.
 func TestTokenKeychainScopedIsReadOnlyOnTheEntity(t *testing.T) {
@@ -672,11 +702,14 @@ func TestUpdateUserPreferencesAgentTokenRule(t *testing.T) {
 	for _, word := range []string{
 		"authenticated by an API token, of any kind", "OAuth client or MCP app", "generateToken",
 		"signed-in session", "isOauth", "403", "stored state", "no part of the payload is applied",
-		"remoteProviderPreferences.<provider>.agentsActWithoutApproval",
+		"remoteProviderPreferences.<provider>.agentsActWithoutApproval", "Writing back the stored entry unchanged is accepted",
 	} {
 		if !strings.Contains(op, word) {
 			t.Errorf("updateUserPreferences description must state the token rule: missing %q", word)
 		}
+	}
+	if strings.Contains(op, "set, change or remove") {
+		t.Error("updateUserPreferences description must not keep the old 'set, change or remove' wording")
 	}
 	if strings.Contains(op, "AI app token") {
 		t.Error("updateUserPreferences description must key the rule on the API token, not on an AI app token")
@@ -696,7 +729,7 @@ func TestUpdateUserPreferencesAgentTokenRule(t *testing.T) {
 	// The free-form entry has the same rule, on the read side and the write side.
 	for _, owner := range []string{"Preference", "PreferencePayload"} {
 		desc := squash(schemaOf(t, v3, owner).Properties["remoteProviderPreferences"].Value.Description)
-		for _, word := range []string{"token-authenticated", "403", "agentsActWithoutApproval"} {
+		for _, word := range []string{"token-authenticated", "403", "agentsActWithoutApproval", "stored state of", "Writing back the stored entry unchanged is accepted"} {
 			if !strings.Contains(desc, word) {
 				t.Errorf("%s.remoteProviderPreferences description must state the free-form token rule: missing %q", owner, word)
 			}
@@ -725,10 +758,14 @@ func TestUpdateUserPreferencesAgentTokenRule(t *testing.T) {
 		"403", "No part of the payload is applied",
 		"remoteProviderPreferences.<provider>.agentsActWithoutApproval",
 		"A token-authenticated write never performs that copy",
+		"would change the stored state of any", "Writing back the stored entry unchanged is accepted",
 	} {
 		if !strings.Contains(doc, word) {
 			t.Errorf("docs/agent-approval-preference.md must state the token rule: missing %q", word)
 		}
+	}
+	if strings.Contains(doc, "set, change or remove") {
+		t.Error("docs/agent-approval-preference.md must not keep the old 'set, change or remove' wording")
 	}
 }
 

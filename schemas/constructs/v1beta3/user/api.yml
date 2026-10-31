@@ -146,9 +146,11 @@ paths:
         that differs from the stored state (true, false, or absent for null) is
         answered 403, and no part of the payload is applied. Sending back the
         stored state is accepted, and so is null while the value is absent. The
-        same 403 applies when a token-authenticated request would set, change or
-        remove any remoteProviderPreferences.<provider>.agentsActWithoutApproval
-        value. Badges are server-owned and are never changed through this
+        same 403 applies when a token-authenticated request would change the
+        stored state of any remoteProviderPreferences.<provider>.agentsActWithoutApproval
+        entry (a different value, adding it where absent, or removing it where
+        present). Writing back the stored entry unchanged is accepted, so a
+        read-modify-write of another provider's settings goes through. Badges are server-owned and are never changed through this
         operation. Moved here from v1beta2 with
         the same route, operationId and response; the v1beta3
         PreferencePayload adds agentsActWithoutApproval.
@@ -959,8 +961,10 @@ components:
             keyed by provider. A provider's `agentsActWithoutApproval` entry
             is deprecated in favor of the typed `agentsActWithoutApproval`
             field and is read for one release only, when the typed field is
-            absent. A token-authenticated request cannot set, change or remove
-            that entry: it is answered 403, as for the typed field. See
+            absent. A token-authenticated request that would change the stored
+            state of that entry (a different value, adding it where absent, or
+            removing it where present) is answered 403, as for the typed field.
+            Writing back the stored entry unchanged is accepted. See
             docs/agent-approval-preference.md (Migration from the free-form
             value).
         agentsActWithoutApproval:
@@ -1055,8 +1059,10 @@ components:
             The remote provider preferences of the preference. Writers set the
             typed agentsActWithoutApproval field, not a provider's free-form
             agentsActWithoutApproval entry. A token-authenticated request that
-            would set, change or remove a provider's agentsActWithoutApproval
-            entry is answered 403, and no part of the payload is applied.
+            would change the stored state of a provider's agentsActWithoutApproval
+            entry (a different value, adding it where absent, or removing it
+            where present) is answered 403, and no part of the payload is
+            applied. Writing back the stored entry unchanged is accepted.
         agentsActWithoutApproval:
           type: boolean
           nullable: true

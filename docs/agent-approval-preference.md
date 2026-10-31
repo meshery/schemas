@@ -120,9 +120,11 @@ is not the token's `isOauth` flag, and it is not the token's scopes.
 - Sending back the stored state is accepted. That includes `null` while the
   value is absent.
 - The same `403` applies to the free-form value. A token-authenticated request
-  that would set, change or remove any
-  `remoteProviderPreferences.<provider>.agentsActWithoutApproval` answers `403`,
-  with the same no-partial-apply rule. See
+  that would change the stored state of any
+  `remoteProviderPreferences.<provider>.agentsActWithoutApproval` entry (a
+  different value, adding it where absent, or removing it where present) answers
+  `403`, with the same no-partial-apply rule. Writing back the stored entry
+  unchanged is accepted, as it is for the typed field. See
   [Migration from the free-form value](#migration-from-the-free-form-value).
 
 This keeps an agent from granting itself `not_required` approval by writing the
@@ -159,8 +161,10 @@ typed field on the user's next preferences write made from the signed-in
 session; they must not write the free-form value again. A token-authenticated
 write never performs that copy, because the copy changes the typed value, which
 [Who can write it](#who-can-write-it) forbids to a token. A token-authenticated
-request that would set, change or remove a provider's free-form
-`agentsActWithoutApproval` is answered `403`, as for the typed field. After the
+request that would change the stored state of a provider's free-form
+`agentsActWithoutApproval` (a different value, adding it where absent, or
+removing it where present) is answered `403`, as for the typed field. Writing
+back the stored entry unchanged is accepted. After the
 release, the free-form value is no longer read and may be deleted from stored
 preferences.
 
