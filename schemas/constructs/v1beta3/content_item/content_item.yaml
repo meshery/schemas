@@ -199,7 +199,7 @@ properties:
       when it is false. Afterwards only `approveRequest` in the request
       construct sets it to true; that operation needs the Decide Content
       Item Approvals key and is never an AI app tool. The client
-      that runs the queue (the Mac the schedule lands on) reads this field.
+      that runs the queue reads this field.
       For one release after this field ships, servers mirror it into the
       free-form `Approved?` column in `data` for older readers; a reader
       that finds no `approved` on an older row falls back to that column. A
@@ -234,7 +234,8 @@ properties:
       `required`. Only a person with Decide Content Item Approvals may write
       a value that changes the stored one; an AI app never can. Changing it
       later never changes `approved` or an existing request. Stored in the
-      nullable `approval_policy` column; null means inherit.
+      nullable `approval_policy` column; null means inherit, and a written
+      `inherit` is stored as null, so reads return it absent.
     x-oapi-codegen-extra-tags:
       db: approval_policy
       json: "approvalPolicy,omitempty"

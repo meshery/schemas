@@ -215,16 +215,17 @@ the session organization may write a value that changes the stored
 nothing changes. No OAuth scope keychain carries that key, so an AI app token
 can never change the policy.
 
-- **Insert.** Any value other than absent is a change, so a caller without the
-  key who sends `approvalPolicy` on insert gets `403` and nothing is inserted.
-  Omitted stores nothing, so the item inherits.
+- **Insert.** `required` or `not_required` is a change, so a caller without the
+  key who sends either on insert gets `403` and nothing is inserted. Omitted or
+  `inherit` stores null, so the item inherits.
 - **Update.** Omitted keeps the stored value. A value different from the stored
-  one is a change, and `inherit` returns the item to inheriting. An absent
-  stored value equals an absent value sent.
+  one is a change, and `inherit` returns the item to inheriting. Absent, null
+  and `inherit` are one value: the server stores `inherit` as null, so writing
+  `inherit` over an inheriting item changes nothing and is never refused.
 - **Write-back.** A caller without the key that reads an item and writes it back
   whole is not refused when the policy comes back unchanged. Sending back the
-  stored value is accepted and changes nothing. Only a different value, or any
-  value on insert, is refused with `403`.
+  stored value is accepted and changes nothing. Only a different value, or an
+  explicit `required` or `not_required` on insert, is refused with `403`.
 
 **The insert effect.** The effective approval is resolved once, when the item
 is inserted:
@@ -302,7 +303,7 @@ insert nothing, and the same key with a different hash answers `422`.
 
 Until now approval was the `Approved?` column inside the item's `data`, a
 client-specific column that a generic construct should not read. It stays readable for
-one release so the Mac engine and the desktop app move over without a flag day:
+one release so the queue-running client and the desktop app move over without a flag day:
 
 1. **Release N (this one).** Writers stop setting approval: they send neither
    `approved` nor `data["Approved?"]`, and approve through `approveRequest`
@@ -325,8 +326,9 @@ backfilled. The backfill is the only time `Approved?` sets `approved`.
   default false, `created_by_client` text, `rules_of_engagement`
   jsonb, `thread_id` and `reply_to_id` uuid referencing `content_items`,
   `thread_index` integer, `media_asset_ids` uuid[], `approval_policy` text
-  nullable, with a check constraint that admits only `required`,
-  `not_required` and `inherit`; null means inherit, `approval_required`
+  nullable, with a check constraint that admits only `required`
+  and `not_required`; null means inherit and the server stores a written
+  `inherit` as null, `approval_required`
   boolean nullable, and `approval_policy_source` text nullable, with a check
   constraint that admits only `item`, `platform`, `workspace`, `profile` and
   `fallback`; the two approval results are null on rows inserted before this
