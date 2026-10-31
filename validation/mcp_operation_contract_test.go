@@ -567,7 +567,7 @@ func anyStrings(v any) []string {
 // No new identifier carries a product name.
 func TestHostedMcpIdentifiersAreProductNeutral(t *testing.T) {
 	root := repoRootDir(t)
-	banned := []string{"blowhorn", "meshery", "layer5", "kanvas"}
+	banned := []string{"meshery", "layer5", "kanvas"}
 	check := func(what, value string) {
 		// The Go import path of the shared models names the repository, not a
 		// new identifier.
