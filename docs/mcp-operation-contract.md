@@ -142,8 +142,12 @@ An operation that also takes an organization in its path or query (`orgId`:
 `getFeaturesByOrganization` in its path, `getConnections` in its query) must
 name the same organization as `X-Current-Orgid` when both are sent. A mismatch
 answers `403` and returns nothing; neither value wins. When the header is
-omitted there is nothing to compare, and the call proceeds as for any other.
-Both operation descriptions reference this section and declare the `403`.
+omitted, the path or query `orgId` must equal the organization the call acts
+in (the session's selected organization); a mismatch answers `403` and returns
+nothing. The comparison is on the parsed UUID and is case-insensitive, so the
+same organization written in upper or lower case matches; the raw strings are
+never compared. Both operation descriptions reference this section and declare
+the `403`.
 
 ## `Idempotency-Key`
 
@@ -159,6 +163,10 @@ for 24 hours:
   is still being processed answers `409` and creates nothing; the client retries
   later and then receives the stored response;
 - no key means no deduplication.
+
+**Precedence.** While the first request with a key is in flight, every retry
+with that key answers `409` whatever its body. Only once the first request has
+finished does a retry with a different body answer `422`.
 
 **In-flight expiry.** An in-flight claim lasts 24 hours from when it was taken,
 the same TTL as the stored response. The repository has no shorter in-flight

@@ -1207,7 +1207,10 @@ components:
         creates nothing. A retry with the same key that arrives while the
         earlier request with that key is still being processed answers 409
         with the body `code` `idempotency_key_in_flight` and creates nothing;
-        the client retries later to receive the stored response. The in-flight
+        the client retries later to receive the stored response. Precedence:
+        while the first request with a key is in flight, every retry with that
+        key answers 409 whatever its body; only once the first request has
+        finished does a retry with a different body answer 422. The in-flight
         claim of a request that never finished expires 24 hours after it was
         taken, the same TTL as the stored response; no shorter in-flight lease
         applies. A retry after that expiry is processed as new. Omitted, the
