@@ -116,59 +116,11 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/identity/users/preferences:
-    put:
-      x-internal: ["cloud"]
-      tags:
-        - users
-      operationId: updateUserPreferences
-      summary: Update the current user's preferences
-      description: >-
-        Merges the payload onto the signed-in user's stored preferences. A key
-        the payload names replaces the stored value; a key it leaves out keeps
-        the stored value. Setting selectedOrganizationId switches the
-        organization the user's session has selected, as Meshery Cloud's and
-        Meshery's organization switchers do. Setting agentsActWithoutApproval
-        to true or false stores the typed profile-level source for agent
-        writes, consulted only for an AI-app activity whose approvalPolicy is
-        inherit or absent. Setting it to null clears the stored value back to
-        absent (inherit). Leaving it out keeps the stored value. Under the
-        interim rule (inherit, including absent, resolves to required), the
-        stored value is not consulted by approval resolution until the profile
-        level is placed in the hierarchy; see
-        docs/agent-approval-preference.md. A request authenticated by an API
-        token, of any kind (a token issued to an OAuth client or MCP app, or a
-        user's personal API token from generateToken), cannot change
-        agentsActWithoutApproval; only a request authenticated by the person's
-        signed-in session can. The rule turns on how the request is
-        authenticated, a token or a session, not on the token's isOauth flag or
-        its scopes. A token-authenticated request whose payload sends a value
-        that differs from the stored state (true, false, or absent for null) is
-        answered 403, and no part of the payload is applied. Sending back the
-        stored state is accepted, and so is null while the value is absent. The
-        same 403 applies when a token-authenticated request would change the
-        stored state of any remoteProviderPreferences.<provider>.agentsActWithoutApproval
-        entry (a different value, adding it where absent, or removing it where
-        present). Writing back the stored entry unchanged is accepted, so a
-        read-modify-write of another provider's settings goes through. Badges are server-owned and are never changed through this
-        operation. Moved here from v1beta2 with
-        the same route, operationId and response; the v1beta3
-        PreferencePayload adds agentsActWithoutApproval.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PreferencePayload"
-      responses:
-        "201":
-          description: Preferences updated
-        "401":
-          $ref: "#/components/responses/401"
-        "403":
-          $ref: "#/components/responses/403"
-        "500":
-          $ref: "#/components/responses/500"
+  # PUT /api/identity/users/preferences (updateUserPreferences) is not declared
+  # here. The bundler merges every version of a construct into one spec and
+  # rejects a route declared twice, and v1beta2 user owns that route until it
+  # is superseded. The v1beta3 request body for the route is PreferencePayload
+  # below; see docs/agent-approval-preference.md.
 
 components:
   securitySchemes:
@@ -960,11 +912,12 @@ components:
             The remote provider preferences of the preference. Free-form,
             keyed by provider. A provider's `agentsActWithoutApproval` entry
             is deprecated in favor of the typed `agentsActWithoutApproval`
-            field and is read for one release only, when the typed field is
-            absent. A token-authenticated request that would change the stored
-            state of that entry (a different value, adding it where absent, or
-            removing it where present) is answered 403, as for the typed field.
-            Writing back the stored entry unchanged is accepted. See
+            field, and it is never read once the typed field has been written
+            (see Preference.agentsActWithoutApproval). A token-authenticated
+            request that would change the stored state of that entry (a
+            different value, adding it where absent, or removing it where
+            present) is answered 403, as for the typed field. Writing back the
+            stored entry unchanged is accepted. See
             docs/agent-approval-preference.md (Migration from the free-form
             value).
         agentsActWithoutApproval:
@@ -994,23 +947,35 @@ components:
             never set approved; approvalPolicy only says whether approval is
             needed. No schema default is declared, so absence stays
             distinguishable from false. Typed replacement for the free-form
-            remoteProviderPreferences.<provider>.agentsActWithoutApproval: when
-            this field is present it wins, and the free-form value is read only
-            while this field is absent. On read, absent means not set (inherit);
-            the stored value is never null. An API token, of any kind, cannot
-            change this field: a token-authenticated updateUserPreferences
-            request that sends a value other than the stored state is answered
-            403. Only a request authenticated by the signed-in session can set
-            it. See PreferencePayload.agentsActWithoutApproval and
+            remoteProviderPreferences.<provider>.agentsActWithoutApproval. The
+            server keeps a write-once marker per preference, which is not part
+            of this schema: the first accepted write that names this field
+            (true, false, or null, from any authenticated caller, including null
+            while the value is absent) sets the marker, and nothing clears it.
+            Once the marker is set, the free-form value is never read again, and
+            null means inherit, not the free-form value. While the marker is
+            unset, the free-form value may be read, as the migration section of
+            docs/agent-approval-preference.md describes. On read, absent means
+            not set (inherit); the stored value is never null. An API token, of
+            any kind, cannot change this field: a token-authenticated request
+            that sends a value other than the stored state is answered 403. Only
+            a request authenticated by the signed-in session can set it. See
+            PreferencePayload.agentsActWithoutApproval and
             docs/agent-approval-preference.md.
 
     PreferencePayload:
       type: object
       description: >-
-        The client-settable fields of Preference for updateUserPreferences.
-        Every field is optional: the server merges the ones present onto the
-        stored preferences and keeps the rest. updatedAt is server-recorded and
-        is not settable.
+        The v1beta3 request body of updateUserPreferences (PUT
+        /api/identity/users/preferences), and the client-settable fields of
+        Preference. Every field is optional: the server merges the ones present
+        onto the stored preferences and keeps the rest. Setting
+        selectedOrganizationId switches the organization the user's session has
+        selected. Badges are server-owned and are never changed through this
+        body. updatedAt is server-recorded and is not settable. The merged spec
+        still declares this route with the v1beta2 body, which does not carry
+        agentsActWithoutApproval; see docs/agent-approval-preference.md (Where
+        it is defined).
       additionalProperties: false
       properties:
         meshAdapters:
@@ -1062,7 +1027,9 @@ components:
             would change the stored state of a provider's agentsActWithoutApproval
             entry (a different value, adding it where absent, or removing it
             where present) is answered 403, and no part of the payload is
-            applied. Writing back the stored entry unchanged is accepted.
+            applied. Writing back the stored entry unchanged is accepted. Once
+            the typed field has been written, the entry is never read again
+            (see Preference.agentsActWithoutApproval).
         agentsActWithoutApproval:
           type: boolean
           nullable: true
@@ -1087,6 +1054,10 @@ components:
             is answered 403 and no part of the payload is applied. Sending back
             the stored state is accepted. Only a request authenticated by the
             signed-in session can set it. See docs/agent-approval-preference.md.
+          x-go-type: nullable.Nullable[bool]
+          x-go-type-import:
+            path: github.com/oapi-codegen/nullable
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             json: "agentsActWithoutApproval,omitempty"
 

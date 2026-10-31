@@ -341,7 +341,7 @@ func TestOauthConsentOperations(t *testing.T) {
 	if ok := del.Responses.Status(204); ok == nil || len(ok.Value.Content) != 0 {
 		t.Error("deleteOauthConsent must answer 204 with no body")
 	}
-	for _, code := range []int{400, 401, 404, 500} {
+	for _, code := range []int{400, 401, 403, 404, 500} {
 		if del.Responses.Status(code) == nil {
 			t.Errorf("deleteOauthConsent must document %d", code)
 		}
@@ -511,13 +511,17 @@ func TestAgentsActWithoutApprovalPreference(t *testing.T) {
 			t.Error("PreferencePayload.agentsActWithoutApproval must be optional")
 		}
 	}
-	item := v3.Paths.Find("/api/identity/users/preferences")
-	if item == nil || item.Put == nil || item.Put.OperationID != "updateUserPreferences" {
-		t.Fatal("v1beta3 user must declare updateUserPreferences (PUT /api/identity/users/preferences)")
+	// Go clients must be able to send true, false, null (clear) and an omitted
+	// key (keep). The generated field is nullable.Nullable[bool]: a map, so
+	// omitempty leaves an unset field out and null marshals as null.
+	if got := mustLookup(t, raw, "components", "schemas", "PreferencePayload", "properties", "agentsActWithoutApproval", "x-go-type"); got != "nullable.Nullable[bool]" {
+		t.Errorf("PreferencePayload.agentsActWithoutApproval x-go-type = %v, want nullable.Nullable[bool]", got)
 	}
-	body := item.Put.RequestBody.Value.Content.Get("application/json")
-	if body == nil || body.Schema.Value != payload {
-		t.Error("updateUserPreferences must take the v1beta3 PreferencePayload")
+	if got := mustLookup(t, raw, "components", "schemas", "PreferencePayload", "properties", "agentsActWithoutApproval", "x-go-type-import", "path"); got != "github.com/oapi-codegen/nullable" {
+		t.Errorf("PreferencePayload.agentsActWithoutApproval x-go-type-import path = %v, want github.com/oapi-codegen/nullable", got)
+	}
+	if got := mustLookup(t, raw, "components", "schemas", "PreferencePayload", "properties", "agentsActWithoutApproval", "x-go-type-skip-optional-pointer"); got != true {
+		t.Errorf("PreferencePayload.agentsActWithoutApproval x-go-type-skip-optional-pointer = %v, want true: the nullable type is not a pointer", got)
 	}
 }
 
@@ -667,12 +671,10 @@ func TestAgentApprovalPreferenceInterimDefault(t *testing.T) {
 			}
 		}
 	}
-	item := v3.Paths.Find("/api/identity/users/preferences")
-	if item == nil || item.Put == nil {
-		t.Fatal("v1beta3 user must declare updateUserPreferences")
-	}
-	if !strings.Contains(item.Put.Description, "interim") {
-		t.Error("updateUserPreferences description must state the interim rule for agentsActWithoutApproval")
+	// The interim rule is stated on the v1beta3 request body, which is the body
+	// the route takes under v1beta3 (the merged route is still v1beta2's).
+	if body := squash(schemaOf(t, v3, "PreferencePayload").Properties["agentsActWithoutApproval"].Value.Description); !strings.Contains(body, "Interim rule") {
+		t.Error("PreferencePayload.agentsActWithoutApproval must state the interim rule")
 	}
 }
 
@@ -684,35 +686,21 @@ func squash(s string) string {
 
 // An API token, of any kind, may not change agentsActWithoutApproval, and
 // neither may it change a provider's free-form agentsActWithoutApproval entry.
-// updateUserPreferences must declare the 403 it answers, and the descriptions
-// and the doc must state the rule, so the spec, the docs and the server agree.
+// The descriptions and the doc must state the rule, so the spec, the docs and
+// the server agree.
 func TestUpdateUserPreferencesAgentTokenRule(t *testing.T) {
 	v3 := loadSpec(t, userV1beta3Spec)
-	item := v3.Paths.Find("/api/identity/users/preferences")
-	if item == nil || item.Put == nil {
-		t.Fatal("v1beta3 user must declare updateUserPreferences")
-	}
-	if item.Put.Responses.Status(403) == nil {
-		t.Fatal("updateUserPreferences must declare 403 for a token-authenticated request that changes agentsActWithoutApproval")
-	}
-	if item.Put.Responses.Status(403).Value == nil {
-		t.Fatal("updateUserPreferences 403 must resolve to a response")
-	}
-	op := squash(item.Put.Description)
-	for _, word := range []string{
-		"authenticated by an API token, of any kind", "OAuth client or MCP app", "generateToken",
-		"signed-in session", "isOauth", "403", "stored state", "no part of the payload is applied",
-		"remoteProviderPreferences.<provider>.agentsActWithoutApproval", "Writing back the stored entry unchanged is accepted",
-	} {
-		if !strings.Contains(op, word) {
-			t.Errorf("updateUserPreferences description must state the token rule: missing %q", word)
+	// The merged route is declared by v1beta2 user, which cannot carry a 403
+	// for this rule, so the rule is stated on the v1beta3 request body and in
+	// the doc. The server enforces it on the route.
+	body := squash(schemaOf(t, v3, "PreferencePayload").Description)
+	for _, word := range []string{"PUT /api/identity/users/preferences", "v1beta2", "does not carry agentsActWithoutApproval"} {
+		if !strings.Contains(body, word) {
+			t.Errorf("PreferencePayload description must state the route's merged body: missing %q", word)
 		}
 	}
-	if strings.Contains(op, "set, change or remove") {
-		t.Error("updateUserPreferences description must not keep the old 'set, change or remove' wording")
-	}
-	if strings.Contains(op, "AI app token") {
-		t.Error("updateUserPreferences description must key the rule on the API token, not on an AI app token")
+	if strings.Contains(body, "AI app token") {
+		t.Error("PreferencePayload description must key the rule on the API token, not on an AI app token")
 	}
 
 	for _, owner := range []string{"Preference", "PreferencePayload"} {
@@ -777,6 +765,10 @@ func TestOauthConsentReConsentScopeRules(t *testing.T) {
 	doc := loadSpec(t, oauthConsentSpec)
 	consent := squash(schemaOf(t, doc, "OauthConsent").Description)
 	rule := []string{
+		"keeps the consent's `organizationId`",
+		"explicitly chooses that organization on the consent screen",
+		"every existing token issued to that client for that user is revoked",
+		"never re-bound to a new organization silently",
 		"at least one keychain scope",
 		"in the same transaction as the consent update",
 		"intersection of its keychains and the keychains of the new scopes",
@@ -808,6 +800,9 @@ func TestOauthConsentReConsentScopeRules(t *testing.T) {
 	}
 	authoritative := squash(string(contract))
 	for _, word := range []string{
+		"keeps the consent's `organizationId`",
+		"explicitly chooses that organization on the consent screen",
+		"Tokens are never re-bound to a new organization silently",
 		"authoritative statement of the re-consent rule",
 		"in the same transaction as the consent update",
 		"intersection of its keychains and the keychains of the new scopes",
@@ -848,6 +843,67 @@ func TestOauthConsentReConsentScopeRules(t *testing.T) {
 	}
 	if strings.Contains(tokens, "**Narrowing**") || strings.Contains(tokens, "**Broadening**") {
 		t.Error("docs/token-scoping-contract.md must summarize the re-consent rule, not repeat it")
+	}
+}
+
+// Who may revoke: a session revokes any of the user's consents; a token only
+// the consent of its own client; a personal API token none. The rule is on the
+// operation, so the spec, the doc and the server agree.
+func TestOauthConsentDeleteWhoMayRevoke(t *testing.T) {
+	doc := loadSpec(t, oauthConsentSpec)
+	desc := squash(doc.Paths.Find("/api/identity/oauth/consents").Delete.Description)
+	for _, word := range []string{
+		"signed-in session may revoke any of that user's consents",
+		"issued to an OAuth client may",
+		"Naming any other `clientId` answers 403 and changes nothing",
+		"does not depend on whether that client has a live consent",
+		"personal API token, one not issued to an OAuth client, cannot revoke",
+	} {
+		if !strings.Contains(desc, word) {
+			t.Errorf("deleteOauthConsent description must state who may revoke: missing %q", word)
+		}
+	}
+	contract, err := os.ReadFile(filepath.Join(repoRootDir(t), "docs", "oauth-consent-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	doctext := squash(string(contract))
+	for _, word := range []string{"## Who may revoke", "| `403` for every `clientId`, and nothing changes. |", "Any other `clientId` is `403`"} {
+		if !strings.Contains(doctext, word) {
+			t.Errorf("docs/oauth-consent-contract.md must state who may revoke: missing %q", word)
+		}
+	}
+}
+
+// Once the typed agentsActWithoutApproval has been written, the free-form
+// remoteProviderPreferences entry is never read again, and null means inherit.
+// The marker is server state; the spec and the doc state the rule.
+func TestFreeFormFallbackEndsOnceTypedFieldWritten(t *testing.T) {
+	v3 := loadSpec(t, userV1beta3Spec)
+	read := squash(schemaOf(t, v3, "Preference").Properties["agentsActWithoutApproval"].Value.Description)
+	for _, word := range []string{"write-once marker", "never read again", "null means inherit, not the free-form value", "including null while the value is absent"} {
+		if !strings.Contains(read, word) {
+			t.Errorf("Preference.agentsActWithoutApproval must state the free-form fallback ends: missing %q", word)
+		}
+	}
+	for _, owner := range []string{"Preference", "PreferencePayload"} {
+		desc := squash(schemaOf(t, v3, owner).Properties["remoteProviderPreferences"].Value.Description)
+		if !strings.Contains(desc, "never read once the typed field has been written") && !strings.Contains(desc, "the entry is never read again") {
+			t.Errorf("%s.remoteProviderPreferences must say the free-form entry is not read once the typed field is written", owner)
+		}
+	}
+	raw, err := os.ReadFile(filepath.Join(repoRootDir(t), "docs", "agent-approval-preference.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	doc := squash(string(raw))
+	for _, word := range []string{"write-once marker", "never read again", "means inherit, not the free-form value"} {
+		if !strings.Contains(doc, word) {
+			t.Errorf("docs/agent-approval-preference.md must state the free-form fallback ends: missing %q", word)
+		}
+	}
+	if strings.Contains(doc, "read for one release") {
+		t.Error("docs/agent-approval-preference.md must not keep the one-release fallback wording")
 	}
 }
 

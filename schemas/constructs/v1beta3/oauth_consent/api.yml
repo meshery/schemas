@@ -82,9 +82,20 @@ paths:
         refresh token that client holds for the user. The consents and tokens
         of other users of the same client are untouched. Answers 204 with no
         body. The consent is soft-deleted: its `deletedAt` is set and it is no
-        longer listed. A client the user has no live consent for, whether it
-        never existed, was never consented to or was already revoked, is a
-        404.
+        longer listed. For a session, and for a token naming its own client, a
+        client the user has no live consent for, whether it never existed, was
+        never consented to or was already revoked, is a 404.
+
+        Who may revoke depends on how the request is authenticated:
+        - A request authenticated by the person's signed-in session may revoke
+          any of that user's consents.
+        - A request authenticated by a token issued to an OAuth client may
+          revoke only the consent of the client the token was issued to. Naming
+          any other `clientId` answers 403 and changes nothing. The 403 does
+          not depend on whether that client has a live consent, so the answer
+          reveals nothing about another client.
+        - A personal API token, one not issued to an OAuth client, cannot revoke
+          a consent. Every such request answers 403 and changes nothing.
       parameters:
         - $ref: "#/components/parameters/clientId"
       responses:
@@ -94,6 +105,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "500":
@@ -111,6 +124,8 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/400"
     401:
       $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    403:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/403"
     404:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
     500:

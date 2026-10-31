@@ -41,6 +41,19 @@ consent in place. The server:
 It does not insert a second row, so the unique key holds. A client the user revoked is not live: consenting to it
 again creates a new consent with a new `id`.
 
+### Organization on re-consent
+
+A re-consent keeps the consent's `organizationId`. It moves the consent to
+another organization only when the user explicitly chooses that organization on
+the consent screen. The consent then names the chosen root organization, and
+every access and refresh token issued to that client for that user is revoked,
+in the same transaction as the consent update, whatever its keychains. This
+overrides the token rules below.
+
+Tokens are never re-bound to a new organization silently. The client gets a
+token for the new organization only under the consent that names it, after the
+user has consented again.
+
 ### Scope changes and existing tokens
 
 This section is the authoritative statement of the re-consent rule for existing
@@ -80,16 +93,34 @@ The token side is summarized in
 | Route | Operation | Notes |
 | --- | --- | --- |
 | `GET /api/identity/oauth/consents` | `getOauthConsents` | Core `page` and `pageSize` query parameters. `200` with an `OauthConsentPage` (`page`, `pageSize`, `totalCount`, `oauthConsents`) of live consents, ordered by `updatedAt` descending (a re-consent moves a consent to the top). An empty page when there are none. |
-| `DELETE /api/identity/oauth/consents?clientId=...` | `deleteOauthConsent` | `clientId` is required. Soft-deletes the live consent (sets `deletedAt`). `204` with no body. `404` when the user has no live consent for that client. |
+| `DELETE /api/identity/oauth/consents?clientId=...` | `deleteOauthConsent` | `clientId` is required. Soft-deletes the live consent (sets `deletedAt`) and revokes the client's tokens for the user. `204` with no body. `403` when the caller may not revoke that client (see [Who may revoke](#who-may-revoke)). `404` when the caller may revoke it but the user has no live consent for that client. |
 
 Both are `x-internal: ["cloud"]`.
+
+## Who may revoke
+
+`deleteOauthConsent` depends on how the request is authenticated:
+
+| Caller | May revoke | Otherwise |
+| --- | --- | --- |
+| Signed-in session of the person | Any of that user's consents. | `404` if the user has no live consent for `clientId`. |
+| Token issued to an OAuth client | Only the consent of the client the token was issued to. | Any other `clientId` is `403`, whether or not that client has a live consent, and nothing changes. Its own client with no live consent is `404`. |
+| Personal API token (not issued to a client) | Nothing. | `403` for every `clientId`, and nothing changes. |
+
+The token rule is a `403` that does not depend on whether another client has a
+live consent, so a token holder learns nothing about another client's consents
+from it. A session is a person acting for themselves, so it may revoke any of
+their own consents, and the `404` for a client with no live consent is the same
+whether the client exists or not.
 
 ## Rules for the server
 
 - Both operations act only on the authenticated user's consents. No user is
   taken from the path, query or body, and another user's consent is never
-  listed, revealed (the `404` is the same whether the client exists or not) or
-  revoked.
+  listed, revealed or revoked.
+- The rule in [Who may revoke](#who-may-revoke) decides which `clientId` a
+  token may name. A token that names another client gets `403` before any
+  lookup, so the result does not depend on whether that client has a live consent.
 - Revoking withdraws the consent and revokes every access and refresh token the
   client holds for that user, at once. The client's next call is refused and it
   must ask for consent again. Other users' consents for the same client, and the

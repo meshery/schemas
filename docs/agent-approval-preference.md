@@ -77,8 +77,9 @@ the interim rule, every `inherit` or unset row resolves to `required`.
 ## Where it is defined and how it is written
 
 The field is defined on `v1beta3` `Preference`, which carries it on read, and
-on `v1beta3` `PreferencePayload`, the body of `updateUserPreferences`
-(`PUT /api/identity/users/preferences`). Writers set it there:
+on `v1beta3` `PreferencePayload`, the v1beta3 request body of
+`updateUserPreferences` (`PUT /api/identity/users/preferences`). Writers set it
+there:
 
 ```json
 { "agentsActWithoutApproval": true }
@@ -96,13 +97,45 @@ The schema declares no `default`, so an omitted field is never read as `false`.
 A `null` on the write is not a default: it removes the stored value. On read,
 absent means not set (inherit), and the stored value is never `null`.
 
-The generated Go field is a pointer, so a Go server cannot tell `null` from an
-omitted key by decoding into the struct. A server must check the raw body for
-the key's presence before it treats an absent pointer as "keep" rather than
-"clear".
+The generated Go field is `nullable.Nullable[bool]` from
+`github.com/oapi-codegen/nullable`, declared with `x-go-type` on
+`PreferencePayload.agentsActWithoutApproval`. It keeps the three states apart on
+marshal and unmarshal, and its `omitempty` tag leaves an unset field out of the
+request:
 
-The operation answers `201` with no body on success, as before, and `403` in the
-cases below.
+| Go value                     | JSON sent            | Effect                       |
+| ---------------------------- | -------------------- | ---------------------------- |
+| `Set(true)` or `Set(false)` | `true` or `false`    | Stores that value.           |
+| `SetNull()`                  | `null`               | Clears it back to absent.    |
+| never set (zero value)       | key omitted          | Keeps the stored value.      |
+
+## Where the route is declared
+
+`updateUserPreferences` is declared once, in `v1beta2` `user`, with the
+`v1beta2` `PreferencePayload`, which does not carry `agentsActWithoutApproval`.
+That declaration is unchanged from before this field. The v1beta3 user spec
+does not declare the route, for two reasons in the bundler
+(`build/bundle-openapi.js`):
+
+- It merges every version of a construct into one spec and throws
+  `Duplicate path operation during merge` when a route and method appear twice.
+- A superseded version is excluded from the merge only when its whole construct
+  is marked `x-deprecated`. `v1beta2` `user` is still live, with operations
+  (`getUser`, `getUsersForOrg` and others) that are served, so it cannot be
+  marked deprecated to free the route.
+
+So the merged spec, and the RTK client generated from it, carry the v1beta2
+operation and body. The v1beta3 `PreferencePayload` is the v1beta3 request body
+for the same route. It generates the v1beta3 Go and TypeScript types, and
+`agentsActWithoutApproval` is writable through those types, but the merged
+spec does not yet declare it on the route. Declaring the route under v1beta3
+needs `v1beta2` `user` superseded, or per-version route ownership in the
+bundler. That is not done here.
+
+The route answers `201` with no body on success, as before. The `403` cases in
+[Who can write it](#who-can-write-it) are enforced by the server on the route.
+The merged spec does not declare them, because the declaration is the v1beta2
+one.
 
 ## Who can write it
 
@@ -131,13 +164,10 @@ This keeps an agent from granting itself `not_required` approval by writing the
 preference. The rule is enforced by the server on each request, not by the
 token's scopes.
 
-`updateUserPreferences` moved from `v1beta2` `user` to `v1beta3` `user` with
-the same route, `operationId`, merge rule and response, so a client calling
-that route is unchanged. Only the `v1beta3` operation is declared. `v1beta2`
-`PreferencePayload` stays declared, marked deprecated, so existing users of
-its generated type still build. It does not declare the field: a server
-decoding the body into it would drop `agentsActWithoutApproval`, so servers
-decode the `v1beta3` `PreferencePayload`.
+A server that accepts `agentsActWithoutApproval` must decode the route's body into
+the `v1beta3` `PreferencePayload`. Decoding into the `v1beta2` type drops the field.
+The merged spec still shows the `v1beta2` body for the route; see
+[Where the route is declared](#where-the-route-is-declared).
 
 ## Migration from the free-form value
 
@@ -145,27 +175,33 @@ Before this field, a provider stored the flag in the free-form
 `remoteProviderPreferences.<provider>.agentsActWithoutApproval`. That
 `remoteProviderPreferences` object is **not removed**.
 
-For one release after this field ships, once approval resolution consults the
-profile level (during the interim neither the typed field nor the free-form
-value is consulted, so an AI app's `inherit` write always needs approval):
+The typed field and the free-form value are resolved in this order:
 
-1. **Precedence.** If the typed `agentsActWithoutApproval` is present (true or
-   false), it is the answer. The free-form value is not consulted.
-2. If the typed field is absent, a reader may fall back to the free-form value.
-3. If both are absent, the preference sets nothing, and the resolution falls
-   through to the final fallback, `required`.
+1. **Marker.** The server keeps a write-once marker per preference, which is
+   server state and not part of the API. The first accepted write that names
+   `agentsActWithoutApproval` (`true`, `false` or `null`, from any authenticated
+   caller, including `null` while the value is absent) sets it, and nothing clears
+   it.
+2. **Typed field, once the marker is set.** The free-form value is never read
+   again. A stored `true` or `false` is the answer, and absent or `null` means
+   inherit. Clearing to `null` means inherit, not the free-form value.
+3. **Free-form value, only while the marker is unset.** A reader may fall back to
+   it, as the release describes. It is not consulted by approval resolution during
+   the interim.
+4. **Nothing set.** The resolution falls through to the final fallback,
+   `required`.
 
 Writers move to the typed field and set it through `updateUserPreferences`
-as above. Servers may copy a free-form value into the
-typed field on the user's next preferences write made from the signed-in
-session; they must not write the free-form value again. A token-authenticated
-write never performs that copy, because the copy changes the typed value, which
-[Who can write it](#who-can-write-it) forbids to a token. A token-authenticated
-request that would change the stored state of a provider's free-form
-`agentsActWithoutApproval` (a different value, adding it where absent, or
-removing it where present) is answered `403`, as for the typed field. Writing
-back the stored entry unchanged is accepted. After the
-release, the free-form value is no longer read and may be deleted from stored
+as above. Servers may copy a free-form value into the typed field on the user's
+next preferences write made from the signed-in session. That copy is an accepted
+write, so it sets the marker, and servers must not write the free-form value
+again. A token-authenticated write never performs that copy, because the copy
+changes the typed value, which [Who can write it](#who-can-write-it) forbids to a
+token. A token-authenticated request that would change the stored state of a
+provider's free-form `agentsActWithoutApproval` (a different value, adding it
+where absent, or removing it where present) is answered `403`, as for the typed
+field. Writing back the stored entry unchanged is accepted. After the release,
+the free-form value is no longer read and may be deleted from stored
 preferences.
 
 The free-form object stays `additionalProperties: true`, so no stored value
