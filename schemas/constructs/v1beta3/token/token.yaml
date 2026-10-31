@@ -149,9 +149,9 @@ properties:
       server at creation: true when the create has a non-empty `keychainIds`.
       A re-consent that narrows an unrestricted token (false) changes it to
       true; no other operation changes it, and it is never reset to false. It
-      is read-only to clients. It is stored on the token, not inferred from
-      the token's keychain mappings, so a scoped token whose keychains have all
-      been deleted stays scoped and holds no keys. A token is unrestricted only
+      is read-only to clients. It is stored on the token and never reset, so a
+      scoped token whose keychains have all been deleted stays scoped and holds
+      no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only
       when keychainScoped is false or absent and keychainIds is empty or absent.
       A true flag is never unrestricted, even with an empty list.
     readOnly: true

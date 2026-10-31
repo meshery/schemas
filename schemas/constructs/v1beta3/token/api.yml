@@ -605,11 +605,13 @@ components:
           description: >-
             IDs of the keychains the token is limited to. A non-empty list limits
             the token to the keys of those keychains, intersected with the
-            owner's keys in the request's organization. An empty or absent list
-            creates an unrestricted token. The server records keychainScoped from
-            this list; clients do not set it.
+            owner's keys in the request's organization. An absent list creates an
+            unrestricted token. An explicit empty list is refused with 400, so a
+            selection that ends up empty never mints a full-access token. The
+            server records keychainScoped from this list; clients do not set it.
           items:
             $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          minItems: 1
           maxItems: 100
           uniqueItems: true
           x-order: 1

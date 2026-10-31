@@ -320,6 +320,9 @@ func TestTokenPayloadCarriesTheScopingFields(t *testing.T) {
 	if len(payload.Required) != 0 {
 		t.Errorf("TokenPayload required = %v, want none: an empty body is an unrestricted token", payload.Required)
 	}
+	if ids := payload.Properties["keychainIds"]; ids == nil || ids.Value.MinItems != 1 {
+		t.Error("TokenPayload.keychainIds must have minItems 1: an explicit empty list is refused, never an unrestricted token")
+	}
 
 	item := doc.Paths.Find("/api/identity/tokens")
 	if item == nil || item.Post == nil {

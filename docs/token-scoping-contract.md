@@ -31,6 +31,9 @@ in the generic `request` construct.
   omits the body. A token with `keychainScoped` true and an empty `keychainIds`
   holds no keys; see [`keychainScoped` versus
   `keychainIds`](#keychainscoped-versus-keychainids).
+- An explicit empty `keychainIds` on creation is refused with `400`
+  (`minItems: 1`), so a selection that ends up empty never mints a
+  full-access token. Omit the field for an unrestricted token.
 - A non-empty list limits the token to the keys that belong to those keychains.
   The token never gains a key its owner lacks: scoping only narrows.
 - The ids reference keychains (`schemas/constructs/v1beta1/keychain`). An id
