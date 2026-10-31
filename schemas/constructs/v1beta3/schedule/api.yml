@@ -126,6 +126,8 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "422":
+          $ref: "#/components/responses/422"
         "429":
           $ref: "#/components/responses/MeshkitError429"
         "500":
@@ -334,6 +336,12 @@ components:
       bearerFormat: JWT
 
   responses:
+    422:
+      description: Unprocessable - the Idempotency-Key was already used with a different request body
+      content:
+        text/plain:
+          schema:
+            type: string
     400:
       $ref: "../../v1beta2/core/api.yml#/components/responses/400"
     401:

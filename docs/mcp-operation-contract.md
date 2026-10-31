@@ -150,9 +150,8 @@ for 24 hours:
 - the same key with a different request hash answers `422` and creates nothing;
 - no key means no deduplication.
 
-The repository models no `422` response yet, so the rule is documented on the
-parameter and on both operations rather than as a response entry. A test pins
-that only those two operations declare the header.
+Both operations declare the `422` response (plain text). A test pins that only
+those two operations declare the header.
 
 ## Adding a tool
 
