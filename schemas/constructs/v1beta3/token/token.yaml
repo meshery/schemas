@@ -106,12 +106,16 @@ properties:
   keychainIds:
     type: array
     description: >-
-      IDs of the keychains this token is limited to. When non-empty, the token
-      may use only keys that belong to these keychains, intersected with the
-      owner's keys in the organization of the request: the effective keys are
-      never more than the user's own. Empty or absent means unrestricted, so
-      every token issued before this field existed keeps working unchanged.
-      Unknown keychain IDs are refused when the token is created.
+      IDs of the keychains this token is limited to. Whether the token is
+      restricted is decided by keychainScoped, not by the length of this list.
+      When keychainScoped is true, the token may use only keys that belong to
+      these keychains, intersected with the owner's keys in the organization of
+      the request: the effective keys are never more than the user's own. A
+      scoped token with an empty list holds no keys; it is not unrestricted.
+      When keychainScoped is false, the token is unrestricted and this list is
+      empty or absent, so every token issued before this field existed keeps
+      working unchanged. Unknown keychain IDs are refused when the token is
+      created.
     items:
       $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
     maxItems: 100

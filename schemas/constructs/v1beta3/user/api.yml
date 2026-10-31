@@ -950,15 +950,18 @@ components:
             remoteProviderPreferences.<provider>.agentsActWithoutApproval. The
             server keeps a write-once marker per preference, which is not part
             of this schema: the first accepted write that names this field
-            (true, false, or null, from any authenticated caller, including null
-            while the value is absent) sets the marker, and nothing clears it.
+            (true, false, or null) sets the marker, and nothing clears it. Only a
+            write from the signed-in session can set the marker; a
+            token-authenticated write that names this field never sets it.
             Once the marker is set, the free-form value is never read again, and
             null means inherit, not the free-form value. While the marker is
-            unset, the free-form value may be read, as the migration section of
+            unset, a reader may display the free-form value, but it never changes
+            approval resolution: during the interim inherit resolves to required
+            whatever it says, as the migration section of
             docs/agent-approval-preference.md describes. On read, absent means
             not set (inherit); the stored value is never null. An API token, of
             any kind, cannot change this field: a token-authenticated request
-            that sends a value other than the stored state is answered 403. Only
+            that names it, with any value including null, is answered 403. Only
             a request authenticated by the signed-in session can set it. See
             PreferencePayload.agentsActWithoutApproval and
             docs/agent-approval-preference.md.
@@ -1049,11 +1052,11 @@ components:
             true or false stores that value; null clears the stored value back
             to absent (inherit); omitted keeps the stored value. No schema
             default is declared. An API token, of any kind, cannot set this
-            field: a token-authenticated request whose payload sends a value
-            that differs from the stored state (true, false, or absent for null)
-            is answered 403 and no part of the payload is applied. Sending back
-            the stored state is accepted. Only a request authenticated by the
-            signed-in session can set it. See docs/agent-approval-preference.md.
+            field: a token-authenticated request whose payload names this field,
+            with any value including null and whatever the stored state is,
+            is answered 403 and no part of the payload is applied. Only a
+            request authenticated by the signed-in session can set it. See
+            docs/agent-approval-preference.md.
           x-go-type: nullable.Nullable[bool]
           x-go-type-import:
             path: github.com/oapi-codegen/nullable

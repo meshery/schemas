@@ -93,8 +93,9 @@ func withFields(base map[string]any, extra map[string]any) map[string]any {
 	return out
 }
 
-// An existing token has neither field and must keep validating: empty or absent
-// keychainIds is unrestricted, absent expiresAt never expires.
+// An existing token has neither field and must keep validating: with keychainScoped
+// absent or false it is unrestricted (empty or absent keychainIds), and absent
+// expiresAt never expires.
 func TestTokenScopingFieldsAreOptionalOnTheEntity(t *testing.T) {
 	doc := loadSpec(t, tokenSpec)
 	token := schemaOf(t, doc, "UserToken")
@@ -115,7 +116,7 @@ func TestTokenScopingFieldsAreOptionalOnTheEntity(t *testing.T) {
 	}{
 		{"existing token without either field", existingToken(), false},
 		{"token with keychains and expiry", withFields(existingToken(), map[string]any{"keychainIds": []any{sampleUUID}, "expiresAt": "2027-01-01T00:00:00Z"}), false},
-		{"empty keychainIds is unrestricted", withFields(existingToken(), map[string]any{"keychainIds": []any{}}), false},
+		{"empty keychainIds without keychainScoped is unrestricted", withFields(existingToken(), map[string]any{"keychainIds": []any{}}), false},
 		{"null expiresAt never expires", withFields(existingToken(), map[string]any{"expiresAt": nil}), false},
 		{"keychain id is not a uuid", withFields(existingToken(), map[string]any{"keychainIds": []any{"not-a-uuid"}}), true},
 		{"duplicate keychain ids", withFields(existingToken(), map[string]any{"keychainIds": []any{sampleUUID, sampleUUID}}), true},
@@ -151,6 +152,42 @@ func TestTokenKeychainScopedChangesOnlyToTrue(t *testing.T) {
 	}
 	if strings.Contains(contract, "Set once") {
 		t.Error("docs/token-scoping-contract.md must not keep the old 'Set once' wording")
+	}
+}
+
+// keychainIds has no restriction of its own: keychainScoped decides it, so a
+// scoped token with an empty list holds no keys. The entity, the api spec and
+// the contract doc must say so, and must not keep the "empty means unrestricted"
+// rule.
+func TestTokenKeychainIdsDefersToKeychainScoped(t *testing.T) {
+	root := repoRootDir(t)
+	entity := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/token/token.yaml"))
+	entityDesc, _ := mustLookup(t, entity, "properties", "keychainIds", "description").(string)
+	apiDesc := squash(schemaOf(t, loadSpec(t, tokenSpec), "UserToken").Properties["keychainIds"].Value.Description)
+	contract, err := os.ReadFile(filepath.Join(root, "docs", "token-scoping-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	texts := map[string]string{
+		"token.yaml keychainIds":         squash(entityDesc),
+		"UserToken.keychainIds":          apiDesc,
+		"docs/token-scoping-contract.md": squash(string(contract)),
+	}
+	for name, text := range texts {
+		if strings.Contains(text, "Empty or absent means unrestricted") || strings.Contains(text, "empty or absent is unrestricted") {
+			t.Errorf("%s must not say an empty list means unrestricted", name)
+		}
+	}
+	for _, word := range []string{"decided by keychainScoped", "not by the length of this list", "holds no keys"} {
+		if !strings.Contains(texts["token.yaml keychainIds"], word) {
+			t.Errorf("token.yaml keychainIds must state that keychainScoped decides restriction: missing %q", word)
+		}
+		if !strings.Contains(texts["UserToken.keychainIds"], word) {
+			t.Errorf("UserToken.keychainIds must state that keychainScoped decides restriction: missing %q", word)
+		}
+	}
+	if !strings.Contains(texts["docs/token-scoping-contract.md"], "`keychainScoped` decides restriction, not the length of the list.") {
+		t.Error("docs/token-scoping-contract.md must state that keychainScoped decides restriction")
 	}
 }
 
@@ -707,9 +744,17 @@ func TestUpdateUserPreferencesAgentTokenRule(t *testing.T) {
 
 	for _, owner := range []string{"Preference", "PreferencePayload"} {
 		desc := squash(schemaOf(t, v3, owner).Properties["agentsActWithoutApproval"].Value.Description)
-		for _, word := range []string{"API token, of any kind", "403", "signed-in session"} {
+		for _, word := range []string{"API token, of any kind", "403", "signed-in session", "with any value including null"} {
 			if !strings.Contains(desc, word) {
 				t.Errorf("%s.agentsActWithoutApproval description must state the token rule: missing %q", owner, word)
+			}
+		}
+		// A token-authenticated write is refused for any value, so the old
+		// "stored state" exception and the "any authenticated caller" marker
+		// rule must be gone.
+		for _, word := range []string{"Sending back", "from any authenticated caller", "sends a value other than the stored state", "differs from the stored state"} {
+			if strings.Contains(desc, word) {
+				t.Errorf("%s.agentsActWithoutApproval description must not keep the old token exception: found %q", owner, word)
 			}
 		}
 		if strings.Contains(desc, "AI app token") {
@@ -749,9 +794,16 @@ func TestUpdateUserPreferencesAgentTokenRule(t *testing.T) {
 		"remoteProviderPreferences.<provider>.agentsActWithoutApproval",
 		"A token-authenticated write never performs that copy",
 		"would change the stored state of any", "Writing back the stored entry unchanged is accepted",
+		"names `agentsActWithoutApproval` answers `403` and changes nothing, whatever the value",
+		"A token-authenticated write therefore never sets the write-once marker",
 	} {
 		if !strings.Contains(doc, word) {
 			t.Errorf("docs/agent-approval-preference.md must state the token rule: missing %q", word)
+		}
+	}
+	for _, word := range []string{"Sending back the stored state is accepted", "from any authenticated", "sends a value that differs from the stored state"} {
+		if strings.Contains(doc, word) {
+			t.Errorf("docs/agent-approval-preference.md must not keep the old token exception: found %q", word)
 		}
 	}
 	if strings.Contains(doc, "set, change or remove") {
@@ -777,7 +829,7 @@ func TestOauthConsentReConsentScopeRules(t *testing.T) {
 		"keychainScoped",
 		"never adds keychains to a scoped token",
 		"revoked, not left with an empty list",
-		"empty keychain list means unrestricted",
+		"a scoped token with no keychains holds no keys",
 		"exactly the keychains of the new scopes",
 		"set to true",
 		"keychains were all deleted",
@@ -917,9 +969,45 @@ func TestOauthConsentNamesAKeychainScope(t *testing.T) {
 	}
 }
 
+// Listing is for the signed-in session only. A token-authenticated listing
+// answers 403, because the page holds other clients' consents and those are not
+// disclosed to a client. The 403 is declared, and the reason is stated, on the
+// operation, the info description and the contract doc.
+func TestOauthConsentListIsSessionOnly(t *testing.T) {
+	doc := loadSpec(t, oauthConsentSpec)
+	get := doc.Paths.Find("/api/identity/oauth/consents").Get
+	if get.Responses.Status(403) == nil {
+		t.Fatal("getOauthConsents must declare 403: a token-authenticated listing is refused")
+	}
+	desc := squash(get.Description)
+	for _, word := range []string{
+		"may list consents",
+		"authenticated by a token, of any kind, answers 403 and lists nothing",
+		"would disclose other clients' consents to that client",
+	} {
+		if !strings.Contains(desc, word) {
+			t.Errorf("getOauthConsents description must state the session-only listing: missing %q", word)
+		}
+	}
+	info := squash(doc.Info.Description)
+	for _, word := range []string{"Listing is for the signed-in session only", "a token-authenticated listing answers 403", "the consents of other clients are not disclosed to a client"} {
+		if !strings.Contains(info, word) {
+			t.Errorf("oauth_consent info description must state the session-only listing: missing %q", word)
+		}
+	}
+	contract, err := os.ReadFile(filepath.Join(repoRootDir(t), "docs", "oauth-consent-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(squash(string(contract)), "Session only: a token-authenticated call is `403` and lists nothing") {
+		t.Error("docs/oauth-consent-contract.md must state that listing is session only")
+	}
+}
+
 // The templates are example instances of the entity: each validates against
 // the OauthConsent schema, and clientUri and logoUri are omitted or valid
-// absolute URIs, never empty strings.
+// absolute URIs, never empty strings. A template names a keychain scope, so it
+// does not use a standard non-keychain scope, which a first consent refuses.
 func TestOauthConsentTemplatesAreValid(t *testing.T) {
 	doc := loadSpec(t, oauthConsentSpec)
 	entity := schemaOf(t, doc, "OauthConsent")
@@ -937,6 +1025,12 @@ func TestOauthConsentTemplatesAreValid(t *testing.T) {
 	for name, body := range map[string]map[string]any{"json": fromJSON, "yaml": fromYAML} {
 		if err := entity.VisitJSON(body); err != nil {
 			t.Errorf("%s template is not a valid OauthConsent: %v", name, err)
+		}
+		scopes, _ := body["scopes"].([]any)
+		for _, scope := range scopes {
+			if scope == "openid" || scope == "offline_access" || scope == "profile" || scope == "email" {
+				t.Errorf("%s template names the standard non-keychain scope %q, which a first consent refuses", name, scope)
+			}
 		}
 		for _, key := range []string{"clientUri", "logoUri"} {
 			v, ok := body[key]
@@ -990,7 +1084,7 @@ func TestOauthConsentDeleteWhoMayRevoke(t *testing.T) {
 func TestFreeFormFallbackEndsOnceTypedFieldWritten(t *testing.T) {
 	v3 := loadSpec(t, userV1beta3Spec)
 	read := squash(schemaOf(t, v3, "Preference").Properties["agentsActWithoutApproval"].Value.Description)
-	for _, word := range []string{"write-once marker", "never read again", "null means inherit, not the free-form value", "including null while the value is absent"} {
+	for _, word := range []string{"write-once marker", "never read again", "null means inherit, not the free-form value", "a token-authenticated write that names this field never sets it", "Only a write from the signed-in session can set the marker", "a reader may display the free-form value, but it never changes approval resolution"} {
 		if !strings.Contains(read, word) {
 			t.Errorf("Preference.agentsActWithoutApproval must state the free-form fallback ends: missing %q", word)
 		}
@@ -1006,9 +1100,14 @@ func TestFreeFormFallbackEndsOnceTypedFieldWritten(t *testing.T) {
 		t.Fatal(err)
 	}
 	doc := squash(string(raw))
-	for _, word := range []string{"write-once marker", "never read again", "means inherit, not the free-form value"} {
+	for _, word := range []string{"write-once marker", "never read again", "means inherit, not the free-form value", "A reader may display it, but it never changes approval"} {
 		if !strings.Contains(doc, word) {
 			t.Errorf("docs/agent-approval-preference.md must state the free-form fallback ends: missing %q", word)
+		}
+	}
+	for _, word := range []string{"A reader may fall back to", "may be read, as the", "from any authenticated caller"} {
+		if strings.Contains(doc, word) {
+			t.Errorf("docs/agent-approval-preference.md must not keep the fallback wording: found %q", word)
 		}
 	}
 	if strings.Contains(doc, "read for one release") {

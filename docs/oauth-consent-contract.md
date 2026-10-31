@@ -44,7 +44,7 @@ scopes that map to no keychain passes the schema. Specifically:
   question), never count toward the keychain-scope minimum. A consent that names
   only such scopes is refused.
 - A token is never issued under a consent with an empty keychain list, because
-  an empty list means unrestricted (see [token-scoping-contract.md](token-scoping-contract.md)).
+  a token limited to no keychains would hold no keys (see [token-scoping-contract.md](token-scoping-contract.md)).
 
 ## Re-consent
 
@@ -86,8 +86,8 @@ whether its `keychainIds` is empty:
   intersection of its keychains and the keychains of the new scopes. A
   re-consent never adds keychains to a scoped token: a narrower re-consent
   narrows it, and a broader one leaves it unchanged. A token whose intersection
-  is empty is **revoked**, not left with an empty list, because an empty
-  keychain list means unrestricted. This also holds when the token's keychains
+  is empty is **revoked**, not left with an empty list, because a scoped token
+  with no keychains holds no keys. This also holds when the token's keychains
   were all deleted: its intersection is empty, so it is revoked, and it never
   gains keys.
 - **Unrestricted token** (`keychainScoped` false). Its `keychainIds` becomes
@@ -111,7 +111,7 @@ The token side is summarized in
 
 | Route | Operation | Notes |
 | --- | --- | --- |
-| `GET /api/identity/oauth/consents` | `getOauthConsents` | Core `page` and `pageSize` query parameters. `200` with an `OauthConsentPage` (`page`, `pageSize`, `totalCount`, `oauthConsents`) of live consents, ordered by `updatedAt` descending (a re-consent moves a consent to the top). An empty page when there are none. |
+| `GET /api/identity/oauth/consents` | `getOauthConsents` | Core `page` and `pageSize` query parameters. `200` with an `OauthConsentPage` (`page`, `pageSize`, `totalCount`, `oauthConsents`) of live consents, ordered by `updatedAt` descending (a re-consent moves a consent to the top). An empty page when there are none. Session only: a token-authenticated call is `403` and lists nothing, because a page of every client's consents is not disclosed to a client. |
 | `DELETE /api/identity/oauth/consents?clientId=...` | `deleteOauthConsent` | `clientId` is required. Soft-deletes the live consent (sets `deletedAt`) and revokes the client's tokens for the user. `204` with no body. `403` when the caller may not revoke that client (see [Who may revoke](#who-may-revoke)). `404` when the caller may revoke it but the user has no live consent for that client. |
 
 Both are `x-internal: ["cloud"]`.

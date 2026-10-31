@@ -147,11 +147,11 @@ personal API token from `generateToken`.
 The discriminator is how the request is authenticated: a token or a session. It
 is not the token's `isOauth` flag, and it is not the token's scopes.
 
-- A token-authenticated request whose payload sends a value that differs from
-  the stored state (`true`, `false`, or absent for `null`) answers `403` and
-  changes nothing. No part of the payload is applied, not even the other fields.
-- Sending back the stored state is accepted. That includes `null` while the
-  value is absent.
+- A token-authenticated request that names `agentsActWithoutApproval` answers
+  `403` and changes nothing, whatever the value: `true`, `false` or `null`, and
+  whatever the stored state is. No part of the payload is applied, not even the
+  other fields. A token-authenticated write therefore never sets the write-once
+  marker below.
 - The same `403` applies to the free-form value. A token-authenticated request
   that would change the stored state of any
   `remoteProviderPreferences.<provider>.agentsActWithoutApproval` entry (a
@@ -179,15 +179,14 @@ The typed field and the free-form value are resolved in this order:
 
 1. **Marker.** The server keeps a write-once marker per preference, which is
    server state and not part of the API. The first accepted write that names
-   `agentsActWithoutApproval` (`true`, `false` or `null`, from any authenticated
-   caller, including `null` while the value is absent) sets it, and nothing clears
-   it.
+   `agentsActWithoutApproval` (`true`, `false` or `null`) from the signed-in
+   session sets it, and nothing clears it. A token-authenticated write never sets it.
 2. **Typed field, once the marker is set.** The free-form value is never read
    again. A stored `true` or `false` is the answer, and absent or `null` means
    inherit. Clearing to `null` means inherit, not the free-form value.
-3. **Free-form value, only while the marker is unset.** A reader may fall back to
-   it, as the release describes. It is not consulted by approval resolution during
-   the interim.
+3. **Free-form value, only while the marker is unset.** A reader may display it,
+   but it never changes approval. During the interim, approval resolution does
+   not read it: inherit resolves to `required` whatever it says.
 4. **Nothing set.** The resolution falls through to the final fallback,
    `required`.
 

@@ -27,15 +27,15 @@ description: |
   is refused with `400`, never silently dropped. Standard non-keychain scopes,
   if the server accepts them at all (an open question), never count toward the
   keychain-scope minimum. A token is never issued under a consent with an empty
-  keychain list.
+  keychain list, because a token limited to no keychains would hold no keys.
   Re-consent changes the client's existing tokens, in the same transaction as
   the consent update, by the token's stored `keychainScoped` flag:
   - A scoped token (`keychainScoped` true) gets `keychainIds` set to the
     intersection of its keychains and the keychains of the new scopes. A
     re-consent never adds keychains to a scoped token: a narrower re-consent
     narrows it, and a broader one leaves it unchanged. A token whose
-    intersection is empty is revoked, not left with an empty list, because an
-    empty keychain list means unrestricted. This also holds when the token's
+    intersection is empty is revoked, not left with an empty list, because a
+    scoped token with no keychains holds no keys. This also holds when the token's
     keychains were all deleted: its intersection is empty, so it is revoked,
     and it never gains keys.
   - An unrestricted token (`keychainScoped` false) gets `keychainIds` set to

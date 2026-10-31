@@ -23,10 +23,13 @@ in the generic `request` construct.
 
 ### `keychainIds`
 
-- **Empty or absent means unrestricted.** A token with no `keychainIds` behaves
-  exactly as every token did before the field existed, so no existing token
-  changes behaviour and none needs migrating. Unrestricted is the default for a
-  creation that omits the body.
+- **`keychainScoped` decides restriction, not the length of the list.** A token
+  with `keychainScoped` false is unrestricted, and its `keychainIds` is empty or
+  absent. That is how every token did before the field existed, so no existing
+  token changes behaviour and none needs migrating. Unrestricted is the default
+  for a creation that omits the body. A token with `keychainScoped` true and an
+  empty `keychainIds` holds no keys; see [`keychainScoped` versus
+  `keychainIds`](#keychainscoped-versus-keychainids).
 - A non-empty list limits the token to the keys that belong to those keychains.
   The token never gains a key its owner lacks: scoping only narrows.
 - The ids reference keychains (`schemas/constructs/v1beta1/keychain`). An id

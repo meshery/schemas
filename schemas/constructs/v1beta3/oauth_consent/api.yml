@@ -19,7 +19,9 @@ info:
 
     Both operations act only on the consents of the authenticated user; they
     take no user in the path or the query, and a consent of another user is
-    never listed, never revealed and never revoked.
+    never listed, never revealed and never revoked. Listing is for the
+    signed-in session only: a token-authenticated listing answers 403, because
+    the consents of other clients are not disclosed to a client.
 
     Revoking a consent withdraws the user's permission for the client and
     revokes every token the client holds for that user, so the client's next
@@ -56,6 +58,12 @@ paths:
         `scopes` is the set the latest consent granted. A re-consent also
         changes the client's existing tokens, as the OauthConsent schema
         description states.
+
+        Only a request authenticated by the person's signed-in session may
+        list consents. A request authenticated by a token, of any kind, answers
+        403 and lists nothing. The page holds the consents of every client the
+        user has allowed, so listing it to a client would disclose other
+        clients' consents to that client, which is why a token may not list.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
@@ -68,6 +76,8 @@ paths:
                 $ref: "#/components/schemas/OauthConsentPage"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "500":
           $ref: "#/components/responses/500"
     delete:
