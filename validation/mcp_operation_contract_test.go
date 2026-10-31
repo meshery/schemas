@@ -251,6 +251,35 @@ func TestSharedHeaderParameters(t *testing.T) {
 	}
 }
 
+// A retry that arrives while the first request with its key is still being
+// processed answers 409, and both operations that take Idempotency-Key declare
+// it: insertContentItem in its own 409 (which also covers the thread and row
+// conflicts) and createSchedule through the shared IdempotencyKeyInFlight
+// response in v1beta2 core.
+func TestIdempotencyKeyInFlightIsDeclared(t *testing.T) {
+	root := repoRootDir(t)
+	core := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta2/core/api.yml"))
+	if desc := fmt.Sprint(mustLookup(t, core, "components", "responses", "IdempotencyKeyInFlight", "description")); !strings.Contains(desc, "still being processed") {
+		t.Errorf("core IdempotencyKeyInFlight must say the earlier request is still being processed, got %q", desc)
+	}
+
+	content := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/content_item/api.yml"))
+	if got := mustValue(mustLookup(t, content, "paths", "/api/content-items", "post", "responses", "409"), "$ref"); got != "#/components/responses/409" {
+		t.Errorf("insertContentItem 409 $ref = %v, want the construct 409", got)
+	}
+	if desc := fmt.Sprint(mustLookup(t, content, "components", "responses", "409", "description")); !strings.Contains(desc, "still being processed") {
+		t.Errorf("the insertContentItem 409 must cover an Idempotency-Key still in flight, got %q", desc)
+	}
+
+	schedule := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/schedule/api.yml"))
+	if got := mustValue(mustLookup(t, schedule, "paths", "/api/schedules", "post", "responses", "409"), "$ref"); got != "#/components/responses/IdempotencyKeyInFlight" {
+		t.Errorf("createSchedule 409 $ref = %v, want IdempotencyKeyInFlight", got)
+	}
+	if got := mustValue(mustLookup(t, schedule, "components", "responses", "IdempotencyKeyInFlight"), "$ref"); got != "../../v1beta2/core/api.yml#/components/responses/IdempotencyKeyInFlight" {
+		t.Errorf("schedule IdempotencyKeyInFlight must reuse the core response, got %v", got)
+	}
+}
+
 func sortedBoolKeys(m map[string]bool) []string {
 	keys := make([]string, 0, len(m))
 	for k := range m {
@@ -514,9 +543,21 @@ func TestRequestConstruct(t *testing.T) {
 		if got := mustValue(mustLookup(t, body, "content", "application/json", "schema"), "$ref"); got != "#/components/schemas/RequestDecisionPayload" {
 			t.Errorf("%s body $ref = %v, want RequestDecisionPayload", id, got)
 		}
-		if _, has := mappingValue(mustLookup(t, op, "responses"), "409"); !has {
-			t.Errorf("%s must document 409 for a request that is not pending", id)
+		responses := mustLookup(t, op, "responses")
+		if _, has := mappingValue(responses, "409"); !has {
+			t.Errorf("%s must document 409 for a request that is not pending or whose subject is soft-deleted", id)
 		}
+		if got := mustValue(mustLookup(t, responses, "404"), "$ref"); got != "#/components/responses/DecisionNotFound" {
+			t.Errorf("%s 404 $ref = %v, want DecisionNotFound for a subject that is gone", id, got)
+		}
+	}
+	// The 404 names a hard-deleted subject and the 409 a soft-deleted one, so a
+	// reader can tell the two apart from the description alone.
+	if desc := fmt.Sprint(mustLookup(t, doc, "components", "responses", "DecisionNotFound", "description")); !strings.Contains(desc, "hard-deleted") {
+		t.Errorf("DecisionNotFound must name the hard-deleted subject, got %q", desc)
+	}
+	if desc := fmt.Sprint(mustLookup(t, doc, "components", "responses", "409", "description")); !strings.Contains(desc, "soft-deleted") {
+		t.Errorf("the request 409 must name the soft-deleted subject, got %q", desc)
 	}
 	list := mustLookup(t, doc, "paths", "/api/requests", "get", "parameters").([]any)
 	var refs []string

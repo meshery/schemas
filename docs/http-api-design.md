@@ -356,8 +356,9 @@ scope is a keychain. Full contract:
   shared `currentOrgId` parameter in `v1beta2/core/api.yml`.
 - A create that is safe to retry takes the optional `Idempotency-Key` header
   (the shared `idempotencyKey` parameter): within 24 hours the same key and the
-  same request hash return the stored response, and a different hash answers
-  `422`. `insertContentItem` and `createSchedule` take it.
+  same request hash return the stored response, a different hash answers
+  `422`, and a retry that arrives while the first request is still in flight
+  answers `409`. `insertContentItem` and `createSchedule` take it.
 - `v1beta3/request` is the one generic request-for-a-decision construct:
   `listRequests`, `getRequest`, `approveRequest`, `denyRequest`, with
   `approve` and `deny` as POST action sub-resources like the claim routes.
