@@ -78,20 +78,21 @@ type itemEditOutcome struct {
 	supersede   bool
 }
 
-// itemEditApproval is the reference for a content edit. Without one, nothing is
-// re-resolved and the stored approval stays. With one, the approval is resolved
-// as insert resolves it, and the open request, if any, is superseded in the same
-// transaction. Required resets approved to false. Whatever the result, an item
-// the write leaves unapproved gets a fresh request, by the open-request invariant.
-// An update never sets approved to true.
+// itemEditApproval is the reference for an update. Without a content change, nothing
+// is re-resolved, nothing is superseded and no request opens or closes, so a denied
+// item stays denied. With one, the approval is resolved as insert resolves it, and
+// the open request, if any, is superseded in the same transaction. Required resets
+// approved to false. Whatever the result, an item the edit leaves unapproved gets a
+// fresh request, by the open-request invariant. An update never sets approved to true.
 func itemEditApproval(s itemEditState, changed bool) itemEditOutcome {
 	out := itemEditOutcome{approved: s.approved, required: s.required, source: s.source}
-	if changed {
-		out.required, out.source = itemInterimResolve(s.policy)
-		out.supersede = s.pending
-		if out.required {
-			out.approved = false
-		}
+	if !changed {
+		return out
+	}
+	out.required, out.source = itemInterimResolve(s.policy)
+	out.supersede = s.pending
+	if out.required {
+		out.approved = false
 	}
 	return itemEnsureRequest(out, s.pending && !out.supersede)
 }
@@ -165,7 +166,10 @@ func TestContentItemUpdateApprovalRule(t *testing.T) {
 		"`approved` false",
 		"The item's open `content_item_approval` request, if it has one, is superseded",
 		"Whatever the resolved approval, an item the edit leaves unapproved gets a fresh pending request for the content as it now is",
-		"an unapproved item always has an open request (the open-request invariant in docs/content-item-contract.md)",
+		"so after the edit an unapproved item has an open request (the open-request invariant in docs/content-item-contract.md)",
+		"A write that changes nothing (a whole-item write-back of the stored content and policy) opens no request and closes none, so a denied item stays denied until a content edit or an `approvalPolicy` change.",
+		"An omitted `approvalPolicy` keeps the stored value and is not a change, so it is never refused.",
+		"(absent, null and `inherit` count as one value, since the server stores `inherit` as null)",
 		"When approval resolves to not required, `approved` is unchanged: an approved item stays approved and opens no request",
 		"An update never approves: the item stays unapproved until a decider approves that request",
 		"no update sets it to true",
@@ -267,10 +271,10 @@ func TestContentItemEditApprovalOutcomes(t *testing.T) {
 			want:    itemEditOutcome{approved: false, required: false, source: "item", openRequest: true},
 		},
 		{
-			name:    "unapproved item with no pending request, bookkeeping only: a request opens, the stored policy is not re-resolved",
+			name:    "denied item (unapproved, no pending request), bookkeeping only: no request opens, the stored policy is not re-resolved",
 			state:   itemEditState{approved: false, pending: false, policy: "not_required", required: true, source: "item"},
 			changed: false,
-			want:    itemEditOutcome{approved: false, required: true, source: "item", openRequest: true},
+			want:    itemEditOutcome{approved: false, required: true, source: "item", openRequest: false},
 		},
 		{
 			name:    "unapproved item with a pending request, bookkeeping only: request kept, none opened",
@@ -352,9 +356,11 @@ func TestContentItemPolicyChangeOutcomes(t *testing.T) {
 	}
 }
 
-// The open-request invariant, checked over every stored state and every kind of
-// write: after the write, an item that is not approved has an open pending
-// request, and no write sets approved to true.
+// The open-request invariant, checked over every stored state and every write that
+// can open a request: a content edit or an approvalPolicy change. After such a
+// write, an item that is not approved has an open pending request, and no write
+// sets approved to true. A write that changes nothing opens and closes no request,
+// so it is checked for that instead: a denied item stays denied.
 func TestContentItemUnapprovedAlwaysHasOpenRequest(t *testing.T) {
 	check := func(t *testing.T, s itemEditState, got itemEditOutcome) {
 		t.Helper()
@@ -373,11 +379,15 @@ func TestContentItemUnapprovedAlwaysHasOpenRequest(t *testing.T) {
 			}
 			for _, policy := range []string{"required", "not_required", "inherit", ""} {
 				s := itemEditState{approved: approved, pending: pending, policy: policy}
-				for _, changed := range []bool{false, true} {
-					t.Run("content", func(t *testing.T) {
-						check(t, s, itemEditApproval(s, changed))
-					})
-				}
+				t.Run("no-change", func(t *testing.T) {
+					got := itemEditApproval(s, false)
+					if got.openRequest || got.supersede || got.approved != s.approved {
+						t.Errorf("state %+v: a no-change write moved approval or a request: %+v", s, got)
+					}
+				})
+				t.Run("content", func(t *testing.T) {
+					check(t, s, itemEditApproval(s, true))
+				})
 				t.Run("policy", func(t *testing.T) {
 					check(t, s, itemPolicyApproval(s))
 				})

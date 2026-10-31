@@ -685,6 +685,60 @@ func anyStrings(v any) []string {
 }
 
 // No new identifier carries a product name.
+// The organization selector (docs/mcp-operation-contract.md, "The organization
+// selector"): an operation that takes an organization in its path or query also
+// takes X-Current-Orgid, its description points at the rule, and it declares the
+// 403 that a mismatch answers. The rule itself is stated once, in the doc.
+func TestOrganizationSelectorIsDeclared(t *testing.T) {
+	root := repoRootDir(t)
+	features := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta1/feature/feature_operations.yml"))
+	connections := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/connection/api.yml"))
+
+	cases := []struct {
+		operationID, orgRef, currentOrgRef string
+		op                                 any
+	}{
+		{"getFeaturesByOrganization", "./api.yml#/components/parameters/orgId", "./api.yml#/components/parameters/currentOrgId", mustLookup(t, features, "organizationCollection", "get")},
+		{"getConnections", "#/components/parameters/orgIdQuery", "#/components/parameters/currentOrgId", mustLookup(t, connections, "paths", "/api/integrations/connections", "get")},
+	}
+	for _, tc := range cases {
+		if got := mustValue(tc.op, "operationId"); got != tc.operationID {
+			t.Fatalf("operation %v has operationId %v, want %s", tc.op, got, tc.operationID)
+		}
+		refs := map[string]bool{}
+		for _, p := range mustValue(tc.op, "parameters").([]any) {
+			if ref, ok := mustValue(p, "$ref").(string); ok {
+				refs[ref] = true
+			}
+		}
+		for _, ref := range []string{tc.orgRef, tc.currentOrgRef} {
+			if !refs[ref] {
+				t.Errorf("%s must take %s", tc.operationID, ref)
+			}
+		}
+		desc := flatDescription(t, tc.op, "description")
+		for _, want := range []string{"`X-Current-Orgid` is also sent", "must name the same organization", "a mismatch is refused with a 403", "docs/mcp-operation-contract.md"} {
+			if !strings.Contains(desc, want) {
+				t.Errorf("%s description must say %q", tc.operationID, want)
+			}
+		}
+		if ref := mustLookup(t, tc.op, "responses", "403", "$ref"); ref != "../../v1beta2/core/api.yml#/components/responses/403" {
+			t.Errorf("%s must declare the 403 response, got %v", tc.operationID, ref)
+		}
+	}
+
+	doc, err := os.ReadFile(filepath.Join(root, "docs/mcp-operation-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	flat := strings.Join(strings.Fields(string(doc)), " ")
+	for _, want := range []string{"## The organization selector", "must name the same organization as `X-Current-Orgid` when both are sent", "A mismatch answers `403` and returns nothing"} {
+		if !strings.Contains(flat, want) {
+			t.Errorf("docs/mcp-operation-contract.md must state the organization selector: missing %q", want)
+		}
+	}
+}
+
 func TestHostedMcpIdentifiersAreProductNeutral(t *testing.T) {
 	root := repoRootDir(t)
 	banned := []string{"meshery", "layer5", "kanvas"}

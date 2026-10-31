@@ -25,7 +25,9 @@ paths:
         title: Get connections
         scope: connections:read
       summary: Get all connections
-      description: Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support
+      description: >
+        Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support.
+        When `X-Current-Orgid` is also sent, it must name the same organization as the `orgId` query; a mismatch is refused with a 403 (the organization selector in docs/mcp-operation-contract.md).
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
@@ -82,6 +84,8 @@ paths:
                 $ref: "#/components/schemas/ConnectionPage"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "../../v1beta2/core/api.yml#/components/responses/403"
         "500":
           $ref: "#/components/responses/500"
 
