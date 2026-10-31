@@ -362,6 +362,60 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/identity/orgs/{orgId}/schedule-pause:
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Set or lift the organization schedule pause
+      description: >-
+        Sets or lifts the organization-wide schedule pause and changes
+        nothing else about the organization: no other preference, no
+        branding, no links. The body is the closed SchedulePausePayload
+        (`paused` required, `reason` optional); an echoed `pausedAt` or
+        `pausedBy` is refused with 400. `paused` true pauses every schedule
+        in the organization, and the server records `pausedAt` and
+        `pausedBy`. `paused` false lifts the pause and clears `reason`,
+        `pausedAt` and `pausedBy`. The call is idempotent: sending the state
+        the organization is already in succeeds and returns it. It answers
+        the resulting SchedulePause. Authorization is one permission key in
+        the organization named by `orgId` ("Workflow Management / Schedules:
+        Pause schedules", in the Schedule Edit keychain, whose OAuth scope is
+        `schedule:write`), seeded to the organization admin role; a caller
+        without it receives 403 and nothing is written. The broad
+        updateOrg and patchOrgPreferences operations can still change
+        `schedulePause`, and stay role-gated as before; this operation
+        exists so a credential can be limited to the pause alone. See
+        docs/schedule-pause-contract.md.
+      operationId: updateOrgSchedulePause
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SchedulePausePayload"
+      responses:
+        "200":
+          description: The organization schedule pause after the change
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchedulePause"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/identity/orgs/{orgId}/teams/{teamId}:
     post:
       x-internal: ["cloud", "meshery"]
@@ -840,7 +894,8 @@ components:
         Organization-wide pause of scheduled work, stored in
         organization.metadata.preferences. While `paused` is true no schedule
         in the organization is claimed. Set or lift it by updating
-        the organization's preferences; there is no pause route. Unset is
+        the organization's preferences, or alone through
+        updateOrgSchedulePause. Unset is
         treated as not paused. Lifting the pause (`paused` false) clears
         `reason`, `pausedAt` and `pausedBy` on the server, so a stored
         `paused` false never carries a stale pause time or identity.
