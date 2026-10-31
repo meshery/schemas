@@ -477,6 +477,161 @@ func TestAgentsActWithoutApprovalPreference(t *testing.T) {
 	}
 }
 
+// prefLevel is a higher-level setting in the approval hierarchy, placed ahead of
+// the profile. decision is "" when that level does not decide.
+type prefLevel struct {
+	name     string
+	decision string
+}
+
+// prefResolve is the reference for how an agent write resolves its approval, as
+// docs/agent-approval-preference.md states it. policy is the activity's
+// approvalPolicy ("" when absent, which behaves as inherit); byAI reports whether
+// an AI app wrote the activity; ahead lists the levels the hierarchy places ahead
+// of the profile, in order; pref is the typed agentsActWithoutApproval, nil when
+// absent. The hierarchy is not settled (prefHierarchyIssue), so the caller
+// supplies the order.
+func prefResolve(policy string, byAI bool, ahead []prefLevel, pref *bool) string {
+	switch policy {
+	case "required", "not_required":
+		return policy
+	case "", "inherit":
+	default:
+		return "required"
+	}
+	for _, level := range ahead {
+		if level.decision != "" {
+			return level.decision
+		}
+	}
+	if byAI && pref != nil {
+		if *pref {
+			return "not_required"
+		}
+		return "required"
+	}
+	// Nothing set a value: fail closed.
+	return "required"
+}
+
+func prefPtr(b bool) *bool { return &b }
+
+// prefHierarchyIssue is the hierarchy proposal that settles the approval
+// hierarchy and the fallback. The descriptions and docs must name it.
+const prefHierarchyIssue = "https://github.com/layer5io/meshery-cloud/issues/6365"
+
+// prefInterimResolve is the interim reference, applied until the platform,
+// workspace and profile policies exist: an explicit required or not_required
+// wins; every other policy (inherit, absent, or anything unrecognized) resolves
+// to required, whatever agentsActWithoutApproval says. The preference is stored
+// but not consulted.
+func prefInterimResolve(policy string, pref *bool) string {
+	switch policy {
+	case "required", "not_required":
+		return policy
+	default:
+		return "required"
+	}
+}
+
+func TestAgentApprovalPreferenceAsProfileSource(t *testing.T) {
+	cases := []struct {
+		name   string
+		policy string
+		byAI   bool
+		ahead  []prefLevel
+		pref   *bool
+		want   string
+	}{
+		{"explicit not_required wins and the preference is not consulted", "not_required", true, nil, prefPtr(false), "not_required"},
+		{"explicit required wins and the preference is not consulted", "required", true, nil, prefPtr(true), "required"},
+		{"explicit not_required is not overridden by a higher level", "not_required", true, []prefLevel{{"workspace", "required"}}, nil, "not_required"},
+		{"absent behaves like inherit (preference true)", "", true, nil, prefPtr(true), "not_required"},
+		{"absent behaves like inherit (preference absent)", "", true, nil, nil, "required"},
+		{"inherit, AI-written, preference true resolves to not_required", "inherit", true, nil, prefPtr(true), "not_required"},
+		{"inherit, AI-written, preference false resolves to required", "inherit", true, nil, prefPtr(false), "required"},
+		{"inherit, AI-written, preference absent and nothing else set fails closed to required", "inherit", true, nil, nil, "required"},
+		{"inherit, person-written, preference true does not apply", "inherit", false, nil, prefPtr(true), "required"},
+		{"higher level ahead of the profile decides over a true preference", "inherit", true, []prefLevel{{"workspace", "required"}}, prefPtr(true), "required"},
+		{"higher level ahead of the profile decides not_required over a false preference", "inherit", true, []prefLevel{{"platform", "not_required"}}, prefPtr(false), "not_required"},
+		{"higher level ahead that does not decide leaves the profile to decide", "inherit", true, []prefLevel{{"platform", ""}}, prefPtr(true), "not_required"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := prefResolve(tc.policy, tc.byAI, tc.ahead, tc.pref); got != tc.want {
+				t.Errorf("prefResolve(%q, byAI=%v, ahead=%v, pref=%v) = %q, want %q", tc.policy, tc.byAI, tc.ahead, tc.pref, got, tc.want)
+			}
+		})
+	}
+
+	// The descriptions are the documented model. Pin the words that name it so
+	// the spec cannot drift from the reference above without this test failing.
+	v3 := loadSpec(t, userV1beta3Spec)
+	for _, owner := range []string{"Preference", "PreferencePayload"} {
+		ref := v3.Components.Schemas[owner]
+		if ref == nil || ref.Value == nil || ref.Value.Properties["agentsActWithoutApproval"] == nil {
+			t.Fatalf("%s.agentsActWithoutApproval is not declared", owner)
+		}
+		desc := ref.Value.Properties["agentsActWithoutApproval"].Value.Description
+		for _, word := range []string{"approvalPolicy", "inherit", prefHierarchyIssue} {
+			if !strings.Contains(desc, word) {
+				t.Errorf("%s.agentsActWithoutApproval description must mention %q", owner, word)
+			}
+		}
+	}
+}
+
+func TestAgentApprovalPreferenceInterimDefault(t *testing.T) {
+	cases := []struct {
+		name   string
+		policy string
+		pref   *bool
+		want   string
+	}{
+		{"absent approvalPolicy with the preference absent resolves to required", "", nil, "required"},
+		{"absent approvalPolicy with the preference true still resolves to required", "", prefPtr(true), "required"},
+		{"inherit with the preference true resolves to required", "inherit", prefPtr(true), "required"},
+		{"inherit with the preference false resolves to required", "inherit", prefPtr(false), "required"},
+		{"inherit with the preference absent resolves to required", "inherit", nil, "required"},
+		{"explicit not_required resolves to not_required with the preference absent", "not_required", nil, "not_required"},
+		{"explicit not_required resolves to not_required with the preference false", "not_required", prefPtr(false), "not_required"},
+		{"explicit required resolves to required with the preference true", "required", prefPtr(true), "required"},
+		{"explicit required resolves to required with the preference absent", "required", nil, "required"},
+		{"an unrecognized approvalPolicy fails closed to required", "approved", prefPtr(true), "required"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := prefInterimResolve(tc.policy, tc.pref); got != tc.want {
+				t.Errorf("prefInterimResolve(%q, pref=%v) = %q, want %q", tc.policy, tc.pref, got, tc.want)
+			}
+		})
+	}
+
+	// The interim rule must be stated where the field is defined and written,
+	// with the hierarchy issue it waits on. The descriptions and the operation
+	// must say so, and the descriptions must name the issue link.
+	v3 := loadSpec(t, userV1beta3Spec)
+	for _, owner := range []string{"Preference", "PreferencePayload"} {
+		ref := v3.Components.Schemas[owner]
+		if ref == nil || ref.Value == nil || ref.Value.Properties["agentsActWithoutApproval"] == nil {
+			t.Fatalf("%s.agentsActWithoutApproval is not declared", owner)
+		}
+		desc := ref.Value.Properties["agentsActWithoutApproval"].Value.Description
+		for _, word := range []string{"Interim", "temporary", "inherit", "not consulted", prefHierarchyIssue} {
+			if !strings.Contains(desc, word) {
+				t.Errorf("%s.agentsActWithoutApproval description must mention %q", owner, word)
+			}
+		}
+	}
+	item := v3.Paths.Find("/api/identity/users/preferences")
+	if item == nil || item.Put == nil {
+		t.Fatal("v1beta3 user must declare updateUserPreferences")
+	}
+	if !strings.Contains(item.Put.Description, "interim") {
+		t.Error("updateUserPreferences description must state the interim rule for agentsActWithoutApproval")
+	}
+}
+
 // None of the new identifiers may name a product, and the new docs must be
 // linked from AGENTS.md.
 func TestHostedAuthShapesAreProductNeutral(t *testing.T) {

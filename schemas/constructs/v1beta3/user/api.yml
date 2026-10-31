@@ -129,7 +129,11 @@ paths:
         the stored value. Setting selectedOrganizationId switches the
         organization the user's session has selected, as Meshery Cloud's and
         Meshery's organization switchers do. Setting agentsActWithoutApproval
-        stores the typed agent approval preference; see
+        stores the typed profile-level source for agent writes, consulted only
+        for an AI-app activity whose approvalPolicy is inherit or absent. Under
+        the interim rule (inherit, including absent, resolves to required), the
+        stored value is not consulted by approval resolution until the profile
+        level is placed in the hierarchy; see
         docs/agent-approval-preference.md. Badges are server-owned and are
         never changed through this operation. Moved here from v1beta2 with the
         same route, operationId and response; the v1beta3 PreferencePayload
@@ -941,16 +945,33 @@ components:
         agentsActWithoutApproval:
           type: boolean
           description: >-
-            Whether writes made by AI apps (agents) on the user's behalf take
-            effect without the user approving them first. No schema default is
-            declared, so absence stays distinguishable from false: when the
-            field is absent and the legacy free-form value is absent too, the
-            effective value is false, and agent writes land unapproved and wait
-            for the user's approval. Typed replacement for the free-form
-            remoteProviderPreferences.<provider>.agentsActWithoutApproval:
-            when this field is present it wins, and the free-form value is
-            read only while this field is absent. See
-            docs/agent-approval-preference.md.
+            Interim rule (temporary): until the upstream platform, workspace and
+            profile policies exist, inherit (including absent) resolves to
+            required. During the interim this field is stored and writable but
+            is not consulted by approval resolution; it becomes the
+            profile-level source once the hierarchy places that level (the
+            hierarchy proposal is https://github.com/layer5io/meshery-cloud/issues/6365,
+            and the interim does not wait on it). Target model, once the
+            hierarchy places the profile level: one profile-level source in the
+            approval hierarchy (platform, workspace, profile; hierarchy defined
+            in https://github.com/layer5io/meshery-cloud/issues/6365). Each
+            activity carries an approvalPolicy (required, not_required or
+            inherit; no schema default, and absent behaves like inherit). An
+            explicit required or not_required on the activity always wins and
+            never consults this field. This field is consulted only for an
+            activity whose approvalPolicy is inherit or absent, only when it
+            was written by an AI app, and only if no level that the hierarchy
+            places ahead of the profile has already decided. For such an
+            activity: true means not_required, false means required, and absent
+            sets nothing. If nothing sets a value, approval is required (fail
+            closed; this fallback is open for confirmation in
+            https://github.com/layer5io/meshery-cloud/issues/6365). AI apps
+            never set approved; approvalPolicy only says whether approval is
+            needed. No schema default is declared, so absence stays
+            distinguishable from false. Typed replacement for the free-form
+            remoteProviderPreferences.<provider>.agentsActWithoutApproval: when
+            this field is present it wins, and the free-form value is read only
+            while this field is absent. See docs/agent-approval-preference.md.
 
     PreferencePayload:
       type: object
@@ -1010,11 +1031,20 @@ components:
         agentsActWithoutApproval:
           type: boolean
           description: >-
-            Whether writes made by AI apps (agents) on the user's behalf take
-            effect without the user approving them first. Optional: when the
-            payload leaves it out, the stored value (or its absence) is kept.
-            No schema default is declared. See
-            docs/agent-approval-preference.md.
+            Interim rule (temporary): until the upstream platform, workspace and
+            profile policies exist, inherit (including absent) resolves to
+            required, and this field is stored but not consulted by approval
+            resolution (see Preference.agentsActWithoutApproval; the hierarchy
+            proposal is https://github.com/layer5io/meshery-cloud/issues/6365).
+            Target model, once the hierarchy places the profile level: one
+            profile-level source for agent writes, consulted only for an AI-app
+            activity whose approvalPolicy is inherit or absent, and only when no
+            higher-level setting (hierarchy defined in
+            https://github.com/layer5io/meshery-cloud/issues/6365) has decided
+            (see Preference.agentsActWithoutApproval): true means not_required,
+            false means required, and absent sets nothing. Optional: when the
+            payload leaves it out, the stored value (or its absence) is kept. No
+            schema default is declared. See docs/agent-approval-preference.md.
 
     Adapter:
       type: object
