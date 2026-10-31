@@ -427,6 +427,54 @@ components:
           format: date-time
           description: Time after which the token is no longer accepted. Absent means it never expires.
           x-order: 2
+    TokenStanding:
+      type: object
+      additionalProperties: false
+      description: >-
+        Server-side read result of looking up one presented token by its ID
+        (the token's `jti`) in the token store. It is not a request or response
+        body: the server reads it before any handler runs to decide whether the
+        token is accepted and whether its keys are narrowed to its keychains.
+        See docs/token-scoping-contract.md.
+      required:
+      - id
+      - revoked
+      - expired
+      - keychainScoped
+      properties:
+        id:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: >-
+            ID of the stored token the presented token's `jti` matched. The
+            zero UUID when no stored token matched.
+          x-oapi-codegen-extra-tags:
+            db: id
+          x-order: 1
+        revoked:
+          type: boolean
+          description: Whether the stored token has been retired (deleted).
+          x-oapi-codegen-extra-tags:
+            db: revoked
+          x-order: 2
+        expired:
+          type: boolean
+          description: >-
+            Whether the stored token's `expiresAt` is at or before the time of
+            the lookup, evaluated by the store. A token with no `expiresAt`
+            never expires.
+          x-oapi-codegen-extra-tags:
+            db: expired
+          x-order: 3
+        keychainScoped:
+          type: boolean
+          description: >-
+            The token's stored `keychainScoped` flag. When true the token is
+            limited to the keys of its keychains, and holds no keys if every
+            one of them has been deleted. Never inferred from the keychain
+            mappings.
+          x-oapi-codegen-extra-tags:
+            db: keychain_scoped
+          x-order: 4
     NativeAuthorizationPayload:
       type: object
       description: Query fields of GET /api/identity/native/authorize. The signed-in session issues the authorization code from these fields.

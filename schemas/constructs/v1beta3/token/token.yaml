@@ -5,6 +5,8 @@ description: >-
   optional limits. `keychainIds` restricts which keys it may use, and
   `expiresAt` ends its life. A token with neither is unrestricted and never
   expires, which is what every token issued before these fields existed is.
+  `keychainScoped` is the server's stored record that the token was created
+  with a keychain limit.
   See the token scoping contract in docs/token-scoping-contract.md.
 required:
 - id
@@ -135,3 +137,18 @@ properties:
       db: expires_at
       json: "expiresAt,omitempty"
     x-order: 12
+  keychainScoped:
+    type: boolean
+    description: >-
+      Whether the token is limited to the keys of its keychains. Set by the
+      server when the token is created with a non-empty `keychainIds`, and
+      never reset to false afterwards. It is stored on the token, not inferred
+      from the token's keychain mappings, so a scoped token whose keychains
+      have all been deleted stays scoped and holds no keys. False or absent
+      means unrestricted.
+    readOnly: true
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: keychain_scoped
+      json: "keychainScoped,omitempty"
+    x-order: 13
