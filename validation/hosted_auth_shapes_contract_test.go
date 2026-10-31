@@ -1,6 +1,8 @@
 package validation
 
 import (
+	"encoding/json"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -769,7 +771,7 @@ func TestOauthConsentReConsentScopeRules(t *testing.T) {
 		"explicitly chooses that organization on the consent screen",
 		"every existing token issued to that client for that user is revoked",
 		"never re-bound to a new organization silently",
-		"at least one keychain scope",
+		"must name a keychain scope",
 		"in the same transaction as the consent update",
 		"intersection of its keychains and the keychains of the new scopes",
 		"keychainScoped",
@@ -780,8 +782,7 @@ func TestOauthConsentReConsentScopeRules(t *testing.T) {
 		"set to true",
 		"keychains were all deleted",
 		"never gains keys",
-		"no keychain scope",
-		"every token issued to that client for that user is revoked",
+		"names no keychain scope (an empty list, or only scopes",
 		"takes effect only for tokens issued after that consent",
 	}
 	for _, word := range rule {
@@ -809,7 +810,7 @@ func TestOauthConsentReConsentScopeRules(t *testing.T) {
 		"exactly the keychains of the new scopes",
 		"**revoked**, not left with an empty list",
 		"keychains were all deleted",
-		"grants no keychain scope",
+		"names no keychain scope (an empty list, or only scopes",
 		"takes effect only for tokens issued after that consent",
 		"minItems: 1",
 	} {
@@ -844,6 +845,114 @@ func TestOauthConsentReConsentScopeRules(t *testing.T) {
 	if strings.Contains(tokens, "**Narrowing**") || strings.Contains(tokens, "**Broadening**") {
 		t.Error("docs/token-scoping-contract.md must summarize the re-consent rule, not repeat it")
 	}
+}
+
+// A consent must name a keychain scope. minItems only stops an empty list, so
+// the server enforces the rule against its scope map and the schema cannot
+// pin it. This test pins the statement of the rule in the OauthConsent
+// description, the scopes description and the contract doc, and that the stale
+// "is a revoke" rule for a re-consent with no keychain scope is gone.
+func TestOauthConsentNamesAKeychainScope(t *testing.T) {
+	doc := loadSpec(t, oauthConsentSpec)
+	entity := schemaOf(t, doc, "OauthConsent")
+	consent := squash(entity.Description)
+	scopes := entity.Properties["scopes"].Value
+	scopesText := squash(scopes.Description)
+	if scopes.MinItems != 1 {
+		t.Errorf("OauthConsent.scopes minItems = %d, want 1 (stops an empty list only)", scopes.MinItems)
+	}
+
+	contract, err := os.ReadFile(filepath.Join(repoRootDir(t), "docs", "oauth-consent-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	authoritative := squash(string(contract))
+
+	statement := []string{
+		"A consent must name a keychain scope",
+		"refuses a first consent in which no scope maps to a keychain in its scope map",
+		"with `400` and nothing stored",
+		"enforced by the server against the scope map, not by the schema",
+		"A scope string the scope map does not know is refused with `400`, never silently dropped",
+		"never count toward the keychain-scope minimum",
+		"A token is never issued under a consent with an empty keychain list",
+		"re-consent that names no keychain scope (an empty list, or only scopes that map to no keychain) revokes",
+	}
+	for _, word := range statement {
+		if !strings.Contains(consent, word) {
+			t.Errorf("OauthConsent description must state the keychain-scope rule: missing %q", word)
+		}
+	}
+	for _, word := range []string{
+		"the server's scope map",
+		"refuses (`400`, nothing stored)",
+		"refuses a scope string the scope map does not know",
+		"never drops one silently",
+		"never count toward that minimum",
+		"enforced by the server against the scope map",
+	} {
+		if !strings.Contains(scopesText, word) {
+			t.Errorf("OauthConsent.scopes description must state the keychain-scope rule: missing %q", word)
+		}
+	}
+	for _, word := range []string{
+		"## Scopes must name a keychain",
+		"A consent must name a keychain scope",
+		"enforced by the server against the scope map, not by the schema",
+		"is refused with `400`. It is never",
+		"silently dropped",
+		"never count toward the keychain-scope minimum",
+		"A token is never issued under a consent with an empty keychain list",
+		"every token issued to that client for that user is revoked",
+	} {
+		if !strings.Contains(authoritative, word) {
+			t.Errorf("docs/oauth-consent-contract.md must state the keychain-scope rule: missing %q", word)
+		}
+	}
+	// A re-consent with no keychain scope revokes (owner-approved); it is never refused into a stored empty consent.
+	for name, text := range map[string]string{"OauthConsent description": consent, "docs/oauth-consent-contract.md": authoritative} {
+		if strings.Contains(text, "re-consent that names no keychain scope is refused") {
+			t.Errorf("%s must say a re-consent with no keychain scope revokes, not that it is refused", name)
+		}
+	}
+}
+
+// The templates are example instances of the entity: each validates against
+// the OauthConsent schema, and clientUri and logoUri are omitted or valid
+// absolute URIs, never empty strings.
+func TestOauthConsentTemplatesAreValid(t *testing.T) {
+	doc := loadSpec(t, oauthConsentSpec)
+	entity := schemaOf(t, doc, "OauthConsent")
+	root := repoRootDir(t)
+	raw, err := os.ReadFile(filepath.Join(root, "schemas/constructs/v1beta3/oauth_consent/templates/oauth_consent_template.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var fromJSON map[string]any
+	if err := json.Unmarshal(raw, &fromJSON); err != nil {
+		t.Fatalf("parse json template: %v", err)
+	}
+	fromYAML := loadYAMLMap(t, "schemas/constructs/v1beta3/oauth_consent/templates/oauth_consent_template.yaml")
+
+	for name, body := range map[string]map[string]any{"json": fromJSON, "yaml": fromYAML} {
+		if err := entity.VisitJSON(body); err != nil {
+			t.Errorf("%s template is not a valid OauthConsent: %v", name, err)
+		}
+		for _, key := range []string{"clientUri", "logoUri"} {
+			v, ok := body[key]
+			if !ok {
+				continue
+			}
+			if s, _ := v.(string); !isAbsoluteURI(s) {
+				t.Errorf("%s template: %s must be omitted or a valid absolute URI, got %q", name, key, v)
+			}
+		}
+	}
+}
+
+func isAbsoluteURI(s string) bool {
+	u, err := url.Parse(s)
+	return err == nil && u.IsAbs() && u.Host != ""
 }
 
 // Who may revoke: a session revokes any of the user's consents; a token only

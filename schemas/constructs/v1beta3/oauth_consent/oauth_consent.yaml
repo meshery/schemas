@@ -19,7 +19,15 @@ description: |
   overrides the token rules below. Tokens are never re-bound to a new
   organization silently: the client gets a token for the new organization only
   under the consent that names it.
-  A consent always names at least one keychain scope (`scopes` has minItems 1).
+  A consent must name a keychain scope. The server refuses a first consent
+  in which no scope maps to a keychain in its scope map, with `400` and nothing
+  stored; a re-consent that names no keychain scope revokes (below). The schema cannot state this: `scopes` has minItems 1,
+  which stops only an empty list. The rule is enforced by the server against
+  the scope map, not by the schema. A scope string the scope map does not know
+  is refused with `400`, never silently dropped. Standard non-keychain scopes,
+  if the server accepts them at all (an open question), never count toward the
+  keychain-scope minimum. A token is never issued under a consent with an empty
+  keychain list.
   Re-consent changes the client's existing tokens, in the same transaction as
   the consent update, by the token's stored `keychainScoped` flag:
   - A scoped token (`keychainScoped` true) gets `keychainIds` set to the
@@ -32,10 +40,10 @@ description: |
     and it never gains keys.
   - An unrestricted token (`keychainScoped` false) gets `keychainIds` set to
     exactly the keychains of the new scopes, and `keychainScoped` set to true.
-  - A re-consent with no keychain scope is a revoke: the consent is revoked
-    (soft-deleted) and every token issued to that client for that user is
-    revoked. A token is never issued under a consent with an empty keychain
-    list.
+  - A re-consent that names no keychain scope (an empty list, or only scopes
+    that map to no keychain) revokes: the consent is revoked (soft-deleted) and
+    every token issued to that client for that user is revoked, in the same
+    transaction. An unknown scope string is still refused with `400`.
   A scope added by a re-consent takes effect only for tokens issued after that
   consent, which is the user's fresh consent.
 type: object
@@ -98,11 +106,15 @@ properties:
     type: array
     description: >-
       Scopes the user granted the client, as the strings the authorization
-      server issues. At least one is required: a consent always names a
-      keychain scope. A scope names one keychain, so the client's tokens are
+      server issues. A scope names one keychain, so the client's tokens are
       limited to the keys of those keychains (see the token scoping contract).
-      A re-consent that leaves no keychain scope revokes the consent; see the
-      description of this schema.
+      At least one scope must map to a keychain in the server's scope map. The
+      server refuses (`400`, nothing stored) a first consent without one (a
+      re-consent without one revokes the consent and the client's tokens),
+      and refuses a scope string the scope map does not know; it never drops one
+      silently. Standard non-keychain scopes never count toward that minimum.
+      The schema enforces only that the list is not empty; the rule is enforced
+      by the server against the scope map. See the description of this schema.
     minItems: 1
     items:
       type: string

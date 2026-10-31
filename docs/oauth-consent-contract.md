@@ -16,7 +16,7 @@ it, so there is no write payload.
 | `clientId` | OAuth client ID. Required. An identifier from the authorization server, not a UUID (`x-id-format: external`). Unique per user among live consents. |
 | `clientName` | Display name the client registered. Required. |
 | `clientUri`, `logoUri` | The client's home page and logo, when it registered them. Omitted otherwise. |
-| `scopes` | Scopes granted, strings. Required, at least one (`minItems: 1`): a consent always names a keychain scope. A scope names one keychain; see [token-scoping-contract.md](token-scoping-contract.md). |
+| `scopes` | Scopes granted, strings. Required, at least one (`minItems: 1`), and at least one must map to a keychain in the server's scope map; see [Scopes must name a keychain](#scopes-must-name-a-keychain). A scope names one keychain; see [token-scoping-contract.md](token-scoping-contract.md). |
 | `organizationId` | The root organization the consent names. Required. The client acts only in it and its descendants. |
 | `createdAt` | When the user first granted the consent. Required. A re-consent keeps it. |
 | `updatedAt` | When the consent was last granted or changed. Server-set and read-only (db `updated_at`). Required. Equal to `createdAt` on creation; advanced by a re-consent. |
@@ -28,6 +28,23 @@ user has at most one live consent per client, so `clientId` identifies the
 consent among the user's own and is what `deleteOauthConsent` takes. The
 server enforces it with a unique index on (`user_id`, `client_id`) where
 `deleted_at` is null, so a client the user revoked can be consented to again.
+
+## Scopes must name a keychain
+
+A consent must name a keychain scope. The server refuses a first consent in
+which no scope maps to a keychain in its scope map, with `400` and nothing
+stored. A re-consent that names no keychain scope revokes instead (below). The rule is enforced by the server against the scope map, not by
+the schema: `minItems: 1` on `scopes` stops only an empty list, and a list of
+scopes that map to no keychain passes the schema. Specifically:
+
+- A scope string the scope map does not know is refused with `400`. It is never
+  silently dropped, so a consent cannot end up with fewer scopes than the
+  client asked for without the user or the client seeing why.
+- Standard non-keychain scopes, if the server accepts them at all (still an open
+  question), never count toward the keychain-scope minimum. A consent that names
+  only such scopes is refused.
+- A token is never issued under a consent with an empty keychain list, because
+  an empty list means unrestricted (see [token-scoping-contract.md](token-scoping-contract.md)).
 
 ## Re-consent
 
@@ -76,11 +93,13 @@ whether its `keychainIds` is empty:
 - **Unrestricted token** (`keychainScoped` false). Its `keychainIds` becomes
   exactly the keychains of the new scopes, and `keychainScoped` becomes `true`.
   The flag is never reset, so the token stays limited from then on.
-- **No keychain scope granted.** A re-consent that grants no keychain scope is a
-  revoke, not a stored consent with empty `scopes`: the consent is revoked
-  (soft-deleted, `deletedAt` set) and every token issued to that client for that
-  user is revoked, as in [Rules for the server](#rules-for-the-server). A token
-  is never issued under a consent with an empty keychain list.
+- **No keychain scope named.** A re-consent that names no keychain scope (an
+  empty list, or only scopes that map to no keychain) is never stored: the
+  consent is revoked (soft-deleted, `deletedAt` set) and every token issued to
+  that client for that user is revoked, in the same transaction, as in
+  [Rules for the server](#rules-for-the-server). A scope string the scope map
+  does not know is still refused with `400` and changes nothing; see
+  [Scopes must name a keychain](#scopes-must-name-a-keychain).
 - **Added scopes.** A scope added by a re-consent takes effect only for tokens
   issued after that consent, which is the user's fresh consent. No existing
   token gains a key it did not have.
