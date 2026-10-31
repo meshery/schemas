@@ -102,7 +102,9 @@ Before this field, a provider stored the flag in the free-form
 `remoteProviderPreferences.<provider>.agentsActWithoutApproval`. That
 `remoteProviderPreferences` object is **not removed**.
 
-For one release after this field ships:
+For one release after this field ships, once approval resolution consults the
+profile level (during the interim neither the typed field nor the free-form
+value is consulted, so an AI app's `inherit` write always needs approval):
 
 1. **Precedence.** If the typed `agentsActWithoutApproval` is present (true or
    false), it is the answer. The free-form value is not consulted.
