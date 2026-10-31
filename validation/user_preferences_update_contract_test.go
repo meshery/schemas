@@ -12,11 +12,12 @@ const userV1beta2Spec = "schemas/constructs/v1beta2/user/api.yml"
 // PUT /api/identity/users/preferences is how Meshery Cloud's and Meshery's
 // organization switchers change the session's selected organization. Its body
 // is the closed PreferencePayload and it answers 201 with no body, as the
-// Cloud handler does.
+// Cloud handler does. The operation is declared in v1beta3 user; v1beta2 no
+// longer declares it, since the bundler rejects a path operation declared twice.
 func TestUpdateUserPreferencesOperation(t *testing.T) {
-	doc, err := loadAPISpec(filepath.Join(repoRootDir(t), userV1beta2Spec))
+	doc, err := loadAPISpec(filepath.Join(repoRootDir(t), userV1beta3Spec))
 	if err != nil {
-		t.Fatalf("load %s: %v", userV1beta2Spec, err)
+		t.Fatalf("load %s: %v", userV1beta3Spec, err)
 	}
 	item := doc.Paths.Find("/api/identity/users/preferences")
 	if item == nil || item.Put == nil {
@@ -47,9 +48,9 @@ func TestUpdateUserPreferencesOperation(t *testing.T) {
 }
 
 func TestPreferencePayloadRequestValidation(t *testing.T) {
-	doc, err := loadAPISpec(filepath.Join(repoRootDir(t), userV1beta2Spec))
+	doc, err := loadAPISpec(filepath.Join(repoRootDir(t), userV1beta3Spec))
 	if err != nil {
-		t.Fatalf("load %s: %v", userV1beta2Spec, err)
+		t.Fatalf("load %s: %v", userV1beta3Spec, err)
 	}
 	ref := doc.Components.Schemas["PreferencePayload"]
 	if ref == nil || ref.Value == nil {
@@ -68,6 +69,9 @@ func TestPreferencePayloadRequestValidation(t *testing.T) {
 		{"forges updatedAt", map[string]any{"updatedAt": "2026-10-20T00:00:00Z"}, true},
 		{"carries unknown field", map[string]any{"badges": []any{"x"}}, true},
 		{"organization id is not a string", map[string]any{"selectedOrganizationId": 7}, true},
+		{"sets agentsActWithoutApproval", map[string]any{"agentsActWithoutApproval": true}, false},
+		{"clears agentsActWithoutApproval", map[string]any{"agentsActWithoutApproval": false}, false},
+		{"agentsActWithoutApproval is not a boolean", map[string]any{"agentsActWithoutApproval": "yes"}, true},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -76,5 +80,21 @@ func TestPreferencePayloadRequestValidation(t *testing.T) {
 				t.Errorf("VisitJSON(%v) error = %v, wantErr %v", tc.body, err, tc.wantErr)
 			}
 		})
+	}
+}
+
+// The v1beta2 user spec keeps PreferencePayload for existing consumers of the
+// generated type, but no longer declares the operation.
+func TestUpdateUserPreferencesNotDeclaredInV1beta2(t *testing.T) {
+	doc, err := loadAPISpec(filepath.Join(repoRootDir(t), userV1beta2Spec))
+	if err != nil {
+		t.Fatalf("load %s: %v", userV1beta2Spec, err)
+	}
+	if item := doc.Paths.Find("/api/identity/users/preferences"); item != nil && item.Put != nil {
+		t.Error("PUT /api/identity/users/preferences must be declared in v1beta3 user only")
+	}
+	payload := doc.Components.Schemas["PreferencePayload"]
+	if payload == nil || payload.Value == nil || !payload.Value.Deprecated {
+		t.Error("v1beta2 PreferencePayload must stay declared and be marked deprecated")
 	}
 }

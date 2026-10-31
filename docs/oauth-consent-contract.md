@@ -18,7 +18,8 @@ it, so there is no write payload.
 | `clientUri`, `logoUri` | The client's home page and logo, when it registered them. Omitted otherwise. |
 | `scopes` | Scopes granted, strings. Required. A scope names one keychain; see [token-scoping-contract.md](token-scoping-contract.md). |
 | `organizationId` | The root organization the consent names. Required. The client acts only in it and its descendants. |
-| `createdAt` | When the user granted the consent. Required. |
+| `createdAt` | When the user first granted the consent. Required. A re-consent keeps it. |
+| `updatedAt` | When the consent was last granted or changed. Server-set and read-only (db `updated_at`). Required. Equal to `createdAt` on creation; advanced by a re-consent. |
 | `lastUsedAt` | When the client last used a token issued under the consent. Null when unused or not recorded. |
 | `deletedAt` | When the consent was revoked (soft delete, db `deleted_at`, `core.NullTime`). Null while live. |
 
@@ -27,8 +28,18 @@ user has at most one live consent per client, so `clientId` identifies the
 consent among the user's own and is what `deleteOauthConsent` takes. The
 server enforces it with a unique index on (`user_id`, `client_id`) where
 `deleted_at` is null, so a client the user revoked can be consented to again.
-A re-consent to a live client replaces that consent's grant. There is no
-`updatedAt`.
+
+## Re-consent
+
+A re-consent by the same user to a client with a live consent updates that
+consent in place. The server:
+
+- replaces `scopes` with the newly granted scopes,
+- advances `updatedAt`,
+- keeps `id` and `createdAt`.
+
+It does not insert a second row, so the unique key holds. A client the user revoked is not live: consenting to it
+again creates a new consent with a new `id`.
 
 ## Routes
 
