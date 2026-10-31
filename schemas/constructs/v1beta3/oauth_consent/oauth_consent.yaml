@@ -1,0 +1,101 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: OAuth Consent Schema
+description: |
+  Server-returned OAuth consent: one OAuth client (a connected app) the
+  signed-in user has allowed to act on their behalf, with what it was granted.
+  A user has at most one consent per client, so `clientId` identifies the
+  consent among the user's own and no separate consent ID exists. The consent
+  names one root organization; the client acts only in that organization and
+  its descendants. Created by the authorization server's consent step and
+  removed by revoking it; there is no write payload.
+type: object
+additionalProperties: false
+required:
+  - clientId
+  - clientName
+  - scopes
+  - organizationId
+  - createdAt
+properties:
+  clientId:
+    type: string
+    description: OAuth client ID the consent was granted to. An identifier issued by the authorization server, not a UUID.
+    minLength: 1
+    maxLength: 255
+    x-id-format: external
+    x-go-name: ClientID
+    x-oapi-codegen-extra-tags:
+      db: client_id
+    x-order: 1
+  clientName:
+    type: string
+    description: Display name the client registered, shown to the user as the connected app's name.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: client_name
+    x-order: 2
+  clientUri:
+    type: string
+    format: uri
+    description: Home page of the client, when it registered one. Omitted otherwise.
+    maxLength: 2048
+    x-oapi-codegen-extra-tags:
+      db: client_uri
+      json: "clientUri,omitempty"
+    x-order: 3
+  logoUri:
+    type: string
+    format: uri
+    description: Logo of the client, when it registered one. Omitted otherwise.
+    maxLength: 2048
+    x-oapi-codegen-extra-tags:
+      db: logo_uri
+      json: "logoUri,omitempty"
+    x-order: 4
+  scopes:
+    type: array
+    description: >-
+      Scopes the user granted the client, as the strings the authorization
+      server issues. A scope names one keychain, so the client's tokens are
+      limited to the keys of those keychains (see the token scoping contract).
+    items:
+      type: string
+      minLength: 1
+      maxLength: 255
+      pattern: '^\S+$'
+    maxItems: 100
+    uniqueItems: true
+    x-oapi-codegen-extra-tags:
+      db: scopes
+    x-order: 5
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >-
+      ID of the root organization the consent names. The client acts only in
+      this organization and its descendants.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 6
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Time the user granted the consent.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 7
+  lastUsedAt:
+    type: string
+    format: date-time
+    description: >-
+      Time the client last used a token issued under this consent. Null when
+      the client has not used it yet or the server does not record use.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: last_used_at
+      json: "lastUsedAt,omitempty"
+    x-order: 8

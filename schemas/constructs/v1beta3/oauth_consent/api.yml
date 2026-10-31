@@ -1,0 +1,117 @@
+openapi: 3.0.0
+info:
+  title: OauthConsent
+  description: |
+    OpenAPI schema for the OAuth consents of the signed-in user: the OAuth
+    clients (connected apps) the user has allowed to act on their behalf, and
+    the operation that withdraws that permission.
+
+    A consent is created by the authorization server's consent step, never by
+    a call defined here, so the construct has no write payload. It belongs to
+    the user and to one client: a user has at most one consent per client.
+    Both operations act only on the consents of the authenticated user; they
+    take no user in the path or the query, and a consent of another user is
+    never listed, never revealed and never revoked.
+
+    Revoking a consent withdraws the user's permission for the client and
+    revokes every token the client holds for that user, so the client's next
+    call is refused and it must ask for consent again.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: oauthConsents
+    description: Operations related to the OAuth consents of the signed-in user.
+
+paths:
+  /api/identity/oauth/consents:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - oauthConsents
+      summary: List OAuth consents
+      operationId: getOauthConsents
+      description: |
+        Returns the OAuth clients the signed-in user has consented to, one
+        entry per client, most recently granted first. A user with no
+        consented client receives an empty array. The list is the user's own
+        and is not paginated: a user connects a handful of apps.
+      responses:
+        "200":
+          description: OAuth consents of the signed-in user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OauthConsent"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - oauthConsents
+      summary: Revoke an OAuth consent
+      operationId: deleteOauthConsent
+      description: |
+        Revokes the signed-in user's consent for the client named by the
+        required `clientId` query parameter, and revokes every access and
+        refresh token that client holds for the user. The consents and tokens
+        of other users of the same client are untouched. Answers 204 with no
+        body. A client the user has no consent for, whether it never existed,
+        was never consented to or was already revoked, is a 404.
+      parameters:
+        - $ref: "#/components/parameters/clientId"
+      responses:
+        "204":
+          description: OAuth consent revoked
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    clientId:
+      name: clientId
+      in: query
+      description: OAuth client ID of the consent to revoke. An identifier issued by the authorization server, not a UUID.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 255
+
+  schemas:
+    OauthConsent:
+      $ref: "./oauth_consent.yaml"
