@@ -8,3 +8,5 @@ purpose: ''
 isOauth: false
 createdAt: ''
 updatedAt: ''
+keychainIds: []
+expiresAt: null
