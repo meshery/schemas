@@ -152,6 +152,10 @@ is not the token's `isOauth` flag, and it is not the token's scopes.
   whatever the stored state is. No part of the payload is applied, not even the
   other fields. A token-authenticated write therefore never sets the write-once
   marker below.
+- A token client doing read-modify-write must omit `agentsActWithoutApproval`
+  from the payload. `Preference` returns the field, and echoing it back, with
+  any value or `null`, answers `403` for the whole payload, so the client's other
+  fields are not applied either.
 - The same `403` applies to the free-form value. A token-authenticated request
   that would change the stored state of any
   `remoteProviderPreferences.<provider>.agentsActWithoutApproval` entry (a

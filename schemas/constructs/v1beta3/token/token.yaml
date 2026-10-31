@@ -5,8 +5,9 @@ description: >-
   optional limits. `keychainIds` restricts which keys it may use, and
   `expiresAt` ends its life. A token with neither is unrestricted and never
   expires, which is what every token issued before these fields existed is.
-  `keychainScoped` is the server's stored record of whether the token is
-  limited to its keychains' keys.
+  A token with neither limit set is unrestricted only when keychainScoped is
+  false or absent. `keychainScoped` is the server's stored record of whether
+  the token is limited to its keychains' keys.
   See the token scoping contract in docs/token-scoping-contract.md.
 required:
 - id
@@ -106,16 +107,16 @@ properties:
   keychainIds:
     type: array
     description: >-
-      IDs of the keychains this token is limited to. Whether the token is
-      restricted is decided by keychainScoped, not by the length of this list.
-      When keychainScoped is true, the token may use only keys that belong to
+      IDs of the keychains this token is limited to. A token is unrestricted
+      only when keychainScoped is false or absent and keychainIds is empty or
+      absent, so every token issued before this field existed keeps working
+      unchanged. A non-empty list always makes the token scoped, whatever
+      keychainScoped says. A scoped token may use only keys that belong to
       these keychains, intersected with the owner's keys in the organization of
       the request: the effective keys are never more than the user's own. A
-      scoped token with an empty list holds no keys; it is not unrestricted.
-      When keychainScoped is false, the token is unrestricted and this list is
-      empty or absent, so every token issued before this field existed keeps
-      working unchanged. Unknown keychain IDs are refused when the token is
-      created.
+      scoped token with an empty list holds no keys; it is not unrestricted. A
+      server that stores keychainIds always stores keychainScoped true. Unknown
+      keychain IDs are refused when the token is created.
     items:
       $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
     maxItems: 100
@@ -150,8 +151,9 @@ properties:
       true; no other operation changes it, and it is never reset to false. It
       is read-only to clients. It is stored on the token, not inferred from
       the token's keychain mappings, so a scoped token whose keychains have all
-      been deleted stays scoped and holds no keys. False or absent means
-      unrestricted.
+      been deleted stays scoped and holds no keys. A token is unrestricted only
+      when keychainScoped is false or absent and keychainIds is empty or absent.
+      A true flag is never unrestricted, even with an empty list.
     readOnly: true
     x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:

@@ -155,39 +155,52 @@ func TestTokenKeychainScopedChangesOnlyToTrue(t *testing.T) {
 	}
 }
 
-// keychainIds has no restriction of its own: keychainScoped decides it, so a
-// scoped token with an empty list holds no keys. The entity, the api spec and
-// the contract doc must say so, and must not keep the "empty means unrestricted"
-// rule.
-func TestTokenKeychainIdsDefersToKeychainScoped(t *testing.T) {
+// A token is unrestricted only when keychainScoped is false or absent AND
+// keychainIds is empty or absent. A non-empty keychainIds always means scoped,
+// whatever the flag says, and a scoped token with an empty list holds no keys.
+// The entity, the api spec and the contract doc must state this rule (backticks
+// are ignored), and must not keep the old "empty means unrestricted" or
+// "decided by keychainScoped" wording.
+func TestTokenRestrictionFailsClosed(t *testing.T) {
 	root := repoRootDir(t)
 	entity := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/token/token.yaml"))
-	entityDesc, _ := mustLookup(t, entity, "properties", "keychainIds", "description").(string)
-	apiDesc := squash(schemaOf(t, loadSpec(t, tokenSpec), "UserToken").Properties["keychainIds"].Value.Description)
+	entityDesc, _ := mustLookup(t, entity, "description").(string)
+	entityIDs, _ := mustLookup(t, entity, "properties", "keychainIds", "description").(string)
+	entityFlag, _ := mustLookup(t, entity, "properties", "keychainScoped", "description").(string)
+	apiIDs := squash(schemaOf(t, loadSpec(t, tokenSpec), "UserToken").Properties["keychainIds"].Value.Description)
 	contract, err := os.ReadFile(filepath.Join(root, "docs", "token-scoping-contract.md"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	texts := map[string]string{
-		"token.yaml keychainIds":         squash(entityDesc),
-		"UserToken.keychainIds":          apiDesc,
-		"docs/token-scoping-contract.md": squash(string(contract)),
+		"token.yaml description":         squash(entityDesc),
+		"token.yaml keychainIds":         squash(entityIDs),
+		"token.yaml keychainScoped":      squash(entityFlag),
+		"UserToken.keychainIds":          apiIDs,
+		"docs/token-scoping-contract.md": squash(strings.ReplaceAll(string(contract), "`", "")),
 	}
 	for name, text := range texts {
-		if strings.Contains(text, "Empty or absent means unrestricted") || strings.Contains(text, "empty or absent is unrestricted") {
-			t.Errorf("%s must not say an empty list means unrestricted", name)
+		for _, stale := range []string{"Empty or absent means unrestricted", "empty or absent is unrestricted", "False or absent means unrestricted", "decided by keychainScoped", "not by the length of this list"} {
+			if strings.Contains(text, stale) {
+				t.Errorf("%s must not keep the old wording %q", name, stale)
+			}
 		}
 	}
-	for _, word := range []string{"decided by keychainScoped", "not by the length of this list", "holds no keys"} {
-		if !strings.Contains(texts["token.yaml keychainIds"], word) {
-			t.Errorf("token.yaml keychainIds must state that keychainScoped decides restriction: missing %q", word)
-		}
-		if !strings.Contains(texts["UserToken.keychainIds"], word) {
-			t.Errorf("UserToken.keychainIds must state that keychainScoped decides restriction: missing %q", word)
+	rule := "A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent"
+	for _, name := range []string{"token.yaml keychainIds", "token.yaml keychainScoped", "UserToken.keychainIds", "docs/token-scoping-contract.md"} {
+		if !strings.Contains(texts[name], rule) {
+			t.Errorf("%s must state the restriction rule: missing %q", name, rule)
 		}
 	}
-	if !strings.Contains(texts["docs/token-scoping-contract.md"], "`keychainScoped` decides restriction, not the length of the list.") {
-		t.Error("docs/token-scoping-contract.md must state that keychainScoped decides restriction")
+	for _, name := range []string{"token.yaml keychainIds", "UserToken.keychainIds", "docs/token-scoping-contract.md"} {
+		for _, word := range []string{"always makes the token scoped", "holds no keys", "always stores keychainScoped true"} {
+			if !strings.Contains(texts[name], word) {
+				t.Errorf("%s must state the fail-closed rule: missing %q", name, word)
+			}
+		}
+	}
+	if !strings.Contains(texts["token.yaml description"], "unrestricted only when keychainScoped is false or absent") {
+		t.Error("token.yaml description must not call a token unrestricted on keychainIds alone")
 	}
 }
 

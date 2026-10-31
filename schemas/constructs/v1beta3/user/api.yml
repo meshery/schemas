@@ -1055,7 +1055,9 @@ components:
             field: a token-authenticated request whose payload names this field,
             with any value including null and whatever the stored state is,
             is answered 403 and no part of the payload is applied. Only a
-            request authenticated by the signed-in session can set it. See
+            request authenticated by the signed-in session can set it. A token
+            client doing read-modify-write must omit this field: echoing the
+            value it read, or null, answers 403 for the whole payload. See
             docs/agent-approval-preference.md.
           x-go-type: nullable.Nullable[bool]
           x-go-type-import:

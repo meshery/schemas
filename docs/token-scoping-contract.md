@@ -23,12 +23,13 @@ in the generic `request` construct.
 
 ### `keychainIds`
 
-- **`keychainScoped` decides restriction, not the length of the list.** A token
-  with `keychainScoped` false is unrestricted, and its `keychainIds` is empty or
-  absent. That is how every token did before the field existed, so no existing
-  token changes behaviour and none needs migrating. Unrestricted is the default
-  for a creation that omits the body. A token with `keychainScoped` true and an
-  empty `keychainIds` holds no keys; see [`keychainScoped` versus
+- **A token is unrestricted only when `keychainScoped` is false or absent and
+  `keychainIds` is empty or absent.** A non-empty list always makes the token
+  scoped, whatever `keychainScoped` says. Every token issued before the field
+  existed is unrestricted under this rule, so no existing token changes behaviour
+  and none needs migrating. Unrestricted is the default for a creation that
+  omits the body. A token with `keychainScoped` true and an empty `keychainIds`
+  holds no keys; see [`keychainScoped` versus
   `keychainIds`](#keychainscoped-versus-keychainids).
 - A non-empty list limits the token to the keys that belong to those keychains.
   The token never gains a key its owner lacks: scoping only narrows.
@@ -63,7 +64,8 @@ other at request time.
 
 - **Set at creation.** A create with a non-empty `keychainIds` stores
   `keychainScoped = true` (column `user_tokens.keychain_scoped`). A create whose
-  `keychainIds` is empty or absent stores `false`: the token is unscoped.
+  `keychainIds` is empty or absent stores `false`: the token is unscoped. A
+  server that stores `keychainIds` always stores `keychainScoped` true.
 - **Changed only from false to true, by re-consent.** A re-consent that narrows
   an unrestricted token (`keychainScoped` false) sets it to true; see
   [`oauth-consent-contract.md`](oauth-consent-contract.md). No other operation
@@ -82,8 +84,9 @@ other at request time.
 - On the entity, `keychainIds` reports the keychains the token is limited to at
   read time. A scoped token can therefore report `keychainScoped: true` with an
   empty `keychainIds`; that token holds no keys, it is not unrestricted.
-  Consumers must check `keychainScoped`, not the length of `keychainIds`, to
-  decide whether a token is restricted.
+  Consumers apply the rule in [`keychainIds`](#keychainids): a non-empty
+  `keychainIds` is a restriction even when `keychainScoped` is false, and a
+  token is unrestricted only when both fields say so.
 
 ## `TokenStanding`
 

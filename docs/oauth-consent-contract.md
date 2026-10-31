@@ -90,7 +90,8 @@ whether its `keychainIds` is empty:
   with no keychains holds no keys. This also holds when the token's keychains
   were all deleted: its intersection is empty, so it is revoked, and it never
   gains keys.
-- **Unrestricted token** (`keychainScoped` false). Its `keychainIds` becomes
+- **Unrestricted token** (`keychainScoped` false or absent and `keychainIds`
+  empty or absent; see `docs/token-scoping-contract.md`). Its `keychainIds` becomes
   exactly the keychains of the new scopes, and `keychainScoped` becomes `true`.
   The flag is never reset, so the token stays limited from then on.
 - **No keychain scope named.** A re-consent that names no keychain scope (an

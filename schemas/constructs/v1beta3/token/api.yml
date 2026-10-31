@@ -603,12 +603,11 @@ components:
         keychainIds:
           type: array
           description: >-
-            IDs of the keychains the token is limited to. Whether the token is
-            restricted is decided by keychainScoped, not by the length of this
-            list. When keychainScoped is true, the token's effective keys are the
-            owner's keys in the request's organization intersected with the keys
-            of these keychains, and a scoped token with an empty list holds no
-            keys. When keychainScoped is false the token is unrestricted.
+            IDs of the keychains the token is limited to. A non-empty list limits
+            the token to the keys of those keychains, intersected with the
+            owner's keys in the request's organization. An empty or absent list
+            creates an unrestricted token. The server records keychainScoped from
+            this list; clients do not set it.
           items:
             $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           maxItems: 100
