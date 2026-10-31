@@ -1,0 +1,12 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "organizationId": "00000000-0000-0000-0000-000000000000",
+  "kind": "content_item_approval",
+  "subjectType": "content_item",
+  "subjectId": "00000000-0000-0000-0000-000000000000",
+  "requesterId": "00000000-0000-0000-0000-000000000000",
+  "status": "pending",
+  "decidedAt": null,
+  "createdAt": "0001-01-01T00:00:00Z",
+  "updatedAt": "0001-01-01T00:00:00Z"
+}

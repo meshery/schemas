@@ -1,0 +1,127 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Request Schema
+description: |
+  Server-returned request: one decision that a person with the right to make
+  it has been asked to make about a subject, for example whether a content
+  item written by an AI app may run. A request is generic. Its `kind` says
+  what is being decided and which permission key may decide it, and it names
+  its subject by type and ID, so any construct can be the subject of a kind.
+  A request is created `pending` by the server when the thing that needs a
+  decision happens (it is not created by a client call), and is decided once:
+  `approved` or `denied`, by a user holding the kind's deciding permission
+  key. Decided requests are kept as history. See docs/request-contract.md.
+type: object
+additionalProperties: false
+required:
+  - id
+  - organizationId
+  - kind
+  - subjectType
+  - subjectId
+  - requesterId
+  - status
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated request ID.
+    x-oapi-codegen-extra-tags:
+      db: id
+    x-order: 1
+  organizationId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning organization ID. Derived from the subject, never client-settable.
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+    x-order: 2
+  kind:
+    $ref: ./api.yml#/components/schemas/RequestKind
+    description: What is being decided. The kind names the permission key that may decide the request.
+    x-oapi-codegen-extra-tags:
+      db: kind
+    x-order: 3
+  subjectType:
+    type: string
+    description: Type of the subject, the construct name in snake_case, for example `content_item`. Fixed by the kind.
+    minLength: 1
+    maxLength: 64
+    x-oapi-codegen-extra-tags:
+      db: subject_type
+    x-order: 4
+  subjectId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: ID of the subject the request is about.
+    x-go-name: SubjectID
+    x-oapi-codegen-extra-tags:
+      db: subject_id
+    x-order: 5
+  requesterId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: >
+      ID of the user on whose behalf the request was made: the user whose
+      session or AI app made the write that needs a decision. Server-set.
+    x-go-name: RequesterID
+    x-oapi-codegen-extra-tags:
+      db: requester_id
+    x-order: 6
+  createdByClient:
+    type: string
+    description: >
+      OAuth client ID of the AI app that made the write behind the request.
+      Server-set from the access token. Empty or omitted when a person made
+      it.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: created_by_client
+      json: "createdByClient,omitempty"
+    x-order: 7
+  status:
+    $ref: ./api.yml#/components/schemas/RequestStatus
+    description: >
+      Lifecycle of the request. `pending` until it is decided; `approved` or
+      `denied` once, and then final.
+    x-oapi-codegen-extra-tags:
+      db: status
+    x-order: 8
+  decidedBy:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: ID of the user who approved or denied the request. Derived from the session; omitted while the request is pending.
+    x-go-name: DecidedBy
+    x-oapi-codegen-extra-tags:
+      db: decided_by
+      json: "decidedBy,omitempty"
+    x-order: 9
+  decidedAt:
+    type: string
+    format: date-time
+    description: Time the request was decided. Null while the request is pending.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: decided_at
+    x-order: 10
+  note:
+    type: string
+    description: The note the decider left with the decision. Omitted while the request is pending and when the decider left none.
+    maxLength: 2000
+    x-oapi-codegen-extra-tags:
+      db: note
+      json: "note,omitempty"
+    x-order: 11
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of request creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 12
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last request modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 13
