@@ -44,7 +44,7 @@ const { execSync } = require("child_process");
 const fs = require("fs");
 const logger = require("./lib/logger");
 const paths = require("./lib/paths");
-const { loadPermissions, generateGoFile, buildIndex, saveIndex } = require("./lib/permissions");
+const { loadPermissions, loadOAuthScopes, generateGoFile, buildIndex, saveIndex } = require("./lib/permissions");
 const { formatGoFile, requireGofmt } = require("./lib/gofmt");
 
 // Default values
@@ -163,12 +163,13 @@ async function main() {
     }
 
 // Phase 1: build and save index (hash-based id)
+const scopes = await loadOAuthScopes(source, { gid: options.gid });
 const index = buildIndex(permissions);
 const indexPath = saveIndex(index);
 logger.info(`Saved permissions index: ${paths.relativePath(indexPath)}`);
 
 // Phase 2: generate Go file from index
-const goContent = generateGoFile(index.items, index.id);
+const goContent = generateGoFile(index.items, index.id, scopes);
 
 // Resolve output path
     let outputPath = options.output;

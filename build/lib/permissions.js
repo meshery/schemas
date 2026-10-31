@@ -13,6 +13,7 @@ const COL_KEYCHAIN_ID = 0;
 const COL_FUNCTION = 2;
 const COL_FEATURE = 3;
 const COL_KEY_ID = 29;
+const COL_KEYCHAIN_DEFINITION_ID = 27;
 
 // Default number of header rows to skip in permissions CSV
 const DEFAULT_SKIP_ROWS = 2;
@@ -126,6 +127,183 @@ function parsePermissions(csvContent, options = {}) {
   return permissions;
 }
 
+// Keychain rows sit in the "Security Management / Keychains" category: the
+// keychain name is the Function column and its ID is the Keychain ID column.
+const KEYCHAIN_CATEGORY = "Security Management";
+const KEYCHAIN_SUBCATEGORY = "Keychains";
+
+/**
+ * Parse the keychain definitions from CSV content
+ * @param {string} csvContent - Raw CSV content
+ * @param {Object} [options] - Parse options
+ * @param {number} [options.skipRows=2] - Number of header rows to skip
+ * @returns {Map<string, {name: string, id: string, description: string}>} Keychains by name
+ */
+function parseKeychains(csvContent, options = {}) {
+  const { skipRows = DEFAULT_SKIP_ROWS } = options;
+  const keychains = new Map();
+  for (const fields of parseCSV(csvContent, { skipRows })) {
+    if (fields[0] !== KEYCHAIN_CATEGORY || fields[1] !== KEYCHAIN_SUBCATEGORY) continue;
+    const name = fields[COL_FUNCTION] || "";
+    const id = fields[COL_KEYCHAIN_DEFINITION_ID] || "";
+    if (!name || !isValidUUID(id)) continue;
+    keychains.set(name, { name, id, description: fields[COL_FEATURE] || "" });
+  }
+  return keychains;
+}
+
+/**
+ * Resolve the OAuth scope map (build/oauth-scopes.json) against the keychains
+ * and permission keys of the permissions source. Every scope names one
+ * keychain defined in the source, no two scopes share a keychain, and every
+ * key is an existing generated constant.
+ * @param {Object} scopeFile - Parsed oauth-scopes.json
+ * @param {Array<{name: string, uuid: string}>} permissions - Parsed permission keys
+ * @param {Map<string, {name: string, id: string}>} keychains - Parsed keychains
+ * @returns {Array<{scope: string, description: string, keychain: string, keychainId: string, keys: Array<{name: string, uuid: string}>}>}
+ */
+function resolveOAuthScopes(scopeFile, permissions, keychains) {
+  const byName = new Map(permissions.map((p) => [p.name, p]));
+  const usedKeychains = new Map();
+  const resolved = [];
+  for (const [scope, entry] of Object.entries(scopeFile?.scopes || {})) {
+    if (!/^[a-z][a-z0-9]*:[a-z][a-z0-9]*$/.test(scope)) {
+      throw new Error(`OAuth scope "${scope}" must be lowercase words joined as resource:action`);
+    }
+    const keychain = keychains.get(entry.keychain);
+    if (!keychain) {
+      throw new Error(
+        `OAuth scope "${scope}" names keychain "${entry.keychain}", which is not defined in the permissions source (Security Management / Keychains)`,
+      );
+    }
+    if (usedKeychains.has(keychain.name)) {
+      throw new Error(
+        `OAuth scopes "${usedKeychains.get(keychain.name)}" and "${scope}" share keychain "${keychain.name}"; a scope is exactly one keychain`,
+      );
+    }
+    usedKeychains.set(keychain.name, scope);
+    const keys = (entry.keys || []).map((name) => {
+      const key = byName.get(name);
+      if (!key) {
+        throw new Error(`OAuth scope "${scope}" lists permission key "${name}", which is not in the permissions source`);
+      }
+      return { name: key.name, uuid: key.uuid };
+    });
+    resolved.push({
+      scope,
+      description: entry.description || "",
+      keychain: keychain.name,
+      keychainId: keychain.id,
+      keys,
+    });
+  }
+  return resolved;
+}
+
+/**
+ * Load the OAuth scope grants for a permissions source
+ * @param {string} source - Local file path, URL, or Google Sheets URL
+ * @param {Object} [options] - Load options (gid, skipRows)
+ * @param {string} [scopeFilePath] - Path to oauth-scopes.json
+ * @returns {Promise<Array>} Resolved scopes, empty when there is no scope file
+ */
+async function loadOAuthScopes(source, options = {}, scopeFilePath) {
+  const file = scopeFilePath || paths.fromRoot("build/oauth-scopes.json");
+  if (!fs.existsSync(file)) return [];
+  const csvContent = await loadCSV(source, options);
+  const permissions = parsePermissions(csvContent, options);
+  const keychains = parseKeychains(csvContent, options);
+  return resolveOAuthScopes(JSON.parse(fs.readFileSync(file, "utf-8")), permissions, keychains);
+}
+
+/**
+ * PascalCase identifier for a scope string, for example content:read -> ContentRead
+ * @param {string} scope - Scope string
+ * @returns {string} PascalCase suffix
+ */
+function scopeIdentifier(scope) {
+  return scope
+    .split(":")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join("");
+}
+
+/**
+ * Generate the Go declarations for the OAuth scopes
+ * @param {Array} scopes - Resolved scopes
+ * @returns {string[]} Go source lines
+ */
+function generateGoScopeLines(scopes) {
+  if (!scopes || scopes.length === 0) return [];
+  const lines = [
+    "",
+    "// OAuthScope is an OAuth scope string. A scope names exactly one keychain.",
+    "type OAuthScope string",
+    "",
+    "const (",
+  ];
+  for (const s of scopes) {
+    lines.push(`\t// OAuthScope${scopeIdentifier(s.scope)} - ${s.description || "No description available"}`);
+    lines.push(`\tOAuthScope${scopeIdentifier(s.scope)} OAuthScope = "${s.scope}"`);
+    lines.push("");
+  }
+  lines.push(")");
+  lines.push("");
+  lines.push("// OAuthScopeGrant is the keychain a scope names and the permission keys that keychain carries for it.");
+  lines.push("type OAuthScopeGrant struct {");
+  lines.push("\tKeychain   string");
+  lines.push("\tKeychainID uuid.UUID");
+  lines.push("\tKeys       []PermissionKey");
+  lines.push("}");
+  lines.push("");
+  lines.push("// OAuthScopeGrants maps each OAuth scope to its keychain and permission keys.");
+  lines.push("var OAuthScopeGrants = map[OAuthScope]OAuthScopeGrant{");
+  for (const s of scopes) {
+    lines.push(`\tOAuthScope${scopeIdentifier(s.scope)}: {`);
+    lines.push(`\t\tKeychain:   "${s.keychain}",`);
+    lines.push(`\t\tKeychainID: uuid.Must(uuid.FromString("${s.keychainId}")),`);
+    lines.push("\t\tKeys: []PermissionKey{");
+    for (const k of s.keys) lines.push(`\t\t\t${k.name},`);
+    lines.push("\t\t},");
+    lines.push("\t},");
+  }
+  lines.push("}");
+  lines.push("");
+  return lines;
+}
+
+/**
+ * Generate the TypeScript declarations for the OAuth scopes
+ * @param {Array} scopes - Resolved scopes
+ * @returns {string[]} TypeScript source lines
+ */
+function generateTypeScriptScopeLines(scopes) {
+  if (!scopes || scopes.length === 0) return [];
+  const lines = [
+    "/**",
+    " * OAuth scopes. A scope names exactly one keychain and lists the permission",
+    " * keys that keychain carries for it. Generated from build/oauth-scopes.json.",
+    " */",
+    "export const OAuthScopes = {",
+  ];
+  for (const s of scopes) {
+    lines.push(`  "${s.scope}": {`);
+    lines.push(`    description: ${JSON.stringify(s.description)},`);
+    lines.push(`    keychain: ${JSON.stringify(s.keychain)},`);
+    lines.push(`    keychainId: "${s.keychainId}",`);
+    lines.push(`    keys: [${s.keys.map((k) => `PermissionKeys.${k.name}`).join(", ")}],`);
+    lines.push("  },");
+  }
+  lines.push("} as const;");
+  lines.push("");
+  lines.push("/**");
+  lines.push(" * Type representing all valid OAuth scope strings.");
+  lines.push(" */");
+  lines.push("export type OAuthScope = keyof typeof OAuthScopes;");
+  lines.push("");
+  return lines;
+}
+
 /**
  * Load and parse permissions from a source (file path, URL, or Google Sheets)
  * @param {string} source - Local file path, URL, or Google Sheets URL
@@ -146,7 +324,7 @@ async function loadPermissions(source, options = {}) {
  * @param {Array<{name: string, uuid: string, feature: string}>} permissions - Parsed permissions
  * @returns {string} Go file content
  */
-function generateGoFile(permissions, indexId) {
+function generateGoFile(permissions, indexId, scopes = []) {
   const lines = [
     "// Package permissions contains auto-generated permission key constants.",
     "// This file is generated from permissions.csv - DO NOT EDIT MANUALLY.",
@@ -190,6 +368,7 @@ function generateGoFile(permissions, indexId) {
 
   lines.push(")");
   lines.push("");
+  lines.push(...generateGoScopeLines(scopes));
 
   return lines.join("\n");
 }
@@ -208,7 +387,7 @@ function escapeJSDocComment(str) {
  * @param {Array<{name: string, uuid: string, feature: string}>} permissions - Parsed permissions
  * @returns {string} TypeScript file content
  */
-function generateTypeScriptFile(permissions, indexId) {
+function generateTypeScriptFile(permissions, indexId, scopes = []) {
   const lines = [
     "/**",
     " * Permission key constants generated from permissions.csv",
@@ -325,6 +504,7 @@ function generateTypeScriptFile(permissions, indexId) {
     "export const AllPermissionKeyNames = Object.keys(PermissionKeys) as PermissionKeyName[];",
   );
   lines.push("");
+  lines.push(...generateTypeScriptScopeLines(scopes));
 
   return lines.join("\n");
 }
@@ -418,6 +598,9 @@ module.exports = {
   DEFAULT_SKIP_ROWS,
   generateConstantName,
   parsePermissions,
+  parseKeychains,
+  resolveOAuthScopes,
+  loadOAuthScopes,
   loadPermissions,
   generateGoFile,
   generateTypeScriptFile,
