@@ -70,12 +70,14 @@ key.
    token. When it is not required, the item lands `approved` true and no
    request is created. A content edit re-resolves the approval the same way
    ([Approval on a content edit](content-item-contract.md#approval-on-a-content-edit)):
-   one that resolves to required supersedes the open request, if any, and opens
-   a fresh pending one; one that resolves to not required supersedes the open
-   request and opens none. A change to `approvalPolicy` alone re-resolves the
-   approval too ([Approval on an `approvalPolicy` change](content-item-contract.md#approval-on-an-approvalpolicy-change)):
+   it supersedes the open request, if any, and opens a fresh pending one
+   whenever it leaves the item unapproved, whatever the resolved approval; an
+   approved item under not required opens none. A change to `approvalPolicy`
+   alone re-resolves the approval too ([Approval on an `approvalPolicy` change](content-item-contract.md#approval-on-an-approvalpolicy-change)):
    only one that makes approval required resets an approved item, which then
-   opens a pending request unless one is pending.
+   opens a pending request unless one is pending. Under either result, an
+   unapproved item with no open request gets one
+   ([the open-request invariant](content-item-contract.md#the-open-request-invariant)).
 2. A person with the deciding key calls `approveRequest`. In one transaction the
    request becomes `approved` and the item's `approved` becomes true. `denyRequest`
    makes the request `denied` and leaves the item unapproved.
@@ -97,10 +99,11 @@ request that is not `pending` answers `409` and changes nothing.
 A content edit changes what the request is about, so the request no longer
 describes the content. In the same transaction as the edit, the server closes
 the item's open request as `superseded`: `decidedAt` is set to the edit time,
-`decidedBy` and `note` are omitted, and nothing is approved. When approval is
-still required after the edit, a fresh pending request opens for the content as
-it now is. When approval is no longer required, no new request opens and the
-item stays unapproved.
+`decidedBy` and `note` are omitted, and nothing is approved. When the edit leaves
+the item unapproved, a fresh pending request opens for the content as it now is,
+whatever the resolved approval, so the item stays unapproved until a decider
+approves that request. This is the
+[open-request invariant](content-item-contract.md#the-open-request-invariant).
 
 Approving or denying a superseded request answers `409` and changes nothing, so
 an approval always applies to the content as of the open request. A policy change
@@ -128,10 +131,11 @@ Neither case approves anything: `approved` is set only on a live subject.
 ## Consumers
 
 - **Cloud** creates a request for each inserted content item whose effective
-  approval is required, for each content edit that resolves to required (after
-  superseding the open request), and for each policy change that makes approval
-  required on an approved item. It supersedes the open request on each content
-  edit, and decides requests in a transaction with the subject,
+  approval is required, for each content edit that leaves the item unapproved
+  (after superseding the open request), for each policy change that makes
+  approval required on an approved item, and for each write that leaves an
+  unapproved item with no open request. It supersedes the open request on each
+  content edit, and decides requests in a transaction with the subject,
   answers `404` and `409` as in the table above, checks the kind's deciding key
   in the session organization, and serves the four routes.
 - **Desktop and web apps** list pending requests and call approve or deny. A

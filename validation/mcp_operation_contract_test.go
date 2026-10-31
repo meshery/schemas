@@ -268,8 +268,8 @@ func TestSharedHeaderParameters(t *testing.T) {
 // processed answers 409 with the distinct in-flight body, and both operations
 // that take Idempotency-Key declare it. createSchedule reaches it through the
 // shared IdempotencyKeyInFlight response in v1beta2 core. insertContentItem
-// declares its own InsertConflict, whose code is the in-flight code or one of
-// its two permanent conflicts, so a client tells the cases apart by code.
+// declares its own InsertConflict, which is the shared in-flight body or its
+// content-specific permanent conflicts, so a client tells the cases apart by code.
 func TestIdempotencyKeyInFlightIsDeclared(t *testing.T) {
 	root := repoRootDir(t)
 	core := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta2/core/api.yml"))
@@ -296,27 +296,26 @@ func TestIdempotencyKeyInFlightIsDeclared(t *testing.T) {
 		t.Errorf("core IdempotencyKeyInFlight must carry the in-flight body, got %v", got)
 	}
 
-	// insertContentItem: its own 409 body, whose permanent codes differ from the in-flight code.
+	// insertContentItem: its 409 body is one of two schemas. The permanent codes are
+	// the content-specific schema's; the in-flight body is the core schema, referenced
+	// rather than copied, so the two cannot drift apart.
 	content := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/content_item/api.yml"))
 	if got := mustValue(mustLookup(t, content, "paths", "/api/content-items", "post", "responses", "409"), "$ref"); got != "#/components/responses/InsertConflict" {
 		t.Errorf("insertContentItem 409 $ref = %v, want InsertConflict", got)
 	}
-	if got := mustValue(mustLookup(t, content, "components", "responses", "InsertConflict", "content", "application/json", "schema"), "$ref"); got != "#/components/schemas/ContentItemInsertConflict" {
-		t.Errorf("InsertConflict must carry ContentItemInsertConflict, got %v", got)
+	branches, _ := mustLookup(t, content, "components", "responses", "InsertConflict", "content", "application/json", "schema", "oneOf").([]any)
+	var refs []string
+	for _, branch := range branches {
+		refs = append(refs, fmt.Sprint(mustValue(branch, "$ref")))
+	}
+	wantRefs := []string{"#/components/schemas/ContentItemInsertConflict", "../../v1beta2/core/api.yml#/components/schemas/IdempotencyKeyInFlightError"}
+	if !reflect.DeepEqual(refs, wantRefs) {
+		t.Errorf("InsertConflict oneOf refs = %v, want %v", refs, wantRefs)
 	}
 	codes := anyStrings(mustLookup(t, content, "components", "schemas", "ContentItemInsertConflict", "properties", "code", "enum"))
-	want := []string{"row_number_taken", "thread_index_taken", inFlight}
+	want := []string{"row_number_taken", "thread_index_taken"}
 	if !reflect.DeepEqual(codes, want) {
-		t.Errorf("insertContentItem 409 codes = %v, want %v", codes, want)
-	}
-	permanent := 0
-	for _, c := range codes {
-		if c != inFlight {
-			permanent++
-		}
-	}
-	if permanent != 2 {
-		t.Errorf("insert has %d permanent conflict codes, want 2 (row_number_taken, thread_index_taken)", permanent)
+		t.Errorf("ContentItemInsertConflict codes = %v, want %v (the in-flight code lives in IdempotencyKeyInFlightError)", codes, want)
 	}
 	// The shared update/delete 409 no longer claims the in-flight case.
 	if desc := fmt.Sprint(mustLookup(t, content, "components", "responses", "409", "description")); strings.Contains(desc, "still being processed") {
