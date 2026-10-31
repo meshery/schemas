@@ -205,11 +205,13 @@ function resolveOAuthScopes(scopeFile, permissions, keychains) {
  * @param {string} csvContent - Permissions CSV content, already loaded once by the caller
  * @param {Object} [options] - Parse options (skipRows)
  * @param {string} [scopeFilePath] - Path to oauth-scopes.json
- * @returns {Array} Resolved scopes, empty when there is no scope file
+ * @returns {Array} Resolved scopes; throws when the scope file is missing, so generation fails closed
  */
 function loadOAuthScopes(csvContent, options = {}, scopeFilePath) {
   const file = scopeFilePath || paths.fromRoot("build/oauth-scopes.json");
-  if (!fs.existsSync(file)) return [];
+  if (!fs.existsSync(file)) {
+    throw new Error(`OAuth scope map not found: ${file}`);
+  }
   const permissions = parsePermissions(csvContent, options);
   const keychains = parseKeychains(csvContent, options);
   return resolveOAuthScopes(JSON.parse(fs.readFileSync(file, "utf-8")), permissions, keychains);

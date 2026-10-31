@@ -64,7 +64,8 @@ key.
    insert resolves the item's effective approval
    ([Approval policy](content-item-contract.md#approval-policy)). When it is
    required, the item lands `approved` false and Cloud creates a `pending`
-   request whose subject is the item and whose `requesterId` and
+   request in the same transaction as the item (if either write fails, neither
+   is kept, so an unapproved item always has its request) whose subject is the item and whose `requesterId` and
    `createdByClient` come from the session or token. When it is not required,
    the item lands `approved` true and no request is created.
 2. A person with the deciding key calls `approveRequest`. In one transaction the

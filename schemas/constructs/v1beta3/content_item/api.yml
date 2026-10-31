@@ -144,11 +144,11 @@ paths:
         retry: within 24 hours the same key with the same request hash
         returns the first response without inserting again, and the same
         key with a different request hash answers 422 and inserts nothing.
-        `approvalPolicy` is accepted on insert only when omitted. A caller
-        whose effective keys lack Decide Content Item Approvals in the session
-        organization who sends any `approvalPolicy` value gets a 403 and
-        nothing is inserted. A caller holding that key may send one. Omitted,
-        the item inherits. The server resolves the effective approval once,
+        A caller whose effective keys lack Decide Content Item Approvals in
+        the session organization who sends `approvalPolicy` `required` or
+        `not_required` gets a 403 and nothing is inserted; a caller holding
+        that key may send any value. Omitted or `inherit`, the item inherits
+        (the server stores both as null, so they are the same value). The server resolves the effective approval once,
         here: when it is required the item lands `approved` false with a
         pending `content_item_approval` request; when it is not required the
         server sets `approved` true and opens no request. Interim: until the
@@ -240,7 +240,8 @@ paths:
         the stored policy and nothing else: `approved` and any existing
         request keep their state. A caller without Decide Content Item
         Approvals gets a 403 if it sends an `approvalPolicy` different from
-        the stored one (an absent stored value equals an absent value sent);
+        the stored one (absent, null and `inherit` are the same value, since
+        the server stores `inherit` as null);
         sending back the unchanged stored value is accepted and changes
         nothing. An omitted `approvalPolicy` keeps the stored value.
       parameters:
