@@ -45,7 +45,7 @@ again creates a new consent with a new `id`.
 
 | Route | Operation | Notes |
 | --- | --- | --- |
-| `GET /api/identity/oauth/consents` | `getOauthConsents` | Core `page` and `pageSize` query parameters. `200` with an `OauthConsentPage` (`page`, `pageSize`, `totalCount`, `oauthConsents`) of live consents, most recently granted first. An empty page when there are none. |
+| `GET /api/identity/oauth/consents` | `getOauthConsents` | Core `page` and `pageSize` query parameters. `200` with an `OauthConsentPage` (`page`, `pageSize`, `totalCount`, `oauthConsents`) of live consents, ordered by `updatedAt` descending (a re-consent moves a consent to the top). An empty page when there are none. |
 | `DELETE /api/identity/oauth/consents?clientId=...` | `deleteOauthConsent` | `clientId` is required. Soft-deletes the live consent (sets `deletedAt`). `204` with no body. `404` when the user has no live consent for that client. |
 
 Both are `x-internal: ["cloud"]`.

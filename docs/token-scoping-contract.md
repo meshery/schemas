@@ -30,7 +30,8 @@ in the generic `request` construct.
 - A non-empty list limits the token to the keys that belong to those keychains.
   The token never gains a key its owner lacks: scoping only narrows.
 - The ids reference keychains (`schemas/constructs/v1beta1/keychain`). An id
-  that names no keychain is refused with `400` at creation.
+  that names no keychain, or a keychain the caller cannot see, is refused with
+  `400` at creation.
 - An OAuth scope string names one keychain, so a scope granted at consent
   becomes one entry of `keychainIds` on the token issued for it. The consents
   that record those scopes are in [oauth-consent-contract.md](oauth-consent-contract.md).
