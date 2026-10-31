@@ -41,6 +41,30 @@ consent in place. The server:
 It does not insert a second row, so the unique key holds. A client the user revoked is not live: consenting to it
 again creates a new consent with a new `id`.
 
+### Scope changes and existing tokens
+
+A re-consent that changes `scopes` changes the tokens the client already holds
+for that user. The server applies the change in the same transaction as the
+consent update, so the consent and the tokens change together or not at all.
+
+- **Narrowing** (a scope is removed). Every token previously issued to that
+  client for that user is narrowed to the new scopes. Each token's
+  `keychainIds` becomes the intersection of its keychains and the keychains of
+  the new scopes. An unrestricted token (empty `keychainIds`) becomes limited to
+  the new scopes' keychains. A token whose keychains would become empty is
+  **revoked** instead: an empty keychain list means unrestricted, so it must
+  never be left on a scoped token. A re-consent with no scopes therefore revokes
+  every token the client holds for that user.
+- **Broadening** (a scope is added). A re-consent never widens an existing
+  token. The added scope takes effect only for tokens issued after that
+  consent, which is the user's fresh consent.
+- **Both** in one re-consent: the removed scopes narrow as above, and the added
+  scopes do not widen anything.
+
+The rules are stated in the `OauthConsent` schema description and the
+`getOauthConsents` operation description. The token side is in
+[token-scoping-contract.md](token-scoping-contract.md#re-consent-and-existing-tokens).
+
 ## Routes
 
 | Route | Operation | Notes |

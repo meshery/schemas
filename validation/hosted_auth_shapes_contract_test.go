@@ -459,6 +459,19 @@ func TestAgentsActWithoutApprovalPreference(t *testing.T) {
 	if write == nil || !write.Value.Type.Is("boolean") {
 		t.Fatal("v1beta3 PreferencePayload.agentsActWithoutApproval must be a boolean")
 	}
+	if !write.Value.Nullable {
+		t.Error("PreferencePayload.agentsActWithoutApproval must be nullable: null clears the stored value to absent")
+	}
+	if pref.Properties["agentsActWithoutApproval"].Value.Nullable {
+		t.Error("Preference.agentsActWithoutApproval is read-side: absent means not set, so it is not nullable")
+	}
+	// Nullable alone makes the generated Go field serialize as null when unset,
+	// which would clear the stored value. The json tag must be omitempty, as on
+	// ContentItemPayload.rulesOfEngagement.
+	raw := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), userV1beta3Spec))
+	if got := mustLookup(t, raw, "components", "schemas", "PreferencePayload", "properties", "agentsActWithoutApproval", "x-oapi-codegen-extra-tags", "json"); got != "agentsActWithoutApproval,omitempty" {
+		t.Errorf("PreferencePayload.agentsActWithoutApproval json tag = %v, want agentsActWithoutApproval,omitempty", got)
+	}
 	if write.Value.Default != nil {
 		t.Error("PreferencePayload.agentsActWithoutApproval must declare no default")
 	}
@@ -629,6 +642,83 @@ func TestAgentApprovalPreferenceInterimDefault(t *testing.T) {
 	}
 	if !strings.Contains(item.Put.Description, "interim") {
 		t.Error("updateUserPreferences description must state the interim rule for agentsActWithoutApproval")
+	}
+}
+
+// squash folds the line breaks of a YAML block or folded scalar, so a rule
+// phrase that the source wraps still matches as one phrase.
+func squash(s string) string {
+	return strings.Join(strings.Fields(s), " ")
+}
+
+// An AI app token may not change agentsActWithoutApproval. updateUserPreferences
+// must declare the 403 it answers, and the descriptions must state the rule, so
+// the spec, the docs and the server agree on it.
+func TestUpdateUserPreferencesAgentTokenRule(t *testing.T) {
+	v3 := loadSpec(t, userV1beta3Spec)
+	item := v3.Paths.Find("/api/identity/users/preferences")
+	if item == nil || item.Put == nil {
+		t.Fatal("v1beta3 user must declare updateUserPreferences")
+	}
+	if item.Put.Responses.Status(403) == nil {
+		t.Fatal("updateUserPreferences must declare 403 for an AI app token that changes agentsActWithoutApproval")
+	}
+	if item.Put.Responses.Status(403).Value == nil {
+		t.Fatal("updateUserPreferences 403 must resolve to a response")
+	}
+	op := squash(item.Put.Description)
+	for _, word := range []string{"AI app token", "OAuth client", "403", "stored state", "no part of the payload is applied", "Only a person's own session"} {
+		if !strings.Contains(op, word) {
+			t.Errorf("updateUserPreferences description must state the agent-token rule: missing %q", word)
+		}
+	}
+	for _, owner := range []string{"Preference", "PreferencePayload"} {
+		desc := squash(schemaOf(t, v3, owner).Properties["agentsActWithoutApproval"].Value.Description)
+		for _, word := range []string{"AI app token", "OAuth client", "403", "Only a person's own session"} {
+			if !strings.Contains(desc, word) {
+				t.Errorf("%s.agentsActWithoutApproval description must state the agent-token rule: missing %q", owner, word)
+			}
+		}
+	}
+	// The write side states the three states; the read side says absent means not set.
+	write := squash(schemaOf(t, v3, "PreferencePayload").Properties["agentsActWithoutApproval"].Value.Description)
+	for _, word := range []string{"true or false stores that value", "null clears", "omitted keeps"} {
+		if !strings.Contains(write, word) {
+			t.Errorf("PreferencePayload.agentsActWithoutApproval must state the write state %q", word)
+		}
+	}
+	if read := squash(schemaOf(t, v3, "Preference").Properties["agentsActWithoutApproval"].Value.Description); !strings.Contains(read, "absent means not set") {
+		t.Error("Preference.agentsActWithoutApproval must say absent means not set")
+	}
+}
+
+// Re-consent that changes scopes changes the client's existing tokens. The rules
+// are pinned in the consent schema and the list operation, which the docs echo.
+func TestOauthConsentReConsentScopeRules(t *testing.T) {
+	doc := loadSpec(t, oauthConsentSpec)
+	consent := squash(schemaOf(t, doc, "OauthConsent").Description)
+	for _, word := range []string{
+		"Narrowing:", "Broadening:",
+		"in the same transaction as the consent update",
+		"narrows every token previously issued to that client for that user",
+		"intersection of its",
+		"revoked instead",
+		"empty keychain list means unrestricted",
+		"never widens existing tokens",
+		"takes effect only for tokens issued after that consent",
+	} {
+		if !strings.Contains(consent, word) {
+			t.Errorf("OauthConsent description must state the re-consent rule: missing %q", word)
+		}
+	}
+	list := squash(doc.Paths.Find("/api/identity/oauth/consents").Get.Description)
+	for _, word := range []string{"narrows scopes", "in the same transaction", "never widens"} {
+		if !strings.Contains(list, word) {
+			t.Errorf("getOauthConsents description must point at the re-consent rule: missing %q", word)
+		}
+	}
+	if info := squash(doc.Info.Description); !strings.Contains(info, "never widens existing tokens") {
+		t.Error("the oauth_consent info description must state that broadening never widens existing tokens")
 	}
 }
 

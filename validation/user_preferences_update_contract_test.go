@@ -70,7 +70,8 @@ func TestPreferencePayloadRequestValidation(t *testing.T) {
 		{"carries unknown field", map[string]any{"badges": []any{"x"}}, true},
 		{"organization id is not a string", map[string]any{"selectedOrganizationId": 7}, true},
 		{"sets agentsActWithoutApproval", map[string]any{"agentsActWithoutApproval": true}, false},
-		{"clears agentsActWithoutApproval", map[string]any{"agentsActWithoutApproval": false}, false},
+		{"stores false for agentsActWithoutApproval", map[string]any{"agentsActWithoutApproval": false}, false},
+		{"clears agentsActWithoutApproval with null", map[string]any{"agentsActWithoutApproval": nil}, false},
 		{"agentsActWithoutApproval is not a boolean", map[string]any{"agentsActWithoutApproval": "yes"}, true},
 	}
 	for _, tc := range cases {

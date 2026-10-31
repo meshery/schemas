@@ -36,6 +36,22 @@ in the generic `request` construct.
   becomes one entry of `keychainIds` on the token issued for it. The consents
   that record those scopes are in [oauth-consent-contract.md](oauth-consent-contract.md).
 
+### Re-consent and existing tokens
+
+A re-consent that changes an OAuth client's scopes changes the `keychainIds` of
+the tokens already issued to that client for that user, in the same transaction
+as the consent update:
+
+- **Narrowing** sets each token's `keychainIds` to the intersection of its
+  keychains and the new scopes' keychains. An unrestricted token becomes limited
+  to them, and its `keychainScoped` is set to `true`, as the flag is never reset.
+  A token whose intersection is empty is **revoked**, not left with an empty
+  list, because empty means unrestricted.
+- **Broadening** never adds keychains to an existing token. An added scope
+  reaches only tokens issued after the consent.
+
+The full rules are in [oauth-consent-contract.md](oauth-consent-contract.md#scope-changes-and-existing-tokens).
+
 ### `expiresAt`
 
 - Absent or `null` means the token never expires. Every token issued before the

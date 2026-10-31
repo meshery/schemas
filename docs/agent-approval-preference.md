@@ -84,9 +84,41 @@ on `v1beta3` `PreferencePayload`, the body of `updateUserPreferences`
 { "agentsActWithoutApproval": true }
 ```
 
-The write merges: a payload that leaves the field out keeps the stored value
-(or its absence), `true` or `false` stores that value. The operation answers
-`201` with no body, as before.
+The field is nullable on the write, and the write has three states:
+
+| Payload value                     | Effect on the stored value                    |
+| --------------------------------- | --------------------------------------------- |
+| `true` or `false`                 | Stores that value.                            |
+| `null`                            | Clears it back to absent (inherit).          |
+| omitted                           | Keeps the stored value, or its absence.       |
+
+The schema declares no `default`, so an omitted field is never read as `false`.
+A `null` on the write is not a default: it removes the stored value. On read,
+absent means not set (inherit), and the stored value is never `null`.
+
+The generated Go field is a pointer, so a Go server cannot tell `null` from an
+omitted key by decoding into the struct. A server must check the raw body for
+the key's presence before it treats an absent pointer as "keep" rather than
+"clear".
+
+The operation answers `201` with no body on success, as before, and `403` in the
+case below.
+
+## Who can write it
+
+Only a person's own session can change `agentsActWithoutApproval`. A request
+authenticated by an AI app token (any token issued to an OAuth client, scoped or
+not) cannot change it:
+
+- If its payload sends a value that differs from the stored state (`true`,
+  `false`, or absent for `null`), the request answers `403` and changes nothing.
+  No part of the payload is applied, not even the other fields.
+- Sending back the stored state is accepted. That includes `null` while the
+  value is absent.
+
+This keeps an agent from granting itself `not_required` approval by writing the
+preference. The rule is enforced by the server on each request, not by the
+token's scopes.
 
 `updateUserPreferences` moved from `v1beta2` `user` to `v1beta3` `user` with
 the same route, `operationId`, merge rule and response, so a client calling

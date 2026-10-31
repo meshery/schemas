@@ -129,15 +129,23 @@ paths:
         the stored value. Setting selectedOrganizationId switches the
         organization the user's session has selected, as Meshery Cloud's and
         Meshery's organization switchers do. Setting agentsActWithoutApproval
-        stores the typed profile-level source for agent writes, consulted only
-        for an AI-app activity whose approvalPolicy is inherit or absent. Under
-        the interim rule (inherit, including absent, resolves to required), the
+        to true or false stores the typed profile-level source for agent
+        writes, consulted only for an AI-app activity whose approvalPolicy is
+        inherit or absent. Setting it to null clears the stored value back to
+        absent (inherit). Leaving it out keeps the stored value. Under the
+        interim rule (inherit, including absent, resolves to required), the
         stored value is not consulted by approval resolution until the profile
         level is placed in the hierarchy; see
-        docs/agent-approval-preference.md. Badges are server-owned and are
-        never changed through this operation. Moved here from v1beta2 with the
-        same route, operationId and response; the v1beta3 PreferencePayload
-        adds agentsActWithoutApproval.
+        docs/agent-approval-preference.md. A request authenticated by an AI app
+        token (any token issued to an OAuth client, scoped or not) may not
+        change agentsActWithoutApproval. If its payload sends a value that
+        differs from the stored state (true, false, or absent for null), the
+        request answers 403 and no part of the payload is applied. Sending back
+        the stored state is accepted, and so is null while the value is absent.
+        Only a person's own session can change it. Badges are server-owned and
+        are never changed through this operation. Moved here from v1beta2 with
+        the same route, operationId and response; the v1beta3
+        PreferencePayload adds agentsActWithoutApproval.
       requestBody:
         required: true
         content:
@@ -149,6 +157,8 @@ paths:
           description: Preferences updated
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "500":
           $ref: "#/components/responses/500"
 
@@ -164,6 +174,8 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/400"
     "401":
       $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    "403":
+      $ref: "../../v1beta2/core/api.yml#/components/responses/403"
     "404":
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
     "500":
@@ -971,7 +983,13 @@ components:
             distinguishable from false. Typed replacement for the free-form
             remoteProviderPreferences.<provider>.agentsActWithoutApproval: when
             this field is present it wins, and the free-form value is read only
-            while this field is absent. See docs/agent-approval-preference.md.
+            while this field is absent. On read, absent means not set (inherit);
+            the stored value is never null. An AI app token (any token issued to
+            an OAuth client, scoped or not) cannot change this field: an
+            updateUserPreferences request from one that sends a value other than
+            the stored state is answered 403. Only a person's own session can
+            set it. See PreferencePayload.agentsActWithoutApproval and
+            docs/agent-approval-preference.md.
 
     PreferencePayload:
       type: object
@@ -1030,6 +1048,7 @@ components:
             agentsActWithoutApproval entry.
         agentsActWithoutApproval:
           type: boolean
+          nullable: true
           description: >-
             Interim rule (temporary): until the upstream platform, workspace and
             profile policies exist, inherit (including absent) resolves to
@@ -1042,9 +1061,17 @@ components:
             higher-level setting (hierarchy defined in
             https://github.com/layer5io/meshery-cloud/issues/6365) has decided
             (see Preference.agentsActWithoutApproval): true means not_required,
-            false means required, and absent sets nothing. Optional: when the
-            payload leaves it out, the stored value (or its absence) is kept. No
-            schema default is declared. See docs/agent-approval-preference.md.
+            false means required, and absent sets nothing. Three states on write:
+            true or false stores that value; null clears the stored value back
+            to absent (inherit); omitted keeps the stored value. No schema
+            default is declared. An AI app token (any token issued to an OAuth
+            client, scoped or not) cannot set this field: when its payload sends
+            a value that differs from the stored state (true, false, or absent
+            for null), the request is answered 403 and no part of the payload is
+            applied. Sending back the stored state is accepted. Only a person's
+            own session can set it. See docs/agent-approval-preference.md.
+          x-oapi-codegen-extra-tags:
+            json: "agentsActWithoutApproval,omitempty"
 
     Adapter:
       type: object
