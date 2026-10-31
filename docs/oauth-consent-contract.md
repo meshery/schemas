@@ -12,24 +12,30 @@ it, so there is no write payload.
 
 | Field | Notes |
 | --- | --- |
-| `clientId` | OAuth client ID. Required. An identifier from the authorization server, not a UUID (`x-id-format: external`). |
+| `id` | Server-generated consent ID (UUID, db `id`). Required. |
+| `clientId` | OAuth client ID. Required. An identifier from the authorization server, not a UUID (`x-id-format: external`). Unique per user among live consents. |
 | `clientName` | Display name the client registered. Required. |
 | `clientUri`, `logoUri` | The client's home page and logo, when it registered them. Omitted otherwise. |
 | `scopes` | Scopes granted, strings. Required. A scope names one keychain; see [token-scoping-contract.md](token-scoping-contract.md). |
 | `organizationId` | The root organization the consent names. Required. The client acts only in it and its descendants. |
 | `createdAt` | When the user granted the consent. Required. |
 | `lastUsedAt` | When the client last used a token issued under the consent. Null when unused or not recorded. |
+| `deletedAt` | When the consent was revoked (soft delete, db `deleted_at`, `core.NullTime`). Null while live. |
 
-There is no `id`: a user has at most one consent per client, so `clientId`
-identifies the consent among the user's own. There is no `updatedAt` or
-`deletedAt`: a re-consent replaces the grant, and a revoke removes it.
+**Unique key:** (user, `clientId`) among live consents (`deletedAt` null). A
+user has at most one live consent per client, so `clientId` identifies the
+consent among the user's own and is what `deleteOauthConsent` takes. The
+server enforces it with a unique index on (`user_id`, `client_id`) where
+`deleted_at` is null, so a client the user revoked can be consented to again.
+A re-consent to a live client replaces that consent's grant. There is no
+`updatedAt`.
 
 ## Routes
 
 | Route | Operation | Notes |
 | --- | --- | --- |
-| `GET /api/identity/oauth/consents` | `getOauthConsents` | `200` with an array of `OauthConsent`, most recently granted first. Not paginated: the list is the user's own and short. Empty array when there are none. |
-| `DELETE /api/identity/oauth/consents?clientId=...` | `deleteOauthConsent` | `clientId` is required. `204` with no body. `404` when the user has no consent for that client. |
+| `GET /api/identity/oauth/consents` | `getOauthConsents` | Core `page` and `pageSize` query parameters. `200` with an `OauthConsentPage` (`page`, `pageSize`, `totalCount`, `oauthConsents`) of live consents, most recently granted first. An empty page when there are none. |
+| `DELETE /api/identity/oauth/consents?clientId=...` | `deleteOauthConsent` | `clientId` is required. Soft-deletes the live consent (sets `deletedAt`). `204` with no body. `404` when the user has no live consent for that client. |
 
 Both are `x-internal: ["cloud"]`.
 
@@ -46,3 +52,4 @@ Both are `x-internal: ["cloud"]`.
 - `DELETE` uses a query parameter and no body, as `docs/http-api-design.md`
   requires, and answers `204` as a single-resource delete.
 - Revoke is not idempotent in status: a second call answers `404`.
+- Revoked (soft-deleted) consents are never listed and never returned.

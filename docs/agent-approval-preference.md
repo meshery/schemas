@@ -12,13 +12,12 @@ product neutral and stays.
 The field is optional. The schema declares no `default`, on purpose: the
 precedence below needs absence to stay distinguishable from `false`.
 
-## Where it is written
+## Where it is defined
 
-The only preferences write is `updateUserPreferences`
-(`PUT /api/identity/users/preferences`, `v1beta2/user`), which merges its
-`PreferencePayload` onto the stored preferences. `PreferencePayload` gains the
-same optional field, so it is settable there; an omitted field keeps the stored
-value. `v1beta3` `Preference` carries it on read.
+The field is defined only on `v1beta3` `Preference`, which carries it on read.
+There is no `v1beta2` copy: `v1beta2` `PreferencePayload`, the body of
+`updateUserPreferences` (`PUT /api/identity/users/preferences`), does not
+declare it, so that write cannot set it.
 
 ## Migration from the free-form value
 

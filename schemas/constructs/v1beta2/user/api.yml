@@ -1178,19 +1178,6 @@ components:
           type: object
           additionalProperties: true
           description: The remote provider preferences of the preference.
-        agentsActWithoutApproval:
-          type: boolean
-          description: >-
-            Whether writes made by AI apps (agents) on the user's behalf take
-            effect without the user approving them first. No schema default is
-            declared, so absence stays distinguishable from false: when the
-            field is absent and the legacy free-form value is absent too, the
-            effective value is false, and agent writes land unapproved and wait
-            for the user's approval. Typed replacement for the free-form
-            remoteProviderPreferences.<provider>.agentsActWithoutApproval:
-            when this field is present it wins, and the free-form value is
-            read only while this field is absent. See
-            docs/agent-approval-preference.md.
 
     Adapter:
       type: object
