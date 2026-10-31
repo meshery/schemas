@@ -189,3 +189,32 @@ properties:
       db: media_asset_ids
       json: "mediaAssetIds,omitempty"
     x-order: 15
+  approved:
+    type: boolean
+    description: >
+      Whether a person approved the item to run. The client that runs the
+      queue (the Mac the schedule lands on) reads this field. An item written
+      by an AI app (`createdByClient` set) lands `false` and is decided
+      through a `content_item_approval` request (see the request construct),
+      unless the creating user turned on acting without approval. For one
+      release after this field ships, the free-form `Approved?` column in
+      `data` stays readable and servers keep it in step: a reader that finds
+      no `approved` on an older row falls back to that column. New readers
+      read this field only. See docs/content-item-contract.md.
+    default: false
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: approved
+      json: "approved"
+    x-order: 16
+  createdByClient:
+    type: string
+    description: >
+      OAuth client ID of the AI app that created the item. Server-set from
+      the access token, never client-settable, and never changed by an
+      update. Empty or omitted on an item a person created.
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: created_by_client
+      json: "createdByClient,omitempty"
+    x-order: 17
