@@ -3,30 +3,41 @@ title: OAuth Consent Schema
 description: |
   Server-returned OAuth consent: one OAuth client (a connected app) the
   signed-in user has allowed to act on their behalf, with what it was granted.
-  A user has at most one consent per client, so `clientId` identifies the
-  consent among the user's own and no separate consent ID exists. The consent
+  Unique key: (user, `clientId`) among live consents (`deletedAt` null). A
+  user has at most one live consent per client, so `clientId` identifies the
+  consent among the user's own; `id` is the stored row's ID. The consent
   names one root organization; the client acts only in that organization and
   its descendants. Created by the authorization server's consent step and
-  removed by revoking it; there is no write payload.
+  soft-deleted by revoking it; there is no write payload.
 type: object
 additionalProperties: false
 required:
+  - id
   - clientId
   - clientName
   - scopes
   - organizationId
   - createdAt
 properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated consent ID.
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+    x-order: 1
   clientId:
     type: string
-    description: OAuth client ID the consent was granted to. An identifier issued by the authorization server, not a UUID.
+    description: >-
+      OAuth client ID the consent was granted to. An identifier issued by the
+      authorization server, not a UUID. Unique per user among live consents.
     minLength: 1
     maxLength: 255
     x-id-format: external
     x-go-name: ClientID
     x-oapi-codegen-extra-tags:
       db: client_id
-    x-order: 1
+    x-order: 2
   clientName:
     type: string
     description: Display name the client registered, shown to the user as the connected app's name.
@@ -34,7 +45,7 @@ properties:
     maxLength: 255
     x-oapi-codegen-extra-tags:
       db: client_name
-    x-order: 2
+    x-order: 3
   clientUri:
     type: string
     format: uri
@@ -43,7 +54,7 @@ properties:
     x-oapi-codegen-extra-tags:
       db: client_uri
       json: "clientUri,omitempty"
-    x-order: 3
+    x-order: 4
   logoUri:
     type: string
     format: uri
@@ -52,7 +63,7 @@ properties:
     x-oapi-codegen-extra-tags:
       db: logo_uri
       json: "logoUri,omitempty"
-    x-order: 4
+    x-order: 5
   scopes:
     type: array
     description: >-
@@ -68,7 +79,7 @@ properties:
     uniqueItems: true
     x-oapi-codegen-extra-tags:
       db: scopes
-    x-order: 5
+    x-order: 6
   organizationId:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
     description: >-
@@ -77,13 +88,13 @@ properties:
     x-go-name: OrganizationID
     x-oapi-codegen-extra-tags:
       db: organization_id
-    x-order: 6
+    x-order: 7
   createdAt:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
     description: Time the user granted the consent.
     x-oapi-codegen-extra-tags:
       db: created_at
-    x-order: 7
+    x-order: 8
   lastUsedAt:
     type: string
     format: date-time
@@ -98,4 +109,18 @@ properties:
     x-oapi-codegen-extra-tags:
       db: last_used_at
       json: "lastUsedAt,omitempty"
-    x-order: 8
+    x-order: 9
+  deletedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/NullTime
+    description: >-
+      Time the consent was revoked (soft-deleted). Null while the consent is
+      live. getOauthConsents returns live consents only.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
+    x-order: 10

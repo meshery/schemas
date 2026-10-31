@@ -8,14 +8,16 @@ info:
 
     A consent is created by the authorization server's consent step, never by
     a call defined here, so the construct has no write payload. It belongs to
-    the user and to one client: a user has at most one consent per client.
+    the user and to one client. Unique key: (user, `clientId`) among live
+    consents: a user has at most one live consent per client.
     Both operations act only on the consents of the authenticated user; they
     take no user in the path or the query, and a consent of another user is
     never listed, never revealed and never revoked.
 
     Revoking a consent withdraws the user's permission for the client and
     revokes every token the client holds for that user, so the client's next
-    call is refused and it must ask for consent again.
+    call is refused and it must ask for consent again. A revoked consent is
+    soft-deleted (`deletedAt` set) and is no longer listed.
   version: v1beta3
   contact:
     name: Meshery Maintainers
@@ -40,19 +42,19 @@ paths:
       summary: List OAuth consents
       operationId: getOauthConsents
       description: |
-        Returns the OAuth clients the signed-in user has consented to, one
-        entry per client, most recently granted first. A user with no
-        consented client receives an empty array. The list is the user's own
-        and is not paginated: a user connects a handful of apps.
+        Returns a page of the live OAuth consents of the signed-in user, one
+        entry per client, most recently granted first. Revoked consents are
+        not listed. A user with no consented client receives an empty page.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
       responses:
         "200":
           description: OAuth consents of the signed-in user
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/OauthConsent"
+                $ref: "#/components/schemas/OauthConsentPage"
         "401":
           $ref: "#/components/responses/401"
         "500":
@@ -68,8 +70,10 @@ paths:
         required `clientId` query parameter, and revokes every access and
         refresh token that client holds for the user. The consents and tokens
         of other users of the same client are untouched. Answers 204 with no
-        body. A client the user has no consent for, whether it never existed,
-        was never consented to or was already revoked, is a 404.
+        body. The consent is soft-deleted: its `deletedAt` is set and it is no
+        longer listed. A client the user has no live consent for, whether it
+        never existed, was never consented to or was already revoked, is a
+        404.
       parameters:
         - $ref: "#/components/parameters/clientId"
       responses:
@@ -102,6 +106,10 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
 
   parameters:
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/pageSize"
     clientId:
       name: clientId
       in: query
@@ -115,3 +123,30 @@ components:
   schemas:
     OauthConsent:
       $ref: "./oauth_consent.yaml"
+    OauthConsentPage:
+      type: object
+      description: Paginated collection of the signed-in user's live OAuth consents.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - oauthConsents
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        oauthConsents:
+          type: array
+          items:
+            $ref: "#/components/schemas/OauthConsent"
+            x-go-type: OauthConsent
+          description: OAuth consents included on this page of results.

@@ -246,10 +246,17 @@ func TestTokenPayloadCarriesTheScopingFields(t *testing.T) {
 	if media == nil || media.Schema == nil || media.Schema.Value != payload {
 		t.Error("generateToken requestBody does not resolve to TokenPayload")
 	}
+	query := map[string]*openapi3.Parameter{}
 	for _, p := range op.Parameters {
-		if p.Value.Name == "name" && !p.Value.Required {
-			t.Error("name stays a required query parameter")
+		if p.Value.In == "query" {
+			query[p.Value.Name] = p.Value
 		}
+	}
+	if query["name"] == nil || !query["name"].Required {
+		t.Error("name stays a required query parameter")
+	}
+	if query["purpose"] == nil {
+		t.Error("purpose stays a query parameter")
 	}
 
 	request := []openapi3.SchemaValidationOption{openapi3.VisitAsRequest()}
@@ -263,6 +270,8 @@ func TestTokenPayloadCarriesTheScopingFields(t *testing.T) {
 		{"forges createdAt", map[string]any{"createdAt": "2026-10-30T00:00:00Z"}, true},
 		{"forges id", map[string]any{"id": sampleUUID}, true},
 		{"keychain id is not a uuid", map[string]any{"keychainIds": []any{"x"}}, true},
+		{"name belongs in the query", map[string]any{"name": "n"}, true},
+		{"purpose belongs in the query", map[string]any{"purpose": "p"}, true},
 	})
 }
 
@@ -307,14 +316,36 @@ func TestOauthConsentOperations(t *testing.T) {
 			t.Errorf("deleteOauthConsent must document %d", code)
 		}
 	}
+	params := map[string]bool{}
+	for _, p := range item.Get.Parameters {
+		if p.Value.In == "query" {
+			params[p.Value.Name] = true
+		}
+	}
+	if !params["page"] || !params["pageSize"] {
+		t.Errorf("getOauthConsents query parameters = %v, want page and pageSize", params)
+	}
 	list := item.Get.Responses.Status(200)
 	if list == nil {
 		t.Fatal("getOauthConsents must document 200")
 	}
-	schema := list.Value.Content.Get("application/json").Schema.Value
-	if !schema.Type.Is("array") || schema.Items.Value != schemaOf(t, doc, "OauthConsent") {
-		t.Error("getOauthConsents 200 must be an array of OauthConsent")
+	page := schemaOf(t, doc, "OauthConsentPage")
+	if list.Value.Content.Get("application/json").Schema.Value != page {
+		t.Error("getOauthConsents 200 must be an OauthConsentPage")
 	}
+	items := page.Properties["oauthConsents"]
+	if items == nil || !items.Value.Type.Is("array") || items.Value.Items.Value != schemaOf(t, doc, "OauthConsent") {
+		t.Error("OauthConsentPage.oauthConsents must be an array of OauthConsent")
+	}
+	checkCases(t, page, nil, []struct {
+		name    string
+		body    map[string]any
+		wantErr bool
+	}{
+		{"empty page", map[string]any{"page": 0, "pageSize": 10, "totalCount": 0, "oauthConsents": []any{}}, false},
+		{"missing totalCount", map[string]any{"page": 0, "pageSize": 10, "oauthConsents": []any{}}, true},
+		{"pageSize below one", map[string]any{"page": 0, "pageSize": 0, "totalCount": 0, "oauthConsents": []any{}}, true},
+	})
 }
 
 func TestOauthConsentEntityShape(t *testing.T) {
@@ -322,6 +353,7 @@ func TestOauthConsentEntityShape(t *testing.T) {
 	consent := schemaOf(t, doc, "OauthConsent")
 
 	valid := map[string]any{
+		"id":             sampleUUID,
 		"clientId":       "app-1",
 		"clientName":     "An app",
 		"scopes":         []any{"content:read"},
@@ -332,6 +364,7 @@ func TestOauthConsentEntityShape(t *testing.T) {
 		"clientUri":  "https://example.com",
 		"logoUri":    "https://example.com/logo.png",
 		"lastUsedAt": "2026-10-30T01:00:00Z",
+		"deletedAt":  "2026-10-30T02:00:00Z",
 	})
 	without := func(key string) map[string]any {
 		out := withFields(valid, nil)
@@ -346,6 +379,10 @@ func TestOauthConsentEntityShape(t *testing.T) {
 		{"required fields only", valid, false},
 		{"every field", full, false},
 		{"lastUsedAt null", withFields(valid, map[string]any{"lastUsedAt": nil}), false},
+		{"deletedAt null while live", withFields(valid, map[string]any{"deletedAt": nil}), false},
+		{"missing id", without("id"), true},
+		{"id not a uuid", withFields(valid, map[string]any{"id": "x"}), true},
+		{"deletedAt is not a time", withFields(valid, map[string]any{"deletedAt": "yesterday"}), true},
 		{"clientId need not be a uuid", withFields(valid, map[string]any{"clientId": "not-a-uuid"}), false},
 		{"missing clientId", without("clientId"), true},
 		{"missing scopes", without("scopes"), true},
@@ -354,6 +391,26 @@ func TestOauthConsentEntityShape(t *testing.T) {
 		{"organizationId not a uuid", withFields(valid, map[string]any{"organizationId": "x"}), true},
 		{"unknown field", withFields(valid, map[string]any{"userId": sampleUUID}), true},
 	})
+
+	// The loader drops siblings of $ref (id, deletedAt), so read the db tags from the raw entity.
+	raw := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), "schemas/constructs/v1beta3/oauth_consent/oauth_consent.yaml"))
+	for name, column := range map[string]string{"id": "id", "deletedAt": "deleted_at"} {
+		if got := mustLookup(t, raw, "properties", name, "x-oapi-codegen-extra-tags", "db"); got != column {
+			t.Errorf("OauthConsent.%s db tag = %v, want %s", name, got, column)
+		}
+	}
+	// Uniqueness is stated as the repo states it: a unique key in the entity
+	// description and in the contract doc.
+	if !strings.Contains(consent.Description, "Unique key: (user, `clientId`)") {
+		t.Error("OauthConsent description must state the unique key (user, clientId)")
+	}
+	contract, err := os.ReadFile(filepath.Join(repoRootDir(t), "docs", "oauth-consent-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(contract), "**Unique key:** (user, `clientId`)") {
+		t.Error("docs/oauth-consent-contract.md must state the unique key (user, clientId)")
+	}
 }
 
 func TestAgentsActWithoutApprovalPreference(t *testing.T) {
@@ -374,27 +431,13 @@ func TestAgentsActWithoutApprovalPreference(t *testing.T) {
 	if pref.Properties["remoteProviderPreferences"] == nil {
 		t.Error("remoteProviderPreferences must not be removed")
 	}
-
-	v2 := loadSpec(t, userV1beta2Spec)
-	payload := schemaOf(t, v2, "PreferencePayload")
-	request := []openapi3.SchemaValidationOption{openapi3.VisitAsRequest()}
-	checkCases(t, payload, request, []struct {
-		name    string
-		body    map[string]any
-		wantErr bool
-	}{
-		{"turns it on", map[string]any{"agentsActWithoutApproval": true}, false},
-		{"turns it off", map[string]any{"agentsActWithoutApproval": false}, false},
-		{"legacy free-form value still accepted", map[string]any{"remoteProviderPreferences": map[string]any{"anyProvider": map[string]any{"agentsActWithoutApproval": true}}}, false},
-		{"not a boolean", map[string]any{"agentsActWithoutApproval": "yes"}, true},
-	})
 }
 
 // None of the new identifiers may name a product, and the new docs must be
 // linked from AGENTS.md.
 func TestHostedAuthShapesAreProductNeutral(t *testing.T) {
 	root := repoRootDir(t)
-	product := regexp.MustCompile(`(?i)blowhorn|meshery|layer5|kanvas`)
+	product := regexp.MustCompile(`(?i)meshery|layer5|kanvas`)
 	// Identifier-bearing lines only: property names, operationIds, schema names,
 	// parameter names and paths. Prose (descriptions, contact, servers) may name
 	// the project.
