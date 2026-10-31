@@ -262,7 +262,10 @@ The rules a consumer must enforce:
   `reason`, `pausedAt` and `pausedBy`, so a stored `paused` false never carries a stale pause.
 - Pause state is data, never a path segment: a schedule is paused or resumed by setting `paused`
   (and optionally `pauseReason`) on `PUT /api/schedules/{scheduleId}`, and the organization-wide
-  pause is set or lifted by updating the organization's preferences. There are no `/pause` or
+  pause is set or lifted by updating the organization's preferences, or alone through the
+  sub-resource `PUT /api/identity/orgs/{orgId}/schedule-pause` (`updateOrgSchedulePause`, gated by
+  its own permission key so an OAuth scope can carry it; see
+  [`schedule-pause-contract.md`](schedule-pause-contract.md)). There are no `/pause` or
   `/resume` routes.
 - To change one preference member without resending the others, use
   `PATCH /api/identity/orgs/{orgId}/preferences` (`PreferencesPatchPayload`): a present member
@@ -306,6 +309,27 @@ registers or keeps a connection alive. An authenticated request also receives
 plan, entitlements and device usage for a live member of `X-Current-Orgid`).
 A client reads paths from `capabilities` instead of hard-coding them, and does
 not use a separate health endpoint.
+
+## Hosted MCP tools, requests and idempotent creates
+
+An operation becomes a tool of the hosted MCP server with the operation-level
+`x-mcp` extension (`expose`, optional `title`, required OAuth `scope`). The tool
+name is the `operationId` and the hints derive from the method, so nothing is
+hand-written. Rule 48 of `make validate-schemas` enforces the contract, and a
+scope is a keychain. Full contract:
+[`mcp-operation-contract.md`](mcp-operation-contract.md).
+
+- Every `x-mcp` operation accepts the optional `X-Current-Orgid` header, the
+  shared `currentOrgId` parameter in `v1beta2/core/api.yml`.
+- A create that is safe to retry takes the optional `Idempotency-Key` header
+  (the shared `idempotencyKey` parameter): within 24 hours the same key and the
+  same request hash return the stored response, and a different hash answers
+  `422`. `insertContentItem` and `createSchedule` take it.
+- `v1beta3/request` is the one generic request-for-a-decision construct:
+  `listRequests`, `getRequest`, `approveRequest`, `denyRequest`, with
+  `approve` and `deny` as POST action sub-resources like the claim routes.
+  Deciding is a human act and never a tool. Full contract:
+  [`request-contract.md`](request-contract.md).
 
 ## Media assets
 

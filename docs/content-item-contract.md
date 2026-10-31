@@ -169,14 +169,73 @@ posts, in posting order. An item refers to an asset by id, never by URL.
 - The fingerprint covers it when set; an item without it hashes as before.
 - The generated Go payload omits an empty `mediaAssetIds`, so a Go client cannot clear the list through it, while TypeScript clients can send `[]`.
 
+## Approval and the client that created an item
+
+Two typed fields carry what the hosted MCP server and the apps need to read
+without parsing `data`:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `approved` | boolean | Whether a person approved the item to run. Server-set and read-only. The client that runs the queue reads it. |
+| `createdByClient` | string | OAuth client ID of the AI app that created the item. Server-set from the access token; empty or absent for an item a person created. |
+
+**`approved` is in the entity only, never in a request body.**
+`ContentItemPayload`, the body of both `insertContentItem` and
+`updateContentItem`, has no `approved` property, so no client, person or AI
+app, can approve an item by writing it. Every inserted item lands `approved`
+false. An update never changes `approved`. A server ignores an `approved` that
+an older client still sends, because the payload is not closed. The generated
+Go and TypeScript payloads have no such field.
+
+**Approval goes only through the request construct.** Inserting an item creates
+a `pending` `content_item_approval` request for it (see
+[`request-contract.md`](request-contract.md)). `approveRequest` is the only
+operation that sets the item's `approved` to true, in the same transaction that
+decides the request; `denyRequest` leaves it false. Both need the Decide Content
+Item Approvals key and carry no `x-mcp`, and no OAuth scope keychain carries
+that key, so an AI app can never approve an item, its own or another's. The
+request is never what the queue reads.
+
+**`createdByClient` is not in the payload.** It is server-set and never changed
+by an update, like `createdBy`. It is optional in the entity.
+
+**Retrying an insert.** `insertContentItem` takes the optional `Idempotency-Key`
+header ([`mcp-operation-contract.md`](mcp-operation-contract.md#idempotency-key)):
+within 24 hours the same key and request hash return the first response and
+insert nothing, and the same key with a different hash answers `422`.
+
+### Migrating from the `Approved?` column
+
+Until now approval was the `Approved?` column inside the item's `data`, a
+client-specific column that a generic construct should not read. It stays readable for
+one release so the Mac engine and the desktop app move over without a flag day:
+
+1. **Release N (this one).** Writers stop setting approval: they send neither
+   `approved` nor `data["Approved?"]`, and approve through `approveRequest`
+   instead. The server owns `data["Approved?"]`: on every write it replaces
+   whatever the client sent there with the stored `approved`, so a
+   client-written `Approved?` never approves an item and an older reader still
+   sees the true value. A reader that finds no `approved` on an older row falls
+   back to `data["Approved?"]`.
+2. **Release N+1.** Readers read `approved` only. Servers stop mirroring into
+   `data`, and the column is no longer part of the contract.
+
+A row written before this release has no stored `approved`. Servers backfill it
+once from `Approved?` (truthy values: `true`, `yes`, `1`, `x`, case-insensitive)
+when the column is added, and the fallback above covers any row not yet
+backfilled. The backfill is the only time `Approved?` sets `approved`.
+
 ## Consumers
 
-- **layer5io/meshery-cloud** must add the columns (`rules_of_engagement`
+- **layer5io/meshery-cloud** must add the columns (`approved` boolean not null
+  default false, `created_by_client` text, `rules_of_engagement`
   jsonb, `thread_id` and `reply_to_id` uuid referencing `content_items`,
   `thread_index` integer, `media_asset_ids` uuid[]), indexes on `(organization_id, thread_id)` and
   `(organization_id, reply_to_id)`, and a partial unique index on
   `(organization_id, thread_id, thread_index)` over live rows. It must also
-  enforce the insert and update rules above, tell an omitted
+  enforce the insert and update rules above (never take `approved` from a
+  request body, open the item's pending `content_item_approval` request on
+  insert, and own `data["Approved?"]` while it is mirrored), tell an omitted
   `rulesOfEngagement` from `null` on update, extend the fingerprint, and
   serve the `threadId` filter.
 - **Blowhorn** vendors the release, adds the fields to its `ContentItem`

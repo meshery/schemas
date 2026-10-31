@@ -1141,6 +1141,38 @@ components:
       description: Filter catalog data based on technology(compatibility) of content e.g (kubernetes, istio...) multiple params can be passed
       schema:
         type: string
+    currentOrgId:
+      name: X-Current-Orgid
+      in: header
+      required: false
+      description: >-
+        Organization the call acts in, by ID (a UUID). When present, the server resolves the
+        session organization from it instead of the caller's selected
+        organization, and runs its membership and permission checks there. A
+        caller who is not a live member of the named organization receives
+        the same 404 as an unknown resource. Omitted, the caller's selected
+        organization applies.
+      schema:
+        type: string
+        minLength: 36
+        maxLength: 36
+        pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    idempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: >-
+        Client-chosen key that makes a create safe to retry. The server keeps
+        the organization, the user, the key, a hash of the request and the
+        response for 24 hours. A retry with the same key and the same request
+        hash returns the stored response without creating anything again. A
+        retry with the same key and a different request hash answers 422 and
+        creates nothing. Omitted, the create is not deduplicated. Use a fresh
+        random value (a UUID) per intended create.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 255
 
   responses:
     "200":
@@ -1181,6 +1213,12 @@ components:
             type: string
     "409":
       description: Publish request already exists
+      content:
+        text/plain:
+          schema:
+            type: string
+    "422":
+      description: Unprocessable - the Idempotency-Key was already used with a different request body
       content:
         text/plain:
           schema:

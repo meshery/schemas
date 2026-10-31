@@ -44,6 +44,10 @@ paths:
         - contentItems
       summary: List content items
       operationId: listContentItems
+      x-mcp:
+        expose: true
+        title: List content items
+        scope: content:read
       description: |
         Returns a paginated list of the live content items in the
         organization of the authenticated session, ordered by `rowNumber`
@@ -66,6 +70,7 @@ paths:
           schema:
             type: string
         - $ref: "#/components/parameters/threadId"
+        - $ref: "#/components/parameters/currentOrgId"
       responses:
         "200":
           description: Content item page
@@ -89,6 +94,8 @@ paths:
         - contentItems
       summary: Insert a content item
       operationId: insertContentItem
+      parameters:
+        - $ref: "#/components/parameters/idempotencyKey"
       description: |
         Inserts a new content item. Insert-only: any supplied
         `id` and `expectedFingerprint` are ignored; existing rows change
@@ -126,6 +133,13 @@ paths:
         item and a missing one receive the same 400. A `threadIndex` that
         another live item of the same thread already holds refuses the
         insert with a 409.
+        The optional `Idempotency-Key` header makes the insert safe to
+        retry: within 24 hours the same key with the same request hash
+        returns the first response without inserting again, and the same
+        key with a different request hash answers 422 and inserts nothing.
+        `approved` is not in the payload: every inserted item lands
+        unapproved with a pending `content_item_approval` request, and only
+        `approveRequest` sets it (docs/content-item-contract.md).
       requestBody:
         required: true
         content:
@@ -149,6 +163,8 @@ paths:
           $ref: "#/components/responses/404"
         "409":
           $ref: "#/components/responses/409"
+        "422":
+          $ref: "#/components/responses/422"
         "429":
           $ref: "#/components/responses/MeshkitError429"
         "500":
@@ -161,8 +177,13 @@ paths:
         - contentItems
       summary: Get a content item by ID
       operationId: getContentItem
+      x-mcp:
+        expose: true
+        title: Get a content item
+        scope: content:read
       parameters:
         - $ref: "#/components/parameters/contentItemId"
+        - $ref: "#/components/parameters/currentOrgId"
       responses:
         "200":
           description: Content item response
@@ -199,6 +220,8 @@ paths:
         it. An omitted `mediaAssetIds` keeps the stored list and `[]`
         clears it. The thread fields are fixed at insert: omitted, or equal to the
         stored values, they are kept; any other value is refused with a 400.
+        `approved` is not in the payload, so an update never changes it;
+        only `approveRequest` does.
       parameters:
         - $ref: "#/components/parameters/contentItemId"
       requestBody:
@@ -269,6 +292,8 @@ components:
       bearerFormat: JWT
 
   responses:
+    422:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/422"
     400:
       $ref: "../../v1beta2/core/api.yml#/components/responses/400"
     401:
@@ -308,6 +333,10 @@ components:
         whose `threadId` names it.
       schema:
         $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    currentOrgId:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/currentOrgId"
+    idempotencyKey:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/idempotencyKey"
     contentItemId:
       name: contentItemId
       in: path
@@ -349,8 +378,10 @@ components:
         Payload for inserting or updating a content item.
         Contains only client-settable fields; the owning
         `organizationId` (derived from the authenticated session), the
-        server-computed `fingerprint` and the server-generated
-        `createdAt` / `updatedAt` timestamps are intentionally excluded.
+        server-computed `fingerprint`, the server-set `createdByClient`,
+        `approved` (set only by `approveRequest` in the request construct)
+        and the server-generated `createdAt` / `updatedAt` timestamps are
+        intentionally excluded.
       required:
         - profile
       properties:

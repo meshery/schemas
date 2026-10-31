@@ -1,0 +1,340 @@
+openapi: 3.0.0
+info:
+  title: Request
+  description: |
+    OpenAPI schema for requests - generic decisions that a person with the
+    right to make them is asked to make about a subject. The first kind,
+    `content_item_approval`, is created when a content item is inserted,
+    by a person or an AI app: the item waits unapproved until a person
+    approves or denies its request in the app. approveRequest is the only
+    way a content item's `approved` becomes true; ContentItemPayload has no
+    `approved`. A request names its subject by type and ID, so any construct
+    can be the subject of a kind. Requests are created by the server, not by
+    a client call, and are decided once. Decided requests are kept as
+    history.
+    Each kind names the permission key that may decide it (`x-decision-key`
+    on RequestKind). Deciding is a human act: approveRequest and denyRequest
+    carry no `x-mcp` annotation and the schema lint refuses one, so no AI
+    app tool can approve or deny, and no OAuth scope keychain carries a
+    deciding key.
+    Organization scope: every operation acts only in the organization the
+    session resolved to (X-Current-Orgid, then the user's selected
+    organization), and only when the caller is a live member of it. A
+    caller who is not a member receives the same 404 as an unknown id, so
+    the existence of another organization's requests is never disclosed.
+    Authorization: reading requests takes the View Requests key; deciding a
+    request takes the deciding key of its kind (for `content_item_approval`,
+    Decide Content Item Approvals). Every key is checked in the session
+    organization.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: requests
+    description: Operations related to requests for a decision.
+
+paths:
+  /api/requests:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - requests
+      summary: List requests
+      operationId: listRequests
+      description: >
+        Returns a paginated list of the requests in the organization of the
+        authenticated session, pending and decided, optionally filtered by
+        kind and status. Ordered by `createdAt`, newest first, unless `order`
+        is `createdAt asc`. Every member holding View Requests sees every
+        request in the organization.
+      parameters:
+        - $ref: "#/components/parameters/currentOrgId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/kind"
+        - $ref: "#/components/parameters/status"
+      responses:
+        "200":
+          description: Requests page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/requests/{requestId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - requests
+      summary: Get a request by ID
+      operationId: getRequest
+      parameters:
+        - $ref: "#/components/parameters/currentOrgId"
+        - $ref: "#/components/parameters/requestId"
+      responses:
+        "200":
+          description: Request response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Request"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/requests/{requestId}/approve:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - requests
+      summary: Approve a request
+      operationId: approveRequest
+      description: >
+        Approves a pending request: sets `status` to `approved`, `decidedBy`
+        to the session user, `decidedAt` to now and `note` to the optional
+        note. The caller must hold the deciding permission key of the
+        request's `kind`, else 403 and nothing changes. For
+        `content_item_approval` the server also sets the subject content
+        item's `approved` to true in the same transaction; this is the only
+        operation that does, since no content item request body carries
+        `approved`. A request that is
+        not `pending` answers 409 and is never changed. The body may be
+        omitted.
+      parameters:
+        - $ref: "#/components/parameters/currentOrgId"
+        - $ref: "#/components/parameters/requestId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestDecisionPayload"
+      responses:
+        "200":
+          description: Request approved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Request"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/requests/{requestId}/deny:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - requests
+      summary: Deny a request
+      operationId: denyRequest
+      description: >
+        Denies a pending request: sets `status` to `denied`, `decidedBy` to
+        the session user, `decidedAt` to now and `note` to the optional
+        note. The caller must hold the deciding permission key of the
+        request's `kind`, else 403 and nothing changes. For
+        `content_item_approval` the subject content item stays unapproved. A
+        request that is not `pending` answers 409 and is never changed. The
+        body may be omitted.
+      parameters:
+        - $ref: "#/components/parameters/currentOrgId"
+        - $ref: "#/components/parameters/requestId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestDecisionPayload"
+      responses:
+        "200":
+          description: Request denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Request"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    403:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/403"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    409:
+      description: Conflict - the request is not pending, so it was already decided and is never changed
+      content:
+        text/plain:
+          schema:
+            type: string
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    currentOrgId:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/currentOrgId"
+    requestId:
+      name: requestId
+      in: path
+      description: Request ID
+      required: true
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      name: pageSize
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        minimum: 1
+    order:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
+    kind:
+      name: kind
+      in: query
+      required: false
+      description: Filter by request kind.
+      schema:
+        $ref: "#/components/schemas/RequestKind"
+    status:
+      name: status
+      in: query
+      required: false
+      description: Filter by request status.
+      schema:
+        $ref: "#/components/schemas/RequestStatus"
+
+  schemas:
+    Request:
+      $ref: "./request.yaml"
+
+    RequestKind:
+      type: string
+      description: >
+        What a request asks a person to decide. Each kind fixes the subject
+        type and names the permission key that may decide it, in
+        `x-decision-key` (the generated constant name in models/permissions).
+        A kind is added together with its deciding key and its handling in
+        docs/request-contract.md.
+      enum:
+        - content_item_approval
+      x-enum-varnames:
+        - RequestKindContentItemApproval
+      x-enumDescriptions:
+        content_item_approval: >
+          A content item, written by a person or an AI app, waits for a person
+          to approve it before it may run. The subject is a `content_item`.
+      x-decision-key:
+        content_item_approval: CatalogManagementDecideContentItemApprovals
+      x-subject-type:
+        content_item_approval: content_item
+
+    RequestStatus:
+      type: string
+      description: >
+        Lifecycle of a request. `pending` until it is decided; `approved` or
+        `denied` once, and then final.
+      enum:
+        - pending
+        - approved
+        - denied
+      x-enum-varnames:
+        - RequestStatusPending
+        - RequestStatusApproved
+        - RequestStatusDenied
+
+    RequestDecisionPayload:
+      type: object
+      additionalProperties: false
+      description: >
+        Payload for approving or denying a request. Contains only the
+        decider's note; `status`, `decidedBy` and `decidedAt` are set by the
+        server from the operation and the session.
+      properties:
+        note:
+          type: string
+          description: Optional note left with the decision, shown to the requester.
+          minLength: 1
+          maxLength: 2000
+
+    RequestPage:
+      type: object
+      description: Paginated collection of requests.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - requests
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        requests:
+          type: array
+          items:
+            $ref: "#/components/schemas/Request"
+            x-go-type: Request
+          description: Requests included on this page of results.

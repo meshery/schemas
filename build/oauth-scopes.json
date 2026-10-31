@@ -1,0 +1,44 @@
+{
+  "$comment": "Scope-to-keychain-to-permission-key map for OAuth scopes (docs/mcp-operation-contract.md). A scope is a keychain: each scope names one keychain defined in build/permissions.csv (Security Management / Keychains) and lists the existing permission keys, by their generated constant names, that the keychain carries for the operations the scope covers. The scope strings themselves are defined once, in schemas/extensions/mcp-operation.yaml; validation/mcp_operation_contract_test.go and tests/oauth-scopes.test.js keep the two in step. build/generate-permission-golang.js and build/generate-permissions-ts.js read this file and emit OAuthScopeGrants (Go) and OAuthScopes (TypeScript).",
+  "scopes": {
+    "content:read": {
+      "keychain": "Content View",
+      "description": "Read the content items of the organization.",
+      "keys": ["CatalogManagementViewContentItems"]
+    },
+    "content:write": {
+      "keychain": "Content Edit",
+      "description": "Create and edit content items of the organization. Never approves them.",
+      "keys": ["CatalogManagementCreateContentItem", "CatalogManagementEditContentItem"]
+    },
+    "schedule:read": {
+      "keychain": "Schedule View",
+      "description": "Read the schedules of the organization.",
+      "keys": ["WorkflowManagementViewSchedules"]
+    },
+    "schedule:write": {
+      "keychain": "Schedule Edit",
+      "description": "Create and change schedules of the organization, and set or lift its schedule pause.",
+      "keys": [
+        "WorkflowManagementCreateSchedule",
+        "WorkflowManagementEditSchedule",
+        "WorkflowManagementPauseSchedules"
+      ]
+    },
+    "connections:read": {
+      "keychain": "Connection View",
+      "description": "Read the connections of the organization.",
+      "keys": ["WorkspaceManagementViewConnections"]
+    },
+    "events:read": {
+      "keychain": "Event View",
+      "description": "Read the events of the organization, including run results.",
+      "keys": ["EventsManagementViewEvents"]
+    },
+    "account:read": {
+      "keychain": "Account View",
+      "description": "Read the signed-in account and the features of the organization.",
+      "keys": ["AccountManagementViewProfile"]
+    }
+  }
+}
