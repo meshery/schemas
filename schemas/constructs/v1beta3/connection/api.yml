@@ -20,6 +20,10 @@ paths:
       tags:
         - Connections
       operationId: getConnections
+      x-mcp:
+        expose: true
+        title: Get connections
+        scope: connections:read
       summary: Get all connections
       description: Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support
       parameters:
@@ -28,6 +32,7 @@ paths:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/orgIdQuery"
+        - $ref: "#/components/parameters/currentOrgId"
         - name: filter
           in: query
           description: Filter connections (general filter string)
@@ -730,6 +735,8 @@ components:
       bearerFormat: JWT
 
   parameters:
+    currentOrgId:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/currentOrgId"
     connectionId:
       name: connectionId
       in: path
