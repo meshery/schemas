@@ -1,6 +1,13 @@
 type: object
 additionalProperties: false
-description: Represents a user-owned API token or OAuth session.
+description: >-
+  Represents a user-owned API token or OAuth session. A token may carry two
+  optional limits. `keychainIds` restricts which keys it may use, and
+  `expiresAt` ends its life. A token with neither is unrestricted and never
+  expires, which is what every token issued before these fields existed is.
+  `keychainScoped` is the server's stored record that the token was created
+  with a keychain limit.
+  See the token scoping contract in docs/token-scoping-contract.md.
 required:
 - id
 - owner
@@ -96,3 +103,52 @@ properties:
       db: updated_at
       json: updatedAt
     x-order: 10
+  keychainIds:
+    type: array
+    description: >-
+      IDs of the keychains this token is limited to. When non-empty, the token
+      may use only keys that belong to these keychains, intersected with the
+      owner's keys in the organization of the request: the effective keys are
+      never more than the user's own. Empty or absent means unrestricted, so
+      every token issued before this field existed keeps working unchanged.
+      Unknown keychain IDs are refused when the token is created.
+    items:
+      $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    maxItems: 100
+    uniqueItems: true
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: "-"
+      json: "keychainIds,omitempty"
+    x-order: 11
+  expiresAt:
+    type: string
+    format: date-time
+    description: >-
+      Time after which the token is no longer accepted. Absent or null means the token
+      never expires, which is the case for every token issued before this
+      field existed. Set when the token is created and not changed afterwards.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: expires_at
+      json: "expiresAt,omitempty"
+    x-order: 12
+  keychainScoped:
+    type: boolean
+    description: >-
+      Whether the token is limited to the keys of its keychains. Set by the
+      server when the token is created with a non-empty `keychainIds`, and
+      never reset to false afterwards. It is stored on the token, not inferred
+      from the token's keychain mappings, so a scoped token whose keychains
+      have all been deleted stays scoped and holds no keys. False or absent
+      means unrestricted.
+    readOnly: true
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: keychain_scoped
+      json: "keychainScoped,omitempty"
+    x-order: 13
