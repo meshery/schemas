@@ -201,8 +201,8 @@ properties:
       to true; that operation needs the Decide Content Item Approvals key and
       is never an AI app tool. A content edit that resolves to required sets
       it back to false. Any content edit that leaves it unapproved supersedes
-      an open request with a fresh pending one, so an unapproved item always
-      has an open request (see updateContentItem). A change to `approvalPolicy` that makes
+      an open request with a fresh pending one, so after the edit an
+      unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` that makes
       approval required does the same to an approved item.
       The client that runs the queue reads this field.
       For one release after this field ships, servers mirror it into the
@@ -238,8 +238,9 @@ properties:
       the upstream policies exist, `inherit` or absent resolves to
       `required`. Only a person with Decide Content Item Approvals may write
       a value that changes the stored one; an AI app never can. Changing it
-      alone re-resolves the approval, and changes `approved` and an open
-      request only when the requirement is tightened (see updateContentItem).
+      alone re-resolves the approval: tightening resets an approved item and
+      opens its request, and any change leaves an unapproved item with an open
+      request, whatever the result (see updateContentItem).
       Stored in the
       nullable `approval_policy` column; null means inherit, and a written
       `inherit` is stored as null, so reads return it absent.

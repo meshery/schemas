@@ -138,6 +138,13 @@ organization the call acts in (decision 5). It is defined once, as
 construct aliases it with a `$ref`. Cloud's membership and permission checks
 run in that organization exactly as for any other call.
 
+An operation that also takes an organization in its path or query (`orgId`:
+`getFeaturesByOrganization` in its path, `getConnections` in its query) must
+name the same organization as `X-Current-Orgid` when both are sent. A mismatch
+answers `403` and returns nothing; neither value wins. When the header is
+omitted there is nothing to compare, and the call proceeds as for any other.
+Both operation descriptions reference this section and declare the `403`.
+
 ## `Idempotency-Key`
 
 `components.parameters.idempotencyKey` in `v1beta2/core/api.yml` is an

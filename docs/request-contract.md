@@ -133,8 +133,9 @@ Neither case approves anything: `approved` is set only on a live subject.
 - **Cloud** creates a request for each inserted content item whose effective
   approval is required, for each content edit that leaves the item unapproved
   (after superseding the open request), for each policy change that makes
-  approval required on an approved item, and for each write that leaves an
-  unapproved item with no open request. It supersedes the open request on each
+  approval required on an approved item, and for each content edit or policy
+  change that leaves an unapproved item with no open request. A write that
+  changes nothing opens none. It supersedes the open request on each
   content edit, and decides requests in a transaction with the subject,
   answers `404` and `409` as in the table above, checks the kind's deciding key
   in the session organization, and serves the four routes.

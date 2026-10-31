@@ -18,8 +18,8 @@ info:
     A content edit that resolves to required resets an approved item to
     unapproved. Any content edit supersedes the item's open request, if any,
     and an item it leaves unapproved gets a fresh pending request for the
-    content as it now is, so an unapproved item always has an open request
-    (see updateContentItem and the invariant in
+    content as it now is, so after the edit an unapproved item has an open
+    request (see updateContentItem and the invariant in
     docs/content-item-contract.md). A change to `approvalPolicy` alone that
     makes approval required resets an approved item the same way. Only a person
     holding Decide Content Item Approvals may write an `approvalPolicy` value
@@ -257,10 +257,11 @@ paths:
         change that makes approval required, can reset it, as described
         below. A caller without Decide Content Item
         Approvals gets a 403 if it sends an `approvalPolicy` different from
-        the stored one (absent, null and `inherit` are the same value, since
+        the stored one (absent, null and `inherit` count as one value, since
         the server stores `inherit` as null);
         sending back the unchanged stored value is accepted and changes
-        nothing. An omitted `approvalPolicy` keeps the stored value.
+        nothing. An omitted `approvalPolicy` keeps the stored value and is not
+        a change, so it is never refused.
         Approval on a content edit. An update that changes the item's
         content re-resolves its effective approval in the same transaction,
         with the same rule as insert: the `approvalPolicy` the update stores,
@@ -282,8 +283,8 @@ paths:
         approved item stays approved and opens no request. Whatever the
         resolved approval, an item the edit leaves unapproved gets a fresh
         pending request for the content as it now is, in the same
-        transaction, so an unapproved item always has an open request (the
-        open-request invariant in docs/content-item-contract.md). An
+        transaction, so after the edit an unapproved item has an open request
+        (the open-request invariant in docs/content-item-contract.md). An
         update never approves: the item stays unapproved until a decider
         approves that request. A failed write keeps every change, the item and
         its requests alike.
@@ -295,11 +296,13 @@ paths:
         and closes no request: loosening the requirement leaves an unapproved
         item unapproved, and its open request stays pending for a decider. An
         unapproved item with no open request, after a denial for example, gets
-        a fresh pending request in the same write, whatever the result, so an
-        unapproved item always has an open request. The stored
-        `approvalRequired` and `approvalPolicySource` are rewritten to the new
-        result. Sending back the unchanged stored policy re-resolves nothing.
-        This applies to every writer, a person included.
+        a fresh pending request in the same write, whatever the result. The
+        stored `approvalRequired` and `approvalPolicySource` are rewritten to
+        the new result. Sending back the unchanged stored policy re-resolves
+        nothing. A write that changes nothing (a whole-item write-back of the
+        stored content and policy) opens no request and closes none, so a
+        denied item stays denied until a content edit or an `approvalPolicy`
+        change. This applies to every writer, a person included.
       parameters:
         - $ref: "#/components/parameters/contentItemId"
       requestBody:
@@ -590,7 +593,8 @@ components:
             `required` or `not_required`; on update, a value different from
             the stored one (absent, null and `inherit` are one value, since the
             server stores `inherit` as null). Sending back the unchanged stored value
-            is accepted. An AI app token never carries that key. Interim: until
+            is accepted, and an omitted value on update keeps the stored one and is
+            never refused. An AI app token never carries that key. Interim: until
             the upstream policies exist, `inherit` or absent resolves to
             `required`, and the item's approval source is `item` for an
             explicit value or `fallback` for `inherit` or absent.

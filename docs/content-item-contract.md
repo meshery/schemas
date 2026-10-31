@@ -218,10 +218,11 @@ can never change the policy.
 - **Insert.** `required` or `not_required` is a change, so a caller without the
   key who sends either on insert gets `403` and nothing is inserted. Omitted or
   `inherit` stores null, so the item inherits.
-- **Update.** Omitted keeps the stored value. A value different from the stored
-  one is a change, and `inherit` returns the item to inheriting. Absent, null
-  and `inherit` are one value: the server stores `inherit` as null, so writing
-  `inherit` over an inheriting item changes nothing and is never refused.
+- **Update.** Omitted keeps the stored value and is not a change, so it is never
+  refused. An explicit value different from the stored one is a change, and
+  `inherit` returns the item to inheriting. Absent, null and `inherit` are one
+  value: the server stores `inherit` as null, so writing `inherit` over an
+  inheriting item changes nothing and is never refused.
 - **Write-back.** A caller without the key that reads an item and writes it back
   whole is not refused when the policy comes back unchanged. Sending back the
   stored value is accepted and changes nothing. Only a different value, or an
@@ -250,20 +251,28 @@ inserted before this field shipped have neither.
 
 ## The open-request invariant
 
-An unapproved item always has exactly one open pending
-`content_item_approval` request. This is the one statement of the rule; the
-approval sections below and the operation descriptions refer back to it.
+After every content edit and every `approvalPolicy` change, an unapproved item
+has exactly one open pending `content_item_approval` request. This is the one
+statement of the rule; the approval sections below and the operation
+descriptions refer back to it.
 
 - **Insert** establishes it: a required item lands unapproved with its request,
   and a not-required item lands approved with none.
-- **Every write** keeps it. A write that leaves an item unapproved with no open
-  request opens a fresh pending one in the same transaction, whatever the
-  item's resolved approval. An approved item has no request to keep.
-- **A denial** closes the request as `denied` and leaves the item unapproved, so
-  the next write that leaves it unapproved opens a new request.
+- **A content edit or `approvalPolicy` change keeps it.** A write of either kind
+  that leaves an item unapproved with no open request opens a fresh pending one
+  in the same transaction, whatever the item's resolved approval. An approved
+  item has no request to keep.
+- **A write that changes nothing opens no request and closes none.** That
+  includes a whole-item write-back of the stored content and policy, so the
+  invariant does not apply to it.
+- **A denial** closes the request as `denied` and leaves the item unapproved
+  with no open request. It stays that way through no-change writes; the next
+  content edit or `approvalPolicy` change that leaves it unapproved opens a new
+  request.
 
-The request is what a decider acts on, so an unapproved item is never left
-where no one is asked to approve it.
+The request is what a decider acts on. An unapproved item is left without an
+open request only after a denial, and only until the next content edit or
+policy change.
 
 ## Approval on a content edit
 
@@ -305,7 +314,7 @@ transaction as the write, and a failed write keeps neither change:
 | not approved, with no pending request | required | false | a new pending request |
 | not approved, with a pending request | not required | false (unchanged) | the pending request is superseded; a fresh pending request opens |
 | not approved, with no pending request | not required | false (unchanged) | a new pending request |
-| any, no content change | any | unchanged | unchanged, except that an unapproved item with no open request gets one |
+| any, no content change, no policy change (a no-change write) | any | unchanged | unchanged; no request opens or closes, so a denied item stays denied |
 
 A superseded request is closed with `status` `superseded`, `decidedAt` set to
 the edit time, and no `decidedBy` and no `note`. It is final. `approveRequest`

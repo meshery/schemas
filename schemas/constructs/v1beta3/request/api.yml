@@ -7,7 +7,9 @@ info:
     `content_item_approval`, is created when a content item is inserted
     whose effective approval is required, by a person or an AI app: that
     item waits unapproved until a person approves or denies its request in
-    the app. An item whose approval is not required opens no request. approveRequest is the only
+    the app. An item whose approval is not required opens no request on insert.
+    A content edit or approvalPolicy change that leaves the item unapproved
+    opens a fresh request, whatever the result. approveRequest is the only
     way a content item's `approved` becomes true; ContentItemPayload has no
     `approved`. A request names its subject by type and ID, so any construct
     can be the subject of a kind. Requests are created by the server, not by
@@ -308,7 +310,8 @@ components:
         `denied` once, by a person with the kind's deciding key. `superseded`
         when a content edit changes the subject before a decision: the
         request is closed with `decidedAt` set, no `decidedBy` and no note,
-        and a fresh pending request opens if approval is still required. Each
+        and a fresh pending request opens if the edit leaves the item
+        unapproved, whatever the result. Each
         of `approved`, `denied` and `superseded` is final.
       enum:
         - pending
