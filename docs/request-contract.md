@@ -33,8 +33,8 @@ no create operation and no create payload. The only payload is
 | --- | --- | --- |
 | `listRequests` | `GET /api/requests` | Filters `kind` and `status`. Paged with `page` and `pageSize`, newest first. |
 | `getRequest` | `GET /api/requests/{requestId}` | |
-| `approveRequest` | `POST /api/requests/{requestId}/approve` | Optional note. `409` when not pending. |
-| `denyRequest` | `POST /api/requests/{requestId}/deny` | Optional note. `409` when not pending. |
+| `approveRequest` | `POST /api/requests/{requestId}/approve` | Optional note. `409` when not pending or when the subject is soft-deleted; `404` when the subject is gone. |
+| `denyRequest` | `POST /api/requests/{requestId}/deny` | Optional note. `409` when not pending or when the subject is soft-deleted; `404` when the subject is gone. |
 
 All four are `x-internal: ["cloud"]` and carry no `x-mcp`. The schema lint
 (Rule 48) refuses `x-mcp` on `approveRequest` and `denyRequest`: deciding is a
@@ -65,9 +65,14 @@ key.
    ([Approval policy](content-item-contract.md#approval-policy)). When it is
    required, the item lands `approved` false and Cloud creates a `pending`
    request in the same transaction as the item (if either write fails, neither
-   is kept, so an unapproved item always has its request) whose subject is the item and whose `requesterId` and
-   `createdByClient` come from the session or token. When it is not required,
-   the item lands `approved` true and no request is created.
+   is kept, so an unapproved item always has its request) whose subject is the
+   item and whose `requesterId` and `createdByClient` come from the session or
+   token. When it is not required, the item lands `approved` true and no
+   request is created. A content edit re-resolves the approval the same way
+   ([Approval on a content edit](content-item-contract.md#approval-on-a-content-edit)):
+   one that resolves to required resets an approved item to unapproved and
+   opens a new pending request, and opens one for an unapproved item only when
+   none is pending.
 2. A person with the deciding key calls `approveRequest`. In one transaction the
    request becomes `approved` and the item's `approved` becomes true. `denyRequest`
    makes the request `denied` and leaves the item unapproved.
@@ -83,11 +88,31 @@ AI app cannot approve any item, including one it wrote.
 
 A request is decided once. A second decision answers `409` and changes nothing.
 
+## Deciding a request whose subject is gone
+
+`approveRequest` and `denyRequest` read the subject in the same transaction as
+the decision and answer as follows. Every answer that is not a decision changes
+nothing: the request stays as it was.
+
+| The request | The subject content item | Answer |
+| --- | --- | --- |
+| Pending | Live | `200`, decided |
+| Not pending (decided) | Any | `409` |
+| Pending | Soft-deleted (`deletedAt` set) | `409` |
+| Pending | Hard-deleted (no row) | `404` |
+| Unknown, or in another organization | Any | `404` |
+
+A soft-deleted subject answers `409` because its row still exists: the request
+is not decided and stays pending, so it still appears in `listRequests`. A
+hard-deleted subject answers `404`, the same answer as an unknown request.
+Neither case approves anything: `approved` is set only on a live subject.
+
 ## Consumers
 
 - **Cloud** creates a request for each inserted content item whose effective
-  approval is required, decides them in a transaction with the
-  subject, checks the kind's deciding key in the session organization, and
-  serves the four routes.
+  approval is required, and for each content edit that resolves to required
+  when none is pending. It decides them in a transaction with the subject,
+  answers `404` and `409` as in the table above, checks the kind's deciding key
+  in the session organization, and serves the four routes.
 - **Desktop and web apps** list pending requests and call approve or deny.
 - **The hosted MCP server** never exposes these operations.

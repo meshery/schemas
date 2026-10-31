@@ -148,10 +148,16 @@ for 24 hours:
 - the same key with the same request hash returns the stored response and
   creates nothing again;
 - the same key with a different request hash answers `422` and creates nothing;
+- a retry with the same key that arrives while the first request with that key
+  is still being processed answers `409` and creates nothing; the client retries
+  later and then receives the stored response;
 - no key means no deduplication.
 
-Both operations declare the `422` response (plain text). A test pins that only
-those two operations declare the header.
+Both operations declare the `422` and the `409` responses (plain text). The
+`409` is the shared `IdempotencyKeyInFlight` response in `v1beta2/core`;
+`insertContentItem` declares its own `409` whose description also covers the
+thread and row-number conflicts. A test pins that only those two operations
+declare the header, and that both declare the `409`.
 
 ## Adding a tool
 

@@ -123,7 +123,10 @@ paths:
         item's `approved` to true in the same transaction; this is the only
         operation that does, since no content item request body carries
         `approved`. A request that is
-        not `pending` answers 409 and is never changed. The body may be
+        not `pending` answers 409 and is never changed. When the subject
+        content item no longer exists (hard-deleted) the answer is 404, and
+        when it is soft-deleted (`deletedAt` set) the answer is 409; in both
+        cases nothing changes and the request stays as it was. The body may be
         omitted.
       parameters:
         - $ref: "#/components/parameters/currentOrgId"
@@ -148,7 +151,7 @@ paths:
         "403":
           $ref: "#/components/responses/403"
         "404":
-          $ref: "#/components/responses/404"
+          $ref: "#/components/responses/DecisionNotFound"
         "409":
           $ref: "#/components/responses/409"
         "500":
@@ -167,7 +170,10 @@ paths:
         note. The caller must hold the deciding permission key of the
         request's `kind`, else 403 and nothing changes. For
         `content_item_approval` the subject content item stays unapproved. A
-        request that is not `pending` answers 409 and is never changed. The
+        request that is not `pending` answers 409 and is never changed. When
+        the subject content item no longer exists (hard-deleted) the answer is
+        404, and when it is soft-deleted (`deletedAt` set) the answer is 409;
+        in both cases nothing changes and the request stays as it was. The
         body may be omitted.
       parameters:
         - $ref: "#/components/parameters/currentOrgId"
@@ -192,7 +198,7 @@ paths:
         "403":
           $ref: "#/components/responses/403"
         "404":
-          $ref: "#/components/responses/404"
+          $ref: "#/components/responses/DecisionNotFound"
         "409":
           $ref: "#/components/responses/409"
         "500":
@@ -214,8 +220,14 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/403"
     404:
       $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    DecisionNotFound:
+      description: Not found - the request does not exist in the organization, or its subject content item no longer exists (hard-deleted). Nothing changes; the request stays as it was.
+      content:
+        text/plain:
+          schema:
+            type: string
     409:
-      description: Conflict - the request is not pending, so it was already decided and is never changed
+      description: Conflict - the request is not pending, so it was already decided and is never changed, or its subject content item is soft-deleted (deletedAt set). Nothing changes; the request stays as it was.
       content:
         text/plain:
           schema:

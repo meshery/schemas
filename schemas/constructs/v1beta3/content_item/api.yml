@@ -10,11 +10,13 @@ info:
     platform run under, and may belong to a thread (`threadId`,
     `replyToId`, `threadIndex`): the parts of a split post, or the replies
     of a conversation between profiles.
-    An item's approval is resolved at insert from its `approvalPolicy`
-    (explicit `required` or `not_required` wins; `inherit` or absent inherits
-    from higher-level settings, hierarchy defined in
-    https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until
+    An item's approval is resolved at insert and again at each content edit
+    from its `approvalPolicy` (explicit `required` or `not_required` wins;
+    `inherit` or absent inherits from higher-level settings, hierarchy defined
+    in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until
     the upstream policies exist, `inherit` or absent resolves to `required`.
+    A content edit that resolves to required resets an approved item to
+    unapproved and opens a pending request (see updateContentItem).
     Only a person holding Decide Content Item Approvals may write an
     `approvalPolicy` value that changes the stored one.
     Organization scope: every operation acts only in the organization the
@@ -144,6 +146,9 @@ paths:
         retry: within 24 hours the same key with the same request hash
         returns the first response without inserting again, and the same
         key with a different request hash answers 422 and inserts nothing.
+        A retry with the same key that arrives while the first request with
+        that key is still being processed answers 409 and inserts nothing;
+        the client retries later and then receives the stored response.
         A caller whose effective keys lack Decide Content Item Approvals in
         the session organization who sends `approvalPolicy` `required` or
         `not_required` gets a 403 and nothing is inserted; a caller holding
@@ -235,15 +240,37 @@ paths:
         it. An omitted `mediaAssetIds` keeps the stored list and `[]`
         clears it. The thread fields are fixed at insert: omitted, or equal to the
         stored values, they are kept; any other value is refused with a 400.
-        `approved` is not in the payload, so an update never changes it;
-        only `approveRequest` does. Changing `approvalPolicy` later changes
-        the stored policy and nothing else: `approved` and any existing
-        request keep their state. A caller without Decide Content Item
+        `approved` is not in the payload, and no update sets it to true;
+        only `approveRequest` does. A content edit can reset it, as described
+        below. Changing `approvalPolicy` alone changes the stored policy and
+        nothing else: `approved` and any existing request keep their state.
+        A caller without Decide Content Item
         Approvals gets a 403 if it sends an `approvalPolicy` different from
         the stored one (absent, null and `inherit` are the same value, since
         the server stores `inherit` as null);
         sending back the unchanged stored value is accepted and changes
         nothing. An omitted `approvalPolicy` keeps the stored value.
+        Approval on a content edit. An update that changes the item's
+        content re-resolves its effective approval in the same transaction,
+        with the same rule as insert: the `approvalPolicy` the update stores,
+        then the higher-level settings (interim: `inherit` or absent resolves
+        to `required`). It records `approvalRequired` and
+        `approvalPolicySource` again. Content is `profile`, `rowNumber`,
+        `data` (without the server-owned `Approved?` mirror),
+        `rulesOfEngagement` and `mediaAssetIds`, the fields the fingerprint
+        covers, compared with the stored values, so a write-back that sends
+        them unchanged is not an edit. These never trigger it: the
+        `approvalPolicy` (a change to it alone only changes the stored policy),
+        `expectedFingerprint`, `id` and the thread fields (`threadId`,
+        `replyToId`, `threadIndex`, fixed at insert).
+        When approval resolves to required, an item that was `approved` is set
+        to `approved` false and a pending `content_item_approval` request is
+        opened. An item that is not approved and already has a pending request
+        keeps that request and opens no second one; an item that is not
+        approved and has none gets one, so an unapproved item always has its
+        request. When approval resolves to not required, `approved` is
+        unchanged and no request opens. A failed write keeps neither change.
+        This applies to every writer, a person included.
       parameters:
         - $ref: "#/components/parameters/contentItemId"
       requestBody:
@@ -325,7 +352,7 @@ components:
     403:
       $ref: "../../v1beta2/core/api.yml#/components/responses/403"
     409:
-      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, another live content item of the organization already holds the same rowNumber, or another live item of the same thread already holds the same threadIndex
+      description: Conflict - the stale expectedFingerprint precondition no longer matches the stored content fingerprint, another live content item of the organization already holds the same rowNumber, another live item of the same thread already holds the same threadIndex, or the same Idempotency-Key is still being processed by an earlier request (nothing is inserted; retry later to receive the stored response)
       content:
         text/plain:
           schema:
@@ -542,7 +569,7 @@ components:
         https://github.com/layer5io/meshery-cloud/issues/6365. When no level
         sets a value, approval is required (fail closed); this fallback is
         still open for confirmation in that issue. The effective result is
-        resolved once, when the item is inserted. AI apps can never set
+        resolved at insert and again at each content edit. AI apps can never set
         `approved`; this value only says whether approval is needed.
         Interim: until the upstream platform, workspace and profile policies
         exist, `inherit` and an absent value resolve to `required`, with

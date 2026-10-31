@@ -171,13 +171,14 @@ func TestContentItemApprovalFieldsAreServerComputed(t *testing.T) {
 	}
 }
 
-// The source enum names every level the resolver can return, and the resolver
-// reports exactly the levels the schema allows.
+// The source enum names every planned level, in the planned order, and the
+// resolver reports exactly the levels the schema allows. Only item and fallback
+// are active during the interim.
 func TestContentItemApprovalSourceEnum(t *testing.T) {
 	root := repoRootDir(t)
 	entity := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/content_item/content_item.yaml"))
 	got := anyStrings(mustLookup(t, entity, "properties", "approvalPolicySource", "enum"))
-	want := []string{"item", "platform", "workspace", "profile", "fallback"}
+	want := []string{"item", "workspace", "profile", "organization", "platform", "fallback"}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("approvalPolicySource enum = %v, want %v", got, want)
 	}
@@ -285,6 +286,20 @@ func TestContentItemApprovalResolution(t *testing.T) {
 			higher:       []itemApprovalLevel{{"platform", ""}, {"workspace", ""}, {"profile", "not_required"}},
 			wantRequired: false,
 			wantSource:   "profile",
+		},
+		{
+			name:         "the organization level decides when the levels above it are absent",
+			item:         "inherit",
+			higher:       []itemApprovalLevel{{"workspace", ""}, {"profile", ""}, {"organization", "not_required"}, {"platform", "required"}},
+			wantRequired: false,
+			wantSource:   "organization",
+		},
+		{
+			name:         "the first level given that sets a value decides, organization before platform",
+			item:         "",
+			higher:       []itemApprovalLevel{{"organization", ""}, {"platform", "not_required"}},
+			wantRequired: false,
+			wantSource:   "platform",
 		},
 		{
 			name:         "nothing set anywhere falls back to required",

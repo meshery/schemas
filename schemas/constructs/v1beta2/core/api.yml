@@ -1180,7 +1180,10 @@ components:
         response for 24 hours. A retry with the same key and the same request
         hash returns the stored response without creating anything again. A
         retry with the same key and a different request hash answers 422 and
-        creates nothing. Omitted, the create is not deduplicated. Use a fresh
+        creates nothing. A retry with the same key that arrives while the
+        earlier request with that key is still being processed answers 409 and
+        creates nothing; the client retries later to receive the stored
+        response. Omitted, the create is not deduplicated. Use a fresh
         random value (a UUID) per intended create.
       schema:
         type: string
@@ -1232,6 +1235,12 @@ components:
             type: string
     "422":
       description: Unprocessable - the Idempotency-Key was already used with a different request body
+      content:
+        text/plain:
+          schema:
+            type: string
+    IdempotencyKeyInFlight:
+      description: Conflict - an earlier request with the same Idempotency-Key is still being processed. Nothing is created by this request; retry later to receive the stored response.
       content:
         text/plain:
           schema:

@@ -206,8 +206,8 @@ PR is not blocked on the hierarchy issue:
 - No higher level is read. `agentsActWithoutApproval` is not consulted during
   the interim, even when a profile sets it.
 - So during the interim `approvalPolicySource` is only `item` or `fallback`.
-  The other sources (`platform`, `workspace`, `profile`) stay in the enum for
-  the target model and appear once those policies exist.
+  The other sources (`workspace`, `profile`, `organization`, `platform`) stay in
+  the enum for the target model and appear once those policies exist.
 
 **Who may write it.** Only a person holding Decide Content Item Approvals in
 the session organization may write a value that changes the stored
@@ -227,8 +227,9 @@ can never change the policy.
   stored value is accepted and changes nothing. Only a different value, or an
   explicit `required` or `not_required` on insert, is refused with `403`.
 
-**The insert effect.** The effective approval is resolved once, when the item
-is inserted:
+**The insert effect.** The effective approval is resolved when the item is
+inserted, and again at each content edit (see
+[Approval on a content edit](#approval-on-a-content-edit)):
 
 - Effective required: `approved` is false and a `pending`
   `content_item_approval` request is opened (see
@@ -236,15 +237,63 @@ is inserted:
 - Effective not required: the server sets `approved` true itself and opens no
   request.
 
-Changing `approvalPolicy` later never changes `approved` and never decides an
+Changing `approvalPolicy` alone never changes `approved` and never decides an
 existing request. The result is returned read-only as `approvalRequired` (the
 effective value) and `approvalPolicySource` (the level that decided it:
-`item`, `platform`, `workspace`, `profile` or `fallback`; the higher levels as
-ordered in the hierarchy issue). Both are stored when the item is inserted, in
-the `approval_required` and `approval_policy_source` columns, and are never
-recomputed, so a later change to `approvalPolicy` or to a higher level leaves
-them as they were. Neither is in any write payload. Items inserted before this
-field shipped have neither.
+`item`, `workspace`, `profile`, `organization`, `platform` or `fallback`; the
+higher levels are listed in their planned order, and the hierarchy issue
+defines them). Both are stored in the `approval_required` and
+`approval_policy_source` columns. They are written at insert and rewritten at
+each content edit, and a policy-only change does not rewrite them. Neither is
+in any write payload. Items inserted before this field shipped have neither.
+
+## Approval on a content edit
+
+An update that changes what the item will run or publish re-resolves its
+effective approval in the same transaction as the write, with the same rule as
+insert: the `approvalPolicy` the update stores, then the higher-level settings
+(interim: `inherit` or absent resolves to `required`). It records
+`approvalRequired` and `approvalPolicySource` again.
+
+**Content fields.** An update is a content edit when it changes one of these,
+compared with the stored value. They are the fields the fingerprint covers:
+
+| Field | Why it counts |
+| --- | --- |
+| `profile` | The profile the item runs as. |
+| `rowNumber` | The item's place in the queue. Counted because the fingerprint covers it, which fails closed: a renumbered item is re-approved. |
+| `data`, without the `Approved?` mirror | The content values the item posts. The server-owned mirror is not content. |
+| `rulesOfEngagement` | How hard the item pushes. |
+| `mediaAssetIds` | The files the item posts. |
+
+**Bookkeeping fields.** These never trigger a re-resolution: `approvalPolicy`
+(a change to it alone only changes the stored policy), `expectedFingerprint`
+(a precondition, not stored), `id` (ignored on update) and the thread fields
+(`threadId`, `replyToId`, `threadIndex`, fixed at insert). A content field
+omitted from the payload keeps its stored value, so it is not a change.
+
+A write-back that sends the stored content unchanged is not an edit. Older
+clients send the whole item on every write, and that must not reset approval.
+
+**The outcome of a content edit.** `approved` is never set to true by an
+update. The rows below are the outcomes of an edit, applied in the same
+transaction as the write, and a failed write keeps neither change:
+
+| Before the edit | The edit resolves to | `approved` after | Request after |
+| --- | --- | --- | --- |
+| approved | required | false | a new pending request |
+| approved | not required | true (unchanged) | none opens |
+| not approved, with a pending request | required | false | the same pending request; no second one |
+| not approved, with no pending request | required | false | a new pending request |
+| not approved | not required | false (unchanged) | an existing request keeps its state; none opens |
+| any, no content change | any | unchanged | unchanged |
+
+The table keeps the invariant the insert establishes: an unapproved item that
+needs approval always has a pending request.
+
+**Who.** The rule applies to every writer, a person included. An edit made by
+a person with Decide Content Item Approvals is re-approved the same way, so a
+person cannot edit an approved item into running without a decision.
 
 The table below is the target model. During the interim, the only sources are
 `item` and `fallback`, so the rows that name a higher level do not occur yet.
@@ -277,7 +326,9 @@ without parsing `data`:
 app, can approve an item by writing it. An insert sets `approved` from its
 effective approval (see [Approval policy](#approval-policy)): false when
 approval is required, true with no request when it is not. An update never
-changes `approved`. A server ignores an `approved` that
+sets `approved` to true; a content edit that resolves to required sets it
+back to false ([Approval on a content edit](#approval-on-a-content-edit)). A
+server ignores an `approved` that
 an older client still sends, because the payload is not closed. The generated
 Go and TypeScript payloads have no such field.
 
@@ -297,7 +348,9 @@ by an update, like `createdBy`. It is optional in the entity.
 **Retrying an insert.** `insertContentItem` takes the optional `Idempotency-Key`
 header ([`mcp-operation-contract.md`](mcp-operation-contract.md#idempotency-key)):
 within 24 hours the same key and request hash return the first response and
-insert nothing, and the same key with a different hash answers `422`.
+insert nothing, the same key with a different hash answers `422`, and a retry
+that arrives while the first request with that key is still being processed
+answers `409` and inserts nothing.
 
 ### Migrating from the `Approved?` column
 
@@ -330,22 +383,26 @@ backfilled. The backfill is the only time `Approved?` sets `approved`.
   and `not_required`; null means inherit and the server stores a written
   `inherit` as null, `approval_required`
   boolean nullable, and `approval_policy_source` text nullable, with a check
-  constraint that admits only `item`, `platform`, `workspace`, `profile` and
-  `fallback`; the two approval results are null on rows inserted before this
-  field shipped), indexes on `(organization_id, thread_id)` and
+  constraint that admits only `item`, `workspace`, `profile`, `organization`,
+  `platform` and `fallback`; the two approval results are null on rows inserted
+  before this field shipped), indexes on `(organization_id, thread_id)` and
   `(organization_id, reply_to_id)`, and a partial unique index on
   `(organization_id, thread_id, thread_index)` over live rows. It must also
   enforce the insert and update rules above (never take `approved` from a
   request body, open the item's pending `content_item_approval` request on
   insert only when the effective approval is required and set `approved`
-  true with no request when it is not, resolve `approvalPolicy` at insert
-  and write `approval_required` and `approval_policy_source` once, at insert,
-  so a later policy change never alters them, refuse with a 403 an
+  true with no request when it is not, resolve `approvalPolicy` at insert and
+  at each content edit, write `approval_required` and `approval_policy_source`
+  at those times only, so a policy-only change never alters them, on a content
+  edit that resolves to required reset `approved` to false and open the item's
+  pending request unless one is already pending, never set `approved` on an
+  update, refuse with a 403 an
   `approvalPolicy` change from a caller without Decide Content Item Approvals
   (`required` or `not_required` on insert; on update, a value different from the stored one, with absent, null and `inherit` as one value),
   and own `data["Approved?"]` while it is mirrored), tell an omitted
   `rulesOfEngagement` from `null` on update, extend the fingerprint, and
-  serve the `threadId` filter.
+  serve the `threadId` filter, and answer `409` to an `Idempotency-Key` still
+  in flight.
 - **The posting client** vendors the release, adds the fields to its `ContentItem`
   reads and `ContentItemPayload` sends, and implements the tightening and
   the reply hold in the engine.
