@@ -89,6 +89,8 @@ paths:
         - schedules
       summary: Create a schedule
       operationId: createSchedule
+      parameters:
+        - $ref: "#/components/parameters/idempotencyKey"
       description: |
         Creates a schedule in the organization of the authenticated session,
         owned by the session user (`createdBy`). `status` accepts only
@@ -97,6 +99,11 @@ paths:
         `nextRunAt` defaults to `runAt`. A `targetId` must name a live
         resource of `targetType` in the organization, else 400. Send
         `paused: true` to create the schedule already paused.
+        The optional `Idempotency-Key` header makes the create safe to
+        retry: within 24 hours the same key with the same request hash
+        returns the first response without creating another schedule, and
+        the same key with a different request hash answers 422 and creates
+        nothing.
       requestBody:
         required: true
         content:
@@ -348,6 +355,8 @@ components:
         type: string
 
   parameters:
+    idempotencyKey:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/idempotencyKey"
     ifMatch:
       name: If-Match
       in: header

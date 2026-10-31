@@ -90,7 +90,13 @@ paths:
       tags:
         - users
       operationId: getUser
+      x-mcp:
+        expose: true
+        title: Get the current user profile
+        scope: account:read
       summary: Get current user profile
+      parameters:
+        - $ref: "#/components/parameters/currentOrgId"
       responses:
         "200":
           description: Current user profile and role context
@@ -437,6 +443,8 @@ components:
             type: string
 
   parameters:
+    currentOrgId:
+      $ref: "../core/api.yml#/components/parameters/currentOrgId"
     id:
       name: id
       in: path

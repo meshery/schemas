@@ -44,6 +44,10 @@ paths:
         - contentItems
       summary: List content items
       operationId: listContentItems
+      x-mcp:
+        expose: true
+        title: List content items
+        scope: content:read
       description: |
         Returns a paginated list of the live content items in the
         organization of the authenticated session, ordered by `rowNumber`
@@ -66,6 +70,7 @@ paths:
           schema:
             type: string
         - $ref: "#/components/parameters/threadId"
+        - $ref: "#/components/parameters/currentOrgId"
       responses:
         "200":
           description: Content item page
@@ -89,6 +94,8 @@ paths:
         - contentItems
       summary: Insert a content item
       operationId: insertContentItem
+      parameters:
+        - $ref: "#/components/parameters/idempotencyKey"
       description: |
         Inserts a new content item. Insert-only: any supplied
         `id` and `expectedFingerprint` are ignored; existing rows change
@@ -126,6 +133,13 @@ paths:
         item and a missing one receive the same 400. A `threadIndex` that
         another live item of the same thread already holds refuses the
         insert with a 409.
+        The optional `Idempotency-Key` header makes the insert safe to
+        retry: within 24 hours the same key with the same request hash
+        returns the first response without inserting again, and the same
+        key with a different request hash answers 422 and inserts nothing.
+        `approved` may be sent, and the server may override it: a write made
+        by an AI app (`createdByClient` set) lands unapproved unless the
+        creating user turned on acting without approval.
       requestBody:
         required: true
         content:
@@ -161,8 +175,13 @@ paths:
         - contentItems
       summary: Get a content item by ID
       operationId: getContentItem
+      x-mcp:
+        expose: true
+        title: Get a content item
+        scope: content:read
       parameters:
         - $ref: "#/components/parameters/contentItemId"
+        - $ref: "#/components/parameters/currentOrgId"
       responses:
         "200":
           description: Content item response
@@ -308,6 +327,10 @@ components:
         whose `threadId` names it.
       schema:
         $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    currentOrgId:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/currentOrgId"
+    idempotencyKey:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/idempotencyKey"
     contentItemId:
       name: contentItemId
       in: path
@@ -349,8 +372,9 @@ components:
         Payload for inserting or updating a content item.
         Contains only client-settable fields; the owning
         `organizationId` (derived from the authenticated session), the
-        server-computed `fingerprint` and the server-generated
-        `createdAt` / `updatedAt` timestamps are intentionally excluded.
+        server-computed `fingerprint`, the server-set `createdByClient` and
+        the server-generated `createdAt` / `updatedAt` timestamps are
+        intentionally excluded.
       required:
         - profile
       properties:
@@ -452,6 +476,20 @@ components:
             clients send the whole item without it); an empty array clears it.
           x-oapi-codegen-extra-tags:
             json: "mediaAssetIds,omitempty"
+
+        approved:
+          type: boolean
+          description: |
+            Whether a person approved the item to run. Optional: omitted on
+            insert, the item is not approved; omitted on update, the stored
+            value is kept (old clients send the whole item without it). The
+            server's agent-write policy overrides it: a write by an AI app
+            (`createdByClient` set) lands unapproved whatever is sent, unless
+            the creating user turned on acting without approval. The
+            free-form `Approved?` column in `data` stays readable for one
+            release (docs/content-item-contract.md).
+          x-oapi-codegen-extra-tags:
+            json: "approved,omitempty"
 
     ContentItemRulesOfEngagement:
       type: object

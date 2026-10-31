@@ -31,8 +31,13 @@ organizationCollection:
       - Features
     summary: Get the active features entitled to an organization through its subscriptions
     operationId: getFeaturesByOrganization
+    x-mcp:
+      expose: true
+      title: Get the features of an organization
+      scope: account:read
     parameters:
       - $ref: "./api.yml#/components/parameters/orgId"
+      - $ref: "./api.yml#/components/parameters/currentOrgId"
     responses:
       "200":
         description: Features response

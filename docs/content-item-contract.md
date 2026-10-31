@@ -169,9 +169,59 @@ posts, in posting order. An item refers to an asset by id, never by URL.
 - The fingerprint covers it when set; an item without it hashes as before.
 - The generated Go payload omits an empty `mediaAssetIds`, so a Go client cannot clear the list through it, while TypeScript clients can send `[]`.
 
+## Approval and the client that created an item
+
+Two typed fields carry what the hosted MCP server and the apps need to read
+without parsing `data`:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `approved` | boolean | Whether a person approved the item to run. The client that runs the queue reads it. |
+| `createdByClient` | string | OAuth client ID of the AI app that created the item. Server-set from the access token; empty or absent for an item a person created. |
+
+**`approved` is in the entity and in `ContentItemPayload`.** A client may send
+it. The server's agent-write policy overrides it for agent writes: an item
+created by an AI app lands `approved` false unless the creating user turned on
+acting without approval, whatever the payload says. Omitted on insert, the item
+is not approved. Omitted on update, the stored value is kept, because clients
+released before the field existed send the whole item without it and must not
+unapprove it. The generated Go payload field is `*bool` with `omitempty` for
+that reason.
+
+**`createdByClient` is not in the payload.** It is server-set and never changed
+by an update, like `createdBy`. It is optional in the entity.
+
+**A pending decision is a request.** An item an AI app wrote waits for a person
+to approve it through a `content_item_approval` request (see
+[`request-contract.md`](request-contract.md)). Approving sets the item's
+`approved`; the request is never what the queue reads.
+
+**Retrying an insert.** `insertContentItem` takes the optional `Idempotency-Key`
+header ([`mcp-operation-contract.md`](mcp-operation-contract.md#idempotency-key)):
+within 24 hours the same key and request hash return the first response and
+insert nothing, and the same key with a different hash answers `422`.
+
+### Migrating from the `Approved?` column
+
+Until now approval was the `Approved?` column inside the item's `data`, a
+client-specific column that a generic construct should not read. It stays readable for
+one release so the Mac engine and the desktop app move over without a flag day:
+
+1. **Release N (this one).** Writers set the typed `approved`. Servers keep
+   `data["Approved?"]` in step on write, so an older reader still sees the
+   value. A reader that finds no `approved` on an older row falls back to
+   `data["Approved?"]`.
+2. **Release N+1.** Readers read `approved` only. Servers stop mirroring into
+   `data`, and the column is no longer part of the contract.
+
+A row written before this release has no stored `approved`. Servers backfill it
+from `Approved?` (truthy values: `true`, `yes`, `1`, `x`, case-insensitive) when
+the column is added, and the fallback above covers any row not yet backfilled.
+
 ## Consumers
 
-- **layer5io/meshery-cloud** must add the columns (`rules_of_engagement`
+- **layer5io/meshery-cloud** must add the columns (`approved` boolean not null
+  default false, `created_by_client` text, `rules_of_engagement`
   jsonb, `thread_id` and `reply_to_id` uuid referencing `content_items`,
   `thread_index` integer, `media_asset_ids` uuid[]), indexes on `(organization_id, thread_id)` and
   `(organization_id, reply_to_id)`, and a partial unique index on
