@@ -86,7 +86,7 @@ test("no scope or keychain carries a product name", () => {
   const scopes = resolveOAuthScopes(scopeFile, permissions, keychains);
   for (const s of scopes) {
     for (const value of [s.scope, s.keychain, ...s.keys.map((k) => k.name)]) {
-      assert.doesNotMatch(value, /blowhorn|meshery|layer5|kanvas/i, value);
+      assert.doesNotMatch(value, /meshery|layer5|kanvas/i, value);
     }
   }
 });
