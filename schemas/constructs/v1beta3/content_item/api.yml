@@ -155,7 +155,10 @@ paths:
         A retry with the same key that arrives while the first request with
         that key is still being processed answers 409 with the body `code`
         `idempotency_key_in_flight` and inserts nothing; the client retries
-        later and then receives the stored response. An in-flight claim on a
+        later and then receives the stored response. Precedence: while the
+        first request with a key is in flight, every retry with that key
+        answers 409 whatever its body; only once the first request has finished
+        does a retry with a different body answer 422. An in-flight claim on a
         request that never finished expires 24 hours after it was taken, the
         same TTL as the stored response (no shorter in-flight lease applies),
         and a retry after that is processed as new. The permanent 409s of

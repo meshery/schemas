@@ -197,6 +197,7 @@ func TestSharedHeaderParameters(t *testing.T) {
 		"no shorter in-flight lease applies",
 		"A retry after that expiry is processed as new",
 		"`code` `idempotency_key_in_flight`",
+		"while the first request with a key is in flight, every retry with that key answers 409 whatever its body",
 	} {
 		if !strings.Contains(flat, want) {
 			t.Errorf("Idempotency-Key description must document the in-flight expiry, missing %q", want)
@@ -300,6 +301,18 @@ func TestIdempotencyKeyInFlightIsDeclared(t *testing.T) {
 	// the content-specific schema's; the in-flight body is the core schema, referenced
 	// rather than copied, so the two cannot drift apart.
 	content := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/content_item/api.yml"))
+	insertDesc := strings.Join(strings.Fields(flatDescription(t, mustLookup(t, content, "paths", "/api/content-items", "post"), "description")), " ")
+	if !strings.Contains(insertDesc, "while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422") {
+		t.Error("insertContentItem must state the Idempotency-Key precedence: in-flight 409 before the 422 for a different body")
+	}
+	// The same precedence is stated once in the contract doc.
+	contractDoc, err := os.ReadFile(filepath.Join(root, "docs/mcp-operation-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(strings.Join(strings.Fields(string(contractDoc)), " "), "**Precedence.** While the first request with a key is in flight, every retry with that key answers `409` whatever its body. Only once the first request has finished does a retry with a different body answer `422`.") {
+		t.Error("docs/mcp-operation-contract.md must state the Idempotency-Key precedence")
+	}
 	if got := mustValue(mustLookup(t, content, "paths", "/api/content-items", "post", "responses", "409"), "$ref"); got != "#/components/responses/InsertConflict" {
 		t.Errorf("insertContentItem 409 $ref = %v, want InsertConflict", got)
 	}
@@ -717,7 +730,7 @@ func TestOrganizationSelectorIsDeclared(t *testing.T) {
 			}
 		}
 		desc := flatDescription(t, tc.op, "description")
-		for _, want := range []string{"`X-Current-Orgid` is also sent", "must name the same organization", "a mismatch is refused with a 403", "docs/mcp-operation-contract.md"} {
+		for _, want := range []string{"`X-Current-Orgid` is also sent", "must name the same organization", "a mismatch is refused with a 403", "docs/mcp-operation-contract.md", "When `X-Current-Orgid` is omitted,", "(the session's selected organization)"} {
 			if !strings.Contains(desc, want) {
 				t.Errorf("%s description must say %q", tc.operationID, want)
 			}
@@ -732,10 +745,13 @@ func TestOrganizationSelectorIsDeclared(t *testing.T) {
 		t.Fatal(err)
 	}
 	flat := strings.Join(strings.Fields(string(doc)), " ")
-	for _, want := range []string{"## The organization selector", "must name the same organization as `X-Current-Orgid` when both are sent", "A mismatch answers `403` and returns nothing"} {
+	for _, want := range []string{"## The organization selector", "must name the same organization as `X-Current-Orgid` when both are sent", "A mismatch answers `403` and returns nothing", "When the header is omitted, the path or query `orgId` must equal the organization the call acts in", "case-insensitive"} {
 		if !strings.Contains(flat, want) {
 			t.Errorf("docs/mcp-operation-contract.md must state the organization selector: missing %q", want)
 		}
+	}
+	if strings.Contains(flat, "nothing to compare") {
+		t.Error("docs/mcp-operation-contract.md must not leave an omitted X-Current-Orgid unchecked")
 	}
 }
 
