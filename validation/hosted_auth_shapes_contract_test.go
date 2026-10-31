@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -119,6 +120,97 @@ func TestTokenScopingFieldsAreOptionalOnTheEntity(t *testing.T) {
 		{"expiresAt is not a time", withFields(existingToken(), map[string]any{"expiresAt": "tomorrow"}), true},
 		{"unknown field", withFields(existingToken(), map[string]any{"scopes": []any{"x"}}), true},
 	})
+}
+
+// keychainScoped is the server's stored record of a keychain limit: optional
+// and read-only on the entity, and never client-settable through TokenPayload.
+func TestTokenKeychainScopedIsReadOnlyOnTheEntity(t *testing.T) {
+	doc := loadSpec(t, tokenSpec)
+	token := schemaOf(t, doc, "UserToken")
+	prop := token.Properties["keychainScoped"]
+	if prop == nil || prop.Value == nil {
+		t.Fatal("UserToken has no keychainScoped property")
+	}
+	if !prop.Value.ReadOnly {
+		t.Error("UserToken.keychainScoped must be readOnly")
+	}
+	for _, r := range token.Required {
+		if r == "keychainScoped" {
+			t.Error("keychainScoped must be optional so existing tokens stay valid")
+		}
+	}
+	if tags := extraTags(prop.Value); tags["db"] != "keychain_scoped" {
+		t.Errorf("UserToken.keychainScoped db tag = %v, want keychain_scoped", tags["db"])
+	}
+	if tags := extraTags(token.Properties["expiresAt"].Value); tags["db"] != "expires_at" {
+		t.Errorf("UserToken.expiresAt db tag = %v, want expires_at", tags["db"])
+	}
+	if schemaOf(t, doc, "TokenPayload").Properties["keychainScoped"] != nil {
+		t.Error("TokenPayload must not carry keychainScoped: a client limits a token only through keychainIds")
+	}
+	checkCases(t, token, nil, []struct {
+		name    string
+		body    map[string]any
+		wantErr bool
+	}{
+		{"scoped token with no keychains left", withFields(existingToken(), map[string]any{"keychainScoped": true, "keychainIds": []any{}}), false},
+		{"keychainScoped is not a boolean", withFields(existingToken(), map[string]any{"keychainScoped": "yes"}), true},
+	})
+}
+
+// TokenStanding is the lookup-by-jti read shape: exactly id, revoked, expired
+// and keychainScoped, all required, each mapped to its result column.
+func TestTokenStandingShape(t *testing.T) {
+	doc := loadSpec(t, tokenSpec)
+	standing := schemaOf(t, doc, "TokenStanding")
+	want := map[string]string{"id": "id", "revoked": "revoked", "expired": "expired", "keychainScoped": "keychain_scoped"}
+	if len(standing.Properties) != len(want) {
+		t.Errorf("TokenStanding has %d properties, want %d", len(standing.Properties), len(want))
+	}
+	// The loader drops siblings of $ref (id), so read the db tags from the raw spec.
+	data, err := os.ReadFile(filepath.Join(repoRootDir(t), tokenSpec))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var raw struct {
+		Components struct {
+			Schemas map[string]struct {
+				Properties map[string]struct {
+					Tags map[string]string `yaml:"x-oapi-codegen-extra-tags"`
+				} `yaml:"properties"`
+			} `yaml:"schemas"`
+		} `yaml:"components"`
+	}
+	if err := yaml.Unmarshal(data, &raw); err != nil {
+		t.Fatal(err)
+	}
+	for name, column := range want {
+		if standing.Properties[name] == nil {
+			t.Errorf("TokenStanding has no %s property", name)
+			continue
+		}
+		if got := raw.Components.Schemas["TokenStanding"].Properties[name].Tags["db"]; got != column {
+			t.Errorf("TokenStanding.%s db tag = %q, want %s", name, got, column)
+		}
+	}
+	if len(standing.Required) != len(want) {
+		t.Errorf("TokenStanding required = %v, want every field", standing.Required)
+	}
+	checkCases(t, standing, nil, []struct {
+		name    string
+		body    map[string]any
+		wantErr bool
+	}{
+		{"matched live token", map[string]any{"id": sampleUUID, "revoked": false, "expired": false, "keychainScoped": true}, false},
+		{"no match", map[string]any{"id": "00000000-0000-0000-0000-000000000000", "revoked": false, "expired": false, "keychainScoped": false}, false},
+		{"missing keychainScoped", map[string]any{"id": sampleUUID, "revoked": false, "expired": false}, true},
+		{"unknown field", map[string]any{"id": sampleUUID, "revoked": false, "expired": false, "keychainScoped": false, "owner": sampleUUID2}, true},
+	})
+}
+
+func extraTags(s *openapi3.Schema) map[string]any {
+	tags, _ := s.Extensions["x-oapi-codegen-extra-tags"].(map[string]any)
+	return tags
 }
 
 func TestTokenPayloadCarriesTheScopingFields(t *testing.T) {
