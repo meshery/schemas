@@ -67,8 +67,9 @@ type itemEditState struct {
 	source   string
 }
 
-// itemEditOutcome is what the update leaves stored. supersede is set when the
-// write closes the item's open request as superseded.
+// itemEditOutcome is what the write leaves stored. supersede is set when the
+// write closes the item's open request as superseded. openRequest is set when the
+// write opens a fresh pending request.
 type itemEditOutcome struct {
 	approved    bool
 	required    bool
@@ -80,35 +81,42 @@ type itemEditOutcome struct {
 // itemEditApproval is the reference for a content edit. Without one, nothing is
 // re-resolved and the stored approval stays. With one, the approval is resolved
 // as insert resolves it, and the open request, if any, is superseded in the same
-// transaction. Required resets approved to false and opens a fresh request.
-// Not required keeps approved and opens none. An update never sets approved to
-// true.
+// transaction. Required resets approved to false. Whatever the result, an item
+// the write leaves unapproved gets a fresh request, by the open-request invariant.
+// An update never sets approved to true.
 func itemEditApproval(s itemEditState, changed bool) itemEditOutcome {
-	if !changed {
-		return itemEditOutcome{approved: s.approved, required: s.required, source: s.source}
+	out := itemEditOutcome{approved: s.approved, required: s.required, source: s.source}
+	if changed {
+		out.required, out.source = itemInterimResolve(s.policy)
+		out.supersede = s.pending
+		if out.required {
+			out.approved = false
+		}
 	}
-	required, source := itemInterimResolve(s.policy)
-	out := itemEditOutcome{approved: s.approved, required: required, source: source, supersede: s.pending}
-	if required {
-		out.approved = false
-		out.openRequest = true
-	}
-	return out
+	return itemEnsureRequest(out, s.pending && !out.supersede)
 }
 
 // itemPolicyApproval is the reference for a write that changes the stored
 // approvalPolicy and no content. The approval is re-resolved, but only tightening
-// changes approved: required on an approved item resets it and opens a request
-// unless one is pending. Loosening, and any change on an unapproved item, leaves
-// approved and the open request as they are. Nothing is superseded, since the
-// content did not change.
+// changes approved: required on an approved item resets it. Loosening, and any
+// change on an unapproved item, leaves approved and the open request as they are.
+// Nothing is superseded, since the content did not change. An unapproved item
+// with no open request gets one under either result.
 func itemPolicyApproval(s itemEditState) itemEditOutcome {
-	required, source := itemInterimResolve(s.policy)
-	out := itemEditOutcome{approved: s.approved, required: required, source: source}
-	if required && s.approved {
+	out := itemEditOutcome{approved: s.approved}
+	out.required, out.source = itemInterimResolve(s.policy)
+	if out.required && s.approved {
 		out.approved = false
-		out.openRequest = !s.pending
 	}
+	return itemEnsureRequest(out, s.pending)
+}
+
+// itemEnsureRequest is the open-request invariant: an unapproved item always has
+// an open pending request. pendingKept is whether the write leaves the item's
+// existing request open. A fresh one opens when the item is unapproved and none
+// is kept.
+func itemEnsureRequest(out itemEditOutcome, pendingKept bool) itemEditOutcome {
+	out.openRequest = !out.approved && !pendingKept
 	return out
 }
 
@@ -156,14 +164,15 @@ func TestContentItemUpdateApprovalRule(t *testing.T) {
 		"the `approvalPolicy` the update stores",
 		"`approved` false",
 		"The item's open `content_item_approval` request, if it has one, is superseded",
-		"A fresh pending request then opens for the content as it now is",
-		"an unapproved item always has an open request",
-		"When approval resolves to not required, an open request is superseded the same way and no new request opens",
-		"`approved` is unchanged, and an unapproved item stays unapproved",
+		"Whatever the resolved approval, an item the edit leaves unapproved gets a fresh pending request for the content as it now is",
+		"an unapproved item always has an open request (the open-request invariant in docs/content-item-contract.md)",
+		"When approval resolves to not required, `approved` is unchanged: an approved item stays approved and opens no request",
+		"An update never approves: the item stays unapproved until a decider approves that request",
 		"no update sets it to true",
 		"A failed write keeps every change",
 		"Approval on an `approvalPolicy` change.",
 		"Any other result changes no `approved` and closes no request",
+		"An unapproved item with no open request, after a denial for example, gets a fresh pending request in the same write, whatever the result",
 		"The stored `approvalRequired` and `approvalPolicySource` are rewritten to the new result",
 		"This applies to every writer, a person included.",
 		"a write-back that sends them unchanged is not an edit",
@@ -210,6 +219,12 @@ func TestContentItemEditApprovalOutcomes(t *testing.T) {
 			want:    itemEditOutcome{approved: true, required: false, source: "item", openRequest: false},
 		},
 		{
+			name:    "approved item, content edit, inherit resolves to required: reset to unapproved and a fresh request opens",
+			state:   itemEditState{approved: true, policy: "inherit", required: false, source: "item"},
+			changed: true,
+			want:    itemEditOutcome{approved: false, required: true, source: "fallback", openRequest: true},
+		},
+		{
 			name:    "approved item, bookkeeping only: unchanged, the stored policy is not re-resolved",
 			state:   itemEditState{approved: true, policy: "required", required: false, source: "item"},
 			changed: false,
@@ -222,10 +237,10 @@ func TestContentItemEditApprovalOutcomes(t *testing.T) {
 			want:    itemEditOutcome{approved: false, required: true, source: "item", openRequest: true, supersede: true},
 		},
 		{
-			name:    "unapproved item with a pending request, content edit, not_required: old request superseded, none opened",
+			name:    "unapproved item with a pending request, content edit, not_required: old request superseded, a fresh one opens",
 			state:   itemEditState{approved: false, pending: true, policy: "not_required", required: true, source: "item"},
 			changed: true,
-			want:    itemEditOutcome{approved: false, required: false, source: "item", openRequest: false, supersede: true},
+			want:    itemEditOutcome{approved: false, required: false, source: "item", openRequest: true, supersede: true},
 		},
 		{
 			name:    "unapproved item with no pending request, content edit, required: a request opens",
@@ -246,10 +261,22 @@ func TestContentItemEditApprovalOutcomes(t *testing.T) {
 			want:    itemEditOutcome{approved: false, required: true, source: "fallback", openRequest: true},
 		},
 		{
-			name:    "unapproved item, content edit, not_required: stays unapproved and opens no request",
+			name:    "unapproved item with no pending request, content edit, not_required: stays unapproved and a fresh request opens",
 			state:   itemEditState{approved: false, pending: false, policy: "not_required", required: false, source: "item"},
 			changed: true,
-			want:    itemEditOutcome{approved: false, required: false, source: "item", openRequest: false},
+			want:    itemEditOutcome{approved: false, required: false, source: "item", openRequest: true},
+		},
+		{
+			name:    "unapproved item with no pending request, bookkeeping only: a request opens, the stored policy is not re-resolved",
+			state:   itemEditState{approved: false, pending: false, policy: "not_required", required: true, source: "item"},
+			changed: false,
+			want:    itemEditOutcome{approved: false, required: true, source: "item", openRequest: true},
+		},
+		{
+			name:    "unapproved item with a pending request, bookkeeping only: request kept, none opened",
+			state:   itemEditState{approved: false, pending: true, policy: "required", required: true, source: "item"},
+			changed: false,
+			want:    itemEditOutcome{approved: false, required: true, source: "item", openRequest: false},
 		},
 	}
 	for _, tc := range cases {
@@ -300,6 +327,21 @@ func TestContentItemPolicyChangeOutcomes(t *testing.T) {
 			state: itemEditState{approved: false, pending: true, policy: "required", required: false, source: "item"},
 			want:  itemEditOutcome{approved: false, required: true, source: "item", openRequest: false},
 		},
+		{
+			name:  "unapproved item with no pending request, required to not_required: stays unapproved, a fresh request opens",
+			state: itemEditState{approved: false, pending: false, policy: "not_required", required: true, source: "item"},
+			want:  itemEditOutcome{approved: false, required: false, source: "item", openRequest: true},
+		},
+		{
+			name:  "unapproved item with no pending request, not_required to required: a request opens",
+			state: itemEditState{approved: false, pending: false, policy: "required", required: false, source: "item"},
+			want:  itemEditOutcome{approved: false, required: true, source: "item", openRequest: true},
+		},
+		{
+			name:  "unapproved item with no pending request, not_required to inherit: interim fallback resolves to required, a request opens",
+			state: itemEditState{approved: false, pending: false, policy: "inherit", required: false, source: "fallback"},
+			want:  itemEditOutcome{approved: false, required: true, source: "fallback", openRequest: true},
+		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -307,6 +349,40 @@ func TestContentItemPolicyChangeOutcomes(t *testing.T) {
 				t.Errorf("itemPolicyApproval(%+v) = %+v, want %+v", tc.state, got, tc.want)
 			}
 		})
+	}
+}
+
+// The open-request invariant, checked over every stored state and every kind of
+// write: after the write, an item that is not approved has an open pending
+// request, and no write sets approved to true.
+func TestContentItemUnapprovedAlwaysHasOpenRequest(t *testing.T) {
+	check := func(t *testing.T, s itemEditState, got itemEditOutcome) {
+		t.Helper()
+		if got.approved && !s.approved {
+			t.Errorf("state %+v: a write set approved to true", s)
+		}
+		pendingAfter := (s.pending && !got.supersede) || got.openRequest
+		if !got.approved && !pendingAfter {
+			t.Errorf("state %+v: write left an unapproved item with no open request: %+v", s, got)
+		}
+	}
+	for _, approved := range []bool{false, true} {
+		for _, pending := range []bool{false, true} {
+			if approved && pending {
+				continue // an approved item has no open request
+			}
+			for _, policy := range []string{"required", "not_required", "inherit", ""} {
+				s := itemEditState{approved: approved, pending: pending, policy: policy}
+				for _, changed := range []bool{false, true} {
+					t.Run("content", func(t *testing.T) {
+						check(t, s, itemEditApproval(s, changed))
+					})
+				}
+				t.Run("policy", func(t *testing.T) {
+					check(t, s, itemPolicyApproval(s))
+				})
+			}
+		}
 	}
 }
 

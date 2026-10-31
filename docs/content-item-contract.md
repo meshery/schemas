@@ -248,6 +248,23 @@ are written at insert, at each content edit and at each policy change, so they
 always describe the stored policy. Neither is in any write payload. Items
 inserted before this field shipped have neither.
 
+## The open-request invariant
+
+An unapproved item always has exactly one open pending
+`content_item_approval` request. This is the one statement of the rule; the
+approval sections below and the operation descriptions refer back to it.
+
+- **Insert** establishes it: a required item lands unapproved with its request,
+  and a not-required item lands approved with none.
+- **Every write** keeps it. A write that leaves an item unapproved with no open
+  request opens a fresh pending one in the same transaction, whatever the
+  item's resolved approval. An approved item has no request to keep.
+- **A denial** closes the request as `denied` and leaves the item unapproved, so
+  the next write that leaves it unapproved opens a new request.
+
+The request is what a decider acts on, so an unapproved item is never left
+where no one is asked to approve it.
+
 ## Approval on a content edit
 
 An update that changes what the item will run or publish re-resolves its
@@ -286,18 +303,18 @@ transaction as the write, and a failed write keeps neither change:
 | approved | not required | true (unchanged) | none opens; an open request, if any, is superseded |
 | not approved, with a pending request | required | false | the pending request is superseded; a fresh pending request opens |
 | not approved, with no pending request | required | false | a new pending request |
-| not approved, with a pending request | not required | false (unchanged) | the pending request is superseded; none opens |
-| any, no content change | any | unchanged | unchanged |
+| not approved, with a pending request | not required | false (unchanged) | the pending request is superseded; a fresh pending request opens |
+| not approved, with no pending request | not required | false (unchanged) | a new pending request |
+| any, no content change | any | unchanged | unchanged, except that an unapproved item with no open request gets one |
 
 A superseded request is closed with `status` `superseded`, `decidedAt` set to
 the edit time, and no `decidedBy` and no `note`. It is final. `approveRequest`
 and `denyRequest` answer `409` on it and change nothing, so an approval always
-applies to the content as of the open request. A content edit that resolves to
-required always opens a new request for the content it wrote, in the same
-transaction, so no approval is carried over from the content it replaced.
-
-The table keeps the invariant the insert establishes: an unapproved item that
-needs approval always has an open pending request.
+applies to the content as of the open request. A content edit that leaves the
+item unapproved always opens a new request for the content it wrote, in the same
+transaction, so no approval is carried over from the content it replaced. This
+is the [open-request invariant](#the-open-request-invariant) at work: a
+not-required edit does not approve the item, so it must ask again.
 
 **Who.** The rule applies to every writer, a person included. An edit made by
 a person with Decide Content Item Approvals is re-approved the same way, so a
@@ -330,15 +347,18 @@ re-resolves nothing.
 | --- | --- | --- | --- |
 | approved | required | false | a pending request opens, unless one is already pending |
 | approved | not required | true (unchanged) | none |
-| not approved | required | false (unchanged) | the open request stays as it is |
-| not approved | not required | false (unchanged) | the open request, if any, stays pending |
+| not approved | required | false (unchanged) | the open request stays as it is; a new one opens if there is none |
+| not approved | not required | false (unchanged) | the open request stays pending; a new one opens if there is none |
 
 Tightening (not required to required, or to inherit or absent during the
 interim) resets an approved item, because its approval must now be given again.
 Loosening never changes `approved` and never closes a request: an unapproved
 item stays unapproved, and its open request stays pending, so a decider can
-still decide it. `approvalRequired` and `approvalPolicySource` are rewritten to
-the new result, so they match the stored policy.
+still decide it. An unapproved item with no open request, after a denial for
+example, gets a fresh one under either result, by the
+[open-request invariant](#the-open-request-invariant). `approvalRequired` and
+`approvalPolicySource` are rewritten to the new result, so they match the stored
+policy.
 
 ## Approval and the client that created an item
 
@@ -432,11 +452,12 @@ backfilled. The backfill is the only time `Approved?` sets `approved`.
   each content edit and at each change to the stored policy, and write
   `approval_required` and `approval_policy_source` at those times; on a content
   edit that resolves to required, reset `approved` to false, supersede the
-  item's open request and open a fresh pending one, and on a content edit that
-  resolves to not required, supersede the open request and open none; on a
-  policy change that resolves to required, reset an approved item to false and
-  open a pending request unless one is already pending, and change nothing
-  else; never set `approved` on an update; refuse with a 403 an
+  item's open request and, when the item is left unapproved, open a fresh pending
+  one (for not required as well as required); on a policy change that resolves to
+  required, reset an approved item to false and open a pending request unless one
+  is already pending, and open one for any unapproved item with none open, under
+  either result (the [open-request invariant](#the-open-request-invariant));
+  never set `approved` on an update; refuse with a 403 an
   `approvalPolicy` change from a caller without Decide Content Item Approvals
   (`required` or `not_required` on insert; on update, a value different from the
   stored one, with absent, null and `inherit` as one value); and own

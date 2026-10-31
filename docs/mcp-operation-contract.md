@@ -168,10 +168,11 @@ in-flight case by that `code`.
 
 - `createSchedule` declares the shared `IdempotencyKeyInFlight` response, which
   carries that body.
-- `insertContentItem` declares its own `InsertConflict` response, whose `code`
-  is one of `idempotency_key_in_flight`, `row_number_taken` or
-  `thread_index_taken`. The two permanent codes are the insert's other `409`s:
-  `row_number_taken` for a `rowNumber` a live item holds, and
+- `insertContentItem` declares its own `InsertConflict` response. Its body is
+  either `ContentItemInsertConflict`, whose `code` is one of the two permanent
+  codes, or the shared `IdempotencyKeyInFlightError` from `v1beta2/core`, whose
+  `code` is `idempotency_key_in_flight`. The permanent codes are the insert's
+  other `409`s: `row_number_taken` for a `rowNumber` a live item holds, and
   `thread_index_taken` for a `threadIndex` a live item of the same thread holds.
   The in-flight code is distinct from both.
 

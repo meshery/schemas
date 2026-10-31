@@ -16,9 +16,12 @@ info:
     in https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until
     the upstream policies exist, `inherit` or absent resolves to `required`.
     A content edit that resolves to required resets an approved item to
-    unapproved and supersedes its open request, if any, with a fresh pending
-    request (see updateContentItem). A change to `approvalPolicy` alone that
-    makes approval required does the same to an approved item. Only a person
+    unapproved. Any content edit supersedes the item's open request, if any,
+    and an item it leaves unapproved gets a fresh pending request for the
+    content as it now is, so an unapproved item always has an open request
+    (see updateContentItem and the invariant in
+    docs/content-item-contract.md). A change to `approvalPolicy` alone that
+    makes approval required resets an approved item the same way. Only a person
     holding Decide Content Item Approvals may write an `approvalPolicy` value
     that changes the stored one.
     Organization scope: every operation acts only in the organization the
@@ -274,23 +277,28 @@ paths:
         When approval resolves to required, an item that was `approved` is set
         to `approved` false. The item's open `content_item_approval` request,
         if it has one, is superseded: it is closed with `status` `superseded`,
-        `decidedAt` set to the edit time, and no `decidedBy` and no `note`. A
-        fresh pending request then opens for the content as it now is, so an
-        unapproved item always has an open request. When approval resolves to
-        not required, an open request is superseded the same way and no new
-        request opens; `approved` is unchanged, and an unapproved item stays
-        unapproved, since an update never approves. A failed write keeps every
-        change, the item and its requests alike.
+        `decidedAt` set to the edit time, and no `decidedBy` and no `note`.
+        When approval resolves to not required, `approved` is unchanged: an
+        approved item stays approved and opens no request. Whatever the
+        resolved approval, an item the edit leaves unapproved gets a fresh
+        pending request for the content as it now is, in the same
+        transaction, so an unapproved item always has an open request (the
+        open-request invariant in docs/content-item-contract.md). An
+        update never approves: the item stays unapproved until a decider
+        approves that request. A failed write keeps every change, the item and
+        its requests alike.
         Approval on an `approvalPolicy` change. A write that changes the stored
         policy and no content re-resolves the approval the same way, in the
         same transaction. When the result is required and the item was
         `approved`, `approved` is set to false and a pending request opens,
         unless one is already pending. Any other result changes no `approved`
         and closes no request: loosening the requirement leaves an unapproved
-        item unapproved, and its open request stays pending for a decider. The
-        stored `approvalRequired` and `approvalPolicySource` are rewritten to
-        the new result. Sending back the unchanged stored policy re-resolves
-        nothing.
+        item unapproved, and its open request stays pending for a decider. An
+        unapproved item with no open request, after a denial for example, gets
+        a fresh pending request in the same write, whatever the result, so an
+        unapproved item always has an open request. The stored
+        `approvalRequired` and `approvalPolicySource` are rewritten to the new
+        result. Sending back the unchanged stored policy re-resolves nothing.
         This applies to every writer, a person included.
       parameters:
         - $ref: "#/components/parameters/contentItemId"
@@ -388,7 +396,9 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ContentItemInsertConflict"
+            oneOf:
+              - $ref: "#/components/schemas/ContentItemInsertConflict"
+              - $ref: "../../v1beta2/core/api.yml#/components/schemas/IdempotencyKeyInFlightError"
     MeshkitError429:
       $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
     500:
@@ -619,7 +629,7 @@ components:
 
     ContentItemInsertConflict:
       type: object
-      description: Body of a refused insert. `code` is the machine-readable reason and `message` the sentence the caller is shown.
+      description: Body of an insert refused for a permanent conflict with the content. `code` is the machine-readable reason and `message` the sentence the caller is shown. The in-flight retry body is `IdempotencyKeyInFlightError` in v1beta2 core.
       additionalProperties: false
       required:
         - code
@@ -630,13 +640,10 @@ components:
           description: >
             `row_number_taken`: a live item of the organization holds the
             `rowNumber`. `thread_index_taken`: a live item of the same thread
-            holds the `threadIndex`. `idempotency_key_in_flight`: an earlier
-            request with the same Idempotency-Key is still being processed; it
-            is a retry, not a conflict with the content.
+            holds the `threadIndex`.
           enum:
             - row_number_taken
             - thread_index_taken
-            - idempotency_key_in_flight
         message:
           type: string
           minLength: 1

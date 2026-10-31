@@ -200,8 +200,9 @@ properties:
       false. Afterwards only `approveRequest` in the request construct sets it
       to true; that operation needs the Decide Content Item Approvals key and
       is never an AI app tool. A content edit that resolves to required sets
-      it back to false and supersedes an open request with a fresh pending
-      one (see updateContentItem). A change to `approvalPolicy` that makes
+      it back to false. Any content edit that leaves it unapproved supersedes
+      an open request with a fresh pending one, so an unapproved item always
+      has an open request (see updateContentItem). A change to `approvalPolicy` that makes
       approval required does the same to an approved item.
       The client that runs the queue reads this field.
       For one release after this field ships, servers mirror it into the
