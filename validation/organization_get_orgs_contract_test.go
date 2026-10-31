@@ -39,8 +39,8 @@ func TestGetOrgsDeclaresNoBodiless204(t *testing.T) {
 	if media == nil || media.Schema == nil {
 		t.Fatal("getOrgs 200 declares no application/json schema")
 	}
-	if media.Schema.Value != page.Value {
-		t.Error("getOrgs 200 does not resolve to OrganizationsPage")
+	if media.Schema.Ref != "#/components/schemas/OrganizationsPage" {
+		t.Errorf("getOrgs 200 schema ref = %q, want \"#/components/schemas/OrganizationsPage\"", media.Schema.Ref)
 	}
 
 	empty := map[string]any{"organizations": []any{}, "page": 0, "pageSize": 10, "totalCount": 0}
