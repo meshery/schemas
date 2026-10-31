@@ -955,9 +955,9 @@ components:
             token-authenticated write that names this field never sets it.
             Once the marker is set, the free-form value is never read again, and
             null means inherit, not the free-form value. While the marker is
-            unset, a reader may display the free-form value, but it never changes
-            approval resolution: during the interim inherit resolves to required
-            whatever it says, as the migration section of
+            unset, the free-form value is not shown as the preference and never
+            changes approval resolution: during the interim inherit resolves to
+            required whatever it says, as the migration section of
             docs/agent-approval-preference.md describes. On read, absent means
             not set (inherit); the stored value is never null. An API token, of
             any kind, cannot change this field: a token-authenticated request

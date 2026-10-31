@@ -29,8 +29,9 @@ description: |
   keychain-scope minimum. A token is never issued under a consent with an empty
   keychain list, because a token limited to no keychains would hold no keys.
   Re-consent changes the client's existing tokens, in the same transaction as
-  the consent update, by the token's stored `keychainScoped` flag:
-  - A scoped token (`keychainScoped` true) gets `keychainIds` set to the
+  the consent update, by whether each token is scoped (`keychainScoped` true,
+  or a non-empty `keychainIds`). Every token matches exactly one branch:
+  - A scoped token gets `keychainIds` set to the
     intersection of its keychains and the keychains of the new scopes. A
     re-consent never adds keychains to a scoped token: a narrower re-consent
     narrows it, and a broader one leaves it unchanged. A token whose
@@ -38,7 +39,8 @@ description: |
     scoped token with no keychains holds no keys. This also holds when the token's
     keychains were all deleted: its intersection is empty, so it is revoked,
     and it never gains keys.
-  - An unrestricted token (`keychainScoped` false) gets `keychainIds` set to
+  - An unrestricted token (`keychainScoped` false or absent and `keychainIds`
+    empty or absent) gets `keychainIds` set to
     exactly the keychains of the new scopes, and `keychainScoped` set to true.
   - A re-consent that names no keychain scope (an empty list, or only scopes
     that map to no keychain) revokes: the consent is revoked (soft-deleted) and

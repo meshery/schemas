@@ -172,15 +172,26 @@ func TestTokenRestrictionFailsClosed(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	oauthContract, err := os.ReadFile(filepath.Join(root, "docs", "oauth-consent-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	approval, err := os.ReadFile(filepath.Join(root, "docs", "agent-approval-preference.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
 	texts := map[string]string{
-		"token.yaml description":         squash(entityDesc),
-		"token.yaml keychainIds":         squash(entityIDs),
-		"token.yaml keychainScoped":      squash(entityFlag),
-		"UserToken.keychainIds":          apiIDs,
-		"docs/token-scoping-contract.md": squash(strings.ReplaceAll(string(contract), "`", "")),
+		"token.yaml description":            squash(entityDesc),
+		"token.yaml keychainIds":            squash(entityIDs),
+		"token.yaml keychainScoped":         squash(entityFlag),
+		"UserToken.keychainIds":             apiIDs,
+		"TokenStanding.keychainScoped":      squash(schemaOf(t, loadSpec(t, tokenSpec), "TokenStanding").Properties["keychainScoped"].Value.Description),
+		"docs/token-scoping-contract.md":    squash(strings.ReplaceAll(string(contract), "`", "")),
+		"docs/oauth-consent-contract.md":    squash(strings.ReplaceAll(string(oauthContract), "`", "")),
+		"docs/agent-approval-preference.md": squash(string(approval)),
 	}
 	for name, text := range texts {
-		for _, stale := range []string{"Empty or absent means unrestricted", "empty or absent is unrestricted", "False or absent means unrestricted", "decided by keychainScoped", "not by the length of this list"} {
+		for _, stale := range []string{"Empty or absent means unrestricted", "empty or absent is unrestricted", "False or absent means unrestricted", "decided by keychainScoped", "not by the length of this list", "Never inferred from mapping rows", "Never inferred from the keychain mappings", "never from counting its keychain mappings", "not by whether its keychainIds is empty", "A reader may display", "a reader may display"} {
 			if strings.Contains(text, stale) {
 				t.Errorf("%s must not keep the old wording %q", name, stale)
 			}
@@ -1097,7 +1108,7 @@ func TestOauthConsentDeleteWhoMayRevoke(t *testing.T) {
 func TestFreeFormFallbackEndsOnceTypedFieldWritten(t *testing.T) {
 	v3 := loadSpec(t, userV1beta3Spec)
 	read := squash(schemaOf(t, v3, "Preference").Properties["agentsActWithoutApproval"].Value.Description)
-	for _, word := range []string{"write-once marker", "never read again", "null means inherit, not the free-form value", "a token-authenticated write that names this field never sets it", "Only a write from the signed-in session can set the marker", "a reader may display the free-form value, but it never changes approval resolution"} {
+	for _, word := range []string{"write-once marker", "never read again", "null means inherit, not the free-form value", "a token-authenticated write that names this field never sets it", "Only a write from the signed-in session can set the marker", "the free-form value is not shown as the preference and never changes approval resolution"} {
 		if !strings.Contains(read, word) {
 			t.Errorf("Preference.agentsActWithoutApproval must state the free-form fallback ends: missing %q", word)
 		}
@@ -1113,7 +1124,7 @@ func TestFreeFormFallbackEndsOnceTypedFieldWritten(t *testing.T) {
 		t.Fatal(err)
 	}
 	doc := squash(string(raw))
-	for _, word := range []string{"write-once marker", "never read again", "means inherit, not the free-form value", "A reader may display it, but it never changes approval"} {
+	for _, word := range []string{"write-once marker", "never read again", "means inherit, not the free-form value", "During the interim it is not shown as the preference, and it never changes approval"} {
 		if !strings.Contains(doc, word) {
 			t.Errorf("docs/agent-approval-preference.md must state the free-form fallback ends: missing %q", word)
 		}

@@ -73,12 +73,13 @@ other at request time.
 - **Never reset to false.** Once true, `keychainScoped` is never set back to
   false. No operation widens a scoped token into an unrestricted one.
 - It is read-only to clients, whatever the server stores.
-- **Never inferred from mapping rows.** The token's keychain mappings can shrink
-  after creation when a keychain is deleted. If scoping were inferred from the
-  mappings, a scoped token whose keychains were all deleted would have none left
-  and would look unrestricted, gaining every key its owner holds. The stored
-  flag prevents that: **a scoped token whose keychains are all deleted holds no
-  keys**, and is refused on every route that checks a key.
+- **A non-empty mapping set always means scoped.** The token's keychain mappings
+  can shrink after creation when a keychain is deleted. The stored flag keeps a
+  token scoped after its mappings are gone: if scoping were decided by the
+  mappings alone, a scoped token whose keychains were all deleted would have none
+  left and would look unrestricted, gaining every key its owner holds. So **a
+  scoped token whose keychains are all deleted holds no keys**, and is refused on
+  every route that checks a key.
 - `keychainScoped` is read-only. It is not part of `TokenPayload`; a client
   limits a token only through `keychainIds`.
 - On the entity, `keychainIds` reports the keychains the token is limited to at
@@ -102,7 +103,7 @@ schema-owned type. The generated Go type is `TokenStanding` in
 | `id` | `ID core.Uuid` | `id` | The `user_tokens.id` the `jti` matched; the zero UUID when none matched. |
 | `revoked` | `Revoked bool` | `revoked` | The row has been retired (`deleted_at` is set). |
 | `expired` | `Expired bool` | `expired` | `expires_at <= now()`, evaluated by the database; a `NULL` `expires_at` never expires. |
-| `keychainScoped` | `KeychainScoped bool` | `keychain_scoped` | The stored `user_tokens.keychain_scoped` flag. |
+| `keychainScoped` | `KeychainScoped bool` | `keychain_scoped` | True when the stored `user_tokens.keychain_scoped` flag is true or the token has any keychain mapping. A consumer deciding from this result therefore fails closed. |
 
 `revoked` and `expired` are computed in the lookup query, so the DB column names
 are result-column aliases rather than `user_tokens` columns. The server refuses
@@ -129,9 +130,9 @@ API tokens, native client sign-in tokens, and OAuth access tokens - not only OAu
    checks a user's keys today, so a handler never sees a scoped token's wider
    keys.
 5. Expired tokens are refused before any key is read.
-6. Whether a token is scoped comes from its stored `keychainScoped` flag, never
-   from counting its keychain mappings. A scoped token with no keychains left
-   has no keys.
+6. A token is scoped when its stored `keychainScoped` flag is true or it has any
+   keychain mapping; it is unrestricted only when both say so. A scoped token
+   with no keychains left has no keys.
 
 ## Compatibility
 

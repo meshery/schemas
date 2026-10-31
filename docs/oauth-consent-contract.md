@@ -79,10 +79,11 @@ tokens. The `OauthConsent` schema description carries the same rule.
 A re-consent that changes `scopes` changes the tokens the client already holds
 for that user. The server applies the change in the same transaction as the
 consent update, so the consent and the tokens change together or not at all.
-Each existing token is recomputed by its stored `keychainScoped` flag, not by
-whether its `keychainIds` is empty:
+Each existing token is recomputed by whether it is scoped: its stored
+`keychainScoped` flag is true, or it has a non-empty `keychainIds`. Every token
+matches exactly one branch below:
 
-- **Scoped token** (`keychainScoped` true). Its `keychainIds` becomes the
+- **Scoped token** (`keychainScoped` true, or a non-empty `keychainIds`). Its `keychainIds` becomes the
   intersection of its keychains and the keychains of the new scopes. A
   re-consent never adds keychains to a scoped token: a narrower re-consent
   narrows it, and a broader one leaves it unchanged. A token whose intersection

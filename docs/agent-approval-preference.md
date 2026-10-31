@@ -188,9 +188,9 @@ The typed field and the free-form value are resolved in this order:
 2. **Typed field, once the marker is set.** The free-form value is never read
    again. A stored `true` or `false` is the answer, and absent or `null` means
    inherit. Clearing to `null` means inherit, not the free-form value.
-3. **Free-form value, only while the marker is unset.** A reader may display it,
-   but it never changes approval. During the interim, approval resolution does
-   not read it: inherit resolves to `required` whatever it says.
+3. **Free-form value, only while the marker is unset.** During the interim it is
+   not shown as the preference, and it never changes approval. Approval
+   resolution does not read it: inherit resolves to `required` whatever it says.
 4. **Nothing set.** The resolution falls through to the final fallback,
    `required`.
 

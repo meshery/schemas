@@ -626,7 +626,9 @@ components:
         (the token's `jti`) in the token store. It is not a request or response
         body: the server reads it before any handler runs to decide whether the
         token is accepted and whether its keys are narrowed to its keychains.
-        See docs/token-scoping-contract.md.
+        The server reports `keychainScoped` true when the stored flag is true or
+        the token has any keychain mapping, so a consumer deciding from this
+        result fails closed. See docs/token-scoping-contract.md.
       required:
       - id
       - revoked
@@ -659,10 +661,10 @@ components:
         keychainScoped:
           type: boolean
           description: >-
-            The token's stored `keychainScoped` flag. When true the token is
-            limited to the keys of its keychains, and holds no keys if every
-            one of them has been deleted. Never inferred from the keychain
-            mappings.
+            True when the token's stored `keychainScoped` flag is true or the
+            token has any keychain mapping. When true the token is limited to
+            the keys of its keychains, and holds no keys if every one of them
+            has been deleted.
           x-oapi-codegen-extra-tags:
             db: keychain_scoped
           x-order: 4
