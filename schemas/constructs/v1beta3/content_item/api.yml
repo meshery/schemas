@@ -10,6 +10,13 @@ info:
     platform run under, and may belong to a thread (`threadId`,
     `replyToId`, `threadIndex`): the parts of a split post, or the replies
     of a conversation between profiles.
+    An item's approval is resolved at insert from its `approvalPolicy`
+    (explicit `required` or `not_required` wins; `inherit` or absent inherits
+    from higher-level settings, hierarchy defined in
+    https://github.com/layer5io/meshery-cloud/issues/6365). Interim: until
+    the upstream policies exist, `inherit` or absent resolves to `required`.
+    Only a person holding Decide Content Item Approvals may write an
+    `approvalPolicy` value that changes the stored one.
     Organization scope: every operation acts only in the organization the
     session resolved to (X-Current-Orgid, then the user's selected
     organization), and only when the caller is a live member of it.
@@ -137,9 +144,17 @@ paths:
         retry: within 24 hours the same key with the same request hash
         returns the first response without inserting again, and the same
         key with a different request hash answers 422 and inserts nothing.
-        `approved` is not in the payload: every inserted item lands
-        unapproved with a pending `content_item_approval` request, and only
-        `approveRequest` sets it (docs/content-item-contract.md).
+        `approvalPolicy` is accepted on insert only when omitted. A caller
+        whose effective keys lack Decide Content Item Approvals in the session
+        organization who sends any `approvalPolicy` value gets a 403 and
+        nothing is inserted. A caller holding that key may send one. Omitted,
+        the item inherits. The server resolves the effective approval once,
+        here: when it is required the item lands `approved` false with a
+        pending `content_item_approval` request; when it is not required the
+        server sets `approved` true and opens no request. Interim: until the
+        upstream policies exist, inherit resolves to required.
+        `approved` is never in the payload (docs/content-item-contract.md,
+        Approval policy).
       requestBody:
         required: true
         content:
@@ -221,7 +236,13 @@ paths:
         clears it. The thread fields are fixed at insert: omitted, or equal to the
         stored values, they are kept; any other value is refused with a 400.
         `approved` is not in the payload, so an update never changes it;
-        only `approveRequest` does.
+        only `approveRequest` does. Changing `approvalPolicy` later changes
+        the stored policy and nothing else: `approved` and any existing
+        request keep their state. A caller without Decide Content Item
+        Approvals gets a 403 if it sends an `approvalPolicy` different from
+        the stored one (an absent stored value equals an absent value sent);
+        sending back the unchanged stored value is accepted and changes
+        nothing. An omitted `approvalPolicy` keeps the stored value.
       parameters:
         - $ref: "#/components/parameters/contentItemId"
       requestBody:
@@ -379,9 +400,13 @@ components:
         Contains only client-settable fields; the owning
         `organizationId` (derived from the authenticated session), the
         server-computed `fingerprint`, the server-set `createdByClient`,
-        `approved` (set only by `approveRequest` in the request construct)
+        `approved` (set only by `approveRequest` in the request construct),
+        the server-computed `approvalRequired` and `approvalPolicySource`
         and the server-generated `createdAt` / `updatedAt` timestamps are
-        intentionally excluded.
+        intentionally excluded. `approvalPolicy` is the one approval field a
+        write carries; a caller without Decide Content Item Approvals may send
+        only the stored value, or omit it (docs/content-item-contract.md,
+        Approval policy).
       required:
         - profile
       properties:
@@ -483,6 +508,52 @@ components:
             clients send the whole item without it); an empty array clears it.
           x-oapi-codegen-extra-tags:
             json: "mediaAssetIds,omitempty"
+        approvalPolicy:
+          $ref: "#/components/schemas/ApprovalPolicy"
+          description: |
+            The item's own approval policy. Optional: omitted on insert, the
+            item inherits; omitted on update, the stored value is kept;
+            `inherit` on update clears an explicit value back to inherit.
+            A caller without Decide Content Item Approvals in the session
+            organization is refused with a 403 and nothing changes when it
+            sends a value that would change the stored one: on insert, any
+            value; on update, a value different from the stored one (absent
+            stored equals absent sent). Sending back the unchanged stored value
+            is accepted. An AI app token never carries that key. Interim: until
+            the upstream policies exist, `inherit` or absent resolves to
+            `required`, and the item's approval source is `item` for an
+            explicit value or `fallback` for `inherit` or absent.
+          x-oapi-codegen-extra-tags:
+            json: "approvalPolicy,omitempty"
+
+    # The approval policy of a content item, and the setting a higher level
+    # (platform, workspace, profile) would use for the same question. It is
+    # defined once here so that reuse, not a copy, is what a higher-level
+    # setting refers to.
+    ApprovalPolicy:
+      type: string
+      description: |
+        Whether an item needs a person's approval before it runs. `required`
+        and `not_required` are explicit and win over every higher-level
+        setting. `inherit`, and an absent value, inherit from higher-level
+        settings (platform, workspace, profile), hierarchy defined in
+        https://github.com/layer5io/meshery-cloud/issues/6365. When no level
+        sets a value, approval is required (fail closed); this fallback is
+        still open for confirmation in that issue. The effective result is
+        resolved once, when the item is inserted. AI apps can never set
+        `approved`; this value only says whether approval is needed.
+        Interim: until the upstream platform, workspace and profile policies
+        exist, `inherit` and an absent value resolve to `required`, with
+        approval source `fallback`. The user preference
+        `agentsActWithoutApproval` is not consulted during the interim.
+      enum:
+        - required
+        - not_required
+        - inherit
+      x-enum-varnames:
+        - ApprovalPolicyRequired
+        - ApprovalPolicyNotRequired
+        - ApprovalPolicyInherit
 
     ContentItemRulesOfEngagement:
       type: object

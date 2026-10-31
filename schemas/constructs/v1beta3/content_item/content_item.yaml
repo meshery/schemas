@@ -193,10 +193,12 @@ properties:
     type: boolean
     description: >
       Whether a person approved the item to run. Server-set and read-only:
-      it is not in ContentItemPayload. Every item lands `false` with a
-      pending `content_item_approval` request, and only `approveRequest` in
-      the request construct sets it to true; that operation needs the Decide
-      Content Item Approvals key and is never an AI app tool. The client
+      it is not in ContentItemPayload. At insert the server sets it from the
+      effective approval: `false` with a pending `content_item_approval`
+      request when `approvalRequired` is true, and `true` with no request
+      when it is false. Afterwards only `approveRequest` in the request
+      construct sets it to true; that operation needs the Decide Content
+      Item Approvals key and is never an AI app tool. The client
       that runs the queue (the Mac the schedule lands on) reads this field.
       For one release after this field ships, servers mirror it into the
       free-form `Approved?` column in `data` for older readers; a reader
@@ -220,3 +222,61 @@ properties:
       db: created_by_client
       json: "createdByClient,omitempty"
     x-order: 17
+  approvalPolicy:
+    $ref: ./api.yml#/components/schemas/ApprovalPolicy
+    description: >
+      The item's own approval policy. Absent means inherit. An explicit
+      `required` or `not_required` wins over every higher-level setting;
+      `inherit` or absent inherits from higher-level settings (platform,
+      workspace, profile), hierarchy defined in
+      https://github.com/layer5io/meshery-cloud/issues/6365. Interim: until
+      the upstream policies exist, `inherit` or absent resolves to
+      `required`. Only a person with Decide Content Item Approvals may write
+      a value that changes the stored one; an AI app never can. Changing it
+      later never changes `approved` or an existing request. Stored in the
+      nullable `approval_policy` column; null means inherit.
+    x-oapi-codegen-extra-tags:
+      db: approval_policy
+      json: "approvalPolicy,omitempty"
+    x-order: 18
+  approvalRequired:
+    type: boolean
+    readOnly: true
+    description: >
+      Server-computed and read-only: whether the item needed a person's
+      approval, as resolved once when it was inserted from its
+      `approvalPolicy` and the higher-level settings (hierarchy defined in
+      https://github.com/layer5io/meshery-cloud/issues/6365). Stored in the
+      `approval_required` column. Never in a payload; a later change to
+      `approvalPolicy` or a higher-level setting does not change it. Interim:
+      until the upstream policies exist, an absent or `inherit` policy
+      resolves to `true` (approval source `fallback`). Absent on items
+      inserted before this field shipped.
+    x-oapi-codegen-extra-tags:
+      db: approval_required
+      json: "approvalRequired,omitempty"
+    x-order: 19
+  approvalPolicySource:
+    type: string
+    readOnly: true
+    description: >
+      Server-computed and read-only: the level that decided
+      `approvalRequired`, stored in the `approval_policy_source` column.
+      `item` when the item's own `approvalPolicy` was explicit; `platform`,
+      `workspace` or `profile` when that higher level set the value (the
+      order is defined in
+      https://github.com/layer5io/meshery-cloud/issues/6365); `fallback` when
+      no level set a value and approval is required. Interim: until the
+      upstream policies exist, only `item` (explicit value) or `fallback`
+      (`inherit` or absent) occur. Never in a payload. Absent on items
+      inserted before this field shipped.
+    enum:
+      - item
+      - platform
+      - workspace
+      - profile
+      - fallback
+    x-oapi-codegen-extra-tags:
+      db: approval_policy_source
+      json: "approvalPolicySource,omitempty"
+    x-order: 20
