@@ -3,7 +3,7 @@ title: Request Schema
 description: |
   Server-returned request: one decision that a person with the right to make
   it has been asked to make about a subject, for example whether a content
-  item written by an AI app may run. A request is generic. Its `kind` says
+  item may run. A request is generic. Its `kind` says
   what is being decided and which permission key may decide it, and it names
   its subject by type and ID, so any construct can be the subject of a kind.
   A request is created `pending` by the server when the thing that needs a

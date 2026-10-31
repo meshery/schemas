@@ -4,9 +4,11 @@ info:
   description: |
     OpenAPI schema for requests - generic decisions that a person with the
     right to make them is asked to make about a subject. The first kind,
-    `content_item_approval`, is created when an AI app writes a content item:
-    the item waits unapproved until a person approves or denies its request
-    in the app. A request names its subject by type and ID, so any construct
+    `content_item_approval`, is created when a content item is inserted,
+    by a person or an AI app: the item waits unapproved until a person
+    approves or denies its request in the app. approveRequest is the only
+    way a content item's `approved` becomes true; ContentItemPayload has no
+    `approved`. A request names its subject by type and ID, so any construct
     can be the subject of a kind. Requests are created by the server, not by
     a client call, and are decided once. Decided requests are kept as
     history.
@@ -117,7 +119,9 @@ paths:
         note. The caller must hold the deciding permission key of the
         request's `kind`, else 403 and nothing changes. For
         `content_item_approval` the server also sets the subject content
-        item's `approved` to true in the same transaction. A request that is
+        item's `approved` to true in the same transaction; this is the only
+        operation that does, since no content item request body carries
+        `approved`. A request that is
         not `pending` answers 409 and is never changed. The body may be
         omitted.
       parameters:
@@ -272,8 +276,8 @@ components:
         - RequestKindContentItemApproval
       x-enumDescriptions:
         content_item_approval: >
-          A content item written by an AI app waits for a person to approve it
-          before it may run. The subject is a `content_item`.
+          A content item, written by a person or an AI app, waits for a person
+          to approve it before it may run. The subject is a `content_item`.
       x-decision-key:
         content_item_approval: CatalogManagementDecideContentItemApprovals
       x-subject-type:
