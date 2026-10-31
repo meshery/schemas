@@ -517,9 +517,10 @@ components:
             `inherit` on update clears an explicit value back to inherit.
             A caller without Decide Content Item Approvals in the session
             organization is refused with a 403 and nothing changes when it
-            sends a value that would change the stored one: on insert, any
-            value; on update, a value different from the stored one (absent
-            stored equals absent sent). Sending back the unchanged stored value
+            sends a value that would change the stored one: on insert,
+            `required` or `not_required`; on update, a value different from
+            the stored one (absent, null and `inherit` are one value, since the
+            server stores `inherit` as null). Sending back the unchanged stored value
             is accepted. An AI app token never carries that key. Interim: until
             the upstream policies exist, `inherit` or absent resolves to
             `required`, and the item's approval source is `item` for an

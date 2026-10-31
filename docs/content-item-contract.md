@@ -342,7 +342,7 @@ backfilled. The backfill is the only time `Approved?` sets `approved`.
   and write `approval_required` and `approval_policy_source` once, at insert,
   so a later policy change never alters them, refuse with a 403 an
   `approvalPolicy` change from a caller without Decide Content Item Approvals
-  (any value on insert; on update, a value different from the stored one),
+  (`required` or `not_required` on insert; on update, a value different from the stored one, with absent, null and `inherit` as one value),
   and own `data["Approved?"]` while it is mirrored), tell an omitted
   `rulesOfEngagement` from `null` on update, extend the fingerprint, and
   serve the `threadId` filter.
