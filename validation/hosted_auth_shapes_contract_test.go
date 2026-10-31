@@ -359,6 +359,7 @@ func TestOauthConsentEntityShape(t *testing.T) {
 		"scopes":         []any{"content:read"},
 		"organizationId": sampleUUID,
 		"createdAt":      "2026-10-30T00:00:00Z",
+		"updatedAt":      "2026-10-30T00:00:00Z",
 	}
 	full := withFields(valid, map[string]any{
 		"clientUri":  "https://example.com",
@@ -381,6 +382,8 @@ func TestOauthConsentEntityShape(t *testing.T) {
 		{"lastUsedAt null", withFields(valid, map[string]any{"lastUsedAt": nil}), false},
 		{"deletedAt null while live", withFields(valid, map[string]any{"deletedAt": nil}), false},
 		{"missing id", without("id"), true},
+		{"missing updatedAt", without("updatedAt"), true},
+		{"updatedAt is not a time", withFields(valid, map[string]any{"updatedAt": "today"}), true},
 		{"id not a uuid", withFields(valid, map[string]any{"id": "x"}), true},
 		{"deletedAt is not a time", withFields(valid, map[string]any{"deletedAt": "yesterday"}), true},
 		{"clientId need not be a uuid", withFields(valid, map[string]any{"clientId": "not-a-uuid"}), false},
@@ -392,12 +395,26 @@ func TestOauthConsentEntityShape(t *testing.T) {
 		{"unknown field", withFields(valid, map[string]any{"userId": sampleUUID}), true},
 	})
 
-	// The loader drops siblings of $ref (id, deletedAt), so read the db tags from the raw entity.
+	// The loader drops siblings of $ref (id, createdAt, updatedAt, deletedAt),
+	// so read the db tags and readOnly from the raw entity.
 	raw := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), "schemas/constructs/v1beta3/oauth_consent/oauth_consent.yaml"))
-	for name, column := range map[string]string{"id": "id", "deletedAt": "deleted_at"} {
+	for name, column := range map[string]string{"id": "id", "createdAt": "created_at", "updatedAt": "updated_at", "deletedAt": "deleted_at"} {
 		if got := mustLookup(t, raw, "properties", name, "x-oapi-codegen-extra-tags", "db"); got != column {
 			t.Errorf("OauthConsent.%s db tag = %v, want %s", name, got, column)
 		}
+	}
+	if got := mustLookup(t, raw, "properties", "updatedAt", "readOnly"); got != true {
+		t.Errorf("OauthConsent.updatedAt readOnly = %v, want true (server-set)", got)
+	}
+	// A re-consent updates the live consent in place, stated in the entity,
+	// api.yml and the contract doc.
+	inPlace := "updates that consent in place"
+	flat := func(s string) string { return strings.Join(strings.Fields(s), " ") }
+	if !strings.Contains(flat(consent.Description), inPlace) {
+		t.Error("OauthConsent description must state that a re-consent updates the live consent in place")
+	}
+	if !strings.Contains(flat(doc.Info.Description), inPlace) {
+		t.Error("oauth_consent api.yml info must state that a re-consent updates the live consent in place")
 	}
 	// Uniqueness is stated as the repo states it: a unique key in the entity
 	// description and in the contract doc.
@@ -410,6 +427,9 @@ func TestOauthConsentEntityShape(t *testing.T) {
 	}
 	if !strings.Contains(string(contract), "**Unique key:** (user, `clientId`)") {
 		t.Error("docs/oauth-consent-contract.md must state the unique key (user, clientId)")
+	}
+	if !strings.Contains(string(contract), "`updatedAt`") || !strings.Contains(flat(string(contract)), inPlace) {
+		t.Error("docs/oauth-consent-contract.md must document updatedAt and the in-place re-consent")
 	}
 }
 
@@ -430,6 +450,30 @@ func TestAgentsActWithoutApprovalPreference(t *testing.T) {
 	}
 	if pref.Properties["remoteProviderPreferences"] == nil {
 		t.Error("remoteProviderPreferences must not be removed")
+	}
+
+	// Writable through the v1beta3 updateUserPreferences body: a boolean,
+	// optional, with no default, so an omitted field keeps the stored value.
+	payload := schemaOf(t, v3, "PreferencePayload")
+	write := payload.Properties["agentsActWithoutApproval"]
+	if write == nil || !write.Value.Type.Is("boolean") {
+		t.Fatal("v1beta3 PreferencePayload.agentsActWithoutApproval must be a boolean")
+	}
+	if write.Value.Default != nil {
+		t.Error("PreferencePayload.agentsActWithoutApproval must declare no default")
+	}
+	for _, r := range payload.Required {
+		if r == "agentsActWithoutApproval" {
+			t.Error("PreferencePayload.agentsActWithoutApproval must be optional")
+		}
+	}
+	item := v3.Paths.Find("/api/identity/users/preferences")
+	if item == nil || item.Put == nil || item.Put.OperationID != "updateUserPreferences" {
+		t.Fatal("v1beta3 user must declare updateUserPreferences (PUT /api/identity/users/preferences)")
+	}
+	body := item.Put.RequestBody.Value.Content.Get("application/json")
+	if body == nil || body.Schema.Value != payload {
+		t.Error("updateUserPreferences must take the v1beta3 PreferencePayload")
 	}
 }
 

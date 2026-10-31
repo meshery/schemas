@@ -12,12 +12,27 @@ product neutral and stays.
 The field is optional. The schema declares no `default`, on purpose: the
 precedence below needs absence to stay distinguishable from `false`.
 
-## Where it is defined
+## Where it is defined and how it is written
 
-The field is defined only on `v1beta3` `Preference`, which carries it on read.
-There is no `v1beta2` copy: `v1beta2` `PreferencePayload`, the body of
-`updateUserPreferences` (`PUT /api/identity/users/preferences`), does not
-declare it, so that write cannot set it.
+The field is defined on `v1beta3` `Preference`, which carries it on read, and
+on `v1beta3` `PreferencePayload`, the body of `updateUserPreferences`
+(`PUT /api/identity/users/preferences`). Writers set it there:
+
+```json
+{ "agentsActWithoutApproval": true }
+```
+
+The write merges: a payload that leaves the field out keeps the stored value
+(or its absence), `true` or `false` stores that value. The operation answers
+`201` with no body, as before.
+
+`updateUserPreferences` moved from `v1beta2` `user` to `v1beta3` `user` with
+the same route, `operationId`, merge rule and response, so a client calling
+that route is unchanged. Only the `v1beta3` operation is declared. `v1beta2`
+`PreferencePayload` stays declared, marked deprecated, so existing users of
+its generated type still build. It does not declare the field: a server
+decoding the body into it would drop `agentsActWithoutApproval`, so servers
+decode the `v1beta3` `PreferencePayload`.
 
 ## Migration from the free-form value
 
@@ -32,7 +47,8 @@ For one release after this field ships:
 2. If the typed field is absent, a reader may fall back to the free-form value.
 3. If both are absent, the answer is false.
 
-Writers move to the typed field. Servers may copy a free-form value into the
+Writers move to the typed field and set it through `updateUserPreferences`
+as above. Servers may copy a free-form value into the
 typed field on the user's next preferences write; they must not write the
 free-form value again. After the release, the free-form value is no longer read
 and may be deleted from stored preferences.

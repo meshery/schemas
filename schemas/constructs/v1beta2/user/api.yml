@@ -105,34 +105,6 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/identity/users/preferences:
-    put:
-      x-internal: ["cloud"]
-      tags:
-        - users
-      operationId: updateUserPreferences
-      summary: Update the current user's preferences
-      description: >-
-        Merges the payload onto the signed-in user's stored preferences. A key
-        the payload names replaces the stored value; a key it leaves out keeps
-        the stored value. Setting selectedOrganizationId switches the
-        organization the user's session has selected, as Meshery Cloud's and
-        Meshery's organization switchers do. Badges are server-owned and are
-        never changed through this operation.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PreferencePayload"
-      responses:
-        "201":
-          description: Preferences updated
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
-
   /api/identity/users/profile/details:
     get:
       x-internal: ["cloud"]
@@ -1129,10 +1101,14 @@ components:
     PreferencePayload:
       type: object
       description: >-
-        The client-settable fields of Preference for updateUserPreferences.
-        Every field is optional: the server merges the ones present onto the
-        stored preferences and keeps the rest. updatedAt is server-recorded and
-        is not settable.
+        Deprecated: updateUserPreferences (PUT /api/identity/users/preferences)
+        moved to v1beta3, whose PreferencePayload is its request body and also
+        carries agentsActWithoutApproval. This schema is kept so existing
+        consumers of the generated type still build. The client-settable
+        fields of Preference: every field is optional, the server merges the
+        ones present onto the stored preferences and keeps the rest. updatedAt
+        is server-recorded and is not settable.
+      deprecated: true
       additionalProperties: false
       properties:
         meshAdapters:

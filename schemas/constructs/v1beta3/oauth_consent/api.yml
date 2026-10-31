@@ -9,7 +9,10 @@ info:
     A consent is created by the authorization server's consent step, never by
     a call defined here, so the construct has no write payload. It belongs to
     the user and to one client. Unique key: (user, `clientId`) among live
-    consents: a user has at most one live consent per client.
+    consents: a user has at most one live consent per client. A re-consent by
+    the same user to a client with a live consent updates that consent in
+    place: its scopes are replaced and `updatedAt` advances, while `id` and
+    `createdAt` are kept.
     Both operations act only on the consents of the authenticated user; they
     take no user in the path or the query, and a consent of another user is
     never listed, never revealed and never revoked.

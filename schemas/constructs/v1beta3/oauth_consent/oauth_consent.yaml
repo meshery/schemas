@@ -8,7 +8,10 @@ description: |
   consent among the user's own; `id` is the stored row's ID. The consent
   names one root organization; the client acts only in that organization and
   its descendants. Created by the authorization server's consent step and
-  soft-deleted by revoking it; there is no write payload.
+  soft-deleted by revoking it; there is no write payload. A re-consent by the
+  same user to a client with a live consent updates that consent in place:
+  its scopes are replaced and `updatedAt` advances, while `id` and
+  `createdAt` are kept.
 type: object
 additionalProperties: false
 required:
@@ -18,6 +21,7 @@ required:
   - scopes
   - organizationId
   - createdAt
+  - updatedAt
 properties:
   id:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
@@ -95,10 +99,20 @@ properties:
     x-order: 7
   createdAt:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
-    description: Time the user granted the consent.
+    description: Time the user first granted the consent. A re-consent keeps it.
     x-oapi-codegen-extra-tags:
       db: created_at
     x-order: 8
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: >-
+      Time the consent was last granted or changed. Server-set: equal to
+      `createdAt` when the consent is created, and advanced when the same user
+      consents to the same live client again, which replaces `scopes`.
+    readOnly: true
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 9
   lastUsedAt:
     type: string
     format: date-time
@@ -113,7 +127,7 @@ properties:
     x-oapi-codegen-extra-tags:
       db: last_used_at
       json: "lastUsedAt,omitempty"
-    x-order: 9
+    x-order: 10
   deletedAt:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/NullTime
     description: >-
@@ -127,4 +141,4 @@ properties:
     x-oapi-codegen-extra-tags:
       db: deleted_at
       json: "deletedAt,omitempty"
-    x-order: 10
+    x-order: 11

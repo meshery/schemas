@@ -116,6 +116,38 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/identity/users/preferences:
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: updateUserPreferences
+      summary: Update the current user's preferences
+      description: >-
+        Merges the payload onto the signed-in user's stored preferences. A key
+        the payload names replaces the stored value; a key it leaves out keeps
+        the stored value. Setting selectedOrganizationId switches the
+        organization the user's session has selected, as Meshery Cloud's and
+        Meshery's organization switchers do. Setting agentsActWithoutApproval
+        stores the typed agent approval preference; see
+        docs/agent-approval-preference.md. Badges are server-owned and are
+        never changed through this operation. Moved here from v1beta2 with the
+        same route, operationId and response; the v1beta3 PreferencePayload
+        adds agentsActWithoutApproval.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PreferencePayload"
+      responses:
+        "201":
+          description: Preferences updated
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
 components:
   securitySchemes:
     jwt:
@@ -918,6 +950,70 @@ components:
             remoteProviderPreferences.<provider>.agentsActWithoutApproval:
             when this field is present it wins, and the free-form value is
             read only while this field is absent. See
+            docs/agent-approval-preference.md.
+
+    PreferencePayload:
+      type: object
+      description: >-
+        The client-settable fields of Preference for updateUserPreferences.
+        Every field is optional: the server merges the ones present onto the
+        stored preferences and keeps the rest. updatedAt is server-recorded and
+        is not settable.
+      additionalProperties: false
+      properties:
+        meshAdapters:
+          type: array
+          items:
+            x-go-type: Adapter
+            $ref: "#/components/schemas/Adapter"
+          description: The mesh adapters of the preference.
+        grafana:
+          x-go-type: Grafana
+          $ref: "#/components/schemas/Grafana"
+        prometheus:
+          x-go-type: Prometheus
+          $ref: "#/components/schemas/Prometheus"
+        loadTestPrefs:
+          x-go-type: LoadTestPreferences
+          $ref: "#/components/schemas/LoadTestPreferences"
+        anonymousUsageStats:
+          type: boolean
+          description: The anonymous usage stats of the preference.
+        anonymousPerfResults:
+          type: boolean
+          description: The anonymous perf results of the preference.
+        dashboardPreferences:
+          type: object
+          additionalProperties: true
+          description: The dashboard preferences of the preference.
+        selectedOrganizationId:
+          type: string
+          description: ID of the organization to make the session's selected organization.
+          maxLength: 500
+          format: uuid
+        selectedWorkspaceForOrganizations:
+          type: object
+          additionalProperties:
+            type: string
+          description: The selected workspace for organizations of the preference.
+        usersExtensionPreferences:
+          type: object
+          additionalProperties: true
+          description: The users extension preferences of the preference.
+        remoteProviderPreferences:
+          type: object
+          additionalProperties: true
+          description: >-
+            The remote provider preferences of the preference. Writers set the
+            typed agentsActWithoutApproval field, not a provider's free-form
+            agentsActWithoutApproval entry.
+        agentsActWithoutApproval:
+          type: boolean
+          description: >-
+            Whether writes made by AI apps (agents) on the user's behalf take
+            effect without the user approving them first. Optional: when the
+            payload leaves it out, the stored value (or its absence) is kept.
+            No schema default is declared. See
             docs/agent-approval-preference.md.
 
     Adapter:
