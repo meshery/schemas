@@ -54,6 +54,7 @@ paths:
         is `createdAt asc`. Every member holding View Requests sees every
         request in the organization.
       parameters:
+        - $ref: "#/components/parameters/currentOrgId"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/order"
@@ -85,6 +86,7 @@ paths:
       summary: Get a request by ID
       operationId: getRequest
       parameters:
+        - $ref: "#/components/parameters/currentOrgId"
         - $ref: "#/components/parameters/requestId"
       responses:
         "200":
@@ -119,6 +121,7 @@ paths:
         not `pending` answers 409 and is never changed. The body may be
         omitted.
       parameters:
+        - $ref: "#/components/parameters/currentOrgId"
         - $ref: "#/components/parameters/requestId"
       requestBody:
         required: false
@@ -162,6 +165,7 @@ paths:
         request that is not `pending` answers 409 and is never changed. The
         body may be omitted.
       parameters:
+        - $ref: "#/components/parameters/currentOrgId"
         - $ref: "#/components/parameters/requestId"
       requestBody:
         required: false
@@ -215,6 +219,8 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/500"
 
   parameters:
+    currentOrgId:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/currentOrgId"
     requestId:
       name: requestId
       in: path
