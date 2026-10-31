@@ -192,15 +192,17 @@ properties:
   approved:
     type: boolean
     description: >
-      Whether a person approved the item to run. The client that runs the
-      queue (the Mac the schedule lands on) reads this field. An item written
-      by an AI app (`createdByClient` set) lands `false` and is decided
-      through a `content_item_approval` request (see the request construct),
-      unless the creating user turned on acting without approval. For one
-      release after this field ships, the free-form `Approved?` column in
-      `data` stays readable and servers keep it in step: a reader that finds
-      no `approved` on an older row falls back to that column. New readers
-      read this field only. See docs/content-item-contract.md.
+      Whether a person approved the item to run. Server-set and read-only:
+      it is not in ContentItemPayload. Every item lands `false` with a
+      pending `content_item_approval` request, and only `approveRequest` in
+      the request construct sets it to true; that operation needs the Decide
+      Content Item Approvals key and is never an AI app tool. The client
+      that runs the queue (the Mac the schedule lands on) reads this field.
+      For one release after this field ships, servers mirror it into the
+      free-form `Approved?` column in `data` for older readers; a reader
+      that finds no `approved` on an older row falls back to that column. A
+      client-sent `Approved?` never approves an item. New readers read this
+      field only. See docs/content-item-contract.md.
     default: false
     x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:

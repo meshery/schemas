@@ -415,8 +415,8 @@ func sortedAnyKeys(m map[string]any) []string {
 }
 
 // A content item carries a typed approved flag and the OAuth client that
-// created it. approved is client-settable (the server may override it);
-// createdByClient is server-set and so is not in the payload.
+// created it. Both are server-set and so are not in the payload: approved
+// becomes true only through approveRequest.
 func TestContentItemApprovalFields(t *testing.T) {
 	root := repoRootDir(t)
 	dir := filepath.Join(root, "schemas/constructs/v1beta3/content_item")
@@ -428,16 +428,13 @@ func TestContentItemApprovalFields(t *testing.T) {
 	if got := mustValue(mustLookup(t, entityProps, "approved"), "type"); got != "boolean" {
 		t.Errorf("entity approved type = %v, want boolean", got)
 	}
-	if got := mustValue(mustLookup(t, payloadProps, "approved"), "type"); got != "boolean" {
-		t.Errorf("payload approved type = %v, want boolean", got)
-	}
 	if got := mustValue(mustLookup(t, entityProps, "createdByClient"), "type"); got != "string" {
 		t.Errorf("entity createdByClient type = %v, want string", got)
 	}
 	if _, has := mappingValue(payloadProps, "createdByClient"); has {
 		t.Error("createdByClient is server-set and must not be in ContentItemPayload")
 	}
-	// Optional on both sides: an old client that omits approved keeps it.
+	// Optional on the entity: rows written before the column have none.
 	required, _ := mustLookup(t, entity, "required").([]any)
 	for _, r := range required {
 		if r == "approved" || r == "createdByClient" {
@@ -446,6 +443,37 @@ func TestContentItemApprovalFields(t *testing.T) {
 	}
 	if required, _ := mustLookup(t, api, "components", "schemas", "ContentItemPayload", "required").([]any); len(required) != 1 || required[0] != "profile" {
 		t.Errorf("ContentItemPayload required = %v, want [profile] only", required)
+	}
+}
+
+// No content item write can approve: the request body of insertContentItem
+// and updateContentItem has no approved property, so approveRequest is the
+// only way an item's approved becomes true. See docs/content-item-contract.md.
+func TestContentItemWritePayloadsHaveNoApproved(t *testing.T) {
+	root := repoRootDir(t)
+	api := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/content_item/api.yml"))
+
+	writes := map[string]string{"/api/content-items": "post", "/api/content-items/{contentItemId}": "put"}
+	for path, method := range writes {
+		ref := mustValue(mustLookup(t, api, "paths", path, method, "requestBody", "content", "application/json", "schema"), "$ref")
+		if ref != "#/components/schemas/ContentItemPayload" {
+			t.Errorf("%s %s requestBody = %v, want ContentItemPayload", method, path, ref)
+		}
+	}
+
+	// Every payload the construct defines, so a new write body is covered too.
+	schemas := mustLookup(t, api, "components", "schemas").(map[string]any)
+	if _, ok := mappingValue(schemas, "ContentItemPayload"); !ok {
+		t.Fatal("ContentItemPayload is missing")
+	}
+	for _, name := range sortedAnyKeys(schemas) {
+		if !strings.HasSuffix(name, "Payload") {
+			continue
+		}
+		props, _ := mappingValue(schemas[name], "properties")
+		if _, has := mappingValue(props, "approved"); has {
+			t.Errorf("%s must not have approved: only approveRequest approves a content item", name)
+		}
 	}
 }
 

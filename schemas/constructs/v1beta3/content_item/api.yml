@@ -137,9 +137,9 @@ paths:
         retry: within 24 hours the same key with the same request hash
         returns the first response without inserting again, and the same
         key with a different request hash answers 422 and inserts nothing.
-        `approved` may be sent, and the server may override it: a write made
-        by an AI app (`createdByClient` set) lands unapproved unless the
-        creating user turned on acting without approval.
+        `approved` is not in the payload: every inserted item lands
+        unapproved with a pending `content_item_approval` request, and only
+        `approveRequest` sets it (docs/content-item-contract.md).
       requestBody:
         required: true
         content:
@@ -218,6 +218,8 @@ paths:
         it. An omitted `mediaAssetIds` keeps the stored list and `[]`
         clears it. The thread fields are fixed at insert: omitted, or equal to the
         stored values, they are kept; any other value is refused with a 400.
+        `approved` is not in the payload, so an update never changes it;
+        only `approveRequest` does.
       parameters:
         - $ref: "#/components/parameters/contentItemId"
       requestBody:
@@ -372,8 +374,9 @@ components:
         Payload for inserting or updating a content item.
         Contains only client-settable fields; the owning
         `organizationId` (derived from the authenticated session), the
-        server-computed `fingerprint`, the server-set `createdByClient` and
-        the server-generated `createdAt` / `updatedAt` timestamps are
+        server-computed `fingerprint`, the server-set `createdByClient`,
+        `approved` (set only by `approveRequest` in the request construct)
+        and the server-generated `createdAt` / `updatedAt` timestamps are
         intentionally excluded.
       required:
         - profile
@@ -476,20 +479,6 @@ components:
             clients send the whole item without it); an empty array clears it.
           x-oapi-codegen-extra-tags:
             json: "mediaAssetIds,omitempty"
-
-        approved:
-          type: boolean
-          description: |
-            Whether a person approved the item to run. Optional: omitted on
-            insert, the item is not approved; omitted on update, the stored
-            value is kept (old clients send the whole item without it). The
-            server's agent-write policy overrides it: a write by an AI app
-            (`createdByClient` set) lands unapproved whatever is sent, unless
-            the creating user turned on acting without approval. The
-            free-form `Approved?` column in `data` stays readable for one
-            release (docs/content-item-contract.md).
-          x-oapi-codegen-extra-tags:
-            json: "approved,omitempty"
 
     ContentItemRulesOfEngagement:
       type: object
