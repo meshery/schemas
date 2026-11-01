@@ -97,7 +97,7 @@ func TestTokenSessionRoutesContract(t *testing.T) {
 			t.Errorf("TokenPayload.token pattern rejected %q, want accepted", token)
 		}
 	}
-	for _, token := range []string{"", " ", "\t\n  "} {
+	for _, token := range []string{"", " ", "\t\n  ", " ", " ", "\u0085 　"} {
 		if tokenPattern.MatchString(token) {
 			t.Errorf("TokenPayload.token pattern accepted %q, want rejected", token)
 		}

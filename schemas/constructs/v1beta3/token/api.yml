@@ -558,7 +558,7 @@ components:
         token:
           type: string
           description: The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected.
-          pattern: '\S'
+          pattern: '[^\s\v\x{85}\p{Z}]'
           x-order: 1
     NativeAuthorizationPayload:
       type: object
