@@ -339,22 +339,31 @@ paths:
         '302':
           description: >-
             Redirect to /login on an organization custom domain, where sign-out
-            is best-effort.
+            is best-effort. The body is a short HTML link to /login.
           headers:
             Location:
               required: true
               description: /login
               schema:
                 type: string
+          content:
+            text/html:
+              schema:
+                type: string
         '303':
           description: >-
             Redirect to /login. Answered when sign-out completes on the
             canonical host, and also when the identity provider failed but the
-            request is a browser document navigation.
+            request is a browser document navigation. The body is a short HTML
+            link to /login.
           headers:
             Location:
               required: true
               description: /login
+              schema:
+                type: string
+          content:
+            text/html:
               schema:
                 type: string
         '500':
