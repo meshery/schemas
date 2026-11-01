@@ -245,7 +245,11 @@ declared paths carry no `/api` prefix:
   the identity provider session, revokes the OAuth tokens in `provider_token`, clears every session
   cookie on every outcome and redirects to `/login`: `303` on the canonical host (also on failure for
   a browser document navigation), `302` on an organization custom domain where sign-out is
-  best-effort, and an empty `500` when the identity provider failed for any other caller.
+  best-effort, and an empty `500` when the identity provider failed for any other caller. On the
+  canonical host a complete sign-out needs both cookies - `session_cookie` lets the identity provider
+  end its session and `provider_token` carries the OAuth tokens to revoke. With only one, the missing
+  half is skipped, cookies are still cleared and the redirect is the same. On an organization custom
+  domain the user is identified from `provider_token`.
 
 ## Schedules and claims
 

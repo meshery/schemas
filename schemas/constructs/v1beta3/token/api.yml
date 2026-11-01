@@ -333,8 +333,13 @@ paths:
         refresh tokens carried by the provider_token cookie, clears every
         session cookie and redirects to /login. Cookies are cleared on every
         outcome, including failure. User-created API tokens are not affected;
-        revoke those with deleteUserToken. On an organization custom domain
-        sign-out is best-effort and always answers 302.
+        revoke those with deleteUserToken. On the canonical host a complete
+        sign-out needs both cookies - session_cookie lets the identity provider
+        end its session and provider_token carries the OAuth tokens to revoke.
+        With only one, the missing half is skipped, cookies are still cleared
+        and the redirect is the same. On an organization custom domain the user
+        is identified from provider_token, sign-out is best-effort and it
+        always answers 302.
       security:
       - sessionCookie: []
       - providerTokenCookie: []
