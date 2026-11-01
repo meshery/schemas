@@ -1647,6 +1647,222 @@ const TokenSchema: Record<string, unknown> = {
           }
         }
       }
+    },
+    "/revoke": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "tokens"
+        ],
+        "summary": "Revoke token",
+        "operationId": "revokeToken",
+        "description": "Revokes an OAuth access or refresh token issued by the identity provider, for example when an OAuth client signs out, or a user-created API token (the token envelope that generateToken returns, or the bare JWT inside it). Possessing the token is the credential, so no session or bearer token is required. The server first checks whether `token` is a user-created API token whose signature verifies. If it is, the server retires it locally, scoped to the owner named in the token, exactly as deleteUserToken does, and evicts cached introspection results so the token stops authenticating immediately. Any other token is forwarded to the OAuth2 server's RFC 7009 revocation endpoint with the server's own client credentials. On either path an unknown, anonymous or already-revoked token is a no-op that still answers 200, so the answer reveals nothing about validity. The server trims whitespace from `token`. The server reads only the first 1 MiB (1048576 bytes) of the body and ignores the rest; JSON that does not complete within it fails to decode (400). A 400 body is one of \"Error reading token payload\", \"Error decoding token\" or \"missing token\". A 503 body is \"token revocation status is temporarily unavailable\" when signing keys (JWKS) or the token store cannot be read; the token was not revoked and the caller should retry. A 500 body is \"Error revoking token at the moment\", answered only on the forwarding path when the OAuth2 server returns an error response or cannot be reached.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Carries the token that revokeToken revokes or introspectToken checks.",
+                "required": [
+                  "token"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected.",
+                    "pattern": "[^\\x09-\\x0D\\x20\\x85\\xA0  -     　]",
+                    "x-order": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token revoked, or unknown or already revoked (no-op). The body is empty and the session cookie is cleared.",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Clears the session cookie (session_cookie=; Path=/; Max-Age=0; HttpOnly).",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Signing keys (JWKS) or the token store could not be read, so the token was not revoked. The body is \"token revocation status is temporarily unavailable\"; the caller should retry.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/introspect": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "tokens"
+        ],
+        "summary": "Introspect access token",
+        "operationId": "introspectToken",
+        "description": "Reports whether an access token (a JWT) is authentic, unexpired and not revoked. Possessing the token is the credential, so no session or bearer token is required. The server trims whitespace from `token`. The server reads only the first 1 MiB (1048576 bytes) of the body and ignores the rest; JSON that does not complete within it fails to decode (400). A 400 body is \"Error reading token payload\" or \"Error decoding token\" (also answered when `token` is missing or empty); a 401 body is \"invalid access token\" when the signature or expiry check fails, or \"revoked access token used\" when the token has been revoked.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Carries the token that revokeToken revokes or introspectToken checks.",
+                "required": [
+                  "token"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected.",
+                    "pattern": "[^\\x09-\\x0D\\x20\\x85\\xA0  -     　]",
+                    "x-order": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token is authentic, unexpired and not revoked. The body is empty."
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Signing keys or token revocation status are temporarily unavailable. The token is refused, but the caller should retry rather than sign the user out.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logout": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "tokens"
+        ],
+        "summary": "Sign out",
+        "operationId": "logoutUser",
+        "description": "Browser navigation that signs the user out. The session is identified by the session_cookie and provider_token cookies, not by a bearer token. Ends the identity provider session, revokes the OAuth access and refresh tokens carried by the provider_token cookie, clears every session cookie and redirects to /login. Cookies are cleared on every outcome, including failure. User-created API tokens are not affected; they are revoked with revokeToken or deleteUserToken. On the canonical host a complete sign-out needs both cookies - session_cookie lets the identity provider end its session and provider_token carries the OAuth tokens to revoke. With only session_cookie, the identity provider session ends but no OAuth tokens are revoked, and the answer is the success 303. With only provider_token, the identity provider cannot start its logout flow, so the OAuth tokens are still revoked but the answer is the failure one - 303 for a browser document navigation, an empty 500 otherwise. Cookies are cleared either way. On an organization custom domain the user is identified from provider_token, sign-out is best-effort and it always answers 302.",
+        "security": [
+          {
+            "sessionCookie": []
+          },
+          {
+            "providerTokenCookie": []
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to /login on an organization custom domain, where sign-out is best-effort. The body is a short HTML link to /login.",
+            "headers": {
+              "Location": {
+                "required": true,
+                "description": "/login",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "303": {
+            "description": "Redirect to /login. Answered when sign-out completes on the canonical host, and also when the identity provider failed but the request is a browser document navigation. The body is a short HTML link to /login.",
+            "headers": {
+              "Location": {
+                "required": true,
+                "description": "/login",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "The identity provider failed and the request was not a browser document navigation. The body is empty; cookies are still cleared."
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1655,6 +1871,18 @@ const TokenSchema: Record<string, unknown> = {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      },
+      "sessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session_cookie",
+        "description": "Identity provider session cookie set at sign-in."
+      },
+      "providerTokenCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "provider_token",
+        "description": "Cookie carrying the OAuth access and refresh tokens issued at sign-in."
       }
     },
     "responses": {
@@ -1700,6 +1928,16 @@ const TokenSchema: Record<string, unknown> = {
       },
       "500": {
         "description": "Internal server error",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "503": {
+        "description": "Signing keys or token revocation status are temporarily unavailable. The token is refused, but the caller should retry rather than sign the user out.",
         "content": {
           "text/plain": {
             "schema": {
@@ -2044,6 +2282,22 @@ const TokenSchema: Record<string, unknown> = {
               "json": "updatedAt"
             },
             "x-order": 10
+          }
+        }
+      },
+      "TokenPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Carries the token that revokeToken revokes or introspectToken checks.",
+        "required": [
+          "token"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected.",
+            "pattern": "[^\\x09-\\x0D\\x20\\x85\\xA0  -     　]",
+            "x-order": 1
           }
         }
       },

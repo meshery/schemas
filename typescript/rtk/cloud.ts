@@ -2212,6 +2212,18 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/identity/native/token`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["token_tokens"],
       }),
+      revokeToken: build.mutation<RevokeTokenApiResponse, RevokeTokenApiArg>({
+        query: (queryArg) => ({ url: `/revoke`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
+      }),
+      introspectToken: build.mutation<IntrospectTokenApiResponse, IntrospectTokenApiArg>({
+        query: (queryArg) => ({ url: `/introspect`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
+      }),
+      logoutUser: build.query<LogoutUserApiResponse, LogoutUserApiArg>({
+        query: () => ({ url: `/logout` }),
+        providesTags: ["token_tokens"],
+      }),
       getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
         query: (queryArg) => ({
           url: `/api/users`,
@@ -21446,6 +21458,22 @@ export type ExchangeNativeAuthorizationCodeApiArg = {
     codeVerifier: string;
   };
 };
+export type RevokeTokenApiResponse = unknown;
+export type RevokeTokenApiArg = {
+  body: {
+    /** The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
+    token: string;
+  };
+};
+export type IntrospectTokenApiResponse = unknown;
+export type IntrospectTokenApiArg = {
+  body: {
+    /** The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
+    token: string;
+  };
+};
+export type LogoutUserApiResponse = unknown;
+export type LogoutUserApiArg = void;
 export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
   /** Current page number of the result set. */
   page: number;
@@ -23508,6 +23536,10 @@ export const {
   useGetNativeClientAuthorizationQuery,
   useLazyGetNativeClientAuthorizationQuery,
   useExchangeNativeAuthorizationCodeMutation,
+  useRevokeTokenMutation,
+  useIntrospectTokenMutation,
+  useLogoutUserQuery,
+  useLazyLogoutUserQuery,
   useGetUsersQuery,
   useLazyGetUsersQuery,
   useSearchUsersQuery,
