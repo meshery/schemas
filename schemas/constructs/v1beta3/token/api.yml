@@ -256,8 +256,9 @@ paths:
         with its own client credentials. This does NOT invalidate user-created
         API tokens (those minted by generateToken under /api/identity/tokens);
         revoke those with deleteUserToken. The server trims whitespace from
-        `token` and reads at most 1 MiB (1048576 bytes) of the body; a larger
-        body is truncated and fails to decode. A 400 body is one of
+        `token`. The server reads only the first 1 MiB (1048576 bytes) of the
+        body and ignores the rest; JSON that does not complete within it fails
+        to decode (400). A 400 body is one of
         "Error reading token payload", "Error decoding token" or
         "missing token"; a 500 body is "Error revoking token at the moment",
         answered when the OAuth2 server rejects the revocation or cannot be
@@ -293,8 +294,10 @@ paths:
         Reports whether an access token (a JWT) is authentic, unexpired and not
         revoked. Meshery Server calls it to check a session before honouring
         it. Possessing the token is the credential, so no session or bearer
-        token is required. The server trims whitespace from `token` and reads
-        at most 1 MiB (1048576 bytes) of the body. A 400 body is
+        token is required. The server trims whitespace from `token`. The
+        server reads only the first 1 MiB (1048576 bytes) of the body and
+        ignores the rest; JSON that does not complete within it fails to
+        decode (400). A 400 body is
         "Error reading token payload" or "Error decoding token" (also answered
         when `token` is missing or empty); a 401 body is
         "invalid access token" when the signature or expiry check fails, or
@@ -547,7 +550,6 @@ components:
         token:
           type: string
           description: The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected.
-          minLength: 1
           pattern: '\S'
           x-order: 1
     NativeAuthorizationPayload:
