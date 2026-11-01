@@ -74,6 +74,11 @@ export interface components {
              * @description UUID of the user who owns this credential.
              */
             userId: string;
+            /**
+             * Format: uuid
+             * @description UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.
+             */
+            orgOwner?: string;
             /** @description Credential type (e.g. token, basic, AWS). */
             type: string;
             /** @description Key-value pairs containing the sensitive credential data. */
@@ -108,6 +113,11 @@ export interface components {
              * @description UUID of the user who owns this credential.
              */
             userId?: string;
+            /**
+             * Format: uuid
+             * @description UUID of the organization to designate as the owner of this credential. A caller may supply this field; the server authorizes it against the authenticated principal and rejects the request when that principal may not write for the named organization.
+             */
+            orgOwner?: string;
             /** @description Credential type (e.g. token, basic, AWS). */
             type: string;
             /** @description Key-value pairs containing the sensitive credential data. */
@@ -129,6 +139,11 @@ export interface components {
                  * @description UUID of the user who owns this credential.
                  */
                 userId: string;
+                /**
+                 * Format: uuid
+                 * @description UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.
+                 */
+                orgOwner?: string;
                 /** @description Credential type (e.g. token, basic, AWS). */
                 type: string;
                 /** @description Key-value pairs containing the sensitive credential data. */
@@ -264,6 +279,11 @@ export interface operations {
                              * @description UUID of the user who owns this credential.
                              */
                             userId: string;
+                            /**
+                             * Format: uuid
+                             * @description UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.
+                             */
+                            orgOwner?: string;
                             /** @description Credential type (e.g. token, basic, AWS). */
                             type: string;
                             /** @description Key-value pairs containing the sensitive credential data. */
@@ -335,6 +355,11 @@ export interface operations {
                      * @description UUID of the user who owns this credential.
                      */
                     userId?: string;
+                    /**
+                     * Format: uuid
+                     * @description UUID of the organization to designate as the owner of this credential. A caller may supply this field; the server authorizes it against the authenticated principal and rejects the request when that principal may not write for the named organization.
+                     */
+                    orgOwner?: string;
                     /** @description Credential type (e.g. token, basic, AWS). */
                     type: string;
                     /** @description Key-value pairs containing the sensitive credential data. */
@@ -362,6 +387,11 @@ export interface operations {
                          * @description UUID of the user who owns this credential.
                          */
                         userId: string;
+                        /**
+                         * Format: uuid
+                         * @description UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.
+                         */
+                        orgOwner?: string;
                         /** @description Credential type (e.g. token, basic, AWS). */
                         type: string;
                         /** @description Key-value pairs containing the sensitive credential data. */
@@ -444,6 +474,11 @@ export interface operations {
                      * @description UUID of the user who owns this credential.
                      */
                     userId?: string;
+                    /**
+                     * Format: uuid
+                     * @description UUID of the organization to designate as the owner of this credential. A caller may supply this field; the server authorizes it against the authenticated principal and rejects the request when that principal may not write for the named organization.
+                     */
+                    orgOwner?: string;
                     /** @description Credential type (e.g. token, basic, AWS). */
                     type: string;
                     /** @description Key-value pairs containing the sensitive credential data. */
@@ -471,6 +506,11 @@ export interface operations {
                          * @description UUID of the user who owns this credential.
                          */
                         userId: string;
+                        /**
+                         * Format: uuid
+                         * @description UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.
+                         */
+                        orgOwner?: string;
                         /** @description Credential type (e.g. token, basic, AWS). */
                         type: string;
                         /** @description Key-value pairs containing the sensitive credential data. */
@@ -610,6 +650,11 @@ export interface operations {
                          * @description UUID of the user who owns this credential.
                          */
                         userId: string;
+                        /**
+                         * Format: uuid
+                         * @description UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for.
+                         */
+                        orgOwner?: string;
                         /** @description Credential type (e.g. token, basic, AWS). */
                         type: string;
                         /** @description Key-value pairs containing the sensitive credential data. */

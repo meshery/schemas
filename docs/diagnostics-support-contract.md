@@ -1,0 +1,124 @@
+# Diagnostics and anonymous support contract
+
+Schema-side contract for Blowhorn issue #771 (schema step, first in the
+issue's sequence). The Cloud and Blowhorn workers build against this
+document plus the specs; where they disagree, the specs win and this
+document is updated.
+
+## Constructs
+
+- `schemas/constructs/v1beta1/support/api.yml` - `SupportRequest`
+  (unchanged), `AnonymousSupportRequest`, `POST /api/support/anonymous`.
+- `schemas/constructs/v1beta1/diagnostics/api.yml` - `FailureDiagnostic`,
+  `POST /api/diagnostics/failures`.
+
+## The support drift decision
+
+`SupportRequest` at `POST /api/integrations/support` is NOT reshaped to
+match what Layer5 Cloud serves today. Cloud's live route is
+`POST /api/webhook/support` with a `memberFormOne` payload
+(`server/handlers/webhooks.go`, `server/models/webhooks_payload.go`), and
+no `/api/integrations/support` route exists on Cloud master. Per this
+repo's source-of-truth rule, the schema is authoritative post-migration:
+Cloud adopts `SupportRequest` at `POST /api/integrations/support`
+(authenticated, as today) and keeps `/api/webhook/support` as a
+deprecated alias for its own UI until that moves. The alias is
+deliberately NOT declared here: declaring it would bake the legacy
+`memberFormOne` shape into the canonical contract. The drift fix
+therefore lands on the Cloud side, not in this repo. Pinned by
+`validation/diagnostics_support_contract_test.go`
+(`TestSupportRequestUnchanged`).
+
+## Anonymous support
+
+`AnonymousSupportRequest` is `SupportRequest` plus two optional fields,
+spelled out flat rather than composed with `allOf`, so generated clients
+expose the fields exactly like `SupportRequest`:
+
+- `email` (`format: email`): only ever sent when the person types it in
+  for a follow-up; never inferred from an account, because the request
+  may come from a signed-out client.
+- `diagnosticId` (`format: uuid`): links the human report to the
+  automatic `FailureDiagnostic` for the same incident, when one exists.
+
+"Anonymous" means no signed-in user, not no credential.
+`POST /api/support/anonymous` declares the same two alternatives as the
+diagnostics route (below): the `X-Client-Key` pre-shared key for a
+signed-out client, or a bearer token for a signed-in caller, in which
+case Cloud attaches the organization, and only then. A request carrying
+neither is a 401. That is what Cloud serves: both routes sit behind
+`AuthWithClientKeyOrSessionMiddleware`. An earlier draft declared
+`security: []`, which would have produced clients that send no key and
+get a 401.
+
+Both operations answer a rate-limit refusal with 429 and a `Retry-After`
+header of whole seconds (at least 1), which is declared on the response.
+
+## FailureDiagnostic
+
+- One anonymous, redacted report per occurrence window. The same failure
+  is deduplicated per install per day: `firstSeenAt` opens the window,
+  `count` (minimum 1) counts occurrences inside it, `occurredAt` is the
+  latest occurrence.
+- Every object is closed (`additionalProperties: false`), so an unknown
+  field is a 400, not a silently widened report.
+- `diagnosticId` is client-generated, `format: uuid`. The client, not
+  the server, mints it, because the human support request must be able
+  to reference it before any server round trip.
+- `failure.cause` is a patterned string (`^[a-z][a-z0-9_]*$`), NOT a
+  closed enum. New failure causes are named by clients over time, and a
+  closed enum would make the server reject reports carrying a cause it
+  does not know yet. Consumers must treat an unknown cause as opaque,
+  never as an error. The description lists the known causes today (the
+  Blowhorn engine's `StoreUnavailable.cause` names).
+- `failure.message` is redacted, max 500 characters: only the cause
+  sentence survives.
+- `failure.code` is a string so numeric and symbolic codes both fit;
+  empty when the failure carries no code beyond its cause.
+- `client.channel` is a free string, not an enum: channel names are
+  release-process values, and a new channel must not make older
+  clients' reports undecodable.
+- `compat` carries `requiresSchema` and `contractVersion` as strings, so
+  dotted versions and plain numbers both fit.
+- `installId` is optional and `format: uuid`: the per-install id is a
+  uuid4 minted once per install (Blowhorn's `installationId`, written
+  beside `cloud.yaml` and reused), never a hardware id, and it is
+  omitted entirely when the person has opted out of failure reports.
+
+## Authentication on POST /api/diagnostics/failures
+
+`security` lists two alternatives: the `X-Client-Key` pre-shared key
+(per client kind, per release channel, `<key id>.<secret>`, at least two
+valid at any time so rotation never breaks old builds) or a bearer
+token for a signed-in caller (organization attached only then). The key
+is a speed bump plus a revocation handle, not a strong secret: it ships
+in the app and can be extracted. Body cap, strict decode, rate limits,
+server-side re-redaction, and 90-day retention are server-side
+behaviour owned by the Cloud step, described in the operation text but
+not enforceable from this repo.
+
+## Responses
+
+Both operations declare exactly what Cloud's handlers send
+(`server/handlers/diagnostics.go`); the contract test pins each code set.
+
+| Code | `submitFailureDiagnostic` | `submitAnonymousSupportRequest` |
+| --- | --- | --- |
+| Success | `201 {diagnosticId}` - the client's id, or one the server generated | `200 {status: "received", diagnosticId?}` |
+| 400 | MeshKit error: invalid or unknown field, wrong client kind | MeshKit error |
+| 401 | `{message}`: no session and no valid client key - rotate the key, this is not an expired session | same |
+| 413 | MeshKit error: body over 16 KB - do not retry the same body | same |
+| 429 | MeshKit error plus `Retry-After` (whole seconds, at least 1) | same |
+| 500 | MeshKit error | MeshKit error |
+| 502 | - | MeshKit error: the support webhook forward failed - retry later |
+| 503 | MeshKit error: diagnostics store not configured - retry later | - |
+
+`AnonymousSupportRequest` is closed (`additionalProperties: false`), like
+`FailureDiagnostic`, because the same strict decoder serves both.
+
+## Serving status
+
+The schema was declared first, then Cloud implemented it:
+layer5io/meshery-cloud#6330 serves both operations
+(`server/handlers/diagnostics.go`). Where this contract and the handler
+disagree, the handler's wire wins, and the schema is corrected to match.

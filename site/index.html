@@ -84,6 +84,9 @@ permalink: /
       }
 
       h1 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
         margin-bottom: 0.5rem;
         font-size: 2rem;
       }
@@ -134,14 +137,6 @@ permalink: /
         font-weight: 700;
       }
 
-      .eyebrow {
-        margin-bottom: 0.5rem;
-        color: var(--secondary);
-        font-size: 0.875rem;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
 
       .classification {
         text-align: center;
@@ -275,10 +270,6 @@ permalink: /
         thead th {
           background: var(--surface-muted-dark);
         }
-
-        .eyebrow {
-          color: var(--primary-hover);
-        }
       }
 
       @media (max-width: 36rem) and (prefers-color-scheme: dark) {
@@ -303,8 +294,7 @@ permalink: /
   </head>
   <body>
     <main>
-      <p class="eyebrow">schemas.meshery.io</p>
-      <h1>Meshery Schemas</h1>
+      <h1><img src="{{ '/site/assets/images/meshery-logo.svg' | relative_url }}" alt="" aria-hidden="true" height="32"> Meshery Schemas</h1>
       <p>Latest schema version for each Meshery resource.</p>
 
       <p>

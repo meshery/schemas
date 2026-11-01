@@ -21,6 +21,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/support/anonymous": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit an anonymous support request
+         * @description Accepts a support request without requiring a signed-in user, so a desktop client can offer a "Contact support" action whether or not the person is signed in. A signed-out client authenticates with the same per-client-kind `X-Client-Key` as submitFailureDiagnostic; a signed-in caller may use its bearer token instead, and only then is the organization attached. A request carrying neither is a 401. The email address is only ever sent when the person types it in, and diagnosticId links this report to the automatic failure diagnostic submitted for the same incident, when one exists. Served by Layer5 Cloud; see Blowhorn issue #771.
+         */
+        post: operations["submitAnonymousSupportRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -44,6 +64,37 @@ export interface components {
              */
             scope?: "Support" | "Community" | "Account" | "Commercial";
         };
+        /** @description Payload for submitting a help-and-support request without signing in. It carries the same subject, message, and scope as SupportRequest, plus two optional fields: an email address the person typed in for a follow-up, and the diagnosticId of the automatic failure diagnostic for the same incident, when one was submitted. The fields are spelled out here rather than composed with allOf so generated clients expose them flat, exactly like SupportRequest. The object is closed: Cloud decodes it strictly and refuses an unknown field with a 400. */
+        AnonymousSupportRequest: {
+            /**
+             * Subject
+             * @description Concise and descriptive title for the support request.
+             */
+            subject: string;
+            /**
+             * Description
+             * @description Detailed description of the issue or question.
+             */
+            message: string;
+            /**
+             * Scope
+             * @description Category that best represents the nature of the inquiry.
+             * @enum {string}
+             */
+            scope?: "Support" | "Community" | "Account" | "Commercial";
+            /**
+             * Email
+             * Format: email
+             * @description Optional email address the person typed in for a follow-up. Absent when they did not ask to be contacted; never inferred from an account, because this request may come from a signed-out client.
+             */
+            email?: string;
+            /**
+             * Diagnostic ID
+             * Format: uuid
+             * @description Optional id of the FailureDiagnostic submitted for the same incident (schemas/constructs/v1beta1/diagnostics/api.yml), linking the human report to the automatic diagnostic.
+             */
+            diagnosticId?: string;
+        };
     };
     responses: {
         /** @description Expired JWT token used or insufficient privilege */
@@ -53,6 +104,135 @@ export interface components {
             };
             content: {
                 "text/plain": string;
+            };
+        };
+        /** @description Invalid request body or request param */
+        MeshkitError400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Internal server error */
+        MeshkitError500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Neither a signed-in session nor a valid X-Client-Key. A missing, revoked, expired, not-yet-valid or unknown key all answer alike, so key existence is not an oracle. Rotate the client key; this is not an expired session. */
+        ClientKeyUnauthorized: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The refusal, for example "Client key required for operation is invalid or missing". */
+                    message: string;
+                };
+            };
+        };
+        /** @description The request body exceeds the 16 KB cap. Do not retry the same body. */
+        PayloadTooLarge: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Rate limit exceeded; retry after the Retry-After interval. */
+        RateLimited: {
+            headers: {
+                /** @description Seconds to wait before retrying; always a whole number of at least 1. */
+                "Retry-After"?: number;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
+            };
+        };
+        /** @description Bad gateway - an upstream service the operation depends on could not be reached or rejected the request */
+        MeshkitError502: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description The sentence the caller is shown. */
+                    error: string;
+                    /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                    code?: string;
+                    /**
+                     * @description MeshKit severity name. Omitted when MeshKit reports none.
+                     * @enum {string}
+                     */
+                    severity?: "emergency" | "alert" | "critical" | "fatal";
+                    /** @description MeshKit's probable causes of the error. */
+                    probableCause?: string[];
+                    /** @description MeshKit's suggested remediations for the error. */
+                    suggestedRemediation?: string[];
+                };
             };
         };
     };
@@ -126,6 +306,199 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    submitAnonymousSupportRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Subject
+                     * @description Concise and descriptive title for the support request.
+                     */
+                    subject: string;
+                    /**
+                     * Description
+                     * @description Detailed description of the issue or question.
+                     */
+                    message: string;
+                    /**
+                     * Scope
+                     * @description Category that best represents the nature of the inquiry.
+                     * @enum {string}
+                     */
+                    scope?: "Support" | "Community" | "Account" | "Commercial";
+                    /**
+                     * Email
+                     * Format: email
+                     * @description Optional email address the person typed in for a follow-up. Absent when they did not ask to be contacted; never inferred from an account, because this request may come from a signed-out client.
+                     */
+                    email?: string;
+                    /**
+                     * Diagnostic ID
+                     * Format: uuid
+                     * @description Optional id of the FailureDiagnostic submitted for the same incident (schemas/constructs/v1beta1/diagnostics/api.yml), linking the human report to the automatic diagnostic.
+                     */
+                    diagnosticId?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Support request received and forwarded */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Always `received`.
+                         * @enum {string}
+                         */
+                        status: "received";
+                        /**
+                         * Format: uuid
+                         * @description Echoes the request's diagnosticId; omitted when the request linked none.
+                         */
+                        diagnosticId?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Neither a signed-in session nor a valid X-Client-Key. A missing, revoked, expired, not-yet-valid or unknown key all answer alike, so key existence is not an oracle. Rotate the client key; this is not an expired session. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The refusal, for example "Client key required for operation is invalid or missing". */
+                        message: string;
+                    };
+                };
+            };
+            /** @description The request body exceeds the 16 KB cap. Do not retry the same body. */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Rate limit exceeded; retry after the Retry-After interval. */
+            429: {
+                headers: {
+                    /** @description Seconds to wait before retrying; always a whole number of at least 1. */
+                    "Retry-After"?: number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
+            };
+            /** @description Bad gateway - an upstream service the operation depends on could not be reached or rejected the request */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The sentence the caller is shown. */
+                        error: string;
+                        /** @description MeshKit error code, a component-scoped identifier allocated by the emitting service (e.g. `<component>-<number>`); it is not a stable part of this contract. Omitted for an error that is not a MeshKit error. */
+                        code?: string;
+                        /**
+                         * @description MeshKit severity name. Omitted when MeshKit reports none.
+                         * @enum {string}
+                         */
+                        severity?: "emergency" | "alert" | "critical" | "fatal";
+                        /** @description MeshKit's probable causes of the error. */
+                        probableCause?: string[];
+                        /** @description MeshKit's suggested remediations for the error. */
+                        suggestedRemediation?: string[];
+                    };
+                };
             };
         };
     };

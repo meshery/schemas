@@ -1,0 +1,38 @@
+openapi: 3.0.0
+info:
+  title: Schedule Stop
+  description: |
+    OpenAPI schema for the organization-wide stop of scheduled work,
+    consumed by Blowhorn's kill switch (`blowhorn stop --all`). The stop
+    has no endpoints of its own: it is read and written as the
+    `scheduleStop` member of the organization's preferences (the
+    organization construct's getOrgPreferences and patchOrgPreferences
+    on /api/identity/orgs/{orgId}/preferences), beside `schedulePause`,
+    so this file declares the components only and the paths stay with
+    the organization construct. Only organization admins may set or
+    lift it, as with the pause; a preferences patch that omits
+    `scheduleStop` keeps the current stop unchanged.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+paths: {}
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ScheduleStop:
+      $ref: "./schedule_stop.yaml"
+
+    ScheduleStopPayload:
+      $ref: "./schedule_stop_payload.yaml"

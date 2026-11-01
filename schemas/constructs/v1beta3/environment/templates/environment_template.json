@@ -3,6 +3,7 @@
   "schemaVersion": "environments.meshery.io/v1beta3",
   "name": "",
   "description": "",
+  "purpose": "user",
   "organizationId": "00000000-0000-0000-0000-000000000000",
   "owner": "00000000-0000-0000-0000-000000000000",
   "createdAt": "",

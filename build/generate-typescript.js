@@ -36,6 +36,7 @@ const { execSync } = require("child_process");
 const logger = require("./lib/logger");
 const config = require("./lib/config");
 const paths = require("./lib/paths");
+const generatedOutputs = require("./lib/generated-outputs");
 
 /**
  * Convert string to PascalCase
@@ -167,6 +168,10 @@ async function main() {
     // Generate TypeScript types for all packages
     for (const pkg of schemaPackages) {
       await generateTypescriptTypes(pkg);
+    }
+
+    for (const dir of generatedOutputs.pruneOrphanedTypescriptOutputs(paths.getProjectRoot())) {
+      logger.info(`Removed output of removed construct: ${dir}`);
     }
 
     // Summary

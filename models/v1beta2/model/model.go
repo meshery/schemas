@@ -236,7 +236,7 @@ type ModelDefinition_Metadata struct {
 	SvgComplete *string `json:"svgComplete" yaml:"svgComplete"`
 
 	// Shape The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-	Shape                *core.Shape    `json:"shape,omitempty" yaml:"shape,omitempty"`
+	Shape                *core.Shape            `json:"shape,omitempty" yaml:"shape,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 

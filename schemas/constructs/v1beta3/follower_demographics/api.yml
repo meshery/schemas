@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  title: Follower Demographics
+  description: |
+    OpenAPI schema for follower-breakdown snapshot rows for a page,
+    consumed by Blowhorn's analytics store. The rows have no endpoints
+    of their own: they are recorded and read back as the `metadata` of
+    events on the events service (category `blowhorn`, action
+    `follower_demographics`; see the event construct), so this file
+    declares the components only and the paths stay with the event
+    construct.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+paths: {}
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer [REDACTED]
+      bearerFormat: JWT
+
+  schemas:
+    FollowerDemographics:
+      $ref: "./follower_demographics.yaml"
+
+    FollowerDemographicsPayload:
+      type: object
+      description: |
+        Payload for recording one follower-breakdown snapshot row for a
+        page, sent as the `metadata` of a create-event call. Contains
+        only client-settable fields; the row has no server-generated
+        fields, because the events service stores and returns event
+        metadata verbatim, so the payload and the recorded row
+        (FollowerDemographics) share one field set.
+      additionalProperties: false
+      required:
+        - organizationId
+        - platform
+        - subject
+        - readingDate
+        - dimension
+        - category
+      properties:
+        organizationId:
+          type: string
+          format: uuid
+          description: Owning organization ID.
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-name: OrganizationID
+        platform:
+          type: string
+          description: The platform the page belongs to (today only `linkedin` produces these exports).
+        subject:
+          type: string
+          description: The page the figures describe, named as the source export names it.
+        readingDate:
+          type: string
+          format: date
+          description: The day the snapshot describes, as an ISO calendar date.
+        dimension:
+          type: string
+          enum:
+            - location
+            - job_function
+            - seniority
+            - industry
+            - company_size
+          description: The breakdown the category belongs to; one value per breakdown sheet the source export carries.
+        category:
+          type: string
+          description: The breakdown row's label, verbatim from the source export (e.g. a location or an industry name).
+        followers:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: The page's cumulative followers in this category on the snapshot day; null when the export's cell is blank.
+        sourceFile:
+          type: string
+          description: The export file the row was read from; empty when the row did not come from a file export.

@@ -1,0 +1,34 @@
+openapi: 3.0.0
+info:
+  title: Activity Metrics
+  description: |
+    OpenAPI schema for per-activity reception figures for one post,
+    consumed by Blowhorn's analytics store. The rows have no endpoints of
+    their own: they are recorded and read back as the `metadata` of events
+    on the events service (category `blowhorn`, action `activity_metrics`;
+    see the event construct), so this file declares the components only and
+    the paths stay with the event construct.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+paths: {}
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ActivityMetrics:
+      $ref: "./activity_metrics.yaml"
+
+    ActivityMetricsPayload:
+      $ref: "./activity_metrics_payload.yaml"

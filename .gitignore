@@ -1,7 +1,10 @@
 # Claude Code worktrees (local state, not project files)
-!.claude/skills/
+!.claude/skills
 .claude/worktrees/
 .claude/settings.local.json
+
+# Superpowers plugin runtime state
+/.superpowers/
 
 
 # api-audit local binary (built via `go build ./cmd/api-audit`)
@@ -39,6 +42,16 @@ dist/
 */npm-debug.log
 **/.idea
 yarn.lock
+
+# Python (local venvs, caches, and build outputs; python/generated/ itself is committed)
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+python/generated/build/
+python/generated/dist/
 
 # Generated files
 **/bin

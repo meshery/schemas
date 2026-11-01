@@ -8,6 +8,7 @@ const CredentialSchema: Record<string, unknown> = {
   "info": {
     "title": "credential",
     "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "description": "Documentation for Meshery Cloud REST APIs for Credentials",
     "contact": {
       "name": "Meshery Maintainers",

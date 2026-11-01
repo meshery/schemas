@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "bfd819819315ab0192b6f930378760de4b79ecd8acdc4741e72b846d7e7207e2" as const;
+export const PERMISSIONS_INDEX_ID = "e0e93dd7284f2834f1d2b5683e27025aa3747e63ff4d78d8624039dc9fa9232a" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -502,6 +502,50 @@ export const Keys = {
   },
 
   /**
+   * View the content items of the organization
+   */
+  CatalogManagementViewContentItems: {
+    id: "5cd87dc9-02c6-44a0-a019-281f7295ad08" as PermissionKey,
+    category: "Catalog Management",
+    subcategory: "Content Items",
+    function: "View Content Items",
+    description: "View the content items of the organization"
+  },
+
+  /**
+   * Create a content item in the organization
+   */
+  CatalogManagementCreateContentItem: {
+    id: "5fb97ae1-49ed-490c-b17a-377bf5558585" as PermissionKey,
+    category: "Catalog Management",
+    subcategory: "Content Items",
+    function: "Create Content Item",
+    description: "Create a content item in the organization"
+  },
+
+  /**
+   * Edit a content item of the organization
+   */
+  CatalogManagementEditContentItem: {
+    id: "06858261-c7eb-464a-a4b7-e29792a7ae54" as PermissionKey,
+    category: "Catalog Management",
+    subcategory: "Content Items",
+    function: "Edit Content Item",
+    description: "Edit a content item of the organization"
+  },
+
+  /**
+   * Delete a content item of the organization
+   */
+  CatalogManagementDeleteContentItem: {
+    id: "129d0297-1091-40e4-8d4a-5262b3378305" as PermissionKey,
+    category: "Catalog Management",
+    subcategory: "Content Items",
+    function: "Delete Content Item",
+    description: "Delete a content item of the organization"
+  },
+
+  /**
    * Invite any Meshery Cloud user, or all Meshery users, to work with you on a public design that control – including making changes and releasing new versions.
    */
   CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers: {
@@ -674,17 +718,6 @@ export const Keys = {
     category: "Extensibility",
     subcategory: "ReST API",
     function: "Swagger integration",
-    description: ""
-  },
-
-  /**
-   * No description available
-   */
-  ExtensibilityNamespacedCustomResolvers: {
-    id: "192cd281-234a-4127-b8a8-3e6f10d9e730" as PermissionKey,
-    category: "Extensibility",
-    subcategory: "GraphQL API",
-    function: "Namespaced custom resolvers",
     description: ""
   },
 
@@ -1461,11 +1494,11 @@ export const Keys = {
   /**
    * Create, update , delete and manage recogntions awarded by your organization
    */
-  IdentityAccessManagementManageRecogntions: {
+  IdentityAccessManagementManageRecognitions: {
     id: "0a887b7f-b6c2-4a33-b080-bec9c3894d0c" as PermissionKey,
     category: "Identity & Access Management",
     subcategory: "Organization",
-    function: "Manage Recogntions",
+    function: "Manage Recognitions",
     description: "Create, update , delete and manage recogntions awarded by your organization"
   },
 
@@ -2017,6 +2050,61 @@ export const Keys = {
     subcategory: "Settings",
     function: "Reset Database",
     description: "Reset Meshery database"
+  },
+
+  /**
+   * Import a model into the capabilities registry
+   */
+  MesherySystemImportModel: {
+    id: "9e412481-744f-4676-bb1c-f40ce9e6c8f8" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Import Model",
+    description: "Import a model into the capabilities registry"
+  },
+
+  /**
+   * Create a new model in the capabilities registry
+   */
+  MesherySystemCreateModel: {
+    id: "272a1166-a023-43e8-9e27-2cd8054115bb" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Create Model",
+    description: "Create a new model in the capabilities registry"
+  },
+
+  /**
+   * Create a new relationship definition in the capabilities registry
+   */
+  MesherySystemCreateRelationship: {
+    id: "60609c21-88b1-4913-8102-5d9d0fa90953" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Create Relationship",
+    description: "Create a new relationship definition in the capabilities registry"
+  },
+
+  /**
+   * View server-wide defaults for Meshery Operator MeshSync and Broker
+   */
+  MesherySystemViewControllersConfig: {
+    id: "278e5f2f-6eca-4e26-864b-44d4246f3c19" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "View Controllers Config",
+    description: "View server-wide defaults for Meshery Operator MeshSync and Broker"
+  },
+
+  /**
+   * Edit and save server-wide defaults for Meshery Operator Meshsync and Broker
+   */
+  MesherySystemEditControllersConfig: {
+    id: "4ea3ffab-dced-4358-b138-b583d90f0451" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Edit Controllers Config",
+    description: "Edit and save server-wide defaults for Meshery Operator Meshsync and Broker"
   },
 
   /**
@@ -2845,14 +2933,14 @@ export const Keys = {
   },
 
   /**
-   * Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.
+   * Direct terminal access to one or more pods/containers simultaneously. Integrated experience.
    */
   KanvasViewInteractiveTerminal: {
     id: "4726da45-2108-409b-b94f-45bd1e199a78" as PermissionKey,
     category: "Kanvas",
     subcategory: "Operator",
     function: "View Interactive Terminal",
-    description: "Direct terminal access to one ore more pods/containers simultaneously. Integrated experience."
+    description: "Direct terminal access to one or more pods/containers simultaneously. Integrated experience."
   },
 
   /**
@@ -2875,17 +2963,6 @@ export const Keys = {
     subcategory: "Operator",
     function: "View metrics in visualizer",
     description: "View real-time resource metrics in Kanvas Operator"
-  },
-
-  /**
-   * Perform a conformance test in Kanvas Operator
-   */
-  KanvasPerformConformanceTest: {
-    id: "901ca054-0656-4db5-8d58-d618e0b82b39" as PermissionKey,
-    category: "Kanvas",
-    subcategory: "Operator",
-    function: "Perform conformance test",
-    description: "Perform a conformance test in Kanvas Operator"
   },
 
   /**
@@ -3912,6 +3989,28 @@ export const Keys = {
   },
 
   /**
+   * Add a profile to a workspace
+   */
+  WorkspaceManagementAssignProfileToWorkspace: {
+    id: "d02cab86-8c22-411e-a82a-50b7a8446b6c" as PermissionKey,
+    category: "Workspace Management",
+    subcategory: "Workspace",
+    function: "Assign profile to workspace",
+    description: "Add a profile to a workspace"
+  },
+
+  /**
+   * Remove a profile from a workspace
+   */
+  WorkspaceManagementRemoveProfileFromWorkspace: {
+    id: "1d8adb54-5e28-419f-83b6-2ea5ab6843a0" as PermissionKey,
+    category: "Workspace Management",
+    subcategory: "Workspace",
+    function: "Remove profile from workspace",
+    description: "Remove a profile from a workspace"
+  },
+
+  /**
    * No description available
    */
   WorkspaceManagementConnectGithubAccountToWorkspace: {
@@ -4008,6 +4107,50 @@ export const Keys = {
     subcategory: "Environments",
     function: "Remove connections from environment",
     description: "Remove connections from environment, "
+  },
+
+  /**
+   * See profiles assigned to your workspaces. Org admins see every profile in the organization.
+   */
+  WorkspaceManagementViewProfiles: {
+    id: "77f8a444-f9ac-4cb5-bb26-832b53addf01" as PermissionKey,
+    category: "Workspace Management",
+    subcategory: "Profiles",
+    function: "View Profiles",
+    description: "See profiles assigned to your workspaces. Org admins see every profile in the organization."
+  },
+
+  /**
+   * Create a new profile
+   */
+  WorkspaceManagementCreateProfile: {
+    id: "b71221e9-3247-4510-9175-14b9de4fb06e" as PermissionKey,
+    category: "Workspace Management",
+    subcategory: "Profiles",
+    function: "Create Profile",
+    description: "Create a new profile"
+  },
+
+  /**
+   * Delete a profile and its workspace and connection memberships. Leave associated connections intact.
+   */
+  WorkspaceManagementDeleteProfile: {
+    id: "cad76a9d-5718-4503-8293-570b495d82bc" as PermissionKey,
+    category: "Workspace Management",
+    subcategory: "Profiles",
+    function: "Delete Profile",
+    description: "Delete a profile and its workspace and connection memberships. Leave associated connections intact."
+  },
+
+  /**
+   * Edit a profile, transfer its owner, and link or unlink its connections
+   */
+  WorkspaceManagementEditProfile: {
+    id: "b8f0c75c-39f6-488f-92c0-ab6add761266" as PermissionKey,
+    category: "Workspace Management",
+    subcategory: "Profiles",
+    function: "Edit Profile",
+    description: "Edit a profile, transfer its owner, and link or unlink its connections"
   },
 
   /**
@@ -4638,6 +4781,105 @@ export const Keys = {
   },
 
   /**
+   * See the claims in your organization, active and past, and which connection and member holds each.
+   */
+  WorkflowManagementViewClaims: {
+    id: "93696d4c-48db-415e-aac9-778390896093" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Claims",
+    function: "View Claims",
+    description: "See the claims in your organization, active and past, and which connection and member holds each."
+  },
+
+  /**
+   * Take a claim on a resource of your organization with one of your own connections, and renew it.
+   */
+  WorkflowManagementTakeAndRenewClaims: {
+    id: "1450f30c-6664-4107-9818-eca7508182d5" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Claims",
+    function: "Take and renew claims",
+    description: "Take a claim on a resource of your organization with one of your own connections, and renew it."
+  },
+
+  /**
+   * Release a claim you hold and record its outcome.
+   */
+  WorkflowManagementReleaseClaim: {
+    id: "6789de53-1b28-407f-90dc-bf290eb28cf6" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Claims",
+    function: "Release claim",
+    description: "Release a claim you hold and record its outcome."
+  },
+
+  /**
+   * Release a claim another member of your organization holds, for example a hold left by a computer that went offline.
+   */
+  WorkflowManagementReleaseClaimsOfOtherMembers: {
+    id: "2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Claims",
+    function: "Release claims of other members",
+    description: "Release a claim another member of your organization holds, for example a hold left by a computer that went offline."
+  },
+
+  /**
+   * View the schedules of the organization, when each runs next and which connection holds each one
+   */
+  WorkflowManagementViewSchedules: {
+    id: "9eba0b6a-08d1-42a2-a2fa-dd5fc5aeb542" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Schedules",
+    function: "View Schedules",
+    description: "View the schedules of the organization, when each runs next and which connection holds each one"
+  },
+
+  /**
+   * Create a schedule in the organization
+   */
+  WorkflowManagementCreateSchedule: {
+    id: "135c39f9-0a98-4db6-a7cd-42e903ab9d32" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Schedules",
+    function: "Create schedule",
+    description: "Create a schedule in the organization"
+  },
+
+  /**
+   * Change a schedule of the organization, including pausing and resuming it
+   */
+  WorkflowManagementEditSchedule: {
+    id: "6767b9a0-d138-4672-a8ba-26ce6e217c48" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Schedules",
+    function: "Edit schedule",
+    description: "Change a schedule of the organization, including pausing and resuming it"
+  },
+
+  /**
+   * Delete a schedule of the organization
+   */
+  WorkflowManagementDeleteSchedule: {
+    id: "d2ab90ab-7abb-4aa3-a38a-24ed4b6b1665" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Schedules",
+    function: "Delete schedule",
+    description: "Delete a schedule of the organization"
+  },
+
+  /**
+   * Link a schedule of the organization to a workspace, or remove the link
+   */
+  WorkflowManagementAssignSchedulesToWorkspaces: {
+    id: "264bda82-2676-41a2-bfff-2d90c7bf52f0" as PermissionKey,
+    category: "Workflow Management",
+    subcategory: "Schedules",
+    function: "Assign schedules to workspaces",
+    description: "Link a schedule of the organization to a workspace, or remove the link"
+  },
+
+  /**
    * No description available
    */
   BusinessPerformanceShoppingCartBasedRealTimeDiscount: {
@@ -4899,6 +5141,17 @@ export const Keys = {
     subcategory: "MeshMonkey",
     function: "As daemonsets",
     description: ""
+  },
+
+  /**
+   * Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
+   */
+  BlowhornAccessDiagnostics: {
+    id: "afb597fc-a027-4ade-b5f9-c5f82b67b053" as PermissionKey,
+    category: "Blowhorn",
+    subcategory: "Diagnostics",
+    function: "Access Diagnostics",
+    description: "Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces."
   }
 } as const;
 
@@ -5118,6 +5371,26 @@ export const PermissionKeys = {
   CatalogManagementDeleteWasmFilter: "9225d5a7-7255-49be-9233-daeabefae306" as PermissionKey,
 
   /**
+   * View the content items of the organization
+   */
+  CatalogManagementViewContentItems: "5cd87dc9-02c6-44a0-a019-281f7295ad08" as PermissionKey,
+
+  /**
+   * Create a content item in the organization
+   */
+  CatalogManagementCreateContentItem: "5fb97ae1-49ed-490c-b17a-377bf5558585" as PermissionKey,
+
+  /**
+   * Edit a content item of the organization
+   */
+  CatalogManagementEditContentItem: "06858261-c7eb-464a-a4b7-e29792a7ae54" as PermissionKey,
+
+  /**
+   * Delete a content item of the organization
+   */
+  CatalogManagementDeleteContentItem: "129d0297-1091-40e4-8d4a-5262b3378305" as PermissionKey,
+
+  /**
    * Invite any Meshery Cloud user, or all Meshery users, to work with you on a public design that control – including making changes and releasing new versions.
    */
   CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers: "ccc4bc8d-f484-42b3-8a62-2667284605c3" as PermissionKey,
@@ -5196,11 +5469,6 @@ export const PermissionKeys = {
    * No description available
    */
   ExtensibilitySwaggerIntegration: "045f4c47-95d7-4ee7-923e-b069faa75640" as PermissionKey,
-
-  /**
-   * No description available
-   */
-  ExtensibilityNamespacedCustomResolvers: "192cd281-234a-4127-b8a8-3e6f10d9e730" as PermissionKey,
 
   /**
    * Extend Meshery's capabilities behind a gRPC interface for Model registration and operation invocation
@@ -5555,7 +5823,7 @@ export const PermissionKeys = {
   /**
    * Create, update , delete and manage recogntions awarded by your organization
    */
-  IdentityAccessManagementManageRecogntions: "0a887b7f-b6c2-4a33-b080-bec9c3894d0c" as PermissionKey,
+  IdentityAccessManagementManageRecognitions: "0a887b7f-b6c2-4a33-b080-bec9c3894d0c" as PermissionKey,
 
   /**
    * Create, update , delete and manage invitations to your organization
@@ -5806,6 +6074,31 @@ export const PermissionKeys = {
    * Reset Meshery database
    */
   MesherySystemResetDatabase: "84fc402c-f33e-4a21-a0e3-e14f9e20b125" as PermissionKey,
+
+  /**
+   * Import a model into the capabilities registry
+   */
+  MesherySystemImportModel: "9e412481-744f-4676-bb1c-f40ce9e6c8f8" as PermissionKey,
+
+  /**
+   * Create a new model in the capabilities registry
+   */
+  MesherySystemCreateModel: "272a1166-a023-43e8-9e27-2cd8054115bb" as PermissionKey,
+
+  /**
+   * Create a new relationship definition in the capabilities registry
+   */
+  MesherySystemCreateRelationship: "60609c21-88b1-4913-8102-5d9d0fa90953" as PermissionKey,
+
+  /**
+   * View server-wide defaults for Meshery Operator MeshSync and Broker
+   */
+  MesherySystemViewControllersConfig: "278e5f2f-6eca-4e26-864b-44d4246f3c19" as PermissionKey,
+
+  /**
+   * Edit and save server-wide defaults for Meshery Operator Meshsync and Broker
+   */
+  MesherySystemEditControllersConfig: "4ea3ffab-dced-4358-b138-b583d90f0451" as PermissionKey,
 
   /**
    * No description available
@@ -6183,7 +6476,7 @@ export const PermissionKeys = {
   KanvasCloneViews: "258c7e18-9ac4-41d7-a637-7f12a7f24df7" as PermissionKey,
 
   /**
-   * Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.
+   * Direct terminal access to one or more pods/containers simultaneously. Integrated experience.
    */
   KanvasViewInteractiveTerminal: "4726da45-2108-409b-b94f-45bd1e199a78" as PermissionKey,
 
@@ -6196,11 +6489,6 @@ export const PermissionKeys = {
    * View real-time resource metrics in Kanvas Operator
    */
   KanvasViewMetricsInVisualizer: "2988a366-a743-48e7-9946-daff9b2ab0a1" as PermissionKey,
-
-  /**
-   * Perform a conformance test in Kanvas Operator
-   */
-  KanvasPerformConformanceTest: "901ca054-0656-4db5-8d58-d618e0b82b39" as PermissionKey,
 
   /**
    * Stream container logs in Kanvas Operator
@@ -6668,6 +6956,16 @@ export const PermissionKeys = {
   WorkspaceManagementRemoveDesignsFromWorkspaces: "076515f1-f696-4211-ae27-58d5463a229e" as PermissionKey,
 
   /**
+   * Add a profile to a workspace
+   */
+  WorkspaceManagementAssignProfileToWorkspace: "d02cab86-8c22-411e-a82a-50b7a8446b6c" as PermissionKey,
+
+  /**
+   * Remove a profile from a workspace
+   */
+  WorkspaceManagementRemoveProfileFromWorkspace: "1d8adb54-5e28-419f-83b6-2ea5ab6843a0" as PermissionKey,
+
+  /**
    * No description available
    */
   WorkspaceManagementConnectGithubAccountToWorkspace: "410b2d3c-8194-44d1-9f80-7b5fea689b4f" as PermissionKey,
@@ -6711,6 +7009,26 @@ export const PermissionKeys = {
    * Remove connections from environment, 
    */
   WorkspaceManagementRemoveConnectionsFromEnvironment: "65648682-e47f-43d7-a5ad-dc042803f951" as PermissionKey,
+
+  /**
+   * See profiles assigned to your workspaces. Org admins see every profile in the organization.
+   */
+  WorkspaceManagementViewProfiles: "77f8a444-f9ac-4cb5-bb26-832b53addf01" as PermissionKey,
+
+  /**
+   * Create a new profile
+   */
+  WorkspaceManagementCreateProfile: "b71221e9-3247-4510-9175-14b9de4fb06e" as PermissionKey,
+
+  /**
+   * Delete a profile and its workspace and connection memberships. Leave associated connections intact.
+   */
+  WorkspaceManagementDeleteProfile: "cad76a9d-5718-4503-8293-570b495d82bc" as PermissionKey,
+
+  /**
+   * Edit a profile, transfer its owner, and link or unlink its connections
+   */
+  WorkspaceManagementEditProfile: "b8f0c75c-39f6-488f-92c0-ab6add761266" as PermissionKey,
 
   /**
    * View all of your projects
@@ -6998,6 +7316,51 @@ export const PermissionKeys = {
   WorkflowManagementSingleAndMultipleApprovers: "8b8b8eb2-00d5-4501-8c94-529f1b0b0f27" as PermissionKey,
 
   /**
+   * See the claims in your organization, active and past, and which connection and member holds each.
+   */
+  WorkflowManagementViewClaims: "93696d4c-48db-415e-aac9-778390896093" as PermissionKey,
+
+  /**
+   * Take a claim on a resource of your organization with one of your own connections, and renew it.
+   */
+  WorkflowManagementTakeAndRenewClaims: "1450f30c-6664-4107-9818-eca7508182d5" as PermissionKey,
+
+  /**
+   * Release a claim you hold and record its outcome.
+   */
+  WorkflowManagementReleaseClaim: "6789de53-1b28-407f-90dc-bf290eb28cf6" as PermissionKey,
+
+  /**
+   * Release a claim another member of your organization holds, for example a hold left by a computer that went offline.
+   */
+  WorkflowManagementReleaseClaimsOfOtherMembers: "2ae5e1c0-8f91-4777-a3b4-bc5cf662ecb7" as PermissionKey,
+
+  /**
+   * View the schedules of the organization, when each runs next and which connection holds each one
+   */
+  WorkflowManagementViewSchedules: "9eba0b6a-08d1-42a2-a2fa-dd5fc5aeb542" as PermissionKey,
+
+  /**
+   * Create a schedule in the organization
+   */
+  WorkflowManagementCreateSchedule: "135c39f9-0a98-4db6-a7cd-42e903ab9d32" as PermissionKey,
+
+  /**
+   * Change a schedule of the organization, including pausing and resuming it
+   */
+  WorkflowManagementEditSchedule: "6767b9a0-d138-4672-a8ba-26ce6e217c48" as PermissionKey,
+
+  /**
+   * Delete a schedule of the organization
+   */
+  WorkflowManagementDeleteSchedule: "d2ab90ab-7abb-4aa3-a38a-24ed4b6b1665" as PermissionKey,
+
+  /**
+   * Link a schedule of the organization to a workspace, or remove the link
+   */
+  WorkflowManagementAssignSchedulesToWorkspaces: "264bda82-2676-41a2-bfff-2d90c7bf52f0" as PermissionKey,
+
+  /**
    * No description available
    */
   BusinessPerformanceShoppingCartBasedRealTimeDiscount: "b1e81301-0726-4d62-a920-c10ee5d563b0" as PermissionKey,
@@ -7115,7 +7478,12 @@ export const PermissionKeys = {
   /**
    * No description available
    */
-  ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey
+  ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey,
+
+  /**
+   * Access the Diagnostics area in the Blowhorn desktop app: the Tells harness, diagnostics report viewer and doctor surfaces.
+   */
+  BlowhornAccessDiagnostics: "afb597fc-a027-4ade-b5f9-c5f82b67b053" as PermissionKey
 } as const;
 
 /**

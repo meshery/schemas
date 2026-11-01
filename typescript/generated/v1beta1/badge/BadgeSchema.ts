@@ -8,6 +8,7 @@ const BadgeSchema: Record<string, unknown> = {
   "info": {
     "title": "Badge",
     "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "description": "OpenAPI schema for managing badges.",
     "version": "v1beta1",
     "contact": {

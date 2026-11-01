@@ -540,6 +540,16 @@ const BadgeSchema: Record<string, unknown> = {
               }
             }
           },
+          "409": {
+            "description": "Badge label conflict. The badge label is already owned by a different organization, so the upsert was refused rather than overwriting another organization's badge.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -879,6 +889,16 @@ const BadgeSchema: Record<string, unknown> = {
       },
       "500": {
         "description": "Internal server error",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "BadgeLabelConflict": {
+        "description": "Badge label conflict. The badge label is already owned by a different organization, so the upsert was refused rather than overwriting another organization's badge.",
         "content": {
           "text/plain": {
             "schema": {

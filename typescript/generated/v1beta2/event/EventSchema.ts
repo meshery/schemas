@@ -8,6 +8,7 @@ const EventSchema: Record<string, unknown> = {
   "info": {
     "title": "Events",
     "x-deprecated": true,
+    "x-superseded-by": "v1beta3",
     "description": "OpenAPI schema for Meshery events and system notifications.",
     "version": "v1beta2",
     "contact": {
@@ -550,28 +551,28 @@ const EventSchema: Record<string, unknown> = {
                         "description": "EventResult entity schema.",
                         "properties": {
                           "user_id": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_id",
+                              "json": "userId"
+                            },
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
-                            },
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId"
                             },
                             "x-go-name": "UserID",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "system_id": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "system_id"
+                            },
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
-                            },
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "system_id"
                             },
                             "x-go-name": "SystemID",
                             "x-go-type-skip-optional-pointer": true
@@ -613,15 +614,15 @@ const EventSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           },
                           "created_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
                             "description": "Timestamp when the resource was created.",
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "CreatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "yaml": "created_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           }
                         },
@@ -799,28 +800,28 @@ const EventSchema: Record<string, unknown> = {
                         "description": "EventResult entity schema.",
                         "properties": {
                           "user_id": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_id",
+                              "json": "userId"
+                            },
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
-                            },
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId"
                             },
                             "x-go-name": "UserID",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "system_id": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "system_id"
+                            },
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
-                            },
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "system_id"
                             },
                             "x-go-name": "SystemID",
                             "x-go-type-skip-optional-pointer": true
@@ -862,15 +863,15 @@ const EventSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           },
                           "created_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
                             "description": "Timestamp when the resource was created.",
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "CreatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "yaml": "created_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           }
                         },
@@ -1267,28 +1268,28 @@ const EventSchema: Record<string, unknown> = {
         "description": "EventResult entity schema.",
         "properties": {
           "user_id": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "user_id",
+              "json": "userId"
+            },
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
-              "json": "userId"
             },
             "x-go-name": "UserID",
             "x-go-type-skip-optional-pointer": true
           },
           "system_id": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "system_id"
+            },
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "system_id"
             },
             "x-go-name": "SystemID",
             "x-go-type-skip-optional-pointer": true
@@ -1330,15 +1331,15 @@ const EventSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true
           },
           "created_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at"
+            },
             "description": "Timestamp when the resource was created.",
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "CreatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at"
-            },
             "x-go-type-skip-optional-pointer": true
           }
         },
@@ -1371,28 +1372,28 @@ const EventSchema: Record<string, unknown> = {
               "description": "EventResult entity schema.",
               "properties": {
                 "user_id": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "user_id",
+                    "json": "userId"
+                  },
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
-                  },
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
-                    "json": "userId"
                   },
                   "x-go-name": "UserID",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "system_id": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "system_id"
+                  },
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
-                  },
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "system_id"
                   },
                   "x-go-name": "SystemID",
                   "x-go-type-skip-optional-pointer": true
@@ -1434,15 +1435,15 @@ const EventSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 },
                 "created_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at"
+                  },
                   "description": "Timestamp when the resource was created.",
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "CreatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "created_at",
-                    "yaml": "created_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 }
               },

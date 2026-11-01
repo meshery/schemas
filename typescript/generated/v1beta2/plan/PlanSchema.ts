@@ -8,6 +8,7 @@ const PlanSchema: Record<string, unknown> = {
   "info": {
     "title": "Plan",
     "x-deprecated": true,
+    "x-superseded-by": "v1beta3",
     "description": "OpenAPI schema for subscription plan management in Meshery Cloud.",
     "version": "v1beta2",
     "contact": {

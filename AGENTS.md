@@ -31,13 +31,25 @@ make validate-schemas  # run repository schema validation rules
 npm run build    # build TypeScript distribution (dist/)
 ```
 
-Generated artifacts (`models/`, `typescript/generated/`) are committed by automation on `master`. The TypeScript distribution in `dist/` is produced by the npm build/publish workflow and is not committed to this repo. Do not edit generated artifacts by hand, and do not manually commit regenerated output in normal PRs unless the change explicitly requires it.
+Generated artifacts (`models/`, `typescript/generated/`, `python/generated/`) are committed by automation on `master`. The TypeScript distribution in `dist/` is produced by the npm build/publish workflow and is not committed to this repo. Do not edit generated artifacts by hand, and do not manually commit regenerated output in normal PRs unless the change explicitly requires it (a PR that alters a bundled Python pilot spec must commit regenerated `python/generated/` output; see [`docs/schema-tooling.md`](docs/schema-tooling.md#python-client-generation-pilot-issue-1240)).
 
 **Never hand-edit generated output:**
 
 - ❌ Generated Go code in `models/`
 - ❌ Generated TypeScript in `typescript/generated/`
+- ❌ Generated Python client in `python/generated/` (`pyproject.toml` and `src/meshery_schemas/__init__.py` are hand-maintained scaffolding, not generator output)
 - ❌ Built files in `dist/`
+
+The Go generators (`build/generate-golang.js`, `build/generate-permission-golang.js`)
+run every file they emit through `gofmt -w` as their final step via
+`build/lib/gofmt.js`, so generated Go under `models/` is gofmt-clean as generated.
+Any new emitter of Go source must do the same. Hand-written Go in `models/`
+(`*_helper.go`, `const.go`, `import.go`, `*_conversion.go`, `models/core/`) is not
+covered by that step.
+
+Removing a construct removes its generated output in the same PR. The generators prune
+output directories whose construct is gone, and `make test-generated-outputs` fails while
+one is committed. See [`docs/superseded-construct-consumer-verification.md`](docs/superseded-construct-consumer-verification.md#removing-a-construct-removes-its-generated-output).
 
 ## Required on Every PR
 
@@ -61,6 +73,26 @@ Always run `make build`, `go test ./...`, and `npm run build` before committing 
 - Use `chrome-devtools-axi` for browser automation (navigate, snapshot, click, fill forms, run JS, inspect console/network) in place of raw Playwright/chrome-devtools MCP for ad hoc tasks.
 - Run `quota-axi` to check local agent-provider quota windows before long-running work.
 - Use the `lavish` skill (`lavish-axi` CLI) to turn a plan, comparison, or report into a reviewable HTML artifact.
+- **Work in a treehouse worktree, never in the main clone.** Other agent sessions and the
+  no-mistakes pipeline share the main clone. Take a worktree with
+  `treehouse get --lease -b <branch>` (it prints the path; `--base <branch>` starts it from
+  another branch), work there, and release it with `treehouse return <path>` once the change
+  has merged. `treehouse status` lists the pool. Never make one with `git worktree add` or a
+  second clone.
+- **Land every change through no-mistakes, at most three runs per pull request.** Commit in
+  the worktree, then run `no-mistakes axi run --intent "<goal>"` (a clone without a
+  `no-mistakes` remote needs `no-mistakes init` once). `no-mistakes axi status` shows the step
+  and its findings, and `no-mistakes axi respond` answers a review gate. The pipeline reviews,
+  tests, pushes and opens the pull request. After the third run, merge the pull request as it
+  stands and open an issue for anything still flagged. A run that stopped on a usage limit
+  counts; one cancelled before it did anything does not.
+
+### Where skills live
+
+`.agents/skills/` is the single source of truth for this repo's agent skills. `.claude/skills` is a
+relative symlink to it - add, edit, and remove skills under `.agents/skills/` only, and never replace
+that symlink with a real directory. Codex and OpenCode read `.agents/skills` natively, so no
+`.codex/skills` or `.opencode/skills` link is needed.
 
 ## The Dual-Schema Pattern (REQUIRED)
 
@@ -75,6 +107,8 @@ The YAML file for an entity represents the **full server-side object** as return
 - `additionalProperties: false` at the top level
 - All server-generated fields defined in `properties`: `id`, `created_at`, `updated_at`, `deleted_at`
 - Server-generated fields that are always present belong in `required`
+
+Exception: an **event-metadata construct** (no endpoints; recorded and read back verbatim as an `Event`'s `metadata`) has no server-generated fields, so it declares none and its `*Payload` carries the same field set. See [the authoring reference](docs/schema-authoring-reference.md#event-metadata-constructs-have-no-server-generated-fields).
 
 ### Rule 2: Every writable entity needs a `*Payload` schema in `api.yml`
 
@@ -126,7 +160,7 @@ This repo IS the authority for that contract. The contract is not optional; devi
 - Object names: singular nouns (`model`, `component`, `design`)
 - `components/schemas` names: PascalCase nouns (`Model`, `Component`, `KeychainPayload`)
 - Files/folders: lowercase (`api.yml`, `keychain.yaml`, `templates/keychain_template.json`)
-- Endpoint paths: `/api` prefix, kebab-case, plural nouns (`/api/workspaces`, `/api/environments`)
+- Endpoint paths: kebab-case, plural nouns, and the `/api` prefix that the authenticated API surface is served under (`/api/workspaces`, `/api/environments`). The declared path must **equal the route the server serves** - nothing prepends `/api` at build time, so a path that does not match ships a client that 404s at runtime without failing any build or validation step. Carry `/api` only where the router group actually applies it: `/user/schedules` is registered on the bare router and is correct without it. Verify against the consumer's route registration (Echo groups supply the prefix); see [`docs/http-api-design.md`](docs/http-api-design.md#declared-paths-are-absolute---there-is-no-implicit-api-prefix).
 - Path params: camelCase with `Id` suffix (`{subscriptionId}`, `{connectionId}`, `{orgId}` - NOT `{orgID}`, NOT `{org_id}`)
 - `operationId`: lower camelCase verbNoun (`createKeychain`, `updateEnvironment` - NOT `CreateKeychain`, NOT `UpdateEnvironment`)
 
@@ -161,11 +195,21 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/identifier-naming-contributor-guide.md`](docs/identifier-naming-contributor-guide.md)** - reader-friendly cross-repo naming directory with before/after examples.
 - **[`docs/http-api-design.md`](docs/http-api-design.md)** - HTTP method semantics, response codes, bulk-delete-via-POST, resource grouping, path structure.
 - **[`docs/schema-authoring-reference.md`](docs/schema-authoring-reference.md)** - dual-schema worked examples, per-property validation rules (37-42), `x-id-format: external`, RJSF form schemas + enforcement tests, Go helper files, `x-internal`, SQL driver (`Scan`/`Value`) rules.
-- **[`docs/schema-review-checklist.md`](docs/schema-review-checklist.md)** - intentional design decisions (do not flag), the 26 common mistakes, and the full pre-PR schema-change checklist.
+- **[`docs/schema-review-checklist.md`](docs/schema-review-checklist.md)** - intentional design decisions (do not flag), the common mistakes to avoid, and the full pre-PR schema-change checklist.
 - **[`docs/schema-tooling.md`](docs/schema-tooling.md)** - identifier-naming migration status, advisory baseline, consumer audit tooling and CI behavior.
+- **[`docs/superseded-construct-consumer-verification.md`](docs/superseded-construct-consumer-verification.md)** - how to prove no downstream consumer is still on an `x-superseded-by` construct version; why import-path grepping is invalid on the TypeScript/RTK surface.
 - **[`docs/release-procedure.md`](docs/release-procedure.md)** - full release flow, What NOT to Do, and versioning policy.
 - **[`docs/release-procedure-skill.md`](docs/release-procedure-skill.md)** - using the `meshery-schemas-release` skill, verification commands, troubleshooting.
+- **[`docs/environment-purpose-contract.md`](docs/environment-purpose-contract.md)** - what `Environment.purpose` means, why it is not client-settable, and what each consumer must enforce for that to hold.
+- **[`docs/profile-contract.md`](docs/profile-contract.md)** - the profile construct, its workspace assignment, and its permission keys.
+- **[`docs/mention-alias-contract.md`](docs/mention-alias-contract.md)** - the mention alias construct: who's who per platform, its unique key, the upsert, and the keys that guard it.
+- **[`docs/content-item-contract.md`](docs/content-item-contract.md)** - the content item's rules of engagement (tighten only) and thread fields, and why a reply's wait for its parent is client behaviour rather than a claim rule.
+- **[`docs/claim-contract.md`](docs/claim-contract.md)** - the claim construct: connection holders, expiry at read time, kept history, release outcomes, and its permission keys.
+- **[`docs/media-asset-contract.md`](docs/media-asset-contract.md)** - the media asset construct: create-upload-complete flow, per-use download URLs, `r2`/`gdrive` backends with no credential on the wire, limits, expiry and `locationStripped`.
+- **[`docs/event-organization-contract.md`](docs/event-organization-contract.md)** - `Event.organizationId` and the `getEvents` `scope` query.
+- **[`docs/connection-design-organization-contract.md`](docs/connection-design-organization-contract.md)** - `Connection.organizationId` and design `organizationId` (`meshery_patterns`), both server-assigned.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
+- **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
 
 ## Questions?
 
@@ -177,3 +221,10 @@ If you're unsure about any schema modification:
 4. Check generated `.d.ts` files for actual type/property names
 5. Review this document and the linked `docs/` references for guidelines
 6. Test your changes with `make build` before committing
+
+## Maintaining this file
+
+Keep this file for knowledge useful to almost every future agent session in this project.
+Do not repeat what the codebase already shows; point to the authoritative file or command instead.
+Prefer rewriting or pruning existing entries over appending new ones.
+When updating this file, preserve this bar for all agents and keep entries concise.

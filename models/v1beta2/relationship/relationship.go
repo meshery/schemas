@@ -126,6 +126,7 @@ const (
 	Merge     RelationshipDefinitionSelectorsPatchStrategy = "merge"
 	Move      RelationshipDefinitionSelectorsPatchStrategy = "move"
 	Remove    RelationshipDefinitionSelectorsPatchStrategy = "remove"
+	Replace   RelationshipDefinitionSelectorsPatchStrategy = "replace"
 	Strategic RelationshipDefinitionSelectorsPatchStrategy = "strategic"
 	Test      RelationshipDefinitionSelectorsPatchStrategy = "test"
 )
@@ -342,6 +343,7 @@ type RelationshipDefinitionSelectorsPatch struct {
 	// merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
 	// strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
 	// remove: Removes a value.
+	// replace: Replaces the value at the target location.
 	// copy: Copies a value from one location to another.
 	// move: Moves a value from one location to another.
 	// test: Tests that a value at the target location is equal to a specified value.
@@ -354,6 +356,7 @@ type RelationshipDefinitionSelectorsPatch struct {
 // merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
 // strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
 // remove: Removes a value.
+// replace: Replaces the value at the target location.
 // copy: Copies a value from one location to another.
 // move: Moves a value from one location to another.
 // test: Tests that a value at the target location is equal to a specified value.

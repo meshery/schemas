@@ -6,10 +6,10 @@ package academy
 import (
 	"time"
 
+	"github.com/gofrs/uuid"
 	core "github.com/meshery/schemas/models/core"
 	invitationv1beta2 "github.com/meshery/schemas/models/v1beta2/invitation"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-	"github.com/gofrs/uuid"
 )
 
 // Defines values for AcademyRegistrationStatus.
@@ -183,7 +183,7 @@ type AcademyRegistration struct {
 
 	// ContentId ID of the course content
 	ContentId uuid.UUID `db:"content_id" json:"content_id" yaml:"content_id"`
-	CreatedAt core.Time  `db:"created_at" json:"created_at" yaml:"created_at"`
+	CreatedAt core.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the resource was deleted.
 	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
@@ -199,7 +199,7 @@ type AcademyRegistration struct {
 
 	// Status Status of the user's course registration
 	Status    AcademyRegistrationStatus `db:"status" json:"status" yaml:"status"`
-	UpdatedAt core.Time         `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	UpdatedAt core.Time                 `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	UserId core.Uuid `db:"owner" json:"user_id" yaml:"user_id"`
@@ -511,7 +511,7 @@ type Quiz struct {
 
 	// OrgId Organization ID that owns this quiz
 	OrgId  uuid.UUID `db:"org_id" json:"org_id" yaml:"org_id"`
-	Parent *Parent            `json:"parent,omitempty" yaml:"parent,omitempty"`
+	Parent *Parent   `json:"parent,omitempty" yaml:"parent,omitempty"`
 
 	// PassPercentage The pass percentage of the quiz.
 	PassPercentage float32 `json:"passPercentage" yaml:"passPercentage"`
@@ -605,8 +605,8 @@ type QuizSubmission struct {
 // RegisterToAcademyContentRequest defines model for RegisterToAcademyContentRequest.
 type RegisterToAcademyContentRequest struct {
 	// ContentId ID of the academy content to register for
-	ContentId   uuid.UUID `json:"contentId" yaml:"contentId"`
-	ContentType *ContentType       `json:"contentType,omitempty" yaml:"contentType,omitempty"`
+	ContentId   uuid.UUID    `json:"contentId" yaml:"contentId"`
+	ContentType *ContentType `json:"contentType,omitempty" yaml:"contentType,omitempty"`
 
 	// UserId ID of the user registering for the content.
 	UserId uuid.UUID `json:"user_id" yaml:"user_id"`
@@ -692,7 +692,7 @@ type TestSubmission struct {
 	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// RegistrationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	RegistrationId core.Uuid     `db:"registration_id" json:"registration_id" yaml:"registration_id"`
+	RegistrationId core.Uuid             `db:"registration_id" json:"registration_id" yaml:"registration_id"`
 	Result         *QuizEvaluationResult `db:"result" json:"result,omitempty" yaml:"result,omitempty"`
 	Status         TestSubmissionStatus  `json:"status" yaml:"status"`
 	SubmissionData *QuizSubmission       `db:"submission_data" json:"submission_data,omitempty" yaml:"submission_data,omitempty"`

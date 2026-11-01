@@ -2300,11 +2300,11 @@
     {
       "name": "KanvasViewInteractiveTerminal",
       "uuid": "4726da45-2108-409b-b94f-45bd1e199a78",
-      "feature": "Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.",
+      "feature": "Direct terminal access to one or more pods/containers simultaneously. Integrated experience.",
       "category": "Kanvas",
       "subcategory": "Operator",
       "function": "View Interactive Terminal",
-      "description": "Direct terminal access to one ore more pods/containers simultaneously. Integrated experience."
+      "description": "Direct terminal access to one or more pods/containers simultaneously. Integrated experience."
     },
     {
       "name": "KanvasViewComponentDetails",

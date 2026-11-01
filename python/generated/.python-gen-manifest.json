@@ -1,0 +1,43 @@
+{
+  "generator": "openapi-python-client",
+  "generatorVersion": "0.29.1",
+  "ruffVersion": "0.17.0",
+  "meta": "none",
+  "specs": {
+    "v1beta2/key": {
+      "spec": "_openapi_build/constructs/v1beta2/key/merged-openapi.json",
+      "sha256": "7b06a9526bccc3aa675ebdd1d192b3d3d0e226064687f76c9a062238d490c0a4"
+    }
+  },
+  "files": {
+    "src/meshery_schemas/key/__init__.py": "89aa1c3262d7be545a753bf2dffd17a408a451d5deb0188cff2c9889f11d6934",
+    "src/meshery_schemas/key/api/__init__.py": "cd34a21bfba34a302a58fc9ce37e585da5fd5d39693238895816d5f9ff98b5d0",
+    "src/meshery_schemas/key/api/key/__init__.py": "e6f77db895808d1a9af71cf1cd890b0f5ca8675d8b77f6c068d079597e1f6c4f",
+    "src/meshery_schemas/key/api/key/delete_key.py": "5b66d38868ac288daff653c3c8da58116a3e53831d9de510096c617a483e82ee",
+    "src/meshery_schemas/key/api/key/get_key_by_id.py": "3fdffec737cde9916377d3d47818ebdb2aa48854c1632931196331c128c124dc",
+    "src/meshery_schemas/key/api/key/get_keys.py": "06621aa010ec8f3291ca134797be080dd77d8f0ad6daccbdac6fc11d597ed72c",
+    "src/meshery_schemas/key/api/key/upsert_key.py": "cb705197b0d01dd939c9292b03f248be429488b72104a72dc9246162426922d8",
+    "src/meshery_schemas/key/api/users/__init__.py": "e6f77db895808d1a9af71cf1cd890b0f5ca8675d8b77f6c068d079597e1f6c4f",
+    "src/meshery_schemas/key/api/users/get_user_keys.py": "a3a3b8ce3919348dfa8a1a0586ff4bd4a43eb7d2a551cdd400e9c4ee05469ba3",
+    "src/meshery_schemas/key/client.py": "d53f5290257d926ba2c0e42aa57342c3d335a50f782d5e6af05646c2e3747ed3",
+    "src/meshery_schemas/key/errors.py": "80ef060662aa992360020f84e684fea0ecb1cedbe9ed5ffa5c6ece5134f5e6ad",
+    "src/meshery_schemas/key/models/__init__.py": "5ca1291299f5c4c73a246b994ee4492b950c665f955998fc3cf7afa3dac74238",
+    "src/meshery_schemas/key/models/get_key_by_id_response_200.py": "11ff51d214b5320bcca2c26d959cd919897cf71230f832963b96ccc7ff2d6e61",
+    "src/meshery_schemas/key/models/get_keys_response_200.py": "453cd890f3e243dce0f1ff261d80d6c7e50b4f1bd307bbe139ce4cb62927e65d",
+    "src/meshery_schemas/key/models/get_keys_response_200_keys_item.py": "d207dce82ce1857aa244ae1716408e4adf2290dcef4a1b7eeaee60e0b4c09821",
+    "src/meshery_schemas/key/models/get_user_keys_response_200.py": "86f6f3ebc06d9f2e2645f7b1b8aa0d1a64f6548b85f80f3a5ede650d7bb1aef3",
+    "src/meshery_schemas/key/models/get_user_keys_response_200_keys_item.py": "eb7a713a182018fdb087ff3b396db8b1316b365c337866c627c1e40d34781429",
+    "src/meshery_schemas/key/models/key.py": "211ca9b2ff416ef0bdcb96ccbb1a5bf318871b5aea16ff688dfcf8b3f27d50d7",
+    "src/meshery_schemas/key/models/key_page.py": "4b61d23cda051081b238f607e2952d3b84e04b422690897a31c5635e4de8bcbb",
+    "src/meshery_schemas/key/models/key_page_keys_item.py": "c6a54d03a4338bd2000f016a5f986cec3a707c139f8b846d96547da6078036b1",
+    "src/meshery_schemas/key/models/key_payload.py": "75cbdad906804d27a2a943c53960f28240c10f13303c04348feb07f420e6c19a",
+    "src/meshery_schemas/key/models/upsert_key_body.py": "d62165502c49764e2994bc4195e0b5143d402d5b51c6f5fd063dce0eebe8ea5a",
+    "src/meshery_schemas/key/models/upsert_key_response_200.py": "bcae64d775c9117b8127864f2ebe1f67f1a2cda22723901a5d1292e9926dc08d",
+    "src/meshery_schemas/key/py.typed": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/meshery_schemas/key/types.py": "d167b834fbe121801246943795ee359e625e100566e36fb654a773949e0e8289"
+  },
+  "warnings": {
+    "v1beta2/key": []
+  },
+  "warningAllowlist": []
+}

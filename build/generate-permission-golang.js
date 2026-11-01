@@ -40,10 +40,12 @@
  *   - Go file with PermissionKey type and constants
  */
 
+const { execSync } = require("child_process");
 const fs = require("fs");
 const logger = require("./lib/logger");
 const paths = require("./lib/paths");
 const { loadPermissions, generateGoFile, buildIndex, saveIndex } = require("./lib/permissions");
+const { formatGoFile, requireGofmt } = require("./lib/gofmt");
 
 // Default values
 const DEFAULT_SOURCE = "build/permissions.csv";
@@ -140,6 +142,9 @@ async function main() {
     // Change to project root
     process.chdir(paths.getProjectRoot());
 
+    // Generated Go must be gofmt-clean as generated; fail before writing anything.
+    requireGofmt(logger);
+
     logger.header("🔑 Generating Go permission key constants...");
 
     // Resolve source path (make relative paths absolute from project root)
@@ -173,6 +178,9 @@ const goContent = generateGoFile(index.items, index.id);
 
     paths.ensureParentDir(outputPath);
     fs.writeFileSync(outputPath, goContent, "utf-8");
+    formatGoFile(outputPath);
+
+    execSync(`gofmt -w "${outputPath}"`, { stdio: "inherit" });
 
     logger.success(`Generated: ${paths.relativePath(outputPath)}`);
 

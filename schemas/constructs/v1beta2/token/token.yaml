@@ -58,9 +58,13 @@ properties:
       db: is_oauth
   created_at:
     $ref: ../core/api.yml#/components/schemas/CreatedAt
+    x-oapi-codegen-extra-tags:
+      db: created_at
     x-order: 9
   updated_at:
     $ref: ../core/api.yml#/components/schemas/UpdatedAt
+    x-oapi-codegen-extra-tags:
+      db: updated_at
     x-order: 10
 required:
 - id

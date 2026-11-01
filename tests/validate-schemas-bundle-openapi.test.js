@@ -171,6 +171,23 @@ test("dereferenceOpenapiSpec resolves a construct api.yml in-process", async () 
   assert.ok(document.components.schemas.KeyPage);
 });
 
+test("clonePattern declares a request body for generated clients", async () => {
+  const projectRoot = config.getProjectRoot();
+  const document = await dereferenceOpenapiSpec(
+    path.join(projectRoot, "schemas/constructs/v1beta3/design/api.yml"),
+  );
+  const operation = document.paths["/api/content/patterns/clone/{designId}"].post;
+
+  assert.equal(operation.operationId, "clonePattern");
+  assert.equal(operation.requestBody.required, true);
+  assert.deepEqual(operation.requestBody.content["application/json"].schema.properties.name, {
+    type: "string",
+    description: "Optional name to apply to the cloned design.",
+    minLength: 1,
+    maxLength: 255,
+  });
+});
+
 test("filterOpenapiByTag applies consumer-specific base metadata", () => {
   const doc = {
     openapi: "3.0.0",
