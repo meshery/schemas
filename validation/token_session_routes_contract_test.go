@@ -3,6 +3,7 @@ package validation
 import (
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"testing"
 )
 
@@ -83,7 +84,22 @@ func TestTokenSessionRoutesContract(t *testing.T) {
 	if mustValue(payload, "additionalProperties") != false {
 		t.Error("TokenPayload must set additionalProperties: false")
 	}
-	if got := mustLookup(t, payload, "properties", "token", "pattern"); got != `\S` {
-		t.Errorf("TokenPayload.token pattern = %v, want \\S (rejects whitespace-only tokens)", got)
+	// Execute the declared pattern rather than match its text: a token must be
+	// accepted with or without surrounding whitespace, and whitespace-only
+	// input must be rejected.
+	pattern, ok := mustLookup(t, payload, "properties", "token", "pattern").(string)
+	if !ok {
+		t.Fatalf("TokenPayload.token must declare a string pattern")
+	}
+	tokenPattern := regexp.MustCompile(pattern)
+	for _, token := range []string{"eyJhbGciOiJIUzI1NiJ9.e30.sig", "  eyJhbGciOiJIUzI1NiJ9.e30.sig  "} {
+		if !tokenPattern.MatchString(token) {
+			t.Errorf("TokenPayload.token pattern rejected %q, want accepted", token)
+		}
+	}
+	for _, token := range []string{"", " ", "\t\n  "} {
+		if tokenPattern.MatchString(token) {
+			t.Errorf("TokenPayload.token pattern accepted %q, want rejected", token)
+		}
 	}
 }
