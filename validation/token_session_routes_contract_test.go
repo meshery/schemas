@@ -19,7 +19,7 @@ func TestTokenSessionRoutesContract(t *testing.T) {
 		path, method, operationID string
 		responses                 []string
 	}{
-		{"/revoke", "post", "revokeToken", []string{"200", "400", "500"}},
+		{"/revoke", "post", "revokeToken", []string{"200", "400", "500", "503"}},
 		{"/introspect", "post", "introspectToken", []string{"200", "400", "401", "503"}},
 		{"/logout", "get", "logoutUser", []string{"302", "303", "500"}},
 	}

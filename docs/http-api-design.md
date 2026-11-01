@@ -233,9 +233,14 @@ The construct is client-agnostic: no client is named in the schema.
 declared paths carry no `/api` prefix:
 
 - `POST /revoke` (`revokeToken`) revokes an OAuth access or refresh token issued by the identity
-  provider, for example when an OAuth client signs out. The body is a `TokenPayload`; possessing the
-  token is the credential (`security: []`). It does not invalidate user-created API tokens minted
-  by `generateToken`; those are revoked with `deleteUserToken`. A `200` clears the session cookie.
+  provider, or a user-created API token (the envelope `generateToken` returns, or the bare JWT inside
+  it). The body is a `TokenPayload`; possessing the token is the credential (`security: []`). A
+  user-created API token whose signature verifies is retired for its owner, as `deleteUserToken`
+  does, and stops authenticating immediately; any other token is forwarded to the OAuth2 server's
+  RFC 7009 revocation endpoint. An unknown, anonymous or already-revoked token is a no-op that
+  answers `200`. A `200` clears the session cookie. A `503` means signing keys or the token store
+  could not be read, so the token was not revoked; the caller should retry. A `500` means the OAuth2
+  server rejected the revocation or could not be reached.
 - `POST /introspect` (`introspectToken`) answers `200` when an access token is authentic, unexpired
   and not revoked. A `401` means the signature or expiry check failed or the token was revoked, and a
   `400` means the body is malformed or `token` is missing or empty. A `503` means signing keys or
