@@ -227,6 +227,26 @@ pattern bound by RFC 7636 PKCE, defined in `v1beta3/token`:
 
 The construct is client-agnostic: no client is named in the schema.
 
+## Token revocation, introspection and sign-out
+
+`v1beta3/token` also defines three routes Meshery Cloud serves on its bare router, so their
+declared paths carry no `/api` prefix:
+
+- `POST /revoke` (`revokeToken`) revokes an OAuth access or refresh token issued by the identity
+  provider, for example when an OAuth client signs out. The body is a `TokenPayload`; possessing the
+  token is the credential (`security: []`). It does not invalidate user-created API tokens minted
+  by `generateToken`; those are revoked with `deleteUserToken`. A `200` clears the session cookie.
+- `POST /introspect` (`introspectToken`) answers `200` when an access token is authentic, unexpired
+  and not revoked, and `401` otherwise. Meshery Server calls it before honouring a session. A `503`
+  means signing keys or revocation status are temporarily unavailable: the token is refused, but the
+  caller should retry rather than sign the user out.
+- `GET /logout` (`logoutUser`) is a browser navigation identified by the `session_cookie` and
+  `provider_token` cookies (the `sessionCookie` and `providerTokenCookie` security schemes). It ends
+  the identity provider session, revokes the OAuth tokens in `provider_token`, clears every session
+  cookie on every outcome and redirects to `/login`: `303` on the canonical host (also on failure for
+  a browser document navigation), `302` on an organization custom domain where sign-out is
+  best-effort, and an empty `500` when the identity provider failed for any other caller.
+
 ## Schedules and claims
 
 `v1beta3/schedule` serves organization schedules at `/api/schedules`, linked to workspaces through

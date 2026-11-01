@@ -240,12 +240,143 @@ paths:
           $ref: '#/components/responses/401'
         '500':
           $ref: '#/components/responses/500'
+  /revoke:
+    post:
+      x-internal:
+      - cloud
+      tags:
+      - tokens
+      summary: Revoke OAuth token
+      operationId: revokeToken
+      description: >-
+        Revokes an OAuth access or refresh token issued by the identity
+        provider, for example when an OAuth client signs out. Possessing the
+        token is the credential, so no session or bearer token is required; the
+        server forwards it to the OAuth2 server's RFC 7009 revocation endpoint
+        with its own client credentials. This does NOT invalidate user-created
+        API tokens (those minted by generateToken under /api/identity/tokens);
+        revoke those with deleteUserToken. The server trims whitespace from
+        `token` and reads at most 1 MiB (1048576 bytes) of the body; a larger
+        body is truncated and fails to decode. A 400 body is one of
+        "Error reading token payload", "Error decoding token" or
+        "missing token"; a 500 body is "Error revoking token at the moment",
+        answered when the OAuth2 server rejects the revocation or cannot be
+        reached.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenPayload'
+      responses:
+        '200':
+          description: Token revoked. The body is empty and the session cookie is cleared.
+          headers:
+            Set-Cookie:
+              description: Clears the session cookie (session_cookie=; Path=/; Max-Age=0; HttpOnly).
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+  /introspect:
+    post:
+      x-internal:
+      - cloud
+      tags:
+      - tokens
+      summary: Introspect access token
+      operationId: introspectToken
+      description: >-
+        Reports whether an access token (a JWT) is authentic, unexpired and not
+        revoked. Meshery Server calls it to check a session before honouring
+        it. Possessing the token is the credential, so no session or bearer
+        token is required. The server trims whitespace from `token` and reads
+        at most 1 MiB (1048576 bytes) of the body. A 400 body is
+        "Error reading token payload" or "Error decoding token" (also answered
+        when `token` is missing or empty); a 401 body is
+        "invalid access token" when the signature or expiry check fails, or
+        "revoked access token used" when the token has been revoked.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenPayload'
+      responses:
+        '200':
+          description: Token is authentic, unexpired and not revoked. The body is empty.
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '503':
+          $ref: '#/components/responses/503'
+  /logout:
+    get:
+      x-internal:
+      - cloud
+      tags:
+      - tokens
+      summary: Sign out
+      operationId: logoutUser
+      description: >-
+        Browser navigation that signs the user out. The session is identified
+        by the session_cookie and provider_token cookies, not by a bearer
+        token. Ends the identity provider session, revokes the OAuth access and
+        refresh tokens carried by the provider_token cookie, clears every
+        session cookie and redirects to /login. Cookies are cleared on every
+        outcome, including failure. User-created API tokens are not affected;
+        revoke those with deleteUserToken. On an organization custom domain
+        sign-out is best-effort and always answers 302.
+      security:
+      - sessionCookie: []
+      - providerTokenCookie: []
+      responses:
+        '302':
+          description: >-
+            Redirect to /login on an organization custom domain, where sign-out
+            is best-effort.
+          headers:
+            Location:
+              required: true
+              description: /login
+              schema:
+                type: string
+        '303':
+          description: >-
+            Redirect to /login. Answered when sign-out completes on the
+            canonical host, and also when the identity provider failed but the
+            request is a browser document navigation.
+          headers:
+            Location:
+              required: true
+              description: /login
+              schema:
+                type: string
+        '500':
+          description: >-
+            The identity provider failed and the request was not a browser
+            document navigation. The body is empty; cookies are still cleared.
 components:
   securitySchemes:
     jwt:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: session_cookie
+      description: Identity provider session cookie set at sign-in.
+    providerTokenCookie:
+      type: apiKey
+      in: cookie
+      name: provider_token
+      description: Cookie carrying the OAuth access and refresh tokens issued at sign-in.
   responses:
     400:
       $ref: ../../v1beta2/core/api.yml#/components/responses/400
@@ -257,6 +388,15 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/responses/404
     500:
       $ref: ../../v1beta2/core/api.yml#/components/responses/500
+    503:
+      description: >-
+        Signing keys or token revocation status are temporarily unavailable.
+        The token is refused, but the caller should retry rather than sign the
+        user out.
+      content:
+        text/plain:
+          schema:
+            type: string
   parameters:
     tokenId:
       name: tokenId
@@ -388,6 +528,18 @@ components:
   schemas:
     UserToken:
       $ref: ./token.yaml
+    TokenPayload:
+      type: object
+      additionalProperties: false
+      description: Carries the token that revokeToken revokes or introspectToken checks.
+      required:
+      - token
+      properties:
+        token:
+          type: string
+          description: The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected.
+          minLength: 1
+          x-order: 1
     NativeAuthorizationPayload:
       type: object
       description: Query fields of GET /api/identity/native/authorize. The signed-in session issues the authorization code from these fields.
