@@ -539,6 +539,7 @@ components:
           type: string
           description: The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected.
           minLength: 1
+          pattern: '\S'
           x-order: 1
     NativeAuthorizationPayload:
       type: object

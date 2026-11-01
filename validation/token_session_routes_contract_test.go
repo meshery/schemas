@@ -83,4 +83,7 @@ func TestTokenSessionRoutesContract(t *testing.T) {
 	if mustValue(payload, "additionalProperties") != false {
 		t.Error("TokenPayload must set additionalProperties: false")
 	}
+	if got := mustLookup(t, payload, "properties", "token", "pattern"); got != `\S` {
+		t.Errorf("TokenPayload.token pattern = %v, want \\S (rejects whitespace-only tokens)", got)
+	}
 }
