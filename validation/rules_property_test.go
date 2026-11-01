@@ -547,8 +547,9 @@ func TestCheckRule6ForAPI_NonDBSnakeFails(t *testing.T) {
 }
 
 // TestCheckRule6ForAPI_LegacyMirroredFieldAnnotated confirms that when a
-// dbMirroredFields-listed name fails Rule 6, the violation message surfaces
-// the legacy-migration guidance pointing at the plan.
+// DB-backed (per its x-oapi-codegen-extra-tags annotations) snake_case name
+// fails Rule 6, the violation message surfaces the legacy-migration
+// guidance pointing at the plan.
 func TestCheckRule6ForAPI_LegacyMirroredFieldAnnotated(t *testing.T) {
 	schema := &openapi3.Schema{
 		Type: &openapi3.Types{"object"},

@@ -158,9 +158,9 @@ func checkRule4(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 // property name / JSON tag is camelCase regardless of DB backing. Rule 6 is
 // therefore unconditional - DB-mirrored fields are no longer exempt and are
 // flagged through the same `--style-debt` severity path as any other
-// legacy snake_case wire identifier. Known legacy DB-mirrored names are
-// still tracked via the `dbMirroredFields` set in casing.go for use by
-// matcher.go's consumer-type diff.
+// legacy snake_case wire identifier. Whether a property is DB-backed is
+// determined from its x-oapi-codegen-extra-tags annotations via
+// IsDBBackedProperty (see casing.go), never from a hardcoded name list.
 func checkRule6ForAPI(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
 	sev := classifyStyleIssue(opts)
 	if sev == nil {
@@ -221,7 +221,7 @@ func checkPropertyNameCasing(filePath, schemaName string, schema *openapi3.Schem
 				if suggestion != "" {
 					msg += fmt.Sprintf(` Use: %q.`, suggestion)
 				}
-				msg += schemaPropertyDBContext(propName)
+				msg += schemaPropertyDBContext(propName, IsDBBackedProperty(schema.Properties[propName]))
 				msg += ` See docs/casing-rules.md.`
 				out = append(out, Violation{File: filePath, Message: msg, Severity: sev, RuleNumber: 6})
 			}
@@ -258,15 +258,15 @@ func checkPropertyNameCasing(filePath, schemaName string, schema *openapi3.Schem
 
 // schemaPropertyDBContext returns a short suffix to append to a Rule 6
 // violation message for schema / entity property names, calling out either
-// the legacy-DB-mirrored migration hint (when the name is in the known
-// mirrored set) or a generic reminder that snake_case belongs only on the
-// `db:` tag (for other snake_case property names). Returns the empty
-// string when no DB-specific context applies - so that this helper can be
-// reused by Rule 6's entity path without pushing DB-specific wording into
-// GetCamelCaseIssues (which is shared with non-DB contexts such as
-// query/header parameter names).
-func schemaPropertyDBContext(propName string) string {
-	if dbMirroredFields[propName] {
+// the legacy-DB-mirrored migration hint (when the property is DB-backed per
+// its x-oapi-codegen-extra-tags annotations - see IsDBBackedProperty) or a
+// generic reminder that snake_case belongs only on the `db:` tag (for other
+// snake_case property names). Returns the empty string when no DB-specific
+// context applies - so that this helper can be reused by Rule 6's entity
+// path without pushing DB-specific wording into GetCamelCaseIssues (which
+// is shared with non-DB contexts such as query/header parameter names).
+func schemaPropertyDBContext(propName string, dbBacked bool) string {
+	if dbBacked {
 		return ` (legacy DB-mirrored name - migrate at the resource's next API-version bump per docs/casing-rules.md)`
 	}
 	if HasUnderscore(propName) {
