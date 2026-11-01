@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"strings"
 	"testing"
 )
 
@@ -91,13 +92,22 @@ func TestTokenSessionRoutesContract(t *testing.T) {
 	if !ok {
 		t.Fatalf("TokenPayload.token must declare a string pattern")
 	}
+	// OpenAPI patterns are ECMA-262 regexes, so the pattern must also compile in
+	// JavaScript with the u flag (Ajv's default). RE2-only constructs such as
+	// \x{...}, \p{...}, \P{...}, \z and (?flags) do not, and without the u flag
+	// they silently change meaning.
+	for _, re2Only := range []string{`\x{`, `\p{`, `\P{`, `\z`, `(?`} {
+		if strings.Contains(pattern, re2Only) {
+			t.Errorf("TokenPayload.token pattern %q contains RE2-only construct %q; OpenAPI patterns must be ECMA-262", pattern, re2Only)
+		}
+	}
 	tokenPattern := regexp.MustCompile(pattern)
-	for _, token := range []string{"eyJhbGciOiJIUzI1NiJ9.e30.sig", "  eyJhbGciOiJIUzI1NiJ9.e30.sig  "} {
+	for _, token := range []string{"eyJhbGciOiJIUzI1NiJ9.e30.sig", "  eyJhbGciOiJIUzI1NiJ9.e30.sig  ", "xp85", "ab cd"} {
 		if !tokenPattern.MatchString(token) {
 			t.Errorf("TokenPayload.token pattern rejected %q, want accepted", token)
 		}
 	}
-	for _, token := range []string{"", " ", "\t\n  ", " ", " ", "\u0085 　"} {
+	for _, token := range []string{"", " ", "\t\n  ", "\v", "\u0085", "\u00a0", "\u1680", "\u2000", "\u200a", "\u2028", "\u2029", "\u202f", "\u205f", "\u3000", "\u0085 \u3000"} {
 		if tokenPattern.MatchString(token) {
 			t.Errorf("TokenPayload.token pattern accepted %q, want rejected", token)
 		}
