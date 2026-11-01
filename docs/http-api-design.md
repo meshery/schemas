@@ -240,7 +240,7 @@ declared paths carry no `/api` prefix:
   RFC 7009 revocation endpoint. An unknown, anonymous or already-revoked token is a no-op that
   answers `200`. A `200` clears the session cookie. A `503` means signing keys or the token store
   could not be read, so the token was not revoked; the caller should retry. A `500` means the OAuth2
-  server rejected the revocation or could not be reached.
+  failed: it returned an error response or could not be reached.
 - `POST /introspect` (`introspectToken`) answers `200` when an access token is authentic, unexpired
   and not revoked. A `401` means the signature or expiry check failed or the token was revoked, and a
   `400` means the body is malformed or `token` is missing or empty. A `503` means signing keys or

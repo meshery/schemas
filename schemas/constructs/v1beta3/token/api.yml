@@ -269,7 +269,7 @@ paths:
         unavailable" when signing keys (JWKS) or the token store cannot be read;
         the token was not revoked and the caller should retry. A 500 body is
         "Error revoking token at the moment", answered only on the forwarding
-        path when the OAuth2 server rejects the revocation or cannot be reached.
+        path when the OAuth2 server fails: it returns an error response or cannot be reached.
       security: []
       requestBody:
         required: true
