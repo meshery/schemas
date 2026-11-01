@@ -229,6 +229,39 @@ pattern bound by RFC 7636 PKCE, defined in `v1beta3/token`:
 
 The construct is client-agnostic: no client is named in the schema.
 
+## Token revocation, introspection and sign-out
+
+`v1beta3/token` also defines three routes Meshery Cloud serves on its bare router, so their
+declared paths carry no `/api` prefix:
+
+- `POST /revoke` (`revokeToken`) revokes an OAuth access or refresh token issued by the identity
+  provider, or a user-created API token (the envelope `generateToken` returns, or the bare JWT inside
+  it). The body is a `TokenPayload`; possessing the token is the credential (`security: []`). A
+  user-created API token whose signature verifies is retired for its owner, as `deleteUserToken`
+  does, and stops authenticating immediately; any other token is forwarded to the OAuth2 server's
+  RFC 7009 revocation endpoint. An unknown, anonymous or already-revoked token is a no-op that
+  answers `200`. A `200` clears the session cookie. A `503` means signing keys or the token store
+  could not be read, so the token was not revoked; the caller should retry. A `500` means the OAuth2
+  server failed: it returned an error response or could not be reached.
+- `POST /introspect` (`introspectToken`) answers `200` when an access token is authentic, unexpired
+  and not revoked. A `401` means the signature or expiry check failed or the token was revoked, and a
+  `400` means the body is malformed or `token` is missing or empty. A `503` means signing keys or
+  revocation status are temporarily unavailable: the token is refused, but the caller should retry
+  rather than sign the user out.
+- `GET /logout` (`logoutUser`) is a browser navigation identified by the `session_cookie` and
+  `provider_token` cookies (the `sessionCookie` and `providerTokenCookie` security schemes). It ends
+  the identity provider session, revokes the OAuth tokens in `provider_token`, clears every session
+  cookie on every outcome and redirects to `/login`: `303` on the canonical host (also on failure for
+  a browser document navigation), `302` on an organization custom domain where sign-out is
+  best-effort, and an empty `500` when the identity provider failed for any other caller. On the
+  canonical host a complete sign-out needs both cookies - `session_cookie` lets the identity provider
+  end its session and `provider_token` carries the OAuth tokens to revoke. With only `session_cookie`,
+  the identity provider session ends but no OAuth tokens are revoked, and the answer is the success
+  `303`. With only `provider_token`, the identity provider cannot start its logout flow, so the OAuth
+  tokens are still revoked but the answer is the failure one - `303` for a browser document
+  navigation, an empty `500` otherwise. Cookies are cleared either way. On an organization custom
+  domain the user is identified from `provider_token`.
+
 ## Schedules and claims
 
 `v1beta3/schedule` serves organization schedules at `/api/schedules`, linked to workspaces through

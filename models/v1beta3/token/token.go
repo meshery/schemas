@@ -74,6 +74,12 @@ type TokenPage struct {
 	PageSize int `json:"pageSize" yaml:"pageSize"`
 }
 
+// TokenPayload Carries the token that revokeToken revokes or introspectToken checks.
+type TokenPayload struct {
+	// Token The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected.
+	Token string `json:"token" yaml:"token"`
+}
+
 // UserToken Represents a user-owned API token or OAuth session.
 type UserToken struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
