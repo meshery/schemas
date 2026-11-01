@@ -238,9 +238,9 @@ declared paths carry no `/api` prefix:
   by `generateToken`; those are revoked with `deleteUserToken`. A `200` clears the session cookie.
 - `POST /introspect` (`introspectToken`) answers `200` when an access token is authentic, unexpired
   and not revoked. A `401` means the signature or expiry check failed or the token was revoked, and a
-  `400` means the body is malformed or `token` is missing or empty. Meshery Server calls it before
-  honouring a session. A `503` means signing keys or revocation status are temporarily unavailable:
-  the token is refused, but the caller should retry rather than sign the user out.
+  `400` means the body is malformed or `token` is missing or empty. A `503` means signing keys or
+  revocation status are temporarily unavailable: the token is refused, but the caller should retry
+  rather than sign the user out.
 - `GET /logout` (`logoutUser`) is a browser navigation identified by the `session_cookie` and
   `provider_token` cookies (the `sessionCookie` and `providerTokenCookie` security schemes). It ends
   the identity provider session, revokes the OAuth tokens in `provider_token`, clears every session
