@@ -262,17 +262,19 @@ func hasJSONSuccessResponse(op *openapi3.Operation) bool {
 	return false
 }
 
-// acceptsOptionalHeader reports whether the operation (or its path item)
-// declares the named header parameter, and not as required.
+// acceptsOptionalHeader reports whether the operation declares the named header
+// parameter as optional. An operation-level parameter with the same name and
+// location overrides the path-level one, so the path item is consulted only
+// when the operation does not redeclare the header.
 func acceptsOptionalHeader(item *openapi3.PathItem, op *openapi3.Operation, name string) bool {
-	for _, params := range []openapi3.Parameters{item.Parameters, op.Parameters} {
+	for _, params := range []openapi3.Parameters{op.Parameters, item.Parameters} {
 		for _, ref := range params {
 			if ref == nil || ref.Value == nil {
 				continue
 			}
 			p := ref.Value
-			if p.In == "header" && strings.EqualFold(p.Name, name) && !p.Required {
-				return true
+			if p.In == "header" && strings.EqualFold(p.Name, name) {
+				return !p.Required
 			}
 		}
 	}

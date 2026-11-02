@@ -232,6 +232,92 @@ func TestRule48_OrganizationSelector(t *testing.T) {
 	})
 }
 
+// acceptsOptionalHeader must let an operation-level declaration override the
+// path-level one, the way OpenAPI does for a parameter with the same name and
+// location.
+func TestRule48_OrganizationSelectorOverride(t *testing.T) {
+	const optionalPathLevel = `  /api/things:
+    parameters:
+      - name: X-Current-Orgid
+        in: header
+        required: false
+        schema:
+          type: string
+    get:
+      x-internal: ["cloud"]
+      operationId: listThings
+      responses:
+        "204":
+          description: none
+`
+	cases := []struct {
+		name string
+		spec string
+		want bool
+	}{
+		{
+			name: "path-level optional, operation-level required is not optional",
+			spec: `  /api/things:
+    parameters:
+      - name: X-Current-Orgid
+        in: header
+        required: false
+        schema:
+          type: string
+    get:
+      x-internal: ["cloud"]
+      operationId: listThings
+      parameters:
+        - name: X-Current-Orgid
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: none
+`,
+			want: false,
+		},
+		{
+			name: "path-level optional only is optional",
+			spec: optionalPathLevel,
+			want: true,
+		},
+		{
+			name: "operation-level optional is optional",
+			spec: `  /api/things:
+    get:
+      x-internal: ["cloud"]
+      operationId: listThings
+      parameters:
+        - name: X-Current-Orgid
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        "204":
+          description: none
+`,
+			want: true,
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			doc := "openapi: 3.0.0\ninfo:\n  title: Things\n  version: v1beta3\npaths:\n" + tc.spec
+			loaded, err := openapi3.NewLoader().LoadFromData([]byte(doc))
+			if err != nil {
+				t.Fatalf("load spec: %v\n%s", err, doc)
+			}
+			item := loaded.Paths.Find("/api/things")
+			if got := acceptsOptionalHeader(item, item.Get, mcpOrganizationField); got != tc.want {
+				t.Errorf("acceptsOptionalHeader = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
 func TestRule48_ValueShape(t *testing.T) {
 	t.Run("expose missing", func(t *testing.T) {
 		op := passingMcpOp()
