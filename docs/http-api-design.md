@@ -221,9 +221,9 @@ move a route to a later version:
   version's `api.yml` to check the pair. It fails with the same
   duplicate error when that pair chains or its `operationId`s or `x-internal`
   targets differ. It does not repeat the bundler's other duplicate checks: an
-  owner that names a version not declaring the route, or a declaration under
-  another title, leaves both rows indexed. The bundler, which gates the build,
-  rejects those.
+  owner that names a version not declaring the route is indexed alone, and a
+  declaration under another title in the named version stays indexed beside
+  the owner. The bundler, which gates the build, rejects both.
 - Any other duplicate fails the merge with `Duplicate path operation during merge`.
 - Component names are not versioned. Two versions of one construct that define
   the same component name overwrite each other in the merged `components`, and
