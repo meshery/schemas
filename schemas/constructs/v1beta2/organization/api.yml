@@ -387,7 +387,10 @@ paths:
         without it receives 403 and nothing is written. The broad
         updateOrg and patchOrgPreferences operations can still change
         `schedulePause`, and stay role-gated as before. See
-        docs/schedule-pause-contract.md.
+        The caller must be a live member of the organization named by
+        `orgId`; a caller who is not receives 404, and this operation does not
+        take `X-Current-Orgid` (see the organization selector in
+        docs/mcp-operation-contract.md). See docs/schedule-pause-contract.md.
       operationId: updateOrgSchedulePause
       parameters:
         - $ref: "#/components/parameters/orgId"

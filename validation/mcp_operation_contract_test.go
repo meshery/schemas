@@ -204,6 +204,16 @@ func TestSharedHeaderParameters(t *testing.T) {
 		}
 	}
 
+	// Only a final response that is not a 5xx is stored; a 5xx releases the claim.
+	for _, want := range []string{
+		"Only a final response that is not a 5xx is stored",
+		"a 5xx releases the key's claim, because the insert rolled back, so a retry with the same key is processed as new",
+	} {
+		if !strings.Contains(flat, want) {
+			t.Errorf("Idempotency-Key description must document the 5xx rule, missing %q", want)
+		}
+	}
+
 	// Every construct alias of currentOrgId / idempotencyKey is a $ref to the core.
 	wantRef := func(name string) string {
 		return "/v1beta2/core/api.yml#/components/parameters/" + name
@@ -310,8 +320,12 @@ func TestIdempotencyKeyInFlightIsDeclared(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(strings.Join(strings.Fields(string(contractDoc)), " "), "**Precedence.** While the first request with a key is in flight, every retry with that key answers `409` whatever its body. Only once the first request has finished does a retry with a different body answer `422`.") {
+	contractFlat := strings.Join(strings.Fields(string(contractDoc)), " ")
+	if !strings.Contains(contractFlat, "**Precedence.** While the first request with a key is in flight, every retry with that key answers `409` whatever its body. Only once the first request has finished does a retry with a different body answer `422`.") {
 		t.Error("docs/mcp-operation-contract.md must state the Idempotency-Key precedence")
+	}
+	if !strings.Contains(contractFlat, "a `5xx` response is not stored. It releases the key's claim, because the insert rolled back, so a retry with the same key is processed as new") {
+		t.Error("docs/mcp-operation-contract.md must state that a 5xx is not stored and releases the key")
 	}
 	if got := mustValue(mustLookup(t, content, "paths", "/api/content-items", "post", "responses", "409"), "$ref"); got != "#/components/responses/InsertConflict" {
 		t.Errorf("insertContentItem 409 $ref = %v, want InsertConflict", got)
@@ -749,13 +763,30 @@ func TestOrganizationSelectorIsDeclared(t *testing.T) {
 		t.Fatal(err)
 	}
 	flat := strings.Join(strings.Fields(string(doc)), " ")
-	for _, want := range []string{"## The organization selector", "must name the same organization as `X-Current-Orgid` when both are sent", "A mismatch answers `400` and returns nothing", "a mismatch answers `403` and returns nothing", "When the header is omitted, the path or query `orgId` must equal the organization the call acts in", "case-insensitive"} {
+	for _, want := range []string{"## The organization selector", "must name the same organization as `X-Current-Orgid` when both are sent", "A mismatch answers `400` and returns nothing", "a mismatch answers `403` and returns nothing", "When the header is omitted, the path or query `orgId` must equal the organization the call acts in", "case-insensitive", "This rule covers the operations that declare `X-Current-Orgid`.", "such as `updateOrgSchedulePause`, checks instead that the caller is a live member of the organization in its path: a caller who is not receives `404`"} {
 		if !strings.Contains(flat, want) {
 			t.Errorf("docs/mcp-operation-contract.md must state the organization selector: missing %q", want)
 		}
 	}
 	if strings.Contains(flat, "nothing to compare") {
 		t.Error("docs/mcp-operation-contract.md must not leave an omitted X-Current-Orgid unchecked")
+	}
+
+	// An operation that takes its organization in the path and declares no
+	// X-Current-Orgid checks membership in that organization, and says so. The
+	// rule in the doc above covers only the operations that declare the header.
+	orgDoc := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta2/organization/api.yml"))
+	pause := mustLookup(t, orgDoc, "paths", "/api/identity/orgs/{orgId}/schedule-pause", "put")
+	for _, p := range mustValue(pause, "parameters").([]any) {
+		if ref := fmt.Sprint(mustValue(p, "$ref")); strings.HasSuffix(ref, "currentOrgId") {
+			t.Errorf("updateOrgSchedulePause must not declare X-Current-Orgid, got %s", ref)
+		}
+	}
+	pauseDesc := flatDescription(t, pause, "description")
+	for _, want := range []string{"The caller must be a live member of the organization named by `orgId`", "a caller who is not receives 404", "docs/mcp-operation-contract.md"} {
+		if !strings.Contains(pauseDesc, want) {
+			t.Errorf("updateOrgSchedulePause description must say %q", want)
+		}
 	}
 }
 
