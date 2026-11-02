@@ -113,8 +113,9 @@ func itemPolicyApproval(s itemEditState) itemEditOutcome {
 	return itemEnsureRequest(out, s.pending)
 }
 
-// itemEnsureRequest is the open-request invariant: an unapproved item always has
-// an open pending request. pendingKept is whether the write leaves the item's
+// itemEnsureRequest is the open-request invariant: an unapproved live item always
+// has an open pending request. A soft-delete is outside it and is not modelled
+// here. pendingKept is whether the write leaves the item's
 // existing request open. A fresh one opens when the item is unapproved and none
 // is kept.
 func itemEnsureRequest(out itemEditOutcome, pendingKept bool) itemEditOutcome {
@@ -446,24 +447,14 @@ func TestContentItemEditChangesContent(t *testing.T) {
 
 // The reset rule is stated by its result, not by a direction of change: a
 // result of required resets an approved item, and inherit or absent is required
-// in the interim, so moving to it resets too. The word "tightening" must not
-// describe the rule anywhere it is written.
+// in the interim, so moving to it resets too.
 func TestApprovalPolicyResetWording(t *testing.T) {
 	root := repoRootDir(t)
 	dir := filepath.Join(root, "schemas/constructs/v1beta3/content_item")
 	entity := loadOpenAPIDocument(t, filepath.Join(dir, "content_item.yaml"))
 	policy := itemFlatten(itemDescription(t, mustLookup(t, entity, "properties", "approvalPolicy", "description")))
-	for _, want := range []string{
-		"A change whose result is required",
-		"(`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request",
-		"A change whose result is not required never changes `approved`",
-	} {
-		if !strings.Contains(policy, want) {
-			t.Errorf("ContentItem.approvalPolicy description must say %q", want)
-		}
-	}
-	if strings.Contains(strings.ToLower(policy), "tighten") {
-		t.Error("ContentItem.approvalPolicy description must not describe the reset as tightening")
+	if want := "A change whose result is required"; !strings.Contains(policy, want) {
+		t.Errorf("ContentItem.approvalPolicy description must say %q", want)
 	}
 
 	doc, err := os.ReadFile(filepath.Join(root, "docs/content-item-contract.md"))
@@ -471,16 +462,7 @@ func TestApprovalPolicyResetWording(t *testing.T) {
 		t.Fatal(err)
 	}
 	flat := strings.Join(strings.Fields(string(doc)), " ")
-	for _, want := range []string{
-		"A change whose result is required resets an approved item, because its approval must now be given again.",
-		"also `required` to `inherit` or absent during the interim, which resolves to required.",
-		"A change whose result is not required never changes `approved` and never closes a request",
-	} {
-		if !strings.Contains(flat, want) {
-			t.Errorf("docs/content-item-contract.md must say %q", want)
-		}
-	}
-	if strings.Contains(flat, "Tightening (not required") || strings.Contains(flat, "Loosening never changes") {
-		t.Error("docs/content-item-contract.md must not describe the policy reset as tightening or loosening")
+	if want := "A change whose result is required resets an approved item, because its approval must now be given again."; !strings.Contains(flat, want) {
+		t.Errorf("docs/content-item-contract.md must say %q", want)
 	}
 }

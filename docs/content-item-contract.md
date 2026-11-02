@@ -259,10 +259,10 @@ inserted before this field shipped have neither.
 
 ## The open-request invariant
 
-After every content edit and every `approvalPolicy` change, an unapproved item
-has exactly one open pending `content_item_approval` request. This is the one
-statement of the rule; the approval sections below and the operation
-descriptions refer back to it.
+After every content edit and every `approvalPolicy` change, an unapproved live
+item (one not soft-deleted) has exactly one open pending `content_item_approval`
+request. This is the one statement of the rule; the approval sections below and
+the operation descriptions refer back to it.
 
 - **Insert** establishes it: a required item lands unapproved with its request,
   and a not-required item lands approved with none.
@@ -273,6 +273,11 @@ descriptions refer back to it.
 - **A write that changes nothing opens no request and closes none.** That
   includes a whole-item write-back of the stored content and policy, so the
   invariant does not apply to it.
+- **A soft-delete is the exception.** Deleting an item closes its open request
+  as `superseded` in the delete transaction and opens none, because the item is
+  gone. A soft-deleted unapproved item therefore has no open request, and the
+  invariant does not require one. See [Deleting](#deleting) and
+  the [request contract](request-contract.md#superseded-requests).
 - **A denial** closes the request as `denied` and leaves the item unapproved
   with no open request. It stays that way through no-change writes; the next
   content edit or `approvalPolicy` change that leaves it unapproved opens a new
@@ -397,8 +402,8 @@ effective approval (see [Approval policy](#approval-policy)): false when
 approval is required, true with no request when it is not. An update never
 sets `approved` to true; a content edit that resolves to required sets it
 back to false ([Approval on a content edit](#approval-on-a-content-edit)), and a
-policy change that makes approval required does the same to an approved item
-([Approval on an `approvalPolicy` change](#approval-on-an-approvalpolicy-change)). A
+policy change whose resolved result is required does the same to an approved
+item ([Approval on an `approvalPolicy` change](#approval-on-an-approvalpolicy-change)). A
 server ignores an `approved` that
 an older client still sends, because the payload is not closed. The generated
 Go and TypeScript payloads have no such field.
@@ -424,10 +429,10 @@ that arrives while the first request with that key is still being processed
 answers `409` with the body `code` `idempotency_key_in_flight` and inserts
 nothing. The in-flight claim of a request that never finished expires 24 hours
 after it was taken, the same TTL as the stored response, and a retry after that
-is processed as new. Only a final response that is not a `5xx` is stored: a
-`5xx` releases the key, so a retry after one is processed as new. The permanent
-`409`s of insert carry `row_number_taken` or `thread_index_taken`, so the
-in-flight case is told apart by its `code`.
+is processed as new. Which responses are stored, and what a `5xx` does to the
+key, is set out in [`mcp-operation-contract.md`](mcp-operation-contract.md#idempotency-key).
+The permanent `409`s of insert carry `row_number_taken` or `thread_index_taken`,
+so the in-flight case is told apart by its `code`.
 
 ### Migrating from the `Approved?` column
 
