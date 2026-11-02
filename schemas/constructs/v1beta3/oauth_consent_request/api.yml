@@ -297,10 +297,16 @@ components:
           uniqueItems: true
           items:
             type: string
-            description: One redirect host, loopback IP literal or app scheme.
+            description: >-
+              One redirect host, loopback IP literal or app scheme: an app
+              scheme in RFC 3986 scheme form (which also covers a hostname
+              that starts with a letter), a hostname whose last label starts
+              with a letter, a dotted-decimal IPv4 literal, or a bracketed
+              hexadecimal IPv6 literal. A colon appears only inside IPv6
+              brackets, so no entry carries a port.
             minLength: 1
             maxLength: 253
-            pattern: '^[a-z0-9\[][a-z0-9.+:\[\]-]*$'
+            pattern: '^(?:[a-z][a-z0-9+.-]*|(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z](?:[a-z0-9-]*[a-z0-9])?|(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])|\[[0-9a-f]{0,4}(?::[0-9a-f]{0,4}){2,7}\])$'
           x-order: 5
         verified:
           type: boolean

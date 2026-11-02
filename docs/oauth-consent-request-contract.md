@@ -70,7 +70,11 @@ empty), optional `clientUri` and `logoUri`, and `redirectHosts`. Each entry of
 URIs: the host of an https URI (`app.example.com`), the loopback IP literal of
 a loopback URI (`127.0.0.1`, `[::1]`), or the scheme of a private-use app URI
 (`vscode`). Entries are lowercase, carry no port, path or `://`, and there is
-at least one.
+at least one. The item pattern enforces the forms: an app scheme follows the
+RFC 3986 scheme grammar (`vscode`, `com.example.app`), a hostname's last label
+starts with a letter, an IPv4 literal is dotted decimal, and an IPv6 literal is
+bracketed hexadecimal (`[::1]`). A colon appears only inside IPv6 brackets, so
+`app.example.com:8080`, `127.0.0.1:8080` and `[::1]:8080` are rejected.
 
 ## No stored row
 
