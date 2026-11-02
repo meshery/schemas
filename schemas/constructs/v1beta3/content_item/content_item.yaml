@@ -291,6 +291,13 @@ properties:
       - organization
       - platform
       - fallback
+    x-enum-varnames:
+      - ApprovalPolicySourceItem
+      - ApprovalPolicySourceWorkspace
+      - ApprovalPolicySourceProfile
+      - ApprovalPolicySourceOrganization
+      - ApprovalPolicySourcePlatform
+      - ApprovalPolicySourceFallback
     x-oapi-codegen-extra-tags:
       db: approval_policy_source
       json: "approvalPolicySource,omitempty"
