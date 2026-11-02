@@ -1201,8 +1201,11 @@ components:
       description: >-
         Client-chosen key that makes a create safe to retry. The server keeps
         the organization, the user, the key, a hash of the request and the
-        response for 24 hours. A retry with the same key and the same request
-        hash returns the stored response without creating anything again. A
+        final response for 24 hours. Only a final response that is not a 5xx
+        is stored; a 5xx releases the key's claim, because the insert rolled
+        back, so a retry with the same key is processed as new. A retry with
+        the same key and the same request hash returns the stored response
+        without creating anything again. A
         retry with the same key and a different request hash answers 422 and
         creates nothing. A retry with the same key that arrives while the
         earlier request with that key is still being processed answers 409

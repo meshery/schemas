@@ -150,12 +150,19 @@ organization written in upper or lower case matches; the raw strings are never
 compared. Both operation descriptions reference this section and declare the
 `400` and the `403`.
 
+This rule covers the operations that declare `X-Current-Orgid`. An operation
+that takes an organization in its path and does not declare the header, such
+as `updateOrgSchedulePause`, checks instead that the caller is a live member of
+the organization in its path: a caller who is not receives `404`, the same
+answer as an unknown resource, and the operation's permission check runs in
+that organization.
+
 ## `Idempotency-Key`
 
 `components.parameters.idempotencyKey` in `v1beta2/core/api.yml` is an
 optional header on `insertContentItem` and `createSchedule`. The server keeps
-the organization, the user, the key, a hash of the request and the response
-for 24 hours:
+the organization, the user, the key, a hash of the request and the final
+response for 24 hours. Only a final response that is not a `5xx` is stored:
 
 - the same key with the same request hash returns the stored response and
   creates nothing again;
@@ -163,6 +170,8 @@ for 24 hours:
 - a retry with the same key that arrives while the first request with that key
   is still being processed answers `409` and creates nothing; the client retries
   later and then receives the stored response;
+- a `5xx` response is not stored. It releases the key's claim, because the
+  insert rolled back, so a retry with the same key is processed as new;
 - no key means no deduplication.
 
 **Precedence.** While the first request with a key is in flight, every retry
