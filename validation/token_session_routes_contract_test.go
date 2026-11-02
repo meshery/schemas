@@ -39,7 +39,7 @@ func TestTokenSessionRoutesContract(t *testing.T) {
 	}
 
 	// Possessing the token is the credential: no session or bearer token.
-	for _, path := range []string{"/revoke", "/introspect"} {
+	for path, body := range map[string]string{"/revoke": "TokenPayload", "/introspect": "TokenIntrospectionPayload"} {
 		operation := mustLookup(t, doc, "paths", path, "post")
 		security, ok := mappingValue(operation, "security")
 		if !ok {
@@ -48,9 +48,36 @@ func TestTokenSessionRoutesContract(t *testing.T) {
 		if seq, isSeq := security.([]any); !isSeq || len(seq) != 0 {
 			t.Errorf("POST %s security = %v, want empty", path, security)
 		}
-		if got := mustLookup(t, operation, "requestBody", "content", "application/json", "schema", "$ref"); got != "#/components/schemas/TokenPayload" {
-			t.Errorf("POST %s requestBody = %v, want TokenPayload", path, got)
+		if got := mustLookup(t, operation, "requestBody", "content", "application/json", "schema", "$ref"); got != "#/components/schemas/"+body {
+			t.Errorf("POST %s requestBody = %v, want %s", path, got, body)
 		}
+	}
+
+	// introspectToken answers 200 with a TokenIntrospection body (#6383 in
+	// layer5io/meshery-cloud). Existing callers read only the status, so the
+	// body is additive; aud is what a resource server checks.
+	introspect200 := mustLookup(t, doc, "paths", "/introspect", "post", "responses", "200", "content", "application/json", "schema", "$ref")
+	if introspect200 != "#/components/schemas/TokenIntrospection" {
+		t.Errorf("introspectToken 200 = %v, want TokenIntrospection", introspect200)
+	}
+	introspection := mustLookup(t, doc, "components", "schemas", "TokenIntrospection")
+	if got := sequenceStrings(mustValue(introspection, "required")); !reflect.DeepEqual(got, []string{"active", "aud"}) {
+		t.Errorf("TokenIntrospection required = %v, want [active aud]", got)
+	}
+	for _, member := range []string{"active", "aud", "sub", "clientId", "scope", "exp", "iat", "nbf", "iss", "tokenType", "tokenUse"} {
+		if _, ok := mappingValue(mustValue(introspection, "properties"), member); !ok {
+			t.Errorf("TokenIntrospection must declare %s", member)
+		}
+	}
+	introspectPayload := mustLookup(t, doc, "components", "schemas", "TokenIntrospectionPayload")
+	if got := sequenceStrings(mustValue(introspectPayload, "required")); !reflect.DeepEqual(got, []string{"token"}) {
+		t.Errorf("TokenIntrospectionPayload required = %v, want [token] (resource is optional)", got)
+	}
+	if mustValue(introspectPayload, "additionalProperties") != false {
+		t.Error("TokenIntrospectionPayload must set additionalProperties: false")
+	}
+	if got, want := mustLookup(t, introspectPayload, "properties", "token", "pattern"), mustLookup(t, doc, "components", "schemas", "TokenPayload", "properties", "token", "pattern"); got != want {
+		t.Errorf("TokenIntrospectionPayload.token pattern = %v, want the TokenPayload.token pattern %v", got, want)
 	}
 
 	// /logout is a browser navigation identified by cookies, never a bearer token.

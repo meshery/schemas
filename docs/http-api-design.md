@@ -236,16 +236,25 @@ declared paths carry no `/api` prefix:
   provider, or a user-created API token (the envelope `generateToken` returns, or the bare JWT inside
   it). The body is a `TokenPayload`; possessing the token is the credential (`security: []`). A
   user-created API token whose signature verifies is retired for its owner, as `deleteUserToken`
-  does, and stops authenticating immediately; any other token is forwarded to the OAuth2 server's
-  RFC 7009 revocation endpoint. An unknown, anonymous or already-revoked token is a no-op that
-  answers `200`. A `200` clears the session cookie. A `503` means signing keys or the token store
+  does, and stops authenticating immediately. A token issued to a third-party OAuth client ends that
+  user's whole grant to that client. Any other token is forwarded to the OAuth2 server's RFC 7009
+  revocation endpoint, which ends the grant it belongs to. An unknown, anonymous or already-revoked
+  token is a no-op that answers `200`. A `200` clears the session cookie. A `503` means signing keys or the token store
   could not be read, so the token was not revoked; the caller should retry. A `500` means the OAuth2
   server failed: it returned an error response or could not be reached.
-- `POST /introspect` (`introspectToken`) answers `200` when an access token is authentic, unexpired
-  and not revoked. A `401` means the signature or expiry check failed or the token was revoked, and a
-  `400` means the body is malformed or `token` is missing or empty. A `503` means signing keys or
+- `POST /introspect` (`introspectToken`) answers `200` when an access token is authentic, unexpired,
+  not revoked and valid for the protected resource asking, with a `TokenIntrospection` body that
+  carries `aud` - the RFC 8707 resource identifiers the token is bound to - and the other RFC 7662
+  members (single-word names as in RFC 7662, `clientId`, `tokenType` and `tokenUse` in camelCase).
+  The body is a `TokenIntrospectionPayload`: `token`, and an optional `resource` naming the
+  protected resource asking; omitted, it is the REST API. A token issued to a third-party OAuth
+  client is valid only for a resource its `aud` names; a token issued to the server's own client
+  with an empty `aud`, and a user-created API token, are valid for the REST API only. A `401` means
+  the signature or expiry check failed, the token was revoked, or its audience does not include the
+  resource. A `400` means the body is malformed, `token` is missing or empty, or `resource` is not a
+  protected resource the server issues tokens for (`invalid_target`). A `503` means signing keys or
   revocation status are temporarily unavailable: the token is refused, but the caller should retry
-  rather than sign the user out.
+  rather than sign the user out. Callers that read only the status code are unaffected by the body.
 - `GET /logout` (`logoutUser`) is a browser navigation identified by the `session_cookie` and
   `provider_token` cookies (the `sessionCookie` and `providerTokenCookie` security schemes). It ends
   the identity provider session, revokes the OAuth tokens in `provider_token`, clears every session
