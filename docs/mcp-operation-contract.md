@@ -141,13 +141,14 @@ run in that organization exactly as for any other call.
 An operation that also takes an organization in its path or query (`orgId`:
 `getFeaturesByOrganization` in its path, `getConnections` in its query) must
 name the same organization as `X-Current-Orgid` when both are sent. A mismatch
-answers `403` and returns nothing; neither value wins. When the header is
-omitted, the path or query `orgId` must equal the organization the call acts
-in (the session's selected organization); a mismatch answers `403` and returns
-nothing. The comparison is on the parsed UUID and is case-insensitive, so the
-same organization written in upper or lower case matches; the raw strings are
-never compared. Both operation descriptions reference this section and declare
-the `403`.
+answers `400` and returns nothing; neither value wins, so the header never
+overrides the path or query `orgId`. When the header is omitted, the path or
+query `orgId` must equal the organization the call acts in (the session's
+selected organization); a mismatch answers `403` and returns nothing. The
+comparison is on the parsed UUID and is case-insensitive, so the same
+organization written in upper or lower case matches; the raw strings are never
+compared. Both operation descriptions reference this section and declare the
+`400` and the `403`.
 
 ## `Idempotency-Key`
 

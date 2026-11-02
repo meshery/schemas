@@ -33,7 +33,7 @@ organizationCollection:
     description: >
       Returns the features the organization's active subscriptions entitle it to.
       When `X-Current-Orgid` is also sent, it must name the same organization as
-      `orgId`; a mismatch is refused with a 403 (the organization selector in
+      `orgId`; a mismatch is refused with a 400 (the organization selector in
       docs/mcp-operation-contract.md). When `X-Current-Orgid` is omitted, `orgId`
       must name the organization the call acts in (the session's selected
       organization); a mismatch is refused with a 403.

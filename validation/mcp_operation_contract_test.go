@@ -701,7 +701,8 @@ func anyStrings(v any) []string {
 // The organization selector (docs/mcp-operation-contract.md, "The organization
 // selector"): an operation that takes an organization in its path or query also
 // takes X-Current-Orgid, its description points at the rule, and it declares the
-// 403 that a mismatch answers. The rule itself is stated once, in the doc.
+// 400 that a header-and-path mismatch answers and the 403 that a mismatch with
+// the session organization answers. The rule itself is stated once, in the doc.
 func TestOrganizationSelectorIsDeclared(t *testing.T) {
 	root := repoRootDir(t)
 	features := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta1/feature/feature_operations.yml"))
@@ -730,13 +731,16 @@ func TestOrganizationSelectorIsDeclared(t *testing.T) {
 			}
 		}
 		desc := flatDescription(t, tc.op, "description")
-		for _, want := range []string{"`X-Current-Orgid` is also sent", "must name the same organization", "a mismatch is refused with a 403", "docs/mcp-operation-contract.md", "When `X-Current-Orgid` is omitted,", "(the session's selected organization)"} {
+		for _, want := range []string{"`X-Current-Orgid` is also sent", "must name the same organization", "a mismatch is refused with a 400", "a mismatch is refused with a 403", "docs/mcp-operation-contract.md", "When `X-Current-Orgid` is omitted,", "(the session's selected organization)"} {
 			if !strings.Contains(desc, want) {
 				t.Errorf("%s description must say %q", tc.operationID, want)
 			}
 		}
 		if ref := mustLookup(t, tc.op, "responses", "403", "$ref"); ref != "../../v1beta2/core/api.yml#/components/responses/403" {
 			t.Errorf("%s must declare the 403 response, got %v", tc.operationID, ref)
+		}
+		if ref, _ := mustLookup(t, tc.op, "responses", "400", "$ref").(string); !strings.HasSuffix(ref, "components/responses/400") {
+			t.Errorf("%s must declare the 400 response for a header and path mismatch, got %q", tc.operationID, ref)
 		}
 	}
 
@@ -745,7 +749,7 @@ func TestOrganizationSelectorIsDeclared(t *testing.T) {
 		t.Fatal(err)
 	}
 	flat := strings.Join(strings.Fields(string(doc)), " ")
-	for _, want := range []string{"## The organization selector", "must name the same organization as `X-Current-Orgid` when both are sent", "A mismatch answers `403` and returns nothing", "When the header is omitted, the path or query `orgId` must equal the organization the call acts in", "case-insensitive"} {
+	for _, want := range []string{"## The organization selector", "must name the same organization as `X-Current-Orgid` when both are sent", "A mismatch answers `400` and returns nothing", "a mismatch answers `403` and returns nothing", "When the header is omitted, the path or query `orgId` must equal the organization the call acts in", "case-insensitive"} {
 		if !strings.Contains(flat, want) {
 			t.Errorf("docs/mcp-operation-contract.md must state the organization selector: missing %q", want)
 		}
