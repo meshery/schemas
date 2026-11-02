@@ -209,9 +209,10 @@ func parseSupersedes(extensions map[string]any) (string, error) {
 // same construct supersedes, so a route the bundler resolves to its owner is
 // indexed once, as the owner declares it. Both declarations cannot stay: the
 // matcher would join one consumer endpoint to two rows and count the route twice.
-// The check is the bundler's rule (build/bundle-openapi.js resolveRouteOwner),
-// and any x-supersedes the bundler would reject is an error here, never a silent
-// drop.
+// A superseded pair that chains or differs in operationId or x-internal fails as
+// it does in the bundler (build/bundle-openapi.js resolveRouteOwner). The
+// bundler's other duplicate checks are not repeated here: an owner whose
+// x-supersedes names no declaration of the route leaves every row in place.
 func dropSupersededEndpoints(endpoints []schemaEndpoint) ([]schemaEndpoint, error) {
 	type declaration struct {
 		title, construct, method, path, version string
@@ -227,7 +228,7 @@ func dropSupersededEndpoints(endpoints []schemaEndpoint) ([]schemaEndpoint, erro
 		}
 		i, ok := byDeclaration[declaration{owner.Title, owner.Construct, owner.Method, owner.Path, owner.Supersedes}]
 		if !ok {
-			continue // the owner moves a route nothing else declares
+			continue
 		}
 		old := endpoints[i]
 		reason := ""

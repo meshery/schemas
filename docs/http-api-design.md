@@ -214,8 +214,13 @@ move a route to a later version:
   not chain), their `operationId`s match, and their `x-internal` targets match as
   sets. The route declaration resolves the same way in either merge order.
 - The endpoint index behind the consumer audit (`validation/endpoint_index.go`)
-  enforces the same checks and drops the superseded declaration, so the route is
-  audited once. A mismatch fails the index with the same duplicate error.
+  drops the declaration an owner's `x-supersedes` names (same title, construct,
+  method and path), so the route is audited once. It fails with the same
+  duplicate error when that pair chains or its `operationId`s or `x-internal`
+  targets differ. It does not repeat the bundler's other duplicate checks: an
+  owner that names a version not declaring the route, or a declaration under
+  another title, leaves both rows indexed. The bundler, which gates the build,
+  rejects those.
 - Any other duplicate fails the merge with `Duplicate path operation during merge`.
 - Component names are not versioned. Two versions of one construct that define
   the same component name overwrite each other in the merged `components`, and
