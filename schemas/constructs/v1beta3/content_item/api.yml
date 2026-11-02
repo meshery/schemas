@@ -20,8 +20,8 @@ info:
     and an item it leaves unapproved gets a fresh pending request for the
     content as it now is, so after the edit an unapproved item has an open
     request (see updateContentItem and the invariant in
-    docs/content-item-contract.md). A change to `approvalPolicy` alone that
-    makes approval required resets an approved item the same way. Only a person
+    docs/content-item-contract.md). A change to `approvalPolicy` alone whose
+    resolved result is required resets an approved item the same way. Only a person
     holding Decide Content Item Approvals may write an `approvalPolicy` value
     that changes the stored one.
     Organization scope: every operation acts only in the organization the
@@ -257,7 +257,7 @@ paths:
         stored values, they are kept; any other value is refused with a 400.
         `approved` is not in the payload, and no update sets it to true;
         only `approveRequest` does. A content edit, or an `approvalPolicy`
-        change that makes approval required, can reset it, as described
+        change whose resolved result is required, can reset it, as described
         below. A caller without Decide Content Item
         Approvals gets a 403 if it sends an `approvalPolicy` different from
         the stored one (absent, null and `inherit` count as one value, since
@@ -296,7 +296,7 @@ paths:
         same transaction. When the result is required and the item was
         `approved`, `approved` is set to false and a pending request opens,
         unless one is already pending. Any other result changes no `approved`
-        and closes no request: loosening the requirement leaves an unapproved
+        and closes no request: a result that is not required leaves an unapproved
         item unapproved, and its open request stays pending for a decider. An
         unapproved item with no open request, after a denial for example, gets
         a fresh pending request in the same write, whatever the result. The
