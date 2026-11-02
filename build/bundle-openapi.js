@@ -132,16 +132,131 @@ function mergeComponentMaps(baseComponents, incomingComponents) {
   }
 }
 
-function mergePaths(basePaths, incomingPaths) {
+/**
+ * Route ownership across construct versions.
+ *
+ * Every version of a construct is merged into one cloud spec, so a route that a
+ * newer version moves can be declared twice. The newer operation names the
+ * version it replaces with the `x-supersedes` operation extension (for example
+ * `x-supersedes: v1beta2`), and the merge keeps that declaration. The collision
+ * resolves only when both declarations belong to the same construct (same
+ * title), the owner names exactly the other's version and is newer than it, the
+ * superseded declaration carries no `x-supersedes` (ownership does not chain),
+ * and the operationIds match. Any other duplicate throws. The result does not
+ * depend on merge order.
+ */
+const SUPERSEDES_EXTENSION = "x-supersedes";
+const MERGE_ORIGIN = Symbol("mergeOrigin");
+const VERSION_PATTERN = /^v(\d+)(alpha|beta)(\d+)$/;
+const STABILITY_RANK = { alpha: 0, beta: 1 };
+
+function versionRank(version) {
+  const match = VERSION_PATTERN.exec(String(version || ""));
+  if (!match) {
+    return null;
+  }
+  return [Number(match[1]), STABILITY_RANK[match[2]], Number(match[3])];
+}
+
+function isNewerVersion(version, other) {
+  const rank = versionRank(version);
+  const otherRank = versionRank(other);
+  if (!rank || !otherRank) {
+    return false;
+  }
+  for (let i = 0; i < rank.length; i += 1) {
+    if (rank[i] !== otherRank[i]) {
+      return rank[i] > otherRank[i];
+    }
+  }
+  return false;
+}
+
+// Origin metadata lives on a non-enumerable symbol so YAML and JSON output and
+// deep equality checks never see it.
+function attachMergeOrigin(operation, origin) {
+  if (operation && typeof operation === "object" && !Array.isArray(operation)) {
+    Object.defineProperty(operation, MERGE_ORIGIN, { value: origin, configurable: true });
+  }
+  return operation;
+}
+
+function mergeOriginOf(operation) {
+  return operation && typeof operation === "object" ? operation[MERGE_ORIGIN] : undefined;
+}
+
+function declareOperation(route, method, operation, origin) {
+  const supersedes = operation?.[SUPERSEDES_EXTENSION];
+  if (supersedes !== undefined && typeof supersedes !== "string") {
+    throw new Error(`${SUPERSEDES_EXTENSION} on ${route} ${method} must be a version string`);
+  }
+  return attachMergeOrigin(operation, {
+    prefix: origin.prefix,
+    version: origin.version,
+    operationId: operation?.operationId,
+    supersedes,
+  });
+}
+
+/**
+ * Decide which of two declarations of one route and method keeps the route.
+ * Returns "existing" or "incoming", or throws the duplicate error.
+ */
+function resolveRouteOwner(route, method, existing, incoming) {
+  const fail = (reason) => {
+    throw new Error(
+      `Duplicate path operation during merge: ${route} ${method}${reason ? ` (${reason})` : ""}`,
+    );
+  };
+  const current = mergeOriginOf(existing);
+  const next = mergeOriginOf(incoming);
+  if (!current || !next || current.prefix !== next.prefix || current.version === next.version) {
+    fail();
+  }
+  if (!current.operationId || current.operationId !== next.operationId) {
+    fail("operationIds differ");
+  }
+
+  const ownerOf = (owner, superseded) => {
+    if (owner.supersedes !== superseded.version) {
+      return false;
+    }
+    if (superseded.supersedes !== undefined) {
+      fail(`ownership does not chain: ${superseded.version} carries ${SUPERSEDES_EXTENSION}`);
+    }
+    if (!isNewerVersion(owner.version, superseded.version)) {
+      fail(`${owner.version} is not newer than ${superseded.version}`);
+    }
+    return true;
+  };
+
+  if (ownerOf(next, current)) {
+    return "incoming";
+  }
+  if (ownerOf(current, next)) {
+    return "existing";
+  }
+  if (current.supersedes !== undefined || next.supersedes !== undefined) {
+    fail(`${SUPERSEDES_EXTENSION} does not name the other declaration's version`);
+  }
+  fail();
+}
+
+function mergePaths(basePaths, incomingPaths, origin) {
   for (const [route, pathItem] of Object.entries(incomingPaths || {})) {
     const currentPath = (basePaths[route] ??= {});
 
     for (const [method, operation] of Object.entries(pathItem || {})) {
-      if (Object.prototype.hasOwnProperty.call(currentPath, method)) {
-        throw new Error(`Duplicate path operation during merge: ${route} ${method}`);
+      const declared = declareOperation(route, method, operation, origin);
+
+      if (!Object.prototype.hasOwnProperty.call(currentPath, method)) {
+        currentPath[method] = declared;
+        continue;
       }
 
-      currentPath[method] = operation;
+      if (resolveRouteOwner(route, method, currentPath[method], declared) === "incoming") {
+        currentPath[method] = declared;
+      }
     }
   }
 }
@@ -165,10 +280,11 @@ function mergeOpenapiSpec(baseSpec, specToMerge) {
     throw new Error("Cannot merge OpenAPI spec without info.title");
   }
 
+  const origin = { prefix, version: specToMerge?.info?.version };
   const normalizedSpec = prefixInternalReferences(specToMerge, prefix);
 
   mergeTags(baseSpec.tags ?? (baseSpec.tags = []), normalizedSpec.tags || []);
-  mergePaths(baseSpec.paths ?? (baseSpec.paths = {}), normalizedSpec.paths || {});
+  mergePaths(baseSpec.paths ?? (baseSpec.paths = {}), normalizedSpec.paths || {}, origin);
   mergeComponentMaps(
     baseSpec.components ?? (baseSpec.components = {}),
     prefixComponents(normalizedSpec.components, prefix),

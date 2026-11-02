@@ -17,6 +17,7 @@ type schemaEndpoint struct {
 	OperationID       string             // "getConnection"
 	Tags              []string           // operation tags -> derive Category / Sub-Category
 	XInternal         []string           // ["meshery"], ["cloud"], or nil (= both repos)
+	Supersedes        string             // x-supersedes: the older version this declaration replaces, or ""
 	RequestShape      *schemaShape       // nil for GET/DELETE without body
 	ResponseShape     *schemaShape       // from primary 2xx response
 	SuccessStatusCode int                // primary 2xx response code (200/201/202/204)
@@ -97,6 +98,10 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 				if err != nil {
 					return err
 				}
+				supersedes, err := parseSupersedes(op.Extensions)
+				if err != nil {
+					return err
+				}
 
 				ep := schemaEndpoint{
 					Method:      strings.ToUpper(method),
@@ -104,6 +109,7 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 					OperationID: op.OperationID,
 					Tags:        append([]string(nil), op.Tags...),
 					XInternal:   xInternal,
+					Supersedes:  supersedes,
 					Deprecated:  op.Deprecated,
 					Public:      isExplicitlyPublic(op, doc),
 					Construct:   spec.Construct,
@@ -131,6 +137,8 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 	}); err != nil {
 		return nil, err
 	}
+
+	index.Endpoints = dropSupersededEndpoints(index.Endpoints)
 
 	sort.Slice(index.Endpoints, func(i, j int) bool {
 		if index.Endpoints[i].Path != index.Endpoints[j].Path {
@@ -171,6 +179,44 @@ func mergeQueryParams(pathLevel, opLevel openapi3.Parameters) []schemaQueryParam
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Name < out[j].Name })
 	return out
+}
+
+// parseSupersedes extracts the x-supersedes version from operation extensions.
+func parseSupersedes(extensions map[string]any) (string, error) {
+	raw, ok := extensions["x-supersedes"]
+	if !ok {
+		return "", nil
+	}
+	version, ok := raw.(string)
+	if !ok {
+		return "", fmt.Errorf("x-supersedes must be a version string")
+	}
+	return version, nil
+}
+
+// dropSupersededEndpoints removes a declaration that a newer version of the same
+// construct supersedes, so a route the bundler resolves to its owner is indexed
+// once, as the owner declares it. It mirrors the bundler's rule: the owner names
+// the declaration's version (x-supersedes) and carries the same operationId.
+func dropSupersededEndpoints(endpoints []schemaEndpoint) []schemaEndpoint {
+	type declaration struct {
+		construct, method, path, version string
+	}
+	owners := make(map[declaration]string)
+	for _, ep := range endpoints {
+		if ep.Supersedes != "" {
+			owners[declaration{ep.Construct, ep.Method, ep.Path, ep.Supersedes}] = ep.OperationID
+		}
+	}
+	kept := make([]schemaEndpoint, 0, len(endpoints))
+	for _, ep := range endpoints {
+		key := declaration{ep.Construct, ep.Method, ep.Path, ep.Version}
+		if operationID, ok := owners[key]; ok && operationID == ep.OperationID {
+			continue
+		}
+		kept = append(kept, ep)
+	}
+	return kept
 }
 
 // parseXInternal extracts the explicit x-internal target list from operation
