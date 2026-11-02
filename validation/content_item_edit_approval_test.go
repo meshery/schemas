@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -98,9 +99,9 @@ func itemEditApproval(s itemEditState, changed bool) itemEditOutcome {
 }
 
 // itemPolicyApproval is the reference for a write that changes the stored
-// approvalPolicy and no content. The approval is re-resolved, but only tightening
-// changes approved: required on an approved item resets it. Loosening, and any
-// change on an unapproved item, leaves approved and the open request as they are.
+// approvalPolicy and no content. The approval is re-resolved, but only a result of
+// required changes approved: an approved item resets. A result of not required, and
+// any change on an unapproved item, leaves approved and the open request as they are.
 // Nothing is superseded, since the content did not change. An unapproved item
 // with no open request gets one under either result.
 func itemPolicyApproval(s itemEditState) itemEditOutcome {
@@ -293,8 +294,8 @@ func TestContentItemEditApprovalOutcomes(t *testing.T) {
 }
 
 // Each row is one outcome of a write that changes approvalPolicy and no content.
-// Only tightening resets an approved item; loosening never changes approved and
-// never supersedes a request.
+// Only a result of required resets an approved item; a result of not required
+// never changes approved and never supersedes a request.
 func TestContentItemPolicyChangeOutcomes(t *testing.T) {
 	cases := []struct {
 		name  string
@@ -440,5 +441,46 @@ func TestContentItemEditChangesContent(t *testing.T) {
 				t.Errorf("itemContentChanged(stored, %v) = %v, want %v", tc.next, got, tc.want)
 			}
 		})
+	}
+}
+
+// The reset rule is stated by its result, not by a direction of change: a
+// result of required resets an approved item, and inherit or absent is required
+// in the interim, so moving to it resets too. The word "tightening" must not
+// describe the rule anywhere it is written.
+func TestApprovalPolicyResetWording(t *testing.T) {
+	root := repoRootDir(t)
+	dir := filepath.Join(root, "schemas/constructs/v1beta3/content_item")
+	entity := loadOpenAPIDocument(t, filepath.Join(dir, "content_item.yaml"))
+	policy := itemFlatten(itemDescription(t, mustLookup(t, entity, "properties", "approvalPolicy", "description")))
+	for _, want := range []string{
+		"A change whose result is required",
+		"(`required`, or `inherit` or absent in the interim, which resolves to required) resets an approved item and opens its request",
+		"A change whose result is not required never changes `approved`",
+	} {
+		if !strings.Contains(policy, want) {
+			t.Errorf("ContentItem.approvalPolicy description must say %q", want)
+		}
+	}
+	if strings.Contains(strings.ToLower(policy), "tighten") {
+		t.Error("ContentItem.approvalPolicy description must not describe the reset as tightening")
+	}
+
+	doc, err := os.ReadFile(filepath.Join(root, "docs/content-item-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	flat := strings.Join(strings.Fields(string(doc)), " ")
+	for _, want := range []string{
+		"A change whose result is required resets an approved item, because its approval must now be given again.",
+		"also `required` to `inherit` or absent during the interim, which resolves to required.",
+		"A change whose result is not required never changes `approved` and never closes a request",
+	} {
+		if !strings.Contains(flat, want) {
+			t.Errorf("docs/content-item-contract.md must say %q", want)
+		}
+	}
+	if strings.Contains(flat, "Tightening (not required") || strings.Contains(flat, "Loosening never changes") {
+		t.Error("docs/content-item-contract.md must not describe the policy reset as tightening or loosening")
 	}
 }
