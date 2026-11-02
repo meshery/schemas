@@ -203,7 +203,7 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/environment-purpose-contract.md`](docs/environment-purpose-contract.md)** - what `Environment.purpose` means, why it is not client-settable, and what each consumer must enforce for that to hold.
 - **[`docs/profile-contract.md`](docs/profile-contract.md)** - the profile construct, its workspace assignment, and its permission keys.
 - **[`docs/mention-alias-contract.md`](docs/mention-alias-contract.md)** - the mention alias construct: who's who per platform, its unique key, the upsert, and the keys that guard it.
-- **[`docs/token-scoping-contract.md`](docs/token-scoping-contract.md)** - `Token.keychainIds` (empty means unrestricted) and `expiresAt`, set through `TokenPayload`, and the effective-keys rule every token kind must enforce.
+- **[`docs/token-scoping-contract.md`](docs/token-scoping-contract.md)** - `Token.keychainIds` (empty means unrestricted) and `expiresAt`, set through `TokenCreatePayload`, and the effective-keys rule every token kind must enforce.
 - **[`docs/oauth-consent-contract.md`](docs/oauth-consent-contract.md)** - the OAuth consent construct: list and revoke a user's connected apps by `clientId`.
 - **[`docs/agent-approval-preference.md`](docs/agent-approval-preference.md)** - the typed `agentsActWithoutApproval` preference and its migration from the free-form `remoteProviderPreferences` value.
 - **[`docs/content-item-contract.md`](docs/content-item-contract.md)** - the content item's rules of engagement (tighten only) and thread fields, and why a reply's wait for its parent is client behaviour rather than a claim rule.

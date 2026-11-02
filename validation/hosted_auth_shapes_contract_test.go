@@ -216,7 +216,7 @@ func TestTokenRestrictionFailsClosed(t *testing.T) {
 }
 
 // keychainScoped is the server's stored record of a keychain limit: optional
-// and read-only on the entity, and never client-settable through TokenPayload.
+// and read-only on the entity, and never client-settable through TokenCreatePayload.
 func TestTokenKeychainScopedIsReadOnlyOnTheEntity(t *testing.T) {
 	doc := loadSpec(t, tokenSpec)
 	token := schemaOf(t, doc, "UserToken")
@@ -238,8 +238,8 @@ func TestTokenKeychainScopedIsReadOnlyOnTheEntity(t *testing.T) {
 	if tags := extraTags(token.Properties["expiresAt"].Value); tags["db"] != "expires_at" {
 		t.Errorf("UserToken.expiresAt db tag = %v, want expires_at", tags["db"])
 	}
-	if schemaOf(t, doc, "TokenPayload").Properties["keychainScoped"] != nil {
-		t.Error("TokenPayload must not carry keychainScoped: a client limits a token only through keychainIds")
+	if schemaOf(t, doc, "TokenCreatePayload").Properties["keychainScoped"] != nil {
+		t.Error("TokenCreatePayload must not carry keychainScoped: a client limits a token only through keychainIds")
 	}
 	checkCases(t, token, nil, []struct {
 		name    string
@@ -306,22 +306,22 @@ func extraTags(s *openapi3.Schema) map[string]any {
 	return tags
 }
 
-func TestTokenPayloadCarriesTheScopingFields(t *testing.T) {
+func TestTokenCreatePayloadCarriesTheScopingFields(t *testing.T) {
 	doc := loadSpec(t, tokenSpec)
-	payload := schemaOf(t, doc, "TokenPayload")
+	payload := schemaOf(t, doc, "TokenCreatePayload")
 
 	got := map[string]bool{}
 	for name := range payload.Properties {
 		got[name] = true
 	}
 	if len(got) != 2 || !got["keychainIds"] || !got["expiresAt"] {
-		t.Errorf("TokenPayload properties = %v, want exactly keychainIds and expiresAt", got)
+		t.Errorf("TokenCreatePayload properties = %v, want exactly keychainIds and expiresAt", got)
 	}
 	if len(payload.Required) != 0 {
-		t.Errorf("TokenPayload required = %v, want none: an empty body is an unrestricted token", payload.Required)
+		t.Errorf("TokenCreatePayload required = %v, want none: an empty body is an unrestricted token", payload.Required)
 	}
 	if ids := payload.Properties["keychainIds"]; ids == nil || ids.Value.MinItems != 1 {
-		t.Error("TokenPayload.keychainIds must have minItems 1: an explicit empty list is refused, never an unrestricted token")
+		t.Error("TokenCreatePayload.keychainIds must have minItems 1: an explicit empty list is refused, never an unrestricted token")
 	}
 
 	item := doc.Paths.Find("/api/identity/tokens")
@@ -340,7 +340,7 @@ func TestTokenPayloadCarriesTheScopingFields(t *testing.T) {
 	}
 	media := op.RequestBody.Value.Content.Get("application/json")
 	if media == nil || media.Schema == nil || media.Schema.Value != payload {
-		t.Error("generateToken requestBody does not resolve to TokenPayload")
+		t.Error("generateToken requestBody does not resolve to TokenCreatePayload")
 	}
 	query := map[string]*openapi3.Parameter{}
 	for _, p := range op.Parameters {

@@ -84,7 +84,7 @@ other at request time.
   left and would look unrestricted, gaining every key its owner holds. So **a
   scoped token whose keychains are all deleted holds no keys**, and is refused on
   every route that checks a key.
-- `keychainScoped` is read-only. It is not part of `TokenPayload`; a client
+- `keychainScoped` is read-only. It is not part of `TokenCreatePayload`; a client
   limits a token only through `keychainIds`.
 - On the entity, `keychainIds` reports the keychains the token is limited to at
   read time. A scoped token can therefore report `keychainScoped: true` with an
