@@ -136,10 +136,11 @@ merge order:
   does not chain).
 - Any other duplicate throws `Duplicate path operation during merge`, so a route
   cannot change owner by accident.
-- The owner's body is fully dereferenced. Component names such as
-  `User_PreferencePayload` are shared by the versions of the construct and the
-  last one merged wins in `components`, so the owned body does not reference
-  them.
+- The `v1beta3` `api.yml` declares the body with `$ref`; `bundleSchema`
+  dereferences it before the merge, and the merge fails if the bundled owner
+  still holds a `$ref`. Component names such as `User_PreferencePayload` are
+  shared by the versions of the construct and the last one merged wins in
+  `components`, so the merged owner does not reference them.
 - `x-supersedes` stays in the merged output, as `x-internal` does.
 
 The consumer audit's endpoint index (`validation/endpoint_index.go`) drops the

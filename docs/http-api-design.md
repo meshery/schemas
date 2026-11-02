@@ -201,10 +201,11 @@ move a route to a later version:
 
 - The owning operation sets `x-supersedes: <older version>` (for example
   `x-supersedes: v1beta2`) and keeps the same `operationId`, method and path. It
-  declares its own request body and responses, fully dereferenced (no `$ref`):
-  component names are shared across the versions of one construct, so an owned
-  body that kept a `$ref` would resolve through a name another version may
-  overwrite. The bundler fails on such an owner.
+  may use `$ref` in its `api.yml`: `bundleSchema` dereferences each version
+  before the merge, and the merge fails if the bundled owner still holds a
+  `$ref`. Component names are shared across the versions of one construct, so an
+  owned body that kept a `$ref` would resolve through a name another version may
+  overwrite.
 - The older version keeps its declaration, unchanged, for its own per-version
   bundle and generated types.
 - `build/bundle-openapi.js` keeps the owner's declaration in the merged spec.
