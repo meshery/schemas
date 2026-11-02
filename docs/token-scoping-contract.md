@@ -6,7 +6,8 @@ ends its life. Both are returned on the `UserToken` entity and are settable at
 creation through `TokenCreatePayload`, the optional body of `generateToken`
 (`POST /api/identity/tokens`). `name` and `purpose` stay query parameters.
 The entity also carries `keychainScoped`, the server's stored record that the
-token was created with a keychain limit, and the construct defines
+token is keychain-limited: set at creation, and changed only from false to true
+when a re-consent narrows an unrestricted token. The construct also defines
 `TokenStanding`, the read shape the server uses to accept or refuse a presented
 token. These serve MCP/OAuth client token scoping as well as user API tokens.
 

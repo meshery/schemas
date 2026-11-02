@@ -112,7 +112,7 @@ The token side is summarized in
 
 | Route | Operation | Notes |
 | --- | --- | --- |
-| `GET /api/identity/oauth/consents` | `getOauthConsents` | Core `page` and a consent-specific `pageSize` query parameter (1 to 1000). `200` with an `OauthConsentPage` (`page`, `pageSize`, `totalCount`, `oauthConsents`) of live consents, ordered by `updatedAt` descending (a re-consent moves a consent to the top). An empty page when there are none. Session only: a token-authenticated call is `403` and lists nothing, because a page of every client's consents is not disclosed to a client. |
+| `GET /api/identity/oauth/consents` | `getOauthConsents` | Core `page` and a consent-specific `pageSize` query parameter (1 to 1000). An out-of-range `pageSize` is `400`. `200` with an `OauthConsentPage` (`page`, `pageSize`, `totalCount`, `oauthConsents`) of live consents, ordered by `updatedAt` descending (a re-consent moves a consent to the top). An empty page when there are none. Session only: a token-authenticated call is `403` and lists nothing, because a page of every client's consents is not disclosed to a client. |
 | `DELETE /api/identity/oauth/consents?clientId=...` | `deleteOauthConsent` | `clientId` is required. Soft-deletes the live consent (sets `deletedAt`) and revokes the client's tokens for the user. `204` with no body. `403` when the caller may not revoke that client (see [Who may revoke](#who-may-revoke)). `404` when the caller may revoke it but the user has no live consent for that client. |
 
 Both are `x-internal: ["cloud"]`.
