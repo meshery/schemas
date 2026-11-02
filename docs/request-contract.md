@@ -65,7 +65,7 @@ key.
    ([Approval policy](content-item-contract.md#approval-policy)). When it is
    required, the item lands `approved` false and Cloud creates a `pending`
    request in the same transaction as the item (if either write fails, neither
-   is kept, so an unapproved item always has its request) whose subject is the
+   is kept, so an unapproved live item always has its request) whose subject is the
    item and whose `requesterId` and `createdByClient` come from the session or
    token. When it is not required, the item lands `approved` true and no
    request is created. A content edit re-resolves the approval the same way
@@ -109,7 +109,8 @@ A soft-delete of the subject supersedes the request the same way, in the same
 transaction as the delete: the request is closed as `superseded` with
 `decidedAt` set to the delete time and no `decidedBy` and no `note`, and no new
 request opens, because the item is gone. The request does not stay pending on a
-deleted subject.
+deleted subject. A soft-deleted unapproved item therefore has no open request;
+the open-request invariant covers live items only.
 
 Approving or denying a superseded request answers `409` and changes nothing, so
 an approval always applies to the content as of the open request. A policy change
