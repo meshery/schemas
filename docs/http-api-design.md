@@ -260,6 +260,18 @@ declared paths carry no `/api` prefix:
   navigation, an empty `500` otherwise. Cookies are cleared either way. On an organization custom
   domain the user is identified from `provider_token`.
 
+## OAuth consent requests
+
+`v1beta3/oauth_consent_request` is the consent page's API, under `/api/identity/oauth/consent-requests`.
+`getOauthConsentRequest` reads a pending request by the required `consentChallenge` query parameter
+(a query parameter because identity provider challenges are long opaque strings), and
+`acceptOauthConsentRequest` and `rejectOauthConsentRequest` (`POST .../accept`, `POST .../reject`,
+body `OauthConsentDecisionPayload`) decide it, answering the `redirectTo` the browser must navigate
+to. Only the signed-in user the challenge was issued for may read or decide it (`403` otherwise), a
+challenge is single use (`404` once decided or expired), an accept grants only the requested scopes
+and audience, and `client.verified` marks trust without blocking. Full contract:
+[`oauth-consent-request-contract.md`](oauth-consent-request-contract.md).
+
 ## Schedules and claims
 
 `v1beta3/schedule` serves organization schedules at `/api/schedules`, linked to workspaces through

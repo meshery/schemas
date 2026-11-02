@@ -1,0 +1,63 @@
+title: OAuth Consent Request Schema
+description: |
+  A pending OAuth consent request, as the consent page shows it to the
+  signed-in user: which client asks, where it sends the user afterwards, and
+  what it asks for. The identity provider issues the request and names it by
+  `consentChallenge`; the server reads it from the identity provider and
+  stores no row of its own, so the schema has no `id` or timestamps.
+
+  The request belongs to the one signed-in user it was issued for. Only that
+  user may read it or decide it, and a challenge is single use: once accepted
+  or rejected it can no longer be read or decided. `client.verified` marks
+  trust and never blocks: an unverified client is shown as such, and the user
+  may still allow it.
+type: object
+additionalProperties: false
+required:
+  - consentChallenge
+  - client
+  - requestedScopes
+properties:
+  consentChallenge:
+    type: string
+    description: >-
+      Opaque challenge the identity provider issued for this consent request,
+      echoed unchanged. Send it back in OauthConsentDecisionPayload to allow
+      or deny the request.
+    minLength: 1
+    maxLength: 8192
+    pattern: '^[\x21-\x7E]+$'
+    x-order: 1
+  client:
+    $ref: "./api.yml#/components/schemas/OauthConsentClient"
+    description: The OAuth client that asks for consent.
+    x-order: 2
+  requestedScopes:
+    type: array
+    description: >-
+      Scopes the client asks for, as the identity provider recorded them. An
+      accept grants exactly these scopes, never more. Empty when the client
+      asks for none.
+    items:
+      type: string
+      description: One OAuth scope token (RFC 6749 section 3.3).
+      minLength: 1
+      maxLength: 255
+      pattern: '^[\x21\x23-\x5B\x5D-\x7E]+$'
+    maxItems: 100
+    uniqueItems: true
+    x-order: 3
+  requestedAudience:
+    type: array
+    description: >-
+      Audiences the client asks its access token to be valid for, as the
+      identity provider recorded them. An accept grants exactly these
+      audiences, never more. Omitted when the client asks for none.
+    items:
+      type: string
+      description: One audience, usually the URL of a resource server.
+      minLength: 1
+      maxLength: 2048
+    maxItems: 100
+    uniqueItems: true
+    x-order: 4

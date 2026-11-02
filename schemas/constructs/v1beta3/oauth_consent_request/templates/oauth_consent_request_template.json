@@ -1,0 +1,11 @@
+{
+  "consentChallenge": "",
+  "client": {
+    "clientId": "",
+    "clientName": "",
+    "redirectHosts": [],
+    "verified": false,
+    "dynamicallyRegistered": false
+  },
+  "requestedScopes": []
+}

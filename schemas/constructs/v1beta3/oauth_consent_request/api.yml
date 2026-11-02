@@ -1,0 +1,365 @@
+openapi: 3.0.0
+info:
+  title: OauthConsentRequest
+  description: |
+    OpenAPI schema for the pending OAuth consent requests the consent page
+    shows to the signed-in user, and the two decisions the user can make on
+    one: allow it or deny it.
+
+    The identity provider sends the browser to the consent page with an
+    opaque consent challenge. The page reads the request with
+    getOauthConsentRequest, shows which client asks and where it will send
+    the user, and then calls acceptOauthConsentRequest or
+    rejectOauthConsentRequest. Both answer an OauthConsentRedirect, and the
+    browser must navigate to its `redirectTo` to finish the authorization.
+
+    The rules every operation enforces:
+    - The caller must be the signed-in user the challenge was issued for. A
+      challenge issued for any other user answers 403 and is neither shown
+      nor decided.
+    - A challenge is single use. Once accepted or rejected, or once it has
+      expired, every operation on it answers 404.
+    - An accept grants only the scopes and audience the request names
+      (`requestedScopes`, `requestedAudience`), never more.
+    - `client.verified` marks trust and never blocks. It is true only when
+      the client matches the operator's known-client list; an unverified
+      client is shown as unverified and the user may still allow it.
+
+    The server stores nothing of its own for a pending request: it reads the
+    request from the identity provider on every call, so a 503 means the
+    identity provider could not be reached and the call may be retried.
+
+    Client registration (RFC 7591) is the identity provider's protocol
+    endpoint and is not part of this construct.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: oauthConsentRequests
+    description: Operations on the pending OAuth consent requests of the signed-in user.
+
+paths:
+  /api/identity/oauth/consent-requests:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - oauthConsentRequests
+      summary: Get a pending OAuth consent request
+      operationId: getOauthConsentRequest
+      description: |
+        Returns the pending consent request named by the required
+        `consentChallenge` query parameter, for the consent page to show.
+        The challenge is a query parameter rather than a path segment
+        because it is a long opaque string issued by the identity provider.
+        Reading a request does not decide it.
+
+        The caller must be the signed-in user the challenge was issued for;
+        a challenge issued for another user answers 403. A challenge the
+        identity provider does not know, that has expired, or that was
+        already accepted or rejected answers 404. A missing or blank
+        challenge answers 400. A 503 means the identity provider could not
+        be reached; nothing was read and the call may be retried.
+      parameters:
+        - $ref: "#/components/parameters/consentChallenge"
+      responses:
+        "200":
+          description: The pending OAuth consent request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OauthConsentRequest"
+        "400":
+          $ref: "#/components/responses/MeshkitError400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/MeshkitError403"
+        "404":
+          $ref: "#/components/responses/MeshkitError404"
+        "500":
+          $ref: "#/components/responses/MeshkitError500"
+        "503":
+          $ref: "#/components/responses/MeshkitError503"
+  /api/identity/oauth/consent-requests/accept:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - oauthConsentRequests
+      summary: Allow a pending OAuth consent request
+      operationId: acceptOauthConsentRequest
+      description: |
+        Allows the pending consent request named by `consentChallenge` in
+        the body, on behalf of the signed-in user. The grant holds exactly
+        the scopes and audience the request names (`requestedScopes`,
+        `requestedAudience` of getOauthConsentRequest), never more; the body
+        cannot widen or narrow them. When `remember` is true, the identity
+        provider remembers the grant so a later request from the same client
+        for the same scopes and audience is not shown again while the grant
+        is remembered; when false or omitted, the grant covers this request
+        only.
+
+        The answer is an OauthConsentRedirect: the browser must navigate to
+        its `redirectTo` to finish the authorization. The challenge is single
+        use: after an accept, every operation on it answers 404.
+
+        The caller must be the signed-in user the challenge was issued for;
+        a challenge issued for another user answers 403 and is not decided.
+        A challenge the identity provider does not know, that has expired, or
+        that was already accepted or rejected answers 404. A malformed body,
+        or a missing or blank `consentChallenge`, answers 400. A 503 means
+        the identity provider could not be reached; the request was not
+        decided and the call may be retried.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OauthConsentDecisionPayload"
+      responses:
+        "200":
+          description: Consent request allowed; navigate to redirectTo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OauthConsentRedirect"
+        "400":
+          $ref: "#/components/responses/MeshkitError400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/MeshkitError403"
+        "404":
+          $ref: "#/components/responses/MeshkitError404"
+        "500":
+          $ref: "#/components/responses/MeshkitError500"
+        "503":
+          $ref: "#/components/responses/MeshkitError503"
+  /api/identity/oauth/consent-requests/reject:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - oauthConsentRequests
+      summary: Deny a pending OAuth consent request
+      operationId: rejectOauthConsentRequest
+      description: |
+        Denies the pending consent request named by `consentChallenge` in
+        the body, on behalf of the signed-in user. Nothing is granted, and
+        the client receives an OAuth `access_denied` error. Only
+        `consentChallenge` is read; `remember` is ignored.
+
+        The answer is an OauthConsentRedirect: the browser must navigate to
+        its `redirectTo`, which returns the user to the client with the
+        error. The challenge is single use: after a reject, every operation
+        on it answers 404.
+
+        The caller must be the signed-in user the challenge was issued for;
+        a challenge issued for another user answers 403 and is not decided.
+        A challenge the identity provider does not know, that has expired, or
+        that was already accepted or rejected answers 404. A malformed body,
+        or a missing or blank `consentChallenge`, answers 400. A 503 means
+        the identity provider could not be reached; the request was not
+        decided and the call may be retried.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OauthConsentDecisionPayload"
+      responses:
+        "200":
+          description: Consent request denied; navigate to redirectTo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OauthConsentRedirect"
+        "400":
+          $ref: "#/components/responses/MeshkitError400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/MeshkitError403"
+        "404":
+          $ref: "#/components/responses/MeshkitError404"
+        "500":
+          $ref: "#/components/responses/MeshkitError500"
+        "503":
+          $ref: "#/components/responses/MeshkitError503"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    MeshkitError400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError400"
+    MeshkitError403:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError403"
+    MeshkitError404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError404"
+    MeshkitError500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError500"
+    MeshkitError503:
+      description: >-
+        Service unavailable - the identity provider could not be reached, so
+        the consent request was neither read nor decided. The call may be
+        retried.
+      content:
+        application/json:
+          schema:
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/MeshkitError"
+
+  parameters:
+    consentChallenge:
+      name: consentChallenge
+      in: query
+      description: >-
+        Opaque consent challenge the identity provider issued, as the consent
+        page received it. Required; a missing or blank value answers 400.
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 8192
+        pattern: '^[\x21-\x7E]+$'
+
+  schemas:
+    OauthConsentRequest:
+      $ref: "./oauth_consent_request.yaml"
+    OauthConsentClient:
+      type: object
+      additionalProperties: false
+      description: >-
+        The OAuth client that asks for consent, as the consent page names it.
+        `verified` marks trust and never blocks: it is true only when the
+        client matches the operator's known-client list, and an unverified
+        client may still be allowed.
+      required:
+        - clientId
+        - clientName
+        - redirectHosts
+        - verified
+        - dynamicallyRegistered
+      properties:
+        clientId:
+          type: string
+          description: >-
+            OAuth client ID. An identifier issued by the identity provider,
+            not a UUID.
+          minLength: 1
+          maxLength: 255
+          x-id-format: external
+          x-go-name: ClientID
+          x-order: 1
+        clientName:
+          type: string
+          description: >-
+            Display name the client registered. Empty when it registered
+            none.
+          maxLength: 255
+          x-order: 2
+        clientUri:
+          type: string
+          format: uri
+          description: Home page the client registered. Omitted when it registered none.
+          maxLength: 2048
+          x-order: 3
+        logoUri:
+          type: string
+          format: uri
+          description: Logo the client registered. Omitted when it registered none.
+          maxLength: 2048
+          x-order: 4
+        redirectHosts:
+          type: array
+          description: >-
+            Where the client can send the user after the decision, one entry
+            per distinct target of its registered redirect URIs, without
+            duplicates: the host of an https redirect URI (for example
+            `app.example.com`), the loopback IP literal of a loopback redirect
+            URI (`127.0.0.1` or `[::1]`), or the scheme of a private-use app
+            redirect URI (for example `vscode`). Lowercase, with no port,
+            path or `://`.
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            type: string
+            description: One redirect host, loopback IP literal or app scheme.
+            minLength: 1
+            maxLength: 253
+            pattern: '^[a-z0-9\[][a-z0-9.+:\[\]-]*$'
+          x-order: 5
+        verified:
+          type: boolean
+          description: >-
+            True only when the client matches the operator's known-client
+            list. Marks trust and never blocks: a false value is shown as an
+            unverified client, and the user may still allow it.
+          x-order: 6
+        dynamicallyRegistered:
+          type: boolean
+          description: >-
+            True when the client registered itself through dynamic client
+            registration (RFC 7591) rather than being configured by the
+            operator.
+          x-order: 7
+    OauthConsentDecisionPayload:
+      type: object
+      additionalProperties: false
+      description: >-
+        Names the pending consent request to allow (acceptOauthConsentRequest)
+        or deny (rejectOauthConsentRequest). The grant is always the request's
+        own scopes and audience, so the body carries no scopes.
+      required:
+        - consentChallenge
+      properties:
+        consentChallenge:
+          type: string
+          description: >-
+            The challenge of the request being decided, as
+            getOauthConsentRequest returned it. A blank value answers 400.
+          minLength: 1
+          maxLength: 8192
+          pattern: '^[\x21-\x7E]+$'
+          x-order: 1
+        remember:
+          type: boolean
+          description: >-
+            On accept, true asks the identity provider to remember the grant,
+            so a later request from the same client for the same scopes and
+            audience is not shown again while the grant is remembered. False
+            or omitted grants this request only. Ignored on reject.
+          default: false
+          x-order: 2
+    OauthConsentRedirect:
+      type: object
+      additionalProperties: false
+      description: >-
+        Where the browser goes after a consent decision. The consent page must
+        navigate the browser to `redirectTo`; the authorization does not
+        finish until it does.
+      required:
+        - redirectTo
+      properties:
+        redirectTo:
+          type: string
+          format: uri
+          description: >-
+            Absolute URL the browser must navigate to next, issued by the
+            identity provider. It continues the authorization and returns the
+            user to the client.
+          maxLength: 16384
+          x-order: 1

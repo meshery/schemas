@@ -205,6 +205,7 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/mention-alias-contract.md`](docs/mention-alias-contract.md)** - the mention alias construct: who's who per platform, its unique key, the upsert, and the keys that guard it.
 - **[`docs/content-item-contract.md`](docs/content-item-contract.md)** - the content item's rules of engagement (tighten only) and thread fields, and why a reply's wait for its parent is client behaviour rather than a claim rule.
 - **[`docs/claim-contract.md`](docs/claim-contract.md)** - the claim construct: connection holders, expiry at read time, kept history, release outcomes, and its permission keys.
+- **[`docs/oauth-consent-request-contract.md`](docs/oauth-consent-request-contract.md)** - the pending OAuth consent request: reading it by challenge, allow and deny, ownership, single-use challenges, and the verified mark that marks trust and never blocks.
 - **[`docs/media-asset-contract.md`](docs/media-asset-contract.md)** - the media asset construct: create-upload-complete flow, per-use download URLs, `r2`/`gdrive` backends with no credential on the wire, limits, expiry and `locationStripped`.
 - **[`docs/event-organization-contract.md`](docs/event-organization-contract.md)** - `Event.organizationId` and the `getEvents` `scope` query.
 - **[`docs/connection-design-organization-contract.md`](docs/connection-design-organization-contract.md)** - `Connection.organizationId` and design `organizationId` (`meshery_patterns`), both server-assigned.
