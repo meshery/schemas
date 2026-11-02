@@ -428,15 +428,14 @@ one release so the queue-running client and the desktop app move over without a 
    instead. The server owns `data["Approved?"]`: on every write it replaces
    whatever the client sent there with the stored `approved`, so a
    client-written `Approved?` never approves an item and an older reader still
-   sees the true value. A reader that finds no `approved` on an older row falls
-   back to `data["Approved?"]`.
+   sees the true value.
 2. **Release N+1.** Readers read `approved` only. Servers stop mirroring into
    `data`, and the column is no longer part of the contract.
 
 A row written before this release has no stored `approved`. Servers backfill it
 once from `Approved?` (truthy values: `true`, `yes`, `1`, `x`, case-insensitive)
-when the column is added, and the fallback above covers any row not yet
-backfilled. The backfill is the only time `Approved?` sets `approved`.
+when the column is added, so every row carries a non-null `approved`. The
+backfill is the only time `Approved?` sets `approved`.
 
 ## Consumers
 
