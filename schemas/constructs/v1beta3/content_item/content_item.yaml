@@ -202,8 +202,9 @@ properties:
       is never an AI app tool. A content edit that resolves to required sets
       it back to false. Any content edit that leaves it unapproved supersedes
       an open request with a fresh pending one, so after the edit an
-      unapproved item has an open request (see updateContentItem). A change to `approvalPolicy` that makes
-      approval required does the same to an approved item.
+      unapproved item has an open request (see updateContentItem). A change to
+      `approvalPolicy` whose resolved result is required does the same to an
+      approved item.
       The client that runs the queue reads this field.
       For one release after this field ships, servers mirror it into the
       free-form `Approved?` column in `data` for older readers, and backfill
