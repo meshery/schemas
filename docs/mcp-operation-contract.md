@@ -168,8 +168,9 @@ response for 24 hours. Only a final response that is not a `5xx` is stored:
   creates nothing again;
 - the same key with a different request hash answers `422` and creates nothing;
 - a retry with the same key that arrives while the first request with that key
-  is still being processed answers `409` and creates nothing; the client retries
-  later and then receives the stored response;
+  is still being processed answers `409` and creates nothing; once the first
+  request has finished without a `5xx`, a retry receives the stored response, and
+  after a `5xx` a retry is processed as new;
 - a `5xx` is answered only after the server has rolled back the write. A `5xx`
   it answers is not stored: it releases the key's claim, so a retry with the
   same key is processed as new. A response the server has committed is final

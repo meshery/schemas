@@ -104,8 +104,9 @@ paths:
         returns the first response without creating another schedule, and
         the same key with a different request hash answers 422 and creates
         nothing. A retry with the same key that arrives while the first request
-        with that key is still being processed answers 409 and creates nothing;
-        the client retries later to receive the stored response.
+        with that key is still being processed answers 409 and creates nothing.
+        Once the first request has finished without a 5xx, a retry receives the
+        stored response; after a 5xx, a retry is processed as new.
       requestBody:
         required: true
         content:

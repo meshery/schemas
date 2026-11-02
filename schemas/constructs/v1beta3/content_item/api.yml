@@ -154,8 +154,9 @@ paths:
         key with a different request hash answers 422 and inserts nothing.
         A retry with the same key that arrives while the first request with
         that key is still being processed answers 409 with the body `code`
-        `idempotency_key_in_flight` and inserts nothing; the client retries
-        later and then receives the stored response. Precedence: while the
+        `idempotency_key_in_flight` and inserts nothing. Once the first request
+        has finished without a 5xx, a retry receives the stored response; after
+        a 5xx, a retry is processed as new. Precedence: while the
         first request with a key is in flight, every retry with that key
         answers 409 whatever its body; only once the first request has finished
         does a retry with a different body answer 422. An in-flight claim on a
@@ -402,8 +403,9 @@ components:
         Conflict on insert. The body's `code` says which: `row_number_taken`
         or `thread_index_taken` is permanent for this payload, and
         `idempotency_key_in_flight` is a retry whose first request with the
-        same Idempotency-Key is still being processed (retry later to receive
-        the stored response). Nothing is inserted in any case.
+        same Idempotency-Key is still being processed. Once the first request
+        has finished without a 5xx, a retry receives the stored response; after
+        a 5xx, a retry is processed as new. Nothing is inserted in any case.
       content:
         application/json:
           schema:
