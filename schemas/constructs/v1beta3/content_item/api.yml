@@ -347,6 +347,11 @@ paths:
         still matches and is refused with a 409 otherwise; without it the
         delete is unconditional. Deleting an item that other items name in
         `threadId` or `replyToId` leaves their references as they are.
+        Deleting an item that has an open `content_item_approval` request
+        closes that request as `superseded` in the same transaction:
+        `decidedAt` is set to the delete time, and no `decidedBy` and no
+        `note` are set. `approveRequest` and `denyRequest` on it then answer
+        `409`, as for any request that is not pending, and change nothing.
       parameters:
         - $ref: "#/components/parameters/contentItemId"
         - $ref: "#/components/parameters/expectedFingerprint"

@@ -117,6 +117,14 @@ Deleting an item does not change the references other items hold to it. A
 reply whose parent is deleted still names the parent, and the client treats
 that parent as stood down.
 
+Deleting an item also closes its open `content_item_approval` request, if it
+has one, as `superseded` in the same transaction, the same way a content edit
+does ([request contract](request-contract.md#superseded-requests)): `decidedAt`
+is set to the delete time, and no `decidedBy` and no `note` are set. The
+request is then final. `approveRequest` and `denyRequest` on it answer `409`
+and change nothing, as for any request that is not pending, so a soft-deleted
+item can never be approved through its old request.
+
 ## A reply waits for its parent's link: client behaviour, not a claim rule
 
 The radio net needs a reply to be held until the post it answers has a link
@@ -359,12 +367,14 @@ re-resolves nothing.
 | not approved | required | false (unchanged) | the open request stays as it is; a new one opens if there is none |
 | not approved | not required | false (unchanged) | the open request stays pending; a new one opens if there is none |
 
-Tightening (not required to required, or to inherit or absent during the
-interim) resets an approved item, because its approval must now be given again.
-Loosening never changes `approved` and never closes a request: an unapproved
-item stays unapproved, and its open request stays pending, so a decider can
-still decide it. An unapproved item with no open request, after a denial for
-example, gets a fresh one under either result, by the
+A change whose result is required resets an approved item, because its
+approval must now be given again. That covers `not_required` to `required`, and
+also `required` to `inherit` or absent during the interim, which resolves to
+required. A change whose result is not required never changes `approved` and
+never closes a request: an unapproved item stays unapproved, and its open
+request stays pending, so a decider can still decide it. An unapproved item
+with no open request, after a denial for example, gets a fresh one under either
+result, by the
 [open-request invariant](#the-open-request-invariant). `approvalRequired` and
 `approvalPolicySource` are rewritten to the new result, so they match the stored
 policy.
@@ -414,8 +424,10 @@ that arrives while the first request with that key is still being processed
 answers `409` with the body `code` `idempotency_key_in_flight` and inserts
 nothing. The in-flight claim of a request that never finished expires 24 hours
 after it was taken, the same TTL as the stored response, and a retry after that
-is processed as new. The permanent `409`s of insert carry `row_number_taken` or
-`thread_index_taken`, so the in-flight case is told apart by its `code`.
+is processed as new. Only a final response that is not a `5xx` is stored: a
+`5xx` releases the key, so a retry after one is processed as new. The permanent
+`409`s of insert carry `row_number_taken` or `thread_index_taken`, so the
+in-flight case is told apart by its `code`.
 
 ### Migrating from the `Approved?` column
 
@@ -465,6 +477,8 @@ backfill is the only time `Approved?` sets `approved`.
   required, reset an approved item to false and open a pending request unless one
   is already pending, and open one for any unapproved item with none open, under
   either result (the [open-request invariant](#the-open-request-invariant));
+  on a delete, close the item's open request as `superseded` in the delete
+  transaction;
   never set `approved` on an update; refuse with a 403 an
   `approvalPolicy` change from a caller without Decide Content Item Approvals
   (`required` or `not_required` on insert; on update, a value different from the
