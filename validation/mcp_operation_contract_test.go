@@ -46,7 +46,7 @@ func readPermissionsCSV(t *testing.T, root string) (map[string]permissionRow, ma
 	if err != nil {
 		t.Fatalf("open permissions.csv: %v", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	r := csv.NewReader(f)
 	r.FieldsPerRecord = -1
 	rows, err := r.ReadAll()
@@ -191,12 +191,9 @@ func TestSharedHeaderParameters(t *testing.T) {
 	currentOrgOps := map[string]bool{}
 	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T) {
 		raw := loadOpenAPIDocument(t, filepath.Join(root, relPath))
-		skipAliases := false
 		// The core holds the definitions, and provider_capability keeps its own
 		// older currentOrgId (membership reporting, not an organization selector).
-		if strings.HasSuffix(relPath, "v1beta2/core/api.yml") || strings.Contains(relPath, "/provider_capability/") {
-			skipAliases = true
-		}
+		skipAliases := strings.HasSuffix(relPath, "v1beta2/core/api.yml") || strings.Contains(relPath, "/provider_capability/")
 		for _, name := range []string{"currentOrgId", "idempotencyKey"} {
 			if skipAliases {
 				break
