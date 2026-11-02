@@ -797,7 +797,7 @@ func TestHostedMcpIdentifiersAreProductNeutral(t *testing.T) {
 	// api.yml does; its paths and components carry the new identifiers.
 	requestAPI := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/request/api.yml"))
 	for _, section := range []string{"paths", "components"} {
-		encoded, err := json.Marshal(requestAPI[section])
+		encoded, err := json.Marshal(stringKeyed(requestAPI[section]))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -827,4 +827,33 @@ func TestHostedMcpIdentifiersAreProductNeutral(t *testing.T) {
 			}
 		}
 	})
+}
+
+// stringKeyed returns a copy of a decoded YAML tree with every mapping keyed
+// by string. yaml.v3 decodes a mapping with an unquoted numeric key (`400:`)
+// as map[any]any, which encoding/json rejects on the Go releases CI builds
+// with, so the test renders keys by their string form before marshalling.
+func stringKeyed(node any) any {
+	switch typed := node.(type) {
+	case map[string]any:
+		out := make(map[string]any, len(typed))
+		for key, value := range typed {
+			out[key] = stringKeyed(value)
+		}
+		return out
+	case map[any]any:
+		out := make(map[string]any, len(typed))
+		for key, value := range typed {
+			out[fmt.Sprint(key)] = stringKeyed(value)
+		}
+		return out
+	case []any:
+		out := make([]any, len(typed))
+		for i, value := range typed {
+			out[i] = stringKeyed(value)
+		}
+		return out
+	}
+
+	return node
 }
