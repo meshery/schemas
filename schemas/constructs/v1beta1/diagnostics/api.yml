@@ -33,7 +33,7 @@ paths:
         The server enforces a body cap, strict decoding (unknown fields
         are rejected), rate limits, server-side re-redaction, and a
         90-day retention on stored rows. Served by Layer5 Cloud
-        (meshery-cloud #6330); see Blowhorn issue #771.
+        (meshery-cloud #6330); see the downstream desktop diagnostics issue #771.
       operationId: submitFailureDiagnostic
       security:
         - clientKey: []
@@ -278,7 +278,7 @@ components:
                 would make the server reject reports carrying a cause it
                 does not know yet. Consumers must treat an unknown cause
                 as opaque, never as an error. Known causes today are the
-                Blowhorn engine's StoreUnavailable.cause names:
+                The desktop engine's StoreUnavailable.cause names:
                 unavailable, not_configured, incomplete, bad_setting,
                 config_unreadable, tunnel_refused, tunnel_silent,
                 tunnel_off, not_postgres, auth_rejected,
@@ -344,6 +344,6 @@ components:
           description: >-
             Optional per-install id, present only when the person has
             not opted out of failure reports. A random uuid4 minted
-            once per install (Blowhorn's installationId, written beside
+            once per install (the client's installationId, written beside
             cloud.yaml and reused), never a hardware id. Omitted
             entirely when opted out.
