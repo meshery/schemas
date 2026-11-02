@@ -386,8 +386,7 @@ paths:
         `schedule:write`), seeded to the organization admin role; a caller
         without it receives 403 and nothing is written. The broad
         updateOrg and patchOrgPreferences operations can still change
-        `schedulePause`, and stay role-gated as before; this operation
-        exists so a credential can be limited to the pause alone. See
+        `schedulePause`, and stay role-gated as before. See
         docs/schedule-pause-contract.md.
       operationId: updateOrgSchedulePause
       parameters:
