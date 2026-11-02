@@ -111,31 +111,42 @@ request:
 
 ## Where the route is declared
 
-`updateUserPreferences` is declared once, in `v1beta2` `user`, with the
-`v1beta2` `PreferencePayload`, which does not carry `agentsActWithoutApproval`.
-That declaration is unchanged from before this field. The v1beta3 user spec
-does not declare the route, for two reasons in the bundler
-(`build/bundle-openapi.js`):
+`updateUserPreferences` (`PUT /api/identity/users/preferences`) is declared by
+both user versions, and each declaration has its own job:
 
-- It merges every version of a construct into one spec and throws
-  `Duplicate path operation during merge` when a route and method appear twice.
-- A superseded version is excluded from the merge only when its whole construct
-  is marked `x-deprecated`. `v1beta2` `user` is still live, with operations
-  (`getUser`, `getUsersForOrg` and others) that are served, so it cannot be
-  marked deprecated to free the route.
+- `v1beta2` `user` keeps its declaration, unchanged from before this field, with
+  the `v1beta2` `PreferencePayload` (which does not carry
+  `agentsActWithoutApproval`). The per-version bundle and the per-version
+  generated types for `v1beta2` come from it.
+- `v1beta3` `user` owns the route. Its operation sets `x-supersedes: v1beta2`,
+  takes the `v1beta3` `PreferencePayload` (with `agentsActWithoutApproval`) as its
+  request body, and declares the `403` described in
+  [Who can write it](#who-can-write-it). Its `operationId`, method, path,
+  `x-internal` (`cloud`) and `201`, `401` and `500` responses match `v1beta2`.
 
-So the merged spec, and the RTK client generated from it, carry the v1beta2
-operation and body. The v1beta3 `PreferencePayload` is the v1beta3 request body
-for the same route. It generates the v1beta3 Go and TypeScript types, and
-`agentsActWithoutApproval` is writable through those types, but the merged
-spec does not yet declare it on the route. Declaring the route under v1beta3
-needs `v1beta2` `user` superseded, or per-version route ownership in the
-bundler. That is not done here.
+The merged cloud spec (`_openapi_build/cloud_openapi.yml`), which the RTK client
+is generated from, declares the route once, as `v1beta3` owns it. The bundler
+(`build/bundle-openapi.js`) resolves the two declarations, and gives the same
+result whichever is merged first:
 
-The route answers `201` with no body on success, as before. The `403` cases in
-[Who can write it](#who-can-write-it) are enforced by the server on the route.
-The merged spec does not declare them, because the declaration is the v1beta2
-one.
+- The collision resolves to the owner only when both declarations belong to the
+  same construct (same title), their `operationId`s match, the owner's
+  `x-supersedes` names exactly the other declaration's version, the owner is
+  the newer version, and the superseded declaration carries no `x-supersedes`
+  (ownership does not chain).
+- Any other duplicate throws `Duplicate path operation during merge`, so a route
+  cannot change owner by accident.
+- `x-supersedes` stays in the merged output, as `x-internal` does.
+
+The consumer audit's endpoint index applies the same rule
+(`validation/endpoint_index.go`), so the route is audited once, against
+`v1beta3`. The route answers `201` with no body on success, as before.
+
+**TypeScript.** The request type for `updateUserPreferences` in the merged cloud
+client (`typescript/rtk/cloud.ts`) now comes from the `v1beta3` generated output,
+so its body includes `agentsActWithoutApproval`. Code that imports the
+`v1beta2` types directly keeps them unchanged. The `v1beta2` generated
+`updateUserPreferences` types are not affected.
 
 ## Who can write it
 
@@ -170,7 +181,7 @@ token's scopes.
 
 A server that accepts `agentsActWithoutApproval` must decode the route's body into
 the `v1beta3` `PreferencePayload`. Decoding into the `v1beta2` type drops the field.
-The merged spec still shows the `v1beta2` body for the route; see
+The merged spec declares that body and the `403` on the route; see
 [Where the route is declared](#where-the-route-is-declared).
 
 ## Migration from the free-form value

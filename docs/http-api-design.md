@@ -193,6 +193,40 @@ they share the `GitHub_github` tag: a workflow install refetches the status, rep
 reads, and no design write refetches any of them. `validation/github_integration_contract_test.go`
 pins them.
 
+## Route ownership across versions
+
+Every version of a construct is bundled and merged into one cloud spec, so one
+route can be declared by two versions of the same construct. Use this only to
+move a route to a newer version:
+
+- The newer operation sets `x-supersedes: <older version>` (for example
+  `x-supersedes: v1beta2`) and keeps the same `operationId`, method and path. It
+  declares its own request body and responses.
+- The older version keeps its declaration, unchanged, for its own per-version
+  bundle and generated types.
+- `build/bundle-openapi.js` keeps the owner's declaration in the merged spec, and
+  the endpoint index behind the consumer audit (`validation/endpoint_index.go`)
+  drops the superseded one. The collision resolves only when both declarations
+  belong to the same construct (same title), their `operationId`s match, the
+  owner is the newer version and names exactly the other declaration's version,
+  and the superseded declaration carries no `x-supersedes` (ownership does not
+  chain). The result does not depend on merge order.
+- Any other duplicate fails the merge with `Duplicate path operation during merge`,
+  including an owner that names a different version, an `operationId`
+  mismatch, or an owner that is not newer.
+- `x-supersedes` stays in the merged output, as `x-internal` does.
+
+```yaml
+  /api/identity/users/preferences:
+    put:
+      x-internal: ["cloud"]
+      x-supersedes: v1beta2
+      operationId: updateUserPreferences
+```
+
+See [`docs/agent-approval-preference.md`](agent-approval-preference.md#where-the-route-is-declared)
+for the route that uses this rule.
+
 ## GitHub integration: verified installations
 
 Every Meshery Cloud GitHub integration operation acts only through the caller's own verified GitHub

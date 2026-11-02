@@ -180,6 +180,10 @@ Auto-generated Go structs live in `models/<version>/<construct>/<construct>.go` 
 - `x-internal: ["meshery"]` - Meshery-only (`_openapi_build/meshery_openapi.yml`)
 - `x-internal: ["cloud", "meshery"]` - both bundled outputs
 
+## Route ownership (`x-supersedes`)
+
+A newer version moves a route from an older one by setting `x-supersedes: <older version>` on the operation. The bundler then merges only the owner's declaration. Any other duplicate route fails the bundle. See [`docs/http-api-design.md`](docs/http-api-design.md#route-ownership-across-versions).
+
 ## Release Procedure
 
 **Use the `meshery-schemas-release` skill** (`/meshery-schemas-release`) to cut releases - it automates the entire procedure and includes safeguards.
