@@ -946,7 +946,8 @@ components:
       type: object
       description: >-
         A retry whose Idempotency-Key is still in flight. Nothing was created
-        by this request; retry later to receive the stored response.
+        by this request. Once the first request has finished without a 5xx, a
+        retry receives the stored response; after a 5xx, a retry is processed as new.
       required:
         - code
         - message
@@ -1212,8 +1213,9 @@ components:
         retry with the same key and a different request hash answers 422 and
         creates nothing. A retry with the same key that arrives while the
         earlier request with that key is still being processed answers 409
-        with the body `code` `idempotency_key_in_flight` and creates nothing;
-        the client retries later to receive the stored response. Precedence:
+        with the body `code` `idempotency_key_in_flight` and creates nothing.
+        Once the first request has finished without a 5xx, a retry receives the
+        stored response; after a 5xx, a retry is processed as new. Precedence:
         while the first request with a key is in flight, every retry with that
         key answers 409 whatever its body; only once the first request has
         finished does a retry with a different body answer 422. The in-flight
@@ -1277,7 +1279,7 @@ components:
           schema:
             type: string
     IdempotencyKeyInFlight:
-      description: Conflict - an earlier request with the same Idempotency-Key is still being processed. Nothing is created by this request; retry later to receive the stored response. The body's `code` is `idempotency_key_in_flight`.
+      description: Conflict - an earlier request with the same Idempotency-Key is still being processed. Nothing is created by this request. Once the first request has finished without a 5xx, a retry receives the stored response; after a 5xx, a retry is processed as new. The body's `code` is `idempotency_key_in_flight`.
       content:
         application/json:
           schema:

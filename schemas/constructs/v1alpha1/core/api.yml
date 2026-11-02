@@ -853,7 +853,8 @@ components:
       type: object
       description: >-
         A retry whose Idempotency-Key is still in flight. Nothing was created
-        by this request; retry later to receive the stored response.
+        by this request. Once the first request has finished without a 5xx, a
+        retry receives the stored response; after a 5xx, a retry is processed as new.
       required:
         - code
         - message

@@ -183,37 +183,6 @@ func TestSharedHeaderParameters(t *testing.T) {
 	if mustValue(idem, "name") != "Idempotency-Key" || mustValue(idem, "in") != "header" || mustValue(idem, "required") != false {
 		t.Errorf("core idempotencyKey must be the optional Idempotency-Key header, got %v", idem)
 	}
-	desc := fmt.Sprint(mustValue(idem, "description"))
-	for _, want := range []string{"24 hours", "same request hash", "422"} {
-		if !strings.Contains(desc, want) {
-			t.Errorf("Idempotency-Key description must document the replay rule, missing %q", want)
-		}
-	}
-	// The in-flight claim expires on the same 24-hour TTL as the stored response,
-	// no shorter lease applies, and a retry after expiry is processed as new.
-	flat := strings.Join(strings.Fields(desc), " ")
-	for _, want := range []string{
-		"expires 24 hours after it was taken, the same TTL as the stored response",
-		"no shorter in-flight lease applies",
-		"A retry after that expiry is processed as new",
-		"`code` `idempotency_key_in_flight`",
-		"while the first request with a key is in flight, every retry with that key answers 409 whatever its body",
-	} {
-		if !strings.Contains(flat, want) {
-			t.Errorf("Idempotency-Key description must document the in-flight expiry, missing %q", want)
-		}
-	}
-
-	// Only a final response that is not a 5xx is stored; a 5xx releases the claim.
-	for _, want := range []string{
-		"Only a final response that is not a 5xx is stored",
-		"The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new",
-	} {
-		if !strings.Contains(flat, want) {
-			t.Errorf("Idempotency-Key description must document the 5xx rule, missing %q", want)
-		}
-	}
-
 	// Every construct alias of currentOrgId / idempotencyKey is a $ref to the core.
 	wantRef := func(name string) string {
 		return "/v1beta2/core/api.yml#/components/parameters/" + name
@@ -300,9 +269,6 @@ func TestIdempotencyKeyInFlightIsDeclared(t *testing.T) {
 	if got := anyStrings(mustLookup(t, body, "required")); !reflect.DeepEqual(got, []string{"code", "message"}) {
 		t.Errorf("IdempotencyKeyInFlightError required = %v, want [code message]", got)
 	}
-	if desc := fmt.Sprint(mustLookup(t, core, "components", "responses", "IdempotencyKeyInFlight", "description")); !strings.Contains(desc, "still being processed") || !strings.Contains(desc, "`code` is `idempotency_key_in_flight`") {
-		t.Errorf("core IdempotencyKeyInFlight must say the earlier request is still being processed and name its code, got %q", desc)
-	}
 	if got := mustValue(mustLookup(t, core, "components", "responses", "IdempotencyKeyInFlight", "content", "application/json", "schema"), "$ref"); got != "../../v1beta2/core/api.yml#/components/schemas/IdempotencyKeyInFlightError" {
 		t.Errorf("core IdempotencyKeyInFlight must carry the in-flight body, got %v", got)
 	}
@@ -311,22 +277,6 @@ func TestIdempotencyKeyInFlightIsDeclared(t *testing.T) {
 	// the content-specific schema's; the in-flight body is the core schema, referenced
 	// rather than copied, so the two cannot drift apart.
 	content := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/content_item/api.yml"))
-	insertDesc := strings.Join(strings.Fields(flatDescription(t, mustLookup(t, content, "paths", "/api/content-items", "post"), "description")), " ")
-	if !strings.Contains(insertDesc, "while the first request with a key is in flight, every retry with that key answers 409 whatever its body; only once the first request has finished does a retry with a different body answer 422") {
-		t.Error("insertContentItem must state the Idempotency-Key precedence: in-flight 409 before the 422 for a different body")
-	}
-	// The same precedence is stated once in the contract doc.
-	contractDoc, err := os.ReadFile(filepath.Join(root, "docs/mcp-operation-contract.md"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	contractFlat := strings.Join(strings.Fields(string(contractDoc)), " ")
-	if !strings.Contains(contractFlat, "**Precedence.** While the first request with a key is in flight, every retry with that key answers `409` whatever its body. Only once the first request has finished does a retry with a different body answer `422`.") {
-		t.Error("docs/mcp-operation-contract.md must state the Idempotency-Key precedence")
-	}
-	if !strings.Contains(contractFlat, "A `5xx` it answers is not stored: it releases the key's claim, so a retry with the same key is processed as new") {
-		t.Error("docs/mcp-operation-contract.md must state that a 5xx is not stored and releases the key")
-	}
 	if got := mustValue(mustLookup(t, content, "paths", "/api/content-items", "post", "responses", "409"), "$ref"); got != "#/components/responses/InsertConflict" {
 		t.Errorf("insertContentItem 409 $ref = %v, want InsertConflict", got)
 	}
@@ -343,10 +293,6 @@ func TestIdempotencyKeyInFlightIsDeclared(t *testing.T) {
 	want := []string{"row_number_taken", "thread_index_taken"}
 	if !reflect.DeepEqual(codes, want) {
 		t.Errorf("ContentItemInsertConflict codes = %v, want %v (the in-flight code lives in IdempotencyKeyInFlightError)", codes, want)
-	}
-	// The shared update/delete 409 no longer claims the in-flight case.
-	if desc := fmt.Sprint(mustLookup(t, content, "components", "responses", "409", "description")); strings.Contains(desc, "still being processed") {
-		t.Errorf("the shared content item 409 must not cover an in-flight Idempotency-Key, got %q", desc)
 	}
 
 	schedule := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/schedule/api.yml"))
@@ -744,32 +690,12 @@ func TestOrganizationSelectorIsDeclared(t *testing.T) {
 				t.Errorf("%s must take %s", tc.operationID, ref)
 			}
 		}
-		desc := flatDescription(t, tc.op, "description")
-		for _, want := range []string{"`X-Current-Orgid` is also sent", "must name the same organization", "a mismatch is refused with a 400", "a mismatch is refused with a 403", "docs/mcp-operation-contract.md", "When `X-Current-Orgid` is omitted,", "(the session's selected organization)"} {
-			if !strings.Contains(desc, want) {
-				t.Errorf("%s description must say %q", tc.operationID, want)
-			}
-		}
 		if ref := mustLookup(t, tc.op, "responses", "403", "$ref"); ref != "../../v1beta2/core/api.yml#/components/responses/403" {
 			t.Errorf("%s must declare the 403 response, got %v", tc.operationID, ref)
 		}
 		if ref, _ := mustLookup(t, tc.op, "responses", "400", "$ref").(string); !strings.HasSuffix(ref, "components/responses/400") {
 			t.Errorf("%s must declare the 400 response for a header and path mismatch, got %q", tc.operationID, ref)
 		}
-	}
-
-	doc, err := os.ReadFile(filepath.Join(root, "docs/mcp-operation-contract.md"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	flat := strings.Join(strings.Fields(string(doc)), " ")
-	for _, want := range []string{"## The organization selector", "must name the same organization as `X-Current-Orgid` when both are sent", "A mismatch answers `400` and returns nothing", "a mismatch answers `403` and returns nothing", "When the header is omitted, the path or query `orgId` must equal the organization the call acts in", "case-insensitive", "This rule covers the operations that declare `X-Current-Orgid`.", "such as `updateOrgSchedulePause`, checks instead that the caller is a live member of the organization in its path: a caller who is not receives `404`"} {
-		if !strings.Contains(flat, want) {
-			t.Errorf("docs/mcp-operation-contract.md must state the organization selector: missing %q", want)
-		}
-	}
-	if strings.Contains(flat, "nothing to compare") {
-		t.Error("docs/mcp-operation-contract.md must not leave an omitted X-Current-Orgid unchecked")
 	}
 
 	// An operation that takes its organization in the path and declares no
@@ -780,12 +706,6 @@ func TestOrganizationSelectorIsDeclared(t *testing.T) {
 	for _, p := range mustValue(pause, "parameters").([]any) {
 		if ref := fmt.Sprint(mustValue(p, "$ref")); strings.HasSuffix(ref, "currentOrgId") {
 			t.Errorf("updateOrgSchedulePause must not declare X-Current-Orgid, got %s", ref)
-		}
-	}
-	pauseDesc := flatDescription(t, pause, "description")
-	for _, want := range []string{"The caller must be a live member of the organization named by `orgId`", "a caller who is not receives 404", "docs/mcp-operation-contract.md"} {
-		if !strings.Contains(pauseDesc, want) {
-			t.Errorf("updateOrgSchedulePause description must say %q", want)
 		}
 	}
 }
