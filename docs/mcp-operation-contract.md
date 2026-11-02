@@ -170,8 +170,11 @@ response for 24 hours. Only a final response that is not a `5xx` is stored:
 - a retry with the same key that arrives while the first request with that key
   is still being processed answers `409` and creates nothing; the client retries
   later and then receives the stored response;
-- a `5xx` response is not stored. It releases the key's claim, because the
-  insert rolled back, so a retry with the same key is processed as new;
+- a `5xx` is answered only after the server has rolled back the write. A `5xx`
+  it answers is not stored: it releases the key's claim, so a retry with the
+  same key is processed as new. A response the server has committed is final
+  and is stored, even if a gateway in front of the server later fails the
+  client's connection;
 - no key means no deduplication.
 
 **Precedence.** While the first request with a key is in flight, every retry

@@ -207,7 +207,7 @@ func TestSharedHeaderParameters(t *testing.T) {
 	// Only a final response that is not a 5xx is stored; a 5xx releases the claim.
 	for _, want := range []string{
 		"Only a final response that is not a 5xx is stored",
-		"a 5xx releases the key's claim, because the insert rolled back, so a retry with the same key is processed as new",
+		"The server answers a 5xx only after it has rolled back the write; a 5xx it answers is not stored and releases the key's claim, so a retry with the same key is processed as new",
 	} {
 		if !strings.Contains(flat, want) {
 			t.Errorf("Idempotency-Key description must document the 5xx rule, missing %q", want)
@@ -324,7 +324,7 @@ func TestIdempotencyKeyInFlightIsDeclared(t *testing.T) {
 	if !strings.Contains(contractFlat, "**Precedence.** While the first request with a key is in flight, every retry with that key answers `409` whatever its body. Only once the first request has finished does a retry with a different body answer `422`.") {
 		t.Error("docs/mcp-operation-contract.md must state the Idempotency-Key precedence")
 	}
-	if !strings.Contains(contractFlat, "a `5xx` response is not stored. It releases the key's claim, because the insert rolled back, so a retry with the same key is processed as new") {
+	if !strings.Contains(contractFlat, "A `5xx` it answers is not stored: it releases the key's claim, so a retry with the same key is processed as new") {
 		t.Error("docs/mcp-operation-contract.md must state that a 5xx is not stored and releases the key")
 	}
 	if got := mustValue(mustLookup(t, content, "paths", "/api/content-items", "post", "responses", "409"), "$ref"); got != "#/components/responses/InsertConflict" {
