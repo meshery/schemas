@@ -13,11 +13,10 @@ organization from being claimed. It can be set or lifted two ways:
 
 An OAuth scope is a keychain, and a keychain narrows keys, not role checks.
 The preferences patch is role-gated and can also write the organization's
-sign-in branding and links, so no scope can limit a credential to the pause
-through it. `updateOrgSchedulePause` writes the pause alone and is gated by its
-own key, so the `schedule:write` scope can carry it and a credential can be
-limited to it. It stays without `x-mcp` until the hosted server exposes the
-pause; `patchOrgPreferences` is never annotated.
+sign-in branding and links, so a scope that carries it reaches more than the
+pause. `updateOrgSchedulePause` writes the pause alone and is gated by its own
+key, so the `schedule:write` scope can carry it. It stays without `x-mcp` until
+the hosted server exposes the pause; `patchOrgPreferences` is never annotated.
 
 ## Contract
 
