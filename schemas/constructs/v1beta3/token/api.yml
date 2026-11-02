@@ -634,7 +634,8 @@ components:
         expiresAt:
           type: string
           format: date-time
-          description: Time after which the token is no longer accepted. Absent means it never expires.
+          nullable: true
+          description: Time after which the token is no longer accepted. Absent or null means it never expires.
           x-order: 2
     TokenStanding:
       type: object
@@ -658,6 +659,7 @@ components:
           description: >-
             ID of the stored token the presented token's `jti` matched. The
             zero UUID when no stored token matched.
+          x-go-name: TokenID
           x-oapi-codegen-extra-tags:
             db: id
           x-order: 1
@@ -682,7 +684,10 @@ components:
             True when the token's stored `keychainScoped` flag is true or the
             token has any keychain mapping. When true the token is limited to
             the keys of its keychains, and holds no keys if every one of them
-            has been deleted.
+            has been deleted. The lookup's `keychain_scoped` result column is a
+            computed alias for this value (the stored flag OR any keychain
+            mapping), so a query-mapping consumer does not read the raw stored
+            flag.
           x-oapi-codegen-extra-tags:
             db: keychain_scoped
           x-order: 4

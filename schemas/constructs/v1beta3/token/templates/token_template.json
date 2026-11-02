@@ -10,5 +10,6 @@
   "createdAt": "",
   "updatedAt": "",
   "keychainIds": [],
-  "expiresAt": null
+  "expiresAt": null,
+  "keychainScoped": false
 }

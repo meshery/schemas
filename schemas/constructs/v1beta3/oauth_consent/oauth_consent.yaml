@@ -42,7 +42,7 @@ description: |
   - An unrestricted token (`keychainScoped` false or absent and `keychainIds`
     empty or absent) gets `keychainIds` set to
     exactly the keychains of the new scopes, and `keychainScoped` set to true.
-  - A re-consent that names no keychain scope (an empty list, or only scopes
+  - A re-consent that names no keychain scope (only scopes
     that map to no keychain) revokes: the consent is revoked (soft-deleted) and
     every token issued to that client for that user is revoked, in the same
     transaction. An unknown scope string is still refused with `400`.
@@ -146,6 +146,7 @@ properties:
   createdAt:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
     description: Time the user first granted the consent. A re-consent keeps it.
+    readOnly: true
     x-oapi-codegen-extra-tags:
       db: created_at
     x-order: 8

@@ -18,7 +18,7 @@ in the generic `request` construct.
 | Field | Type | Meaning |
 | --- | --- | --- |
 | `keychainIds` | array of UUID (max 100, unique) | The keychains the token is limited to. |
-| `expiresAt` | date-time, nullable | Time after which the token is no longer accepted. |
+| `expiresAt` | date-time, nullable | Time after which the token is no longer accepted. Absent or null means it never expires. |
 | `keychainScoped` | boolean, read-only | Whether the token is limited to its keychains' keys. Server-set. |
 
 ### `keychainIds`
@@ -104,10 +104,10 @@ schema-owned type. The generated Go type is `TokenStanding` in
 
 | Field | Go field | DB column | Meaning |
 | --- | --- | --- | --- |
-| `id` | `ID core.Uuid` | `id` | The `user_tokens.id` the `jti` matched; the zero UUID when none matched. |
+| `id` | `TokenID core.Uuid` | `id` | The `user_tokens.id` the `jti` matched; the zero UUID when none matched. |
 | `revoked` | `Revoked bool` | `revoked` | The row has been retired (`deleted_at` is set). |
 | `expired` | `Expired bool` | `expired` | `expires_at <= now()`, evaluated by the database; a `NULL` `expires_at` never expires. |
-| `keychainScoped` | `KeychainScoped bool` | `keychain_scoped` | True when the stored `user_tokens.keychain_scoped` flag is true or the token has any keychain mapping. A consumer deciding from this result therefore fails closed. |
+| `keychainScoped` | `KeychainScoped bool` | `keychain_scoped` | True when the stored `user_tokens.keychain_scoped` flag is true or the token has any keychain mapping. The column is a computed alias for this value, not the raw stored flag, so a consumer that maps the query fails closed. |
 
 `revoked` and `expired` are computed in the lookup query, so the DB column names
 are result-column aliases rather than `user_tokens` columns. The server refuses

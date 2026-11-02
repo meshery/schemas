@@ -95,9 +95,8 @@ matches exactly one branch below:
   empty or absent; see `docs/token-scoping-contract.md`). Its `keychainIds` becomes
   exactly the keychains of the new scopes, and `keychainScoped` becomes `true`.
   The flag is never reset, so the token stays limited from then on.
-- **No keychain scope named.** A re-consent that names no keychain scope (an
-  empty list, or only scopes that map to no keychain) is never stored: the
-  consent is revoked (soft-deleted, `deletedAt` set) and every token issued to
+- **No keychain scope named.** A re-consent that names no keychain scope (only
+  scopes that map to no keychain) is never stored: the consent is revoked (soft-deleted, `deletedAt` set) and every token issued to
   that client for that user is revoked, in the same transaction, as in
   [Rules for the server](#rules-for-the-server). A scope string the scope map
   does not know is still refused with `400` and changes nothing; see
@@ -113,7 +112,7 @@ The token side is summarized in
 
 | Route | Operation | Notes |
 | --- | --- | --- |
-| `GET /api/identity/oauth/consents` | `getOauthConsents` | Core `page` and `pageSize` query parameters. `200` with an `OauthConsentPage` (`page`, `pageSize`, `totalCount`, `oauthConsents`) of live consents, ordered by `updatedAt` descending (a re-consent moves a consent to the top). An empty page when there are none. Session only: a token-authenticated call is `403` and lists nothing, because a page of every client's consents is not disclosed to a client. |
+| `GET /api/identity/oauth/consents` | `getOauthConsents` | Core `page` and a consent-specific `pageSize` query parameter (1 to 1000). `200` with an `OauthConsentPage` (`page`, `pageSize`, `totalCount`, `oauthConsents`) of live consents, ordered by `updatedAt` descending (a re-consent moves a consent to the top). An empty page when there are none. Session only: a token-authenticated call is `403` and lists nothing, because a page of every client's consents is not disclosed to a client. |
 | `DELETE /api/identity/oauth/consents?clientId=...` | `deleteOauthConsent` | `clientId` is required. Soft-deletes the live consent (sets `deletedAt`) and revokes the client's tokens for the user. `204` with no body. `403` when the caller may not revoke that client (see [Who may revoke](#who-may-revoke)). `404` when the caller may revoke it but the user has no live consent for that client. |
 
 Both are `x-internal: ["cloud"]`.

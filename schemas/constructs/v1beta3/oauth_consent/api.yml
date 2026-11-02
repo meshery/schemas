@@ -66,7 +66,7 @@ paths:
         clients' consents to that client, which is why a token may not list.
       parameters:
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/oauthConsentPageSize"
       responses:
         "200":
           description: OAuth consents of the signed-in user
@@ -144,8 +144,14 @@ components:
   parameters:
     page:
       $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
-    pageSize:
-      $ref: "../../v1beta2/core/api.yml#/components/parameters/pageSize"
+    oauthConsentPageSize:
+      name: pageSize
+      in: query
+      description: Number of consents per page, at most 1000. Bounded here because the list is the signed-in user's whole consent set.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 1000
     clientId:
       name: clientId
       in: query

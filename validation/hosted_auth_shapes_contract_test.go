@@ -301,6 +301,15 @@ func TestTokenStandingShape(t *testing.T) {
 	})
 }
 
+// The lookup's id is exposed as TokenID in Go, not ID: the generated struct is
+// read by the token store, and the bare name would read as the entity's id.
+func TestTokenStandingIDGoName(t *testing.T) {
+	raw := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), tokenSpec))
+	if got := mustLookup(t, raw, "components", "schemas", "TokenStanding", "properties", "id", "x-go-name"); got != "TokenID" {
+		t.Errorf("TokenStanding.id x-go-name = %v, want TokenID", got)
+	}
+}
+
 func extraTags(s *openapi3.Schema) map[string]any {
 	tags, _ := s.Extensions["x-oapi-codegen-extra-tags"].(map[string]any)
 	return tags
@@ -323,6 +332,18 @@ func TestTokenCreatePayloadCarriesTheScopingFields(t *testing.T) {
 	if ids := payload.Properties["keychainIds"]; ids == nil || ids.Value.MinItems != 1 {
 		t.Error("TokenCreatePayload.keychainIds must have minItems 1: an explicit empty list is refused, never an unrestricted token")
 	}
+	if exp := payload.Properties["expiresAt"]; exp == nil || !exp.Value.Nullable {
+		t.Error("TokenCreatePayload.expiresAt must be nullable: null, like an absent value, means the token never expires")
+	}
+	checkCases(t, payload, nil, []struct {
+		name    string
+		body    map[string]any
+		wantErr bool
+	}{
+		{"empty body is unrestricted", map[string]any{}, false},
+		{"expiresAt null never expires", map[string]any{"expiresAt": nil}, false},
+		{"expiresAt is not a date-time", map[string]any{"expiresAt": "tomorrow"}, true},
+	})
 
 	item := doc.Paths.Find("/api/identity/tokens")
 	if item == nil || item.Post == nil {
@@ -389,6 +410,22 @@ func TestOauthConsentOperations(t *testing.T) {
 		if got := sequenceStrings(mustLookup(t, op, "x-internal")); len(got) != 1 || got[0] != "cloud" {
 			t.Errorf("%s x-internal = %v, want [cloud]", method, got)
 		}
+	}
+
+	var pageSize *openapi3.Parameter
+	for _, p := range item.Get.Parameters {
+		if p.Value.Name == "pageSize" {
+			pageSize = p.Value
+		}
+	}
+	if pageSize == nil || pageSize.Schema == nil || pageSize.Schema.Value == nil {
+		t.Fatal("getOauthConsents declares no pageSize parameter")
+	}
+	if max := pageSize.Schema.Value.Max; max == nil || *max != 1000 {
+		t.Errorf("getOauthConsents pageSize maximum = %v, want 1000", max)
+	}
+	if min := pageSize.Schema.Value.Min; min == nil || *min != 1 {
+		t.Errorf("getOauthConsents pageSize minimum = %v, want 1", min)
 	}
 
 	del := item.Delete
@@ -500,8 +537,10 @@ func TestOauthConsentEntityShape(t *testing.T) {
 			t.Errorf("OauthConsent.%s db tag = %v, want %s", name, got, column)
 		}
 	}
-	if got := mustLookup(t, raw, "properties", "updatedAt", "readOnly"); got != true {
-		t.Errorf("OauthConsent.updatedAt readOnly = %v, want true (server-set)", got)
+	for _, name := range []string{"createdAt", "updatedAt"} {
+		if got := mustLookup(t, raw, "properties", name, "readOnly"); got != true {
+			t.Errorf("OauthConsent.%s readOnly = %v, want true (server-set)", name, got)
+		}
 	}
 	// A re-consent updates the live consent in place, stated in the entity,
 	// api.yml and the contract doc.
@@ -861,7 +900,7 @@ func TestOauthConsentReConsentScopeRules(t *testing.T) {
 		"set to true",
 		"keychains were all deleted",
 		"never gains keys",
-		"names no keychain scope (an empty list, or only scopes",
+		"names no keychain scope (only scopes",
 		"takes effect only for tokens issued after that consent",
 	}
 	for _, word := range rule {
@@ -889,7 +928,7 @@ func TestOauthConsentReConsentScopeRules(t *testing.T) {
 		"exactly the keychains of the new scopes",
 		"**revoked**, not left with an empty list",
 		"keychains were all deleted",
-		"names no keychain scope (an empty list, or only scopes",
+		"names no keychain scope (only scopes",
 		"takes effect only for tokens issued after that consent",
 		"minItems: 1",
 	} {
@@ -955,7 +994,7 @@ func TestOauthConsentNamesAKeychainScope(t *testing.T) {
 		"A scope string the scope map does not know is refused with `400`, never silently dropped",
 		"never count toward the keychain-scope minimum",
 		"A token is never issued under a consent with an empty keychain list",
-		"re-consent that names no keychain scope (an empty list, or only scopes that map to no keychain) revokes",
+		"re-consent that names no keychain scope (only scopes that map to no keychain) revokes",
 	}
 	for _, word := range statement {
 		if !strings.Contains(consent, word) {
