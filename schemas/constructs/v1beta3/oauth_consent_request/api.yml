@@ -19,15 +19,20 @@ info:
       nor decided.
     - A challenge is single use. Once accepted or rejected, or once it has
       expired, every operation on it answers 404.
-    - An accept grants only the scopes and audience the request names
-      (`requestedScopes`, `requestedAudience`), never more.
+    - An accept grants only what the client requested, never more: the
+      scopes in `requestedScopes`, and any audience the client asked the
+      identity provider for. The decision body cannot widen or narrow it.
     - `client.verified` marks trust and never blocks. It is true only when
       the client matches the operator's known-client list; an unverified
       client is shown as unverified and the user may still allow it.
 
     The server stores nothing of its own for a pending request: it reads the
     request from the identity provider on every call, so a 503 means the
-    identity provider could not be reached and the call may be retried.
+    identity provider could not be reached or did not answer. On a read,
+    nothing was read and the call may be retried. On a decision, the outcome
+    is unknown: the caller may retry, and a retry that answers 404 means the
+    challenge was already decided, so the user should restart sign-in from
+    the client.
 
     Client registration (RFC 7591) is the identity provider's protocol
     endpoint and is not part of this construct.
@@ -97,14 +102,14 @@ paths:
       operationId: acceptOauthConsentRequest
       description: |
         Allows the pending consent request named by `consentChallenge` in
-        the body, on behalf of the signed-in user. The grant holds exactly
-        the scopes and audience the request names (`requestedScopes`,
-        `requestedAudience` of getOauthConsentRequest), never more; the body
-        cannot widen or narrow them. When `remember` is true, the identity
-        provider remembers the grant so a later request from the same client
-        for the same scopes and audience is not shown again while the grant
-        is remembered; when false or omitted, the grant covers this request
-        only.
+        the body, on behalf of the signed-in user. The grant holds only what
+        the client requested, never more: the `requestedScopes` of
+        getOauthConsentRequest, and any audience the client asked the
+        identity provider for. The body cannot widen or narrow it. When
+        `remember` is true, the identity provider remembers the grant so a
+        later request from the same client for the same scopes is not shown
+        again while the grant is remembered; when false or omitted, the grant
+        covers this request only.
 
         The answer is an OauthConsentRedirect: the browser must navigate to
         its `redirectTo` to finish the authorization. The challenge is single
@@ -115,8 +120,10 @@ paths:
         A challenge the identity provider does not know, that has expired, or
         that was already accepted or rejected answers 404. A malformed body,
         or a missing or blank `consentChallenge`, answers 400. A 503 means
-        the identity provider could not be reached; the request was not
-        decided and the call may be retried.
+        the identity provider could not be reached or did not answer, so the
+        outcome is unknown: the request may already have been decided. The
+        caller may retry; a retry that answers 404 means the challenge was
+        already decided, and the user should restart sign-in from the client.
       requestBody:
         required: true
         content:
@@ -165,8 +172,10 @@ paths:
         A challenge the identity provider does not know, that has expired, or
         that was already accepted or rejected answers 404. A malformed body,
         or a missing or blank `consentChallenge`, answers 400. A 503 means
-        the identity provider could not be reached; the request was not
-        decided and the call may be retried.
+        the identity provider could not be reached or did not answer, so the
+        outcome is unknown: the request may already have been decided. The
+        caller may retry; a retry that answers 404 means the challenge was
+        already decided, and the user should restart sign-in from the client.
       requestBody:
         required: true
         content:
@@ -213,9 +222,13 @@ components:
       $ref: "../../v1beta2/core/api.yml#/components/responses/MeshkitError500"
     MeshkitError503:
       description: >-
-        Service unavailable - the identity provider could not be reached, so
-        the consent request was neither read nor decided. The call may be
-        retried.
+        Service unavailable - the identity provider could not be reached or
+        did not answer. On getOauthConsentRequest nothing was read and the
+        call may be retried. On acceptOauthConsentRequest and
+        rejectOauthConsentRequest the outcome is unknown: the request may
+        already have been decided. The caller may retry; a retry that answers
+        404 means the challenge was already decided, and the user should
+        restart sign-in from the client.
       content:
         application/json:
           schema:
@@ -242,16 +255,21 @@ components:
       type: object
       additionalProperties: false
       description: >-
-        The OAuth client that asks for consent, as the consent page names it.
-        `verified` marks trust and never blocks: it is true only when the
-        client matches the operator's known-client list, and an unverified
-        client may still be allowed.
+        The OAuth client that asks for consent, as the consent page names it:
+        its ID and registered name, where it can send the user afterwards
+        (`redirectHosts` for https and loopback redirects, `appSchemes` for
+        private-use app redirects), and the `verified` mark. `verified` marks
+        trust and never blocks: it is true only when the client matches the
+        operator's known-client list, and an unverified client may still be
+        allowed. The server classifies each registered redirect URI by its
+        scheme into exactly one of the two lists, and at least one of them is
+        non-empty.
       required:
         - clientId
         - clientName
         - redirectHosts
+        - appSchemes
         - verified
-        - dynamicallyRegistered
       properties:
         clientId:
           type: string
@@ -267,68 +285,76 @@ components:
           type: string
           description: >-
             Display name the client registered. Empty when it registered
-            none.
+            none. Self-asserted by the client; only `verified` marks trust.
           maxLength: 255
           x-order: 2
-        clientUri:
-          type: string
-          format: uri
-          description: Home page the client registered. Omitted when it registered none.
-          maxLength: 2048
-          x-order: 3
-        logoUri:
-          type: string
-          format: uri
-          description: Logo the client registered. Omitted when it registered none.
-          maxLength: 2048
-          x-order: 4
         redirectHosts:
           type: array
           description: >-
-            Where the client can send the user after the decision, one entry
-            per distinct target of its registered redirect URIs, without
-            duplicates: the host of an https redirect URI (for example
-            `app.example.com`), the loopback IP literal of a loopback redirect
-            URI (`127.0.0.1` or `[::1]`), or the scheme of a private-use app
-            redirect URI (for example `vscode`). Lowercase, with no port,
-            path or `://`.
-          minItems: 1
+            The network hosts the client can send the user to after the
+            decision: the host of each https redirect URI (for example
+            `app.example.com`) and of each loopback redirect URI (`127.0.0.1`
+            or `[::1]`), without duplicates. Only redirect URIs whose scheme
+            is `https`, or `http` on a loopback IP literal, are listed here;
+            the `localhost` hostname is never registered (RFC 8252 section
+            8.3), and a private-use app redirect is listed in `appSchemes`
+            instead. Lowercase, with no scheme, port or path. Empty when the
+            client registered only app redirects; `redirectHosts` and
+            `appSchemes` are never both empty.
           maxItems: 100
           uniqueItems: true
           items:
             type: string
             description: >-
-              One redirect host, loopback IP literal or app scheme: an app
-              scheme in RFC 3986 scheme form (which also covers a hostname
-              that starts with a letter), a hostname whose last label starts
-              with a letter, a dotted-decimal IPv4 literal, or a bracketed
-              hexadecimal IPv6 literal. A colon appears only inside IPv6
-              brackets, so no entry carries a port.
+              One network host: a DNS hostname of at least two labels whose
+              last label starts with a letter, a dotted-decimal IPv4 literal,
+              or a bracketed hexadecimal IPv6 literal. A colon appears only
+              inside IPv6 brackets, so no entry carries a port, and a bare
+              single-label name such as `localhost` or an app scheme
+              (`vscode`) is not a host.
             minLength: 1
             maxLength: 253
-            pattern: '^(?:[a-z][a-z0-9+.-]*|(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z](?:[a-z0-9-]*[a-z0-9])?|(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])|\[[0-9a-f]{0,4}(?::[0-9a-f]{0,4}){2,7}\])$'
-          x-order: 5
+            pattern: '^(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z](?:[a-z0-9-]*[a-z0-9])?|(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])|\[[0-9a-f]{0,4}(?::[0-9a-f]{0,4}){2,7}\])$'
+          x-order: 3
+        appSchemes:
+          type: array
+          description: >-
+            The private-use URI schemes (RFC 8252 section 7.1) of the client's
+            app redirect URIs, without duplicates, for example `vscode` or
+            `com.example.app`: the app that claims the scheme on the user's
+            device receives the user after the decision. A reverse-domain
+            scheme such as `com.example.app` names an app, not a host, and
+            must not be shown as one. Empty when the client registered only
+            https and loopback redirects; `redirectHosts` and `appSchemes` are
+            never both empty.
+          maxItems: 100
+          uniqueItems: true
+          items:
+            type: string
+            description: >-
+              One private-use scheme in lowercase RFC 3986 scheme form, with
+              no `:` or `//`. Never `http` or `https`, whose redirects are
+              listed in `redirectHosts`.
+            minLength: 1
+            maxLength: 255
+            pattern: '^[a-z][a-z0-9+.-]*$'
+            not:
+              enum: ["http", "https"]
+          x-order: 4
         verified:
           type: boolean
           description: >-
             True only when the client matches the operator's known-client
             list. Marks trust and never blocks: a false value is shown as an
             unverified client, and the user may still allow it.
-          x-order: 6
-        dynamicallyRegistered:
-          type: boolean
-          description: >-
-            True when the client registered itself through dynamic client
-            registration (RFC 7591) rather than being configured by the
-            operator.
-          x-order: 7
+          x-order: 5
     OauthConsentDecisionPayload:
       type: object
       additionalProperties: false
       description: >-
         Names the pending consent request to allow (acceptOauthConsentRequest)
-        or deny (rejectOauthConsentRequest). The grant is always the request's
-        own scopes and audience, so the body carries no scopes.
+        or deny (rejectOauthConsentRequest). The grant is always what the
+        client requested, so the body carries no scopes.
       required:
         - consentChallenge
       properties:
@@ -345,8 +371,8 @@ components:
           type: boolean
           description: >-
             On accept, true asks the identity provider to remember the grant,
-            so a later request from the same client for the same scopes and
-            audience is not shown again while the grant is remembered. False
+            so a later request from the same client for the same scopes is
+            not shown again while the grant is remembered. False
             or omitted grants this request only. Ignored on reject.
           default: false
           x-order: 2

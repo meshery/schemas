@@ -4,8 +4,8 @@
     "clientId": "",
     "clientName": "",
     "redirectHosts": [],
-    "verified": false,
-    "dynamicallyRegistered": false
+    "appSchemes": [],
+    "verified": false
   },
   "requestedScopes": []
 }

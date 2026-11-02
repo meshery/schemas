@@ -3,6 +3,6 @@ client:
   clientId: ''
   clientName: ''
   redirectHosts: []
+  appSchemes: []
   verified: false
-  dynamicallyRegistered: false
 requestedScopes: []

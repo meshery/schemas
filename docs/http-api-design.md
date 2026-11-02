@@ -268,8 +268,11 @@ declared paths carry no `/api` prefix:
 `acceptOauthConsentRequest` and `rejectOauthConsentRequest` (`POST .../accept`, `POST .../reject`,
 body `OauthConsentDecisionPayload`) decide it, answering the `redirectTo` the browser must navigate
 to. Only the signed-in user the challenge was issued for may read or decide it (`403` otherwise), a
-challenge is single use (`404` once decided or expired), an accept grants only the requested scopes
-and audience, and `client.verified` marks trust without blocking. Full contract:
+challenge is single use (`404` once decided or expired), an accept grants only what the client
+requested, and `client.verified` marks trust without blocking. `client.redirectHosts` (https and
+loopback hosts) and `client.appSchemes` (private-use app schemes) are separate lists, so an app is
+never shown as a host. A `503` on a decision means the outcome is unknown: a retry that answers
+`404` means the challenge was already decided. Full contract:
 [`oauth-consent-request-contract.md`](oauth-consent-request-contract.md).
 
 ## Schedules and claims

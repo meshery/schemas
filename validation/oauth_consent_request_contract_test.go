@@ -156,7 +156,7 @@ func TestOauthConsentDecisionPayload(t *testing.T) {
 		{"omits the challenge", map[string]any{"remember": true}, true},
 		{"empty body", map[string]any{}, true},
 		{"blank challenge", map[string]any{"consentChallenge": "   "}, true},
-		// The grant is the request's own scopes and audience; the body cannot name others.
+		// The grant is what the client requested; the body cannot name anything else.
 		{"widens the scopes", map[string]any{"consentChallenge": "a1b2c3", "grantScope": []any{"admin"}}, true},
 		{"names an audience", map[string]any{"consentChallenge": "a1b2c3", "requestedAudience": []any{"https://api.example.com"}}, true},
 	}
@@ -175,34 +175,33 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 	consentRequest := spec.Components.Schemas["OauthConsentRequest"].Value
 	redirect := spec.Components.Schemas["OauthConsentRedirect"].Value
 
-	if got := slices.Sorted(maps.Keys(consentRequest.Properties)); !reflect.DeepEqual(got, []string{"client", "consentChallenge", "requestedAudience", "requestedScopes"}) {
+	if got := slices.Sorted(maps.Keys(consentRequest.Properties)); !reflect.DeepEqual(got, []string{"client", "consentChallenge", "requestedScopes"}) {
 		t.Errorf("OauthConsentRequest properties = %v", got)
 	}
 	client := consentRequest.Properties["client"].Value
 	// kin-openapi does not check string formats while visiting, so pin the
-	// declaration that tells generated clients these are absolute URLs.
-	for label, schema := range map[string]*openapi3.Schema{
-		"OauthConsentRedirect.redirectTo": redirect.Properties["redirectTo"].Value,
-		"OauthConsentClient.clientUri":    client.Properties["clientUri"].Value,
-		"OauthConsentClient.logoUri":      client.Properties["logoUri"].Value,
-	} {
-		if schema.Format != "uri" {
-			t.Errorf("%s format = %q, want uri", label, schema.Format)
-		}
+	// declaration that tells generated clients this is an absolute URL.
+	if got := redirect.Properties["redirectTo"].Value.Format; got != "uri" {
+		t.Errorf("OauthConsentRedirect.redirectTo format = %q, want uri", got)
 	}
-	if got := slices.Sorted(maps.Keys(client.Properties)); !reflect.DeepEqual(got, []string{"clientId", "clientName", "clientUri", "dynamicallyRegistered", "logoUri", "redirectHosts", "verified"}) {
+	// verified is the only trust mark: no self-asserted home page or logo, and
+	// no second flag about how the client registered.
+	if got := slices.Sorted(maps.Keys(client.Properties)); !reflect.DeepEqual(got, []string{"appSchemes", "clientId", "clientName", "redirectHosts", "verified"}) {
 		t.Errorf("OauthConsentClient properties = %v", got)
+	}
+	if got, want := slices.Sorted(slices.Values(client.Required)), []string{"appSchemes", "clientId", "clientName", "redirectHosts", "verified"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("OauthConsentClient required = %v, want %v", got, want)
 	}
 
 	request := func(mutate func(map[string]any)) map[string]any {
 		body := map[string]any{
 			"consentChallenge": "a1b2c3",
 			"client": map[string]any{
-				"clientId":              "d1f0c2e4-client",
-				"clientName":            "",
-				"redirectHosts":         []any{"app.example.com", "127.0.0.1", "vscode"},
-				"verified":              false,
-				"dynamicallyRegistered": true,
+				"clientId":      "d1f0c2e4-client",
+				"clientName":    "",
+				"redirectHosts": []any{"app.example.com", "127.0.0.1"},
+				"appSchemes":    []any{"vscode"},
+				"verified":      false,
 			},
 			"requestedScopes": []any{"openid", "offline_access"},
 		}
@@ -220,30 +219,24 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 		body    map[string]any
 		wantErr bool
 	}{
-		{"unverified dynamically registered client", consentRequest, request(nil), false},
-		{"names an audience", consentRequest, request(func(b map[string]any) { b["requestedAudience"] = []any{"https://api.example.com"} }), false},
-		{"IPv6 loopback redirect host", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"[::1]"} }), false},
-		{"https redirect host", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"app.example.com"} }), false},
-		{"https redirect host starting with a digit", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"1password.example.com"} }), false},
-		{"IPv4 loopback redirect host", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"127.0.0.1"} }), false},
-		{"full IPv6 redirect host", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"[2001:db8:0:0:0:0:0:1]"} }), false},
-		{"app scheme", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"vscode"} }), false},
-		{"reverse-domain app scheme", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"com.example.app+native"} }), false},
+		{"unverified client", consentRequest, request(nil), false},
+		{"verified client", consentRequest, request(func(b map[string]any) { client0(b)["verified"] = true }), false},
 		{"asks for no scopes", consentRequest, request(func(b map[string]any) { b["requestedScopes"] = []any{} }), false},
+		// Either list may be empty. That both are never empty at once is the
+		// server's guarantee; the schema cannot say it without a combinator
+		// the code generators do not model.
+		{"only app redirects", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{} }), false},
+		{"only https and loopback redirects", consentRequest, request(func(b map[string]any) { client0(b)["appSchemes"] = []any{} }), false},
 		{"omits the challenge", consentRequest, request(func(b map[string]any) { delete(b, "consentChallenge") }), true},
 		{"omits verified", consentRequest, request(func(b map[string]any) { delete(client0(b), "verified") }), true},
-		{"omits dynamicallyRegistered", consentRequest, request(func(b map[string]any) { delete(client0(b), "dynamicallyRegistered") }), true},
-		{"no redirect hosts", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{} }), true},
-		{"duplicate redirect hosts", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"vscode", "vscode"} }), true},
-		{"redirect host carries a scheme", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"https://app.example.com"} }), true},
-		{"redirect host carries a path", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"app.example.com/cb"} }), true},
-		{"redirect host carries a port", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"app.example.com:8080"} }), true},
-		{"IPv4 redirect host carries a port", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"127.0.0.1:8080"} }), true},
-		{"IPv6 redirect host carries a port", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"[::1]:8080"} }), true},
-		{"app scheme carries a colon", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"vscode:"} }), true},
-		{"unbracketed IPv6 redirect host", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"::1"} }), true},
-		{"out-of-range IPv4 redirect host", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"256.0.0.1"} }), true},
-		{"uppercase redirect host", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"App.Example.com"} }), true},
+		{"omits redirectHosts", consentRequest, request(func(b map[string]any) { delete(client0(b), "redirectHosts") }), true},
+		{"omits appSchemes", consentRequest, request(func(b map[string]any) { delete(client0(b), "appSchemes") }), true},
+		{"duplicate redirect hosts", consentRequest, request(func(b map[string]any) { client0(b)["redirectHosts"] = []any{"[::1]", "[::1]"} }), true},
+		{"duplicate app schemes", consentRequest, request(func(b map[string]any) { client0(b)["appSchemes"] = []any{"vscode", "vscode"} }), true},
+		{"names an audience", consentRequest, request(func(b map[string]any) { b["requestedAudience"] = []any{"https://api.example.com"} }), true},
+		{"carries a client home page", consentRequest, request(func(b map[string]any) { client0(b)["clientUri"] = "https://github.com" }), true},
+		{"carries a client logo", consentRequest, request(func(b map[string]any) { client0(b)["logoUri"] = "https://evil.example.com/logo.png" }), true},
+		{"carries dynamicallyRegistered", consentRequest, request(func(b map[string]any) { client0(b)["dynamicallyRegistered"] = true }), true},
 		{"unknown client field", consentRequest, request(func(b map[string]any) { client0(b)["secret"] = "x" }), true},
 		{"redirect", redirect, map[string]any{"redirectTo": "https://cloud.example.com/oauth2/auth?consent_verifier=v"}, false},
 		{"redirect without redirectTo", redirect, map[string]any{}, true},
@@ -273,6 +266,95 @@ func TestOauthConsentRequestResponseShapes(t *testing.T) {
 	templateClient, _ := template["client"].(map[string]any)
 	if got, want := slices.Sorted(maps.Keys(templateClient)), slices.Sorted(slices.Values(client.Required)); !reflect.DeepEqual(got, want) {
 		t.Errorf("template client keys = %v, want %v", got, want)
+	}
+}
+
+// Where the client sends the user is split by kind, so the consent page never
+// shows an app as a host: redirectHosts holds only network hosts of https and
+// loopback redirects, appSchemes only private-use app schemes. The patterns
+// keep each value out of the wrong list where the forms differ; a
+// reverse-domain scheme such as github.com is valid in both, and only the
+// server's classification by redirect URI scheme places it (in appSchemes).
+func TestOauthConsentClientRedirectTargets(t *testing.T) {
+	spec := loadOauthConsentRequestSpec(t)
+	client := spec.Components.Schemas["OauthConsentClient"].Value
+	response := []openapi3.SchemaValidationOption{openapi3.VisitAsResponse()}
+
+	lists := []struct {
+		field              string
+		accepted, rejected []string
+	}{
+		{
+			field: "redirectHosts",
+			accepted: []string{
+				"app.example.com",
+				"1password.example.com",
+				"xn--bcher-kva.example",
+				"127.0.0.1",
+				"[::1]",
+				"[2001:db8:0:0:0:0:0:1]",
+			},
+			rejected: []string{
+				"",
+				"vscode",                  // an app scheme is not a host
+				"com-example-app",         // nor is any other single label
+				"localhost",               // loopback redirects use an IP literal (RFC 8252 section 8.3)
+				"https://app.example.com", // no scheme
+				"app.example.com/cb",      // no path
+				"app.example.com:8080",    // no port
+				"127.0.0.1:8080",
+				"[::1]:8080",
+				"localhost:3000",
+				"::1",       // IPv6 must be bracketed
+				"256.0.0.1", // not an IPv4 literal, and not a hostname
+				"App.Example.com",
+				"app.example.com.",
+				"-app.example.com",
+			},
+		},
+		{
+			field: "appSchemes",
+			accepted: []string{
+				"vscode",
+				"cursor",
+				"com.example.app",
+				"com.example.app+native",
+				"x-my-app",
+			},
+			rejected: []string{
+				"",
+				"http", // web redirects are listed in redirectHosts
+				"https",
+				"vscode:", // no colon
+				"vscode://",
+				"vscode://callback",
+				"VSCode",
+				"1app", // a scheme starts with a letter
+				"127.0.0.1",
+				"[::1]",
+				"my_app",
+			},
+		},
+	}
+	for _, list := range lists {
+		prop := client.Properties[list.field].Value
+		if prop.MinItems != 0 {
+			t.Errorf("%s minItems = %d, want 0: either list may be empty", list.field, prop.MinItems)
+		}
+		if !prop.UniqueItems {
+			t.Errorf("%s must declare uniqueItems", list.field)
+		}
+		item := prop.Items.Value
+		for _, value := range list.accepted {
+			if err := item.VisitJSON(value, response...); err != nil {
+				t.Errorf("%s rejected %q: %v", list.field, value, err)
+			}
+		}
+		for _, value := range list.rejected {
+			if err := item.VisitJSON(value, response...); err == nil {
+				t.Errorf("%s accepted %q, want rejected", list.field, value)
+			}
+		}
 	}
 }
 

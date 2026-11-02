@@ -2,7 +2,7 @@ title: OAuth Consent Request Schema
 description: |
   A pending OAuth consent request, as the consent page shows it to the
   signed-in user: which client asks, where it sends the user afterwards, and
-  what it asks for. The identity provider issues the request and names it by
+  which scopes it asks for. The identity provider issues the request and names it by
   `consentChallenge`; the server reads it from the identity provider and
   stores no row of its own, so the schema has no `id` or timestamps.
 
@@ -36,8 +36,9 @@ properties:
     type: array
     description: >-
       Scopes the client asks for, as the identity provider recorded them. An
-      accept grants exactly these scopes, never more. Empty when the client
-      asks for none.
+      accept grants only what the client requested, never more: these scopes,
+      and any audience the client asked the identity provider for. Empty when
+      the client asks for none.
     items:
       type: string
       description: One OAuth scope token (RFC 6749 section 3.3).
@@ -47,17 +48,3 @@ properties:
     maxItems: 100
     uniqueItems: true
     x-order: 3
-  requestedAudience:
-    type: array
-    description: >-
-      Audiences the client asks its access token to be valid for, as the
-      identity provider recorded them. An accept grants exactly these
-      audiences, never more. Omitted when the client asks for none.
-    items:
-      type: string
-      description: One audience, usually the URL of a resource server.
-      minLength: 1
-      maxLength: 2048
-    maxItems: 100
-    uniqueItems: true
-    x-order: 4
