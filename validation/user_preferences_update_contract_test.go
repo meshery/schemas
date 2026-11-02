@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -207,6 +208,74 @@ func TestDropSupersededEndpointsMirrorsBundlerRule(t *testing.T) {
 			}
 			if len(kept) != tc.want {
 				t.Errorf("kept %d endpoints, want %d", len(kept), tc.want)
+			}
+		})
+	}
+}
+
+// buildEndpointIndex walks only the latest version of each construct, so it
+// must load the declaration an owner's x-supersedes names to check the pair.
+// Each case writes a two-version construct and runs the real walk.
+func TestEndpointIndexChecksSupersededDeclaration(t *testing.T) {
+	spec := func(version, route, operationID, supersedes, internal string) string {
+		extra := ""
+		if supersedes != "" {
+			extra = "\n      x-supersedes: " + supersedes
+		}
+		return `openapi: 3.0.0
+info:
+  title: Widget
+  version: ` + version + `
+paths:
+  ` + route + `:
+    put:
+      operationId: ` + operationID + `
+      x-internal: ` + internal + extra + `
+      responses:
+        "204":
+          description: Updated
+`
+	}
+	write := func(t *testing.T, root, version, body string) {
+		dir := filepath.Join(root, "schemas", "constructs", version, "widget")
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(dir, "api.yml"), []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	const route = "/api/widgets"
+	older := spec("v1beta2", route, "updateWidget", "", "[cloud]")
+	cases := []struct {
+		name    string
+		older   string
+		owner   string
+		wantErr string
+	}{
+		{"a matching owner is indexed once", older, spec("v1beta3", route, "updateWidget", "v1beta2", "[cloud]"), ""},
+		{"an owner whose named version does not declare the route is indexed once", spec("v1beta2", "/api/other", "updateOther", "", "[cloud]"), spec("v1beta3", route, "updateWidget", "v1beta2", "[cloud]"), ""},
+		{"an operationId mismatch fails", older, spec("v1beta3", route, "putWidget", "v1beta2", "[cloud]"), "operationIds differ"},
+		{"an x-internal mismatch fails", older, spec("v1beta3", route, "updateWidget", "v1beta2", "[cloud, meshery]"), "x-internal differs"},
+		{"ownership does not chain", spec("v1beta2", route, "updateWidget", "v1beta1", "[cloud]"), spec("v1beta3", route, "updateWidget", "v1beta2", "[cloud]"), "does not chain"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			write(t, root, "v1beta2", tc.older)
+			write(t, root, "v1beta3", tc.owner)
+			idx, err := buildEndpointIndex(root)
+			if tc.wantErr != "" {
+				if err == nil || !strings.Contains(err.Error(), tc.wantErr) {
+					t.Fatalf("err = %v, want one containing %q", err, tc.wantErr)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("buildEndpointIndex: %v", err)
+			}
+			if len(idx.Endpoints) != 1 || idx.Endpoints[0].Version != "v1beta3" || idx.Endpoints[0].Path != route {
+				t.Fatalf("indexed %+v, want only the v1beta3 PUT %s", idx.Endpoints, route)
 			}
 		})
 	}

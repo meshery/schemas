@@ -3,6 +3,8 @@ package validation
 import (
 	"fmt"
 	"maps"
+	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -82,70 +84,21 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 		if spec.LoadErr != nil {
 			return nil // skip specs that fail to load; schema validator reports the violation
 		}
-		doc := spec.Doc
-		if doc == nil || doc.Paths == nil {
-			return nil
+		endpoints, err := specEndpoints(spec)
+		if err != nil {
+			return err
 		}
-		title := ""
-		if doc.Info != nil {
-			title = doc.Info.Title
-		}
-		for path, pathItem := range doc.Paths.Map() {
-			if pathItem == nil {
-				continue
-			}
-			for _, method := range httpMethods {
-				op := getOperation(pathItem, method)
-				if op == nil {
-					continue
-				}
-
-				xInternal, err := parseXInternal(op.Extensions)
-				if err != nil {
-					return err
-				}
-				supersedes, err := parseSupersedes(op.Extensions)
-				if err != nil {
-					return err
-				}
-
-				ep := schemaEndpoint{
-					Method:      strings.ToUpper(method),
-					Path:        path,
-					OperationID: op.OperationID,
-					Tags:        append([]string(nil), op.Tags...),
-					XInternal:   xInternal,
-					Supersedes:  supersedes,
-					Title:       title,
-					Deprecated:  op.Deprecated,
-					Public:      isExplicitlyPublic(op, doc),
-					Construct:   spec.Construct,
-					Version:     spec.Version,
-					SourceFile:  spec.RelativePath,
-				}
-
-				if op.RequestBody != nil && op.RequestBody.Value != nil {
-					ep.RequestBody = true
-					for _, media := range op.RequestBody.Value.Content {
-						if media != nil && media.Schema != nil {
-							ep.RequestShape = buildSchemaShape(media.Schema)
-							break
-						}
-					}
-				}
-
-				ep.ResponseShape, ep.HasSuccessRef, ep.Has2xx, ep.SuccessStatusCode = pickResponseShape(op)
-				ep.QueryParams = mergeQueryParams(pathItem.Parameters, op.Parameters)
-
-				index.Endpoints = append(index.Endpoints, ep)
-			}
-		}
+		index.Endpoints = append(index.Endpoints, endpoints...)
 		return nil
 	}); err != nil {
 		return nil, err
 	}
 
-	superseded, err := dropSupersededEndpoints(index.Endpoints)
+	named, err := supersededDeclarations(rootDir, index.Endpoints)
+	if err != nil {
+		return nil, err
+	}
+	superseded, err := dropSupersededEndpoints(append(index.Endpoints, named...))
 	if err != nil {
 		return nil, err
 	}
@@ -159,6 +112,125 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 	})
 
 	return index, nil
+}
+
+// specEndpoints indexes every operation one construct spec declares.
+func specEndpoints(spec constructSpec) ([]schemaEndpoint, error) {
+	doc := spec.Doc
+	if doc == nil || doc.Paths == nil {
+		return nil, nil
+	}
+	title := ""
+	if doc.Info != nil {
+		title = doc.Info.Title
+	}
+	var endpoints []schemaEndpoint
+	for path, pathItem := range doc.Paths.Map() {
+		if pathItem == nil {
+			continue
+		}
+		for _, method := range httpMethods {
+			op := getOperation(pathItem, method)
+			if op == nil {
+				continue
+			}
+
+			xInternal, err := parseXInternal(op.Extensions)
+			if err != nil {
+				return nil, err
+			}
+			supersedes, err := parseSupersedes(op.Extensions)
+			if err != nil {
+				return nil, err
+			}
+
+			ep := schemaEndpoint{
+				Method:      strings.ToUpper(method),
+				Path:        path,
+				OperationID: op.OperationID,
+				Tags:        append([]string(nil), op.Tags...),
+				XInternal:   xInternal,
+				Supersedes:  supersedes,
+				Title:       title,
+				Deprecated:  op.Deprecated,
+				Public:      isExplicitlyPublic(op, doc),
+				Construct:   spec.Construct,
+				Version:     spec.Version,
+				SourceFile:  spec.RelativePath,
+			}
+
+			if op.RequestBody != nil && op.RequestBody.Value != nil {
+				ep.RequestBody = true
+				for _, media := range op.RequestBody.Value.Content {
+					if media != nil && media.Schema != nil {
+						ep.RequestShape = buildSchemaShape(media.Schema)
+						break
+					}
+				}
+			}
+
+			ep.ResponseShape, ep.HasSuccessRef, ep.Has2xx, ep.SuccessStatusCode = pickResponseShape(op)
+			ep.QueryParams = mergeQueryParams(pathItem.Parameters, op.Parameters)
+
+			endpoints = append(endpoints, ep)
+		}
+	}
+	return endpoints, nil
+}
+
+// supersededDeclarations loads, from the version each owner's x-supersedes
+// names, the declarations of the owners' routes. The walker indexes only each
+// construct's latest version, so without them dropSupersededEndpoints would
+// never see the pair it checks. Only routes an owner names are returned: the
+// older version's other routes stay unindexed, as the walker leaves them.
+func supersededDeclarations(rootDir string, endpoints []schemaEndpoint) ([]schemaEndpoint, error) {
+	type route struct{ method, path string }
+	named := make(map[[2]string]map[route]bool)
+	for _, ep := range endpoints {
+		if ep.Supersedes == "" {
+			continue
+		}
+		key := [2]string{ep.Construct, ep.Supersedes}
+		if named[key] == nil {
+			named[key] = make(map[route]bool)
+		}
+		named[key][route{ep.Method, ep.Path}] = true
+	}
+	keys := make([][2]string, 0, len(named))
+	for key := range named {
+		keys = append(keys, key)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		return keys[i][0] < keys[j][0] || (keys[i][0] == keys[j][0] && keys[i][1] < keys[j][1])
+	})
+
+	var out []schemaEndpoint
+	for _, key := range keys {
+		construct, version := key[0], key[1]
+		apiYmlPath := filepath.Join(rootDir, "schemas", "constructs", version, construct, "api.yml")
+		if _, err := os.Stat(apiYmlPath); err != nil {
+			continue // nothing declares the route there; the bundler rejects that owner
+		}
+		doc, err := loadAPISpec(apiYmlPath)
+		if err != nil {
+			return nil, fmt.Errorf("loading %s, superseded by a later %s: %w", relativeToRoot(apiYmlPath, rootDir), construct, err)
+		}
+		declared, err := specEndpoints(constructSpec{
+			Version:      version,
+			Construct:    construct,
+			RelativePath: relativeToRoot(apiYmlPath, rootDir),
+			Doc:          doc,
+		})
+		if err != nil {
+			return nil, err
+		}
+		for _, ep := range declared {
+			if named[key][route{ep.Method, ep.Path}] {
+				out = append(out, ep)
+			}
+		}
+	}
+	return out, nil
 }
 
 // mergeQueryParams collects query parameters from path-level and

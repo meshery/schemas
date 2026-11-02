@@ -216,7 +216,9 @@ move a route to a later version:
   sets. The route declaration resolves the same way in either merge order.
 - The endpoint index behind the consumer audit (`validation/endpoint_index.go`)
   drops the declaration an owner's `x-supersedes` names (same title, construct,
-  method and path), so the route is audited once. It fails with the same
+  method and path), so the route is audited once. Its walk covers only each
+  construct's latest version, so it loads that declaration from the named
+  version's `api.yml` to check the pair. It fails with the same
   duplicate error when that pair chains or its `operationId`s or `x-internal`
   targets differ. It does not repeat the bundler's other duplicate checks: an
   owner that names a version not declaring the route, or a declaration under
