@@ -289,7 +289,7 @@ paths:
         transaction, so after the edit an unapproved item has an open request
         (the open-request invariant in docs/content-item-contract.md). An
         update never approves: the item stays unapproved until a decider
-        approves that request. A failed write keeps every change, the item and
+        approves that request. A failed write keeps none of these changes, the item and
         its requests alike.
         Approval on an `approvalPolicy` change. A write that changes the stored
         policy and no content re-resolves the approval the same way, in the

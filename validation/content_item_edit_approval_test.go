@@ -173,7 +173,7 @@ func TestContentItemUpdateApprovalRule(t *testing.T) {
 		"When approval resolves to not required, `approved` is unchanged: an approved item stays approved and opens no request",
 		"An update never approves: the item stays unapproved until a decider approves that request",
 		"no update sets it to true",
-		"A failed write keeps every change",
+		"A failed write keeps none of these changes",
 		"Approval on an `approvalPolicy` change.",
 		"Any other result changes no `approved` and closes no request",
 		"An unapproved item with no open request, after a denial for example, gets a fresh pending request in the same write, whatever the result",
