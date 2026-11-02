@@ -126,21 +126,25 @@ both user versions, and each declaration has its own job:
 
 The merged cloud spec (`_openapi_build/cloud_openapi.yml`), which the RTK client
 is generated from, declares the route once, as `v1beta3` owns it. The bundler
-(`build/bundle-openapi.js`) resolves the two declarations, and gives the same
-result whichever is merged first:
+(`build/bundle-openapi.js`) resolves the two declarations the same way in either
+merge order:
 
 - The collision resolves to the owner only when both declarations belong to the
-  same construct (same title), their `operationId`s match, the owner's
-  `x-supersedes` names exactly the other declaration's version, the owner is
-  the newer version, and the superseded declaration carries no `x-supersedes`
-  (ownership does not chain).
+  same construct (same title), their `operationId`s match, their `x-internal`
+  targets match, the owner's `x-supersedes` names exactly the other declaration's
+  version, and the superseded declaration carries no `x-supersedes` (ownership
+  does not chain).
 - Any other duplicate throws `Duplicate path operation during merge`, so a route
   cannot change owner by accident.
+- The owner's body is fully dereferenced. Component names such as
+  `User_PreferencePayload` are shared by the versions of the construct and the
+  last one merged wins in `components`, so the owned body does not reference
+  them.
 - `x-supersedes` stays in the merged output, as `x-internal` does.
 
-The consumer audit's endpoint index applies the same rule
-(`validation/endpoint_index.go`), so the route is audited once, against
-`v1beta3`. The route answers `201` with no body on success, as before.
+The consumer audit's endpoint index enforces the same checks
+(`validation/endpoint_index.go`) and drops the superseded declaration, so the route
+is audited once, against `v1beta3`. The route answers `201` with no body on success, as before.
 
 **TypeScript.** The request type for `updateUserPreferences` in the merged cloud
 client (`typescript/rtk/cloud.ts`) now comes from the `v1beta3` generated output,

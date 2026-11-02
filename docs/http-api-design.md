@@ -197,23 +197,31 @@ pins them.
 
 Every version of a construct is bundled and merged into one cloud spec, so one
 route can be declared by two versions of the same construct. Use this only to
-move a route to a newer version:
+move a route to a later version:
 
-- The newer operation sets `x-supersedes: <older version>` (for example
+- The owning operation sets `x-supersedes: <older version>` (for example
   `x-supersedes: v1beta2`) and keeps the same `operationId`, method and path. It
-  declares its own request body and responses.
+  declares its own request body and responses, fully dereferenced (no `$ref`):
+  component names are shared across the versions of one construct, so an owned
+  body that kept a `$ref` would resolve through a name another version may
+  overwrite. The bundler fails on such an owner.
 - The older version keeps its declaration, unchanged, for its own per-version
   bundle and generated types.
-- `build/bundle-openapi.js` keeps the owner's declaration in the merged spec, and
-  the endpoint index behind the consumer audit (`validation/endpoint_index.go`)
-  drops the superseded one. The collision resolves only when both declarations
-  belong to the same construct (same title), their `operationId`s match, the
-  owner is the newer version and names exactly the other declaration's version,
-  and the superseded declaration carries no `x-supersedes` (ownership does not
-  chain). The result does not depend on merge order.
-- Any other duplicate fails the merge with `Duplicate path operation during merge`,
-  including an owner that names a different version, an `operationId`
-  mismatch, or an owner that is not newer.
+- `build/bundle-openapi.js` keeps the owner's declaration in the merged spec.
+  The collision resolves only when both declarations belong to the same
+  construct (same title), the owner names exactly the other declaration's
+  version, the superseded declaration carries no `x-supersedes` (ownership does
+  not chain), their `operationId`s match, and their `x-internal` targets match as
+  sets. The route declaration resolves the same way in either merge order.
+- The endpoint index behind the consumer audit (`validation/endpoint_index.go`)
+  enforces the same checks and drops the superseded declaration, so the route is
+  audited once. A mismatch fails the index with the same duplicate error.
+- Any other duplicate fails the merge with `Duplicate path operation during merge`.
+- Component names are not versioned. Two versions of one construct that define
+  the same component name overwrite each other in the merged `components`, and
+  the last one merged wins. Packages merge in sorted directory order, so the
+  newest version merges last. An owned operation does not depend on this, because
+  its body is inlined.
 - `x-supersedes` stays in the merged output, as `x-internal` does.
 
 ```yaml
