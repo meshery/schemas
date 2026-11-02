@@ -339,21 +339,52 @@ test("route ownership: a different construct cannot supersede the route", () => 
   assert.throws(() => mergeInOrder([v1beta2Preferences, otherConstruct]), /Duplicate path operation during merge/);
 });
 
-test("route ownership: the owner must be newer than the version it supersedes", () => {
-  const olderOwner = userVersionSpec("v1beta2", {
-    "x-supersedes": "v1beta3",
+test("route ownership: the owner's x-internal must match the superseded declaration", () => {
+  const widerSuperseded = userVersionSpec("v1beta2", {
+    "x-internal": ["cloud", "meshery"],
     responses: { "201": { description: "Preferences updated (v1beta2)" } },
   });
 
-  const undeclaredNewer = userVersionSpec("v1beta3", {
+  for (const specs of [
+    [widerSuperseded, v1beta3Preferences],
+    [v1beta3Preferences, widerSuperseded],
+  ]) {
+    assert.throws(() => mergeInOrder(specs), /Duplicate path operation during merge: \/api\/identity\/users\/preferences put \(x-internal differs/);
+  }
+});
+
+test("route ownership: an owned operation that keeps a $ref throws", () => {
+  const referencingOwner = userVersionSpec("v1beta3", {
+    "x-supersedes": "v1beta2",
+    requestBody: { content: { "application/json": { schema: { $ref: "#/components/schemas/User_PreferencePayload" } } } },
     responses: { "201": { description: "Preferences updated (v1beta3)" } },
   });
 
+  assert.throws(
+    () => mergeInOrder([v1beta2Preferences, referencingOwner]),
+    /keeps a \$ref \(#\/components\/schemas\/User_User_PreferencePayload\)/,
+  );
+});
+
+test("route ownership: an owned body is the owner's in either order even when component names collide", () => {
+  const sharedComponent = (description) => ({ schemas: { User_PreferencePayload: { type: "object", description } } });
+  const owner = userVersionSpec("v1beta3", {
+    "x-supersedes": "v1beta2",
+    requestBody: {
+      content: { "application/json": { schema: { type: "object", properties: { agentsActWithoutApproval: { type: "boolean", nullable: true } } } } },
+    },
+    responses: { "201": { description: "Preferences updated (v1beta3)" } },
+  });
+  const superseded = { ...v1beta2Preferences, components: sharedComponent("v1beta2") };
+  owner.components = sharedComponent("v1beta3");
+
   for (const specs of [
-    [undeclaredNewer, olderOwner],
-    [olderOwner, undeclaredNewer],
+    [superseded, owner],
+    [owner, superseded],
   ]) {
-    assert.throws(() => mergeInOrder(specs), /v1beta2 is not newer than v1beta3/);
+    const merged = mergeInOrder(specs);
+    const body = merged.paths[PREFERENCES_PATH].put.requestBody.content["application/json"].schema;
+    assert.ok(body.properties.agentsActWithoutApproval, "the owner's inline body is kept");
   }
 });
 
@@ -376,4 +407,34 @@ test("route ownership: x-supersedes must be a version string", () => {
   });
 
   assert.throws(() => mergeInOrder([v1beta2Preferences, malformed]), /x-supersedes on \/api\/identity\/users\/preferences put must be a version string/);
+});
+
+test("the real user specs merge to one updateUserPreferences, owned by v1beta3, in either order", async () => {
+  const userSpec = (version) =>
+    dereferenceOpenapiSpec(path.resolve(__dirname, "..", "schemas/constructs", version, "user/api.yml"));
+  const specs = {
+    v1beta2: await userSpec("v1beta2"),
+    v1beta3: await userSpec("v1beta3"),
+  };
+  const route = "/api/identity/users/preferences";
+
+  for (const order of [["v1beta2", "v1beta3"], ["v1beta3", "v1beta2"]]) {
+    const merged = {
+      openapi: "3.0.3",
+      info: { title: "Meshery Cloud", version: "v0.0.0" },
+      tags: [],
+      paths: {},
+      components: {},
+    };
+    for (const version of order) {
+      mergeOpenapiSpec(merged, JSON.parse(JSON.stringify(specs[version])));
+    }
+
+    const operation = merged.paths[route].put;
+    assert.equal(operation.operationId, "updateUserPreferences", `order ${order}`);
+    assert.equal(operation["x-supersedes"], "v1beta2", `order ${order}`);
+    assert.ok(operation.responses["403"], `order ${order}: the owned route declares 403`);
+    const body = operation.requestBody.content["application/json"].schema;
+    assert.ok(body.properties.agentsActWithoutApproval, `order ${order}: the owned body is the v1beta3 PreferencePayload`);
+  }
 });

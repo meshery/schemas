@@ -136,41 +136,25 @@ function mergeComponentMaps(baseComponents, incomingComponents) {
  * Route ownership across construct versions.
  *
  * Every version of a construct is merged into one cloud spec, so a route that a
- * newer version moves can be declared twice. The newer operation names the
+ * later version moves can be declared twice. The owning operation names the
  * version it replaces with the `x-supersedes` operation extension (for example
  * `x-supersedes: v1beta2`), and the merge keeps that declaration. The collision
  * resolves only when both declarations belong to the same construct (same
- * title), the owner names exactly the other's version and is newer than it, the
- * superseded declaration carries no `x-supersedes` (ownership does not chain),
- * and the operationIds match. Any other duplicate throws. The result does not
- * depend on merge order.
+ * title), the owner names exactly the other's version, the superseded
+ * declaration carries no `x-supersedes` (ownership does not chain), the
+ * operationIds match, and the x-internal targets match as sets. Any other
+ * duplicate throws.
+ *
+ * Route declarations resolve the same way in either merge order. Component
+ * names are not versioned: two versions of one construct that define the same
+ * component name (User_PreferencePayload, for example) overwrite each other in
+ * merge order, and the last one merged wins. Packages merge in sorted directory
+ * order, so the newest version merges last. An owned operation must therefore
+ * not keep a $ref, because its body would resolve through those shared names.
+ * bundleSchema dereferences every version, so an owned body is inlined.
  */
 const SUPERSEDES_EXTENSION = "x-supersedes";
 const MERGE_ORIGIN = Symbol("mergeOrigin");
-const VERSION_PATTERN = /^v(\d+)(alpha|beta)(\d+)$/;
-const STABILITY_RANK = { alpha: 0, beta: 1 };
-
-function versionRank(version) {
-  const match = VERSION_PATTERN.exec(String(version || ""));
-  if (!match) {
-    return null;
-  }
-  return [Number(match[1]), STABILITY_RANK[match[2]], Number(match[3])];
-}
-
-function isNewerVersion(version, other) {
-  const rank = versionRank(version);
-  const otherRank = versionRank(other);
-  if (!rank || !otherRank) {
-    return false;
-  }
-  for (let i = 0; i < rank.length; i += 1) {
-    if (rank[i] !== otherRank[i]) {
-      return rank[i] > otherRank[i];
-    }
-  }
-  return false;
-}
 
 // Origin metadata lives on a non-enumerable symbol so YAML and JSON output and
 // deep equality checks never see it.
@@ -185,16 +169,47 @@ function mergeOriginOf(operation) {
   return operation && typeof operation === "object" ? operation[MERGE_ORIGIN] : undefined;
 }
 
+// First $ref string found anywhere under value, or undefined.
+function firstRef(value) {
+  if (!value || typeof value !== "object") {
+    return undefined;
+  }
+  if (typeof value.$ref === "string") {
+    return value.$ref;
+  }
+  for (const child of Object.values(value)) {
+    const ref = firstRef(child);
+    if (ref !== undefined) {
+      return ref;
+    }
+  }
+  return undefined;
+}
+
+function sameTargets(a, b) {
+  const normalize = (targets) => [...new Set(targets ?? [])].sort().join(",");
+  return normalize(a) === normalize(b);
+}
+
 function declareOperation(route, method, operation, origin) {
   const supersedes = operation?.[SUPERSEDES_EXTENSION];
   if (supersedes !== undefined && typeof supersedes !== "string") {
     throw new Error(`${SUPERSEDES_EXTENSION} on ${route} ${method} must be a version string`);
+  }
+  if (supersedes !== undefined) {
+    const ref = firstRef(operation);
+    if (ref !== undefined) {
+      throw new Error(
+        `${SUPERSEDES_EXTENSION} on ${route} ${method} keeps a $ref (${ref}): an owned operation must be fully dereferenced, because component names are shared across versions`,
+      );
+    }
   }
   return attachMergeOrigin(operation, {
     prefix: origin.prefix,
     version: origin.version,
     operationId: operation?.operationId,
     supersedes,
+    xInternal: operation?.["x-internal"],
   });
 }
 
@@ -224,8 +239,8 @@ function resolveRouteOwner(route, method, existing, incoming) {
     if (superseded.supersedes !== undefined) {
       fail(`ownership does not chain: ${superseded.version} carries ${SUPERSEDES_EXTENSION}`);
     }
-    if (!isNewerVersion(owner.version, superseded.version)) {
-      fail(`${owner.version} is not newer than ${superseded.version}`);
+    if (!sameTargets(owner.xInternal, superseded.xInternal)) {
+      fail("x-internal differs between the declarations");
     }
     return true;
   };
