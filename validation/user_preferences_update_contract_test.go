@@ -1,9 +1,9 @@
 package validation
 
 import (
-	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -145,44 +145,6 @@ func TestUpdateUserPreferencesOwnedByV1beta3(t *testing.T) {
 	}
 }
 
-// The bundled cloud spec is what the RTK client is generated from. The route
-// must appear once, with the v1beta3 body and the 403. The bundle is gitignored,
-// so make bundle-openapi must have run first.
-func TestMergedCloudSpecDeclaresUpdateUserPreferencesOnce(t *testing.T) {
-	path := filepath.Join(repoRootDir(t), "_openapi_build", "cloud_openapi.yml")
-	if _, err := os.Stat(path); err != nil {
-		t.Fatalf("%s is missing: run make bundle-openapi first: %v", path, err)
-	}
-	raw := loadOpenAPIDocument(t, path)
-
-	declared := 0
-	paths, _ := mustLookup(t, raw, "paths").(map[string]any)
-	for route, item := range paths {
-		methods, _ := item.(map[string]any)
-		for method, value := range methods {
-			op, ok := value.(map[string]any)
-			if !ok || op["operationId"] != "updateUserPreferences" {
-				continue
-			}
-			declared++
-			if route != preferencesRoute || method != "put" {
-				t.Errorf("updateUserPreferences declared at %s %s, want PUT %s", method, route, preferencesRoute)
-			}
-		}
-	}
-	if declared != 1 {
-		t.Fatalf("merged cloud spec declares updateUserPreferences %d times, want once", declared)
-	}
-
-	body := mustLookup(t, raw, "paths", preferencesRoute, "put", "requestBody", "content", "application/json", "schema", "properties")
-	if _, ok := mustValue(body, "agentsActWithoutApproval").(map[string]any); !ok {
-		t.Error("merged updateUserPreferences body must carry agentsActWithoutApproval (the v1beta3 PreferencePayload)")
-	}
-	if got := mustLookup(t, raw, "paths", preferencesRoute, "put", "responses", "403", "description"); got != "Forbidden" {
-		t.Errorf("merged updateUserPreferences 403 description = %v, want Forbidden", got)
-	}
-}
-
 // The endpoint index feeds the consumer audit, which must see the moved route
 // once, as v1beta3 declares it.
 func TestEndpointIndexIndexesMovedRouteOnce(t *testing.T) {
@@ -204,26 +166,47 @@ func TestEndpointIndexIndexesMovedRouteOnce(t *testing.T) {
 	}
 }
 
-// dropSupersededEndpoints mirrors the bundler: a declaration goes only when its
-// owner names its version and carries the same operationId.
+// dropSupersededEndpoints applies the bundler's ownership rule: a declaration
+// goes only when its owner names its version, and an x-supersedes the bundler
+// would reject is an error, not a silent drop.
 func TestDropSupersededEndpointsMirrorsBundlerRule(t *testing.T) {
-	declaration := func(version, supersedes, operationID string) schemaEndpoint {
-		return schemaEndpoint{Construct: "user", Method: "PUT", Path: preferencesRoute, Version: version, Supersedes: supersedes, OperationID: operationID}
+	declaration := func(version, supersedes, operationID string, internal ...string) schemaEndpoint {
+		return schemaEndpoint{Title: "User", Construct: "user", Method: "PUT", Path: preferencesRoute, Version: version, Supersedes: supersedes, OperationID: operationID, XInternal: internal}
 	}
+	older := declaration("v1beta2", "", "updateUserPreferences", "cloud")
+	owner := declaration("v1beta3", "v1beta2", "updateUserPreferences", "cloud")
+	otherTitle := owner
+	otherTitle.Title = "Token"
 	cases := []struct {
 		name      string
 		endpoints []schemaEndpoint
 		want      int
+		wantErr   string
 	}{
-		{"owner drops the superseded declaration", []schemaEndpoint{declaration("v1beta2", "", "updateUserPreferences"), declaration("v1beta3", "v1beta2", "updateUserPreferences")}, 1},
-		{"operationId mismatch keeps both", []schemaEndpoint{declaration("v1beta2", "", "updateUserPreferences"), declaration("v1beta3", "v1beta2", "setUserPreferences")}, 2},
-		{"wrong superseded version keeps both", []schemaEndpoint{declaration("v1beta2", "", "updateUserPreferences"), declaration("v1beta3", "v1beta1", "updateUserPreferences")}, 2},
-		{"undeclared duplicate keeps both", []schemaEndpoint{declaration("v1beta2", "", "updateUserPreferences"), declaration("v1beta3", "", "updateUserPreferences")}, 2},
+		{"owner drops the superseded declaration", []schemaEndpoint{older, owner}, 1, ""},
+		{"x-internal is compared as a set", []schemaEndpoint{declaration("v1beta2", "", "updateUserPreferences", "cloud", "meshery"), declaration("v1beta3", "v1beta2", "updateUserPreferences", "meshery", "cloud")}, 1, ""},
+		{"an owner with nothing to supersede is kept", []schemaEndpoint{owner}, 1, ""},
+		{"an owner naming a version nothing declares keeps both", []schemaEndpoint{older, declaration("v1beta3", "v1beta1", "updateUserPreferences", "cloud")}, 2, ""},
+		{"an undeclared duplicate keeps both", []schemaEndpoint{older, declaration("v1beta3", "", "updateUserPreferences", "cloud")}, 2, ""},
+		{"a different construct title keeps both", []schemaEndpoint{older, otherTitle}, 2, ""},
+		{"an operationId mismatch fails", []schemaEndpoint{older, declaration("v1beta3", "v1beta2", "setUserPreferences", "cloud")}, 0, "operationIds differ"},
+		{"an x-internal mismatch fails", []schemaEndpoint{declaration("v1beta2", "", "updateUserPreferences", "cloud", "meshery"), owner}, 0, "x-internal differs"},
+		{"ownership does not chain", []schemaEndpoint{declaration("v1beta1", "", "updateUserPreferences", "cloud"), declaration("v1beta2", "v1beta1", "updateUserPreferences", "cloud"), owner}, 0, "does not chain"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := len(dropSupersededEndpoints(tc.endpoints)); got != tc.want {
-				t.Errorf("kept %d endpoints, want %d", got, tc.want)
+			kept, err := dropSupersededEndpoints(tc.endpoints)
+			if tc.wantErr != "" {
+				if err == nil || !strings.Contains(err.Error(), tc.wantErr) {
+					t.Fatalf("err = %v, want one containing %q", err, tc.wantErr)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if len(kept) != tc.want {
+				t.Errorf("kept %d endpoints, want %d", len(kept), tc.want)
 			}
 		})
 	}

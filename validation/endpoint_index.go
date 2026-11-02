@@ -2,6 +2,7 @@ package validation
 
 import (
 	"fmt"
+	"maps"
 	"sort"
 	"strconv"
 	"strings"
@@ -18,6 +19,7 @@ type schemaEndpoint struct {
 	Tags              []string           // operation tags -> derive Category / Sub-Category
 	XInternal         []string           // ["meshery"], ["cloud"], or nil (= both repos)
 	Supersedes        string             // x-supersedes: the older version this declaration replaces, or ""
+	Title             string             // info.title of the construct version: the bundler's construct identity
 	RequestShape      *schemaShape       // nil for GET/DELETE without body
 	ResponseShape     *schemaShape       // from primary 2xx response
 	SuccessStatusCode int                // primary 2xx response code (200/201/202/204)
@@ -84,6 +86,10 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 		if doc == nil || doc.Paths == nil {
 			return nil
 		}
+		title := ""
+		if doc.Info != nil {
+			title = doc.Info.Title
+		}
 		for path, pathItem := range doc.Paths.Map() {
 			if pathItem == nil {
 				continue
@@ -110,6 +116,7 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 					Tags:        append([]string(nil), op.Tags...),
 					XInternal:   xInternal,
 					Supersedes:  supersedes,
+					Title:       title,
 					Deprecated:  op.Deprecated,
 					Public:      isExplicitlyPublic(op, doc),
 					Construct:   spec.Construct,
@@ -138,7 +145,11 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 		return nil, err
 	}
 
-	index.Endpoints = dropSupersededEndpoints(index.Endpoints)
+	superseded, err := dropSupersededEndpoints(index.Endpoints)
+	if err != nil {
+		return nil, err
+	}
+	index.Endpoints = superseded
 
 	sort.Slice(index.Endpoints, func(i, j int) bool {
 		if index.Endpoints[i].Path != index.Endpoints[j].Path {
@@ -194,29 +205,66 @@ func parseSupersedes(extensions map[string]any) (string, error) {
 	return version, nil
 }
 
-// dropSupersededEndpoints removes a declaration that a newer version of the same
-// construct supersedes, so a route the bundler resolves to its owner is indexed
-// once, as the owner declares it. It mirrors the bundler's rule: the owner names
-// the declaration's version (x-supersedes) and carries the same operationId.
-func dropSupersededEndpoints(endpoints []schemaEndpoint) []schemaEndpoint {
+// dropSupersededEndpoints removes each declaration that a newer version of the
+// same construct supersedes, so a route the bundler resolves to its owner is
+// indexed once, as the owner declares it. Both declarations cannot stay: the
+// matcher would join one consumer endpoint to two rows and count the route twice.
+// The check is the bundler's rule (build/bundle-openapi.js resolveRouteOwner),
+// and any x-supersedes the bundler would reject is an error here, never a silent
+// drop.
+func dropSupersededEndpoints(endpoints []schemaEndpoint) ([]schemaEndpoint, error) {
 	type declaration struct {
-		construct, method, path, version string
+		title, construct, method, path, version string
 	}
-	owners := make(map[declaration]string)
-	for _, ep := range endpoints {
-		if ep.Supersedes != "" {
-			owners[declaration{ep.Construct, ep.Method, ep.Path, ep.Supersedes}] = ep.OperationID
-		}
+	byDeclaration := make(map[declaration]int, len(endpoints))
+	for i, ep := range endpoints {
+		byDeclaration[declaration{ep.Title, ep.Construct, ep.Method, ep.Path, ep.Version}] = i
 	}
-	kept := make([]schemaEndpoint, 0, len(endpoints))
-	for _, ep := range endpoints {
-		key := declaration{ep.Construct, ep.Method, ep.Path, ep.Version}
-		if operationID, ok := owners[key]; ok && operationID == ep.OperationID {
+	dropped := make(map[int]bool)
+	for _, owner := range endpoints {
+		if owner.Supersedes == "" {
 			continue
 		}
-		kept = append(kept, ep)
+		i, ok := byDeclaration[declaration{owner.Title, owner.Construct, owner.Method, owner.Path, owner.Supersedes}]
+		if !ok {
+			continue // the owner moves a route nothing else declares
+		}
+		old := endpoints[i]
+		reason := ""
+		switch {
+		case old.Supersedes != "":
+			reason = "ownership does not chain: " + old.Version + " carries x-supersedes"
+		case owner.OperationID != old.OperationID:
+			reason = "operationIds differ"
+		case !sameTargets(owner.XInternal, old.XInternal):
+			reason = "x-internal differs between the declarations"
+		}
+		if reason != "" {
+			return nil, fmt.Errorf("duplicate path operation during merge: %s %s %s (%s)",
+				owner.Version, strings.ToUpper(owner.Method), owner.Path, reason)
+		}
+		dropped[i] = true
 	}
-	return kept
+	kept := make([]schemaEndpoint, 0, len(endpoints))
+	for i, ep := range endpoints {
+		if !dropped[i] {
+			kept = append(kept, ep)
+		}
+	}
+	return kept, nil
+}
+
+// sameTargets reports whether two x-internal target lists name the same set.
+func sameTargets(a, b []string) bool {
+	as := make(map[string]bool, len(a))
+	for _, t := range a {
+		as[t] = true
+	}
+	bs := make(map[string]bool, len(b))
+	for _, t := range b {
+		bs[t] = true
+	}
+	return maps.Equal(as, bs)
 }
 
 // parseXInternal extracts the explicit x-internal target list from operation
