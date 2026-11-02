@@ -74,7 +74,7 @@ key.
    whenever it leaves the item unapproved, whatever the resolved approval; an
    approved item under not required opens none. A change to `approvalPolicy`
    alone re-resolves the approval too ([Approval on an `approvalPolicy` change](content-item-contract.md#approval-on-an-approvalpolicy-change)):
-   only one that makes approval required resets an approved item, which then
+   only one whose result is required resets an approved item, which then
    opens a pending request unless one is pending. Under either result, an
    unapproved item with no open request gets one
    ([the open-request invariant](content-item-contract.md#the-open-request-invariant)).
@@ -105,6 +105,12 @@ whatever the resolved approval, so the item stays unapproved until a decider
 approves that request. This is the
 [open-request invariant](content-item-contract.md#the-open-request-invariant).
 
+A soft-delete of the subject supersedes the request the same way, in the same
+transaction as the delete: the request is closed as `superseded` with
+`decidedAt` set to the delete time and no `decidedBy` and no `note`, and no new
+request opens, because the item is gone. The request does not stay pending on a
+deleted subject.
+
 Approving or denying a superseded request answers `409` and changes nothing, so
 an approval always applies to the content as of the open request. A policy change
 alone never supersedes a request, because the content did not change.
@@ -119,12 +125,13 @@ nothing: the request stays as it was.
 | --- | --- | --- |
 | Pending | Live | `200`, decided |
 | Not pending (decided or superseded) | Any | `409` |
-| Pending | Soft-deleted (`deletedAt` set) | `409` |
+| Soft-deleted subject (`deletedAt` set) | Any | `409`: the delete superseded the request, so it is not pending |
 | Pending | Hard-deleted (no row) | `404` |
 | Unknown, or in another organization | Any | `404` |
 
-A soft-deleted subject answers `409` because its row still exists: the request
-is not decided and stays pending, so it still appears in `listRequests`. A
+A soft-deleted subject answers `409` because the delete closed its request as
+`superseded`, so the request is not pending and is never changed. It is kept
+as history and still appears in `listRequests` with that status. A
 hard-deleted subject answers `404`, the same answer as an unknown request.
 Neither case approves anything: `approved` is set only on a live subject.
 
@@ -132,11 +139,11 @@ Neither case approves anything: `approved` is set only on a live subject.
 
 - **Cloud** creates a request for each inserted content item whose effective
   approval is required, for each content edit that leaves the item unapproved
-  (after superseding the open request), for each policy change that makes
-  approval required on an approved item, and for each content edit or policy
+  (after superseding the open request), for each policy change whose result is
+  required on an approved item, and for each content edit or policy
   change that leaves an unapproved item with no open request. A write that
   changes nothing opens none. It supersedes the open request on each
-  content edit, and decides requests in a transaction with the subject,
+  content edit and on each delete, and decides requests in a transaction with the subject,
   answers `404` and `409` as in the table above, checks the kind's deciding key
   in the session organization, and serves the four routes.
 - **Desktop and web apps** list pending requests and call approve or deny. A

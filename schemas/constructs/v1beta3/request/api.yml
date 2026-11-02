@@ -13,8 +13,8 @@ info:
     way a content item's `approved` becomes true; ContentItemPayload has no
     `approved`. A request names its subject by type and ID, so any construct
     can be the subject of a kind. Requests are created by the server, not by
-    a client call, and are decided once, or superseded when a content edit
-    changes the subject before a decision (the approval then applies to the
+    a client call, and are decided once, or superseded when a content edit or
+    a delete changes the subject before a decision (the approval then applies to the
     content as of the new open request). Closed requests are kept as
     history.
     Each kind names the permission key that may decide it (`x-decision-key`
@@ -129,11 +129,11 @@ paths:
         `approved`. A request that is
         not `pending` answers 409 and is never changed: a decided request, and
         a `superseded` one, whose content has changed since it opened, so an
-        approval always applies to the content as of the open request. When the subject
-        content item no longer exists (hard-deleted) the answer is 404, and
-        when it is soft-deleted (`deletedAt` set) the answer is 409; in both
-        cases nothing changes and the request stays as it was. The body may be
-        omitted.
+        approval always applies to the content as of the open request. A
+        soft-deleted subject answers 409, because deleting it already
+        superseded the request; when the subject no longer exists
+        (hard-deleted) the answer is 404. In both cases nothing changes and
+        the request stays as it was. The body may be omitted.
       parameters:
         - $ref: "#/components/parameters/currentOrgId"
         - $ref: "#/components/parameters/requestId"
@@ -177,11 +177,10 @@ paths:
         request's `kind`, else 403 and nothing changes. For
         `content_item_approval` the subject content item stays unapproved. A
         request that is not `pending` answers 409 and is never changed, a
-        `superseded` one included. When
-        the subject content item no longer exists (hard-deleted) the answer is
-        404, and when it is soft-deleted (`deletedAt` set) the answer is 409;
-        in both cases nothing changes and the request stays as it was. The
-        body may be omitted.
+        `superseded` one included. A soft-deleted subject answers 409, because
+        deleting it already superseded the request; when the subject no longer
+        exists (hard-deleted) the answer is 404. In both cases nothing changes
+        and the request stays as it was. The body may be omitted.
       parameters:
         - $ref: "#/components/parameters/currentOrgId"
         - $ref: "#/components/parameters/requestId"
@@ -234,7 +233,7 @@ components:
           schema:
             type: string
     409:
-      description: Conflict - the request is not pending, so it was already decided or superseded by a content edit and is never changed, or its subject content item is soft-deleted (deletedAt set). Nothing changes; the request stays as it was.
+      description: Conflict - the request is not pending, so it was already decided or superseded by a content edit or a delete and is never changed, or its subject content item is soft-deleted (deletedAt set), which superseded the request. Nothing changes; the request stays as it was.
       content:
         text/plain:
           schema:
@@ -274,7 +273,7 @@ components:
       name: status
       in: query
       required: false
-      description: Filter by request status, for example `superseded` for the requests a content edit closed before a decision.
+      description: Filter by request status, for example `superseded` for the requests a content edit or a delete closed before a decision.
       schema:
         $ref: "#/components/schemas/RequestStatus"
 
@@ -308,7 +307,7 @@ components:
       description: >
         Lifecycle of a request. `pending` until it is decided. `approved` or
         `denied` once, by a person with the kind's deciding key. `superseded`
-        when a content edit changes the subject before a decision: the
+        when a content edit or a delete changes the subject before a decision: the
         request is closed with `decidedAt` set, no `decidedBy` and no note,
         and a fresh pending request opens if the edit leaves the item
         unapproved, whatever the result. Each

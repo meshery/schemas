@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -39,7 +40,7 @@ func TestRequestStatusSuperseded(t *testing.T) {
 	}
 
 	statusDesc := flatDescription(t, status, "description")
-	for _, want := range []string{"`superseded` when a content edit changes the subject before a decision", "closed with `decidedAt` set", "no `decidedBy` and no note", "Each of `approved`, `denied` and `superseded` is final"} {
+	for _, want := range []string{"`superseded` when a content edit or a delete changes the subject before a decision", "closed with `decidedAt` set", "no `decidedBy` and no note", "Each of `approved`, `denied` and `superseded` is final"} {
 		if !strings.Contains(statusDesc, want) {
 			t.Errorf("RequestStatus description must say %q", want)
 		}
@@ -47,9 +48,9 @@ func TestRequestStatusSuperseded(t *testing.T) {
 
 	// The entity's status, decidedBy, decidedAt and note describe a superseded request.
 	for path, want := range map[string]string{
-		"status":    "`superseded` when a content edit closes it first",
+		"status":    "`superseded` when a content edit or a delete closes it first",
 		"decidedBy": "and when it is superseded, since no user decided it",
-		"decidedAt": "or superseded by a content edit",
+		"decidedAt": "or superseded by a content edit or a delete",
 		"note":      "when it is superseded",
 	} {
 		desc := flatDescription(t, entity, "properties", path, "description")
@@ -80,3 +81,48 @@ func TestRequestStatusSuperseded(t *testing.T) {
 		t.Errorf("the status filter must name superseded, got %q", filter)
 	}
 }
+
+// A soft-delete supersedes the item's open request in the delete transaction,
+// as a content edit does, so the request is never pending on a deleted subject.
+// The delete operation, the decisions that refuse a deleted subject and the
+// contract doc must say the same thing.
+func TestDeleteSupersedesOpenRequest(t *testing.T) {
+	root := repoRootDir(t)
+	content := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/content_item/api.yml"))
+	request := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/request/api.yml"))
+
+	del := flatDescription(t, mustLookup(t, content, "paths", "/api/content-items/{contentItemId}", "delete"), "description")
+	for _, want := range []string{
+		"closes that request as `superseded` in the same transaction",
+		"`decidedAt` is set to the delete time",
+		"no `decidedBy` and no `note` are set",
+		"`approveRequest` and `denyRequest` on it then answer `409`",
+	} {
+		if !strings.Contains(del, want) {
+			t.Errorf("deleteContentItem description must say %q", want)
+		}
+	}
+
+	for _, op := range []string{"approve", "deny"} {
+		desc := flatDescription(t, mustLookup(t, request, "paths", "/api/requests/{requestId}/"+op, "post"), "description")
+		if !strings.Contains(desc, "A soft-deleted subject answers 409, because deleting it already superseded the request") {
+			t.Errorf("%s description must say a soft-deleted subject answers 409 because the delete superseded the request", op)
+		}
+	}
+
+	doc, err := os.ReadFile(filepath.Join(root, "docs/request-contract.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	flat := strings.Join(strings.Fields(string(doc)), " ")
+	for _, want := range []string{
+		"A soft-delete of the subject supersedes the request the same way, in the same",
+		"no new request opens, because the item is gone",
+		"A soft-deleted subject answers `409` because the delete closed its request as",
+	} {
+		if !strings.Contains(flat, want) {
+			t.Errorf("docs/request-contract.md must say %q", want)
+		}
+	}
+}
+

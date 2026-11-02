@@ -9,7 +9,7 @@ description: |
   A request is created `pending` by the server when the thing that needs a
   decision happens (it is not created by a client call), and is decided once:
   `approved` or `denied`, by a user holding the kind's deciding permission
-  key. A content edit that changes the subject before it is decided closes
+  key. A content edit or a delete that changes the subject before it is decided closes
   the request as `superseded`, so an approval always applies to the content
   as of the open request. Closed requests are kept as history. See
   docs/request-contract.md.
@@ -84,7 +84,7 @@ properties:
     $ref: ./api.yml#/components/schemas/RequestStatus
     description: >
       Lifecycle of the request. `pending` until it is decided; `approved` or
-      `denied` once, `superseded` when a content edit closes it first. Each of
+      `denied` once, `superseded` when a content edit or a delete closes it first. Each of
       these is final.
     x-oapi-codegen-extra-tags:
       db: status
@@ -100,7 +100,7 @@ properties:
   decidedAt:
     type: string
     format: date-time
-    description: Time the request was decided, or superseded by a content edit (decidedBy and note are then omitted). Null while the request is pending.
+    description: Time the request was decided, or superseded by a content edit or a delete (decidedBy and note are then omitted). Null while the request is pending.
     nullable: true
     x-go-type: core.NullTime
     x-go-type-import:
