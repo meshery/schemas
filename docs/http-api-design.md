@@ -41,6 +41,15 @@ post:
       description: Patterns deleted
 ```
 
+### Optional request bodies
+
+A request body is optional unless it declares `required: true` (the OpenAPI default is `false`).
+Declare it optional only when omitting it has defined meaning - `generateToken` omits it to mint an
+unrestricted token. `@rtk-query/codegen-openapi` ignores `required: false` and types every body as
+required, so `build/generate-rtk.js` (`markOptionalRequestBodies`) rewrites the generated
+`*ApiArg` member to `body?:` for each such operation and fails the build if it cannot find it.
+`tests/generate-rtk.test.js` type-checks a body-less call against the rewritten type.
+
 ## HTTP response codes
 
 | Code | Meaning | When to use |

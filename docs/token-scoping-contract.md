@@ -159,7 +159,8 @@ shared `403` response.
 
 All three entity fields are additive and optional, and `TokenStanding` is a
 new schema with no operation. `generateToken`'s body is optional, so a
-client that sends only `name` and `purpose` is unchanged. Entity consumers see
+client that sends only `name` and `purpose` is unchanged, including in the
+generated RTK client, where `GenerateTokenApiArg.body` is optional. Entity consumers see
 three new optional properties; Go consumers of `UserToken` get `KeychainIds
 []core.Uuid` (omitted when empty), `ExpiresAt *core.NullTime` and
 `KeychainScoped bool` (omitted when false). Existing rows need `keychain_scoped` added with default
