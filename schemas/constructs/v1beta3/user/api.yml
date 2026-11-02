@@ -116,11 +116,40 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  # PUT /api/identity/users/preferences (updateUserPreferences) is not declared
-  # here. The bundler merges every version of a construct into one spec and
-  # rejects a route declared twice, and v1beta2 user owns that route until it
-  # is superseded. The v1beta3 request body for the route is PreferencePayload
-  # below; see docs/agent-approval-preference.md.
+  /api/identity/users/preferences:
+    put:
+      x-internal: ["cloud"]
+      x-supersedes: v1beta2
+      tags:
+        - users
+      operationId: updateUserPreferences
+      summary: Update the current user's preferences
+      description: >-
+        Merges the payload onto the signed-in user's stored preferences. A key
+        the payload names replaces the stored value; a key it leaves out keeps
+        the stored value. Setting selectedOrganizationId switches the
+        organization the user's session has selected, as Meshery Cloud's and
+        Meshery's organization switchers do. Badges are server-owned and are
+        never changed through this operation. Only the signed-in session can
+        set agentsActWithoutApproval: a token-authenticated request that names
+        it, with any value including null, or that changes a
+        remoteProviderPreferences.<provider>.agentsActWithoutApproval entry, is
+        answered 403 and no part of the payload is applied.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PreferencePayload"
+      responses:
+        "201":
+          description: Preferences updated
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "500":
+          $ref: "#/components/responses/500"
 
 components:
   securitySchemes:
@@ -975,10 +1004,9 @@ components:
         onto the stored preferences and keeps the rest. Setting
         selectedOrganizationId switches the organization the user's session has
         selected. Badges are server-owned and are never changed through this
-        body. updatedAt is server-recorded and is not settable. The merged spec
-        still declares this route with the v1beta2 body, which does not carry
-        agentsActWithoutApproval; see docs/agent-approval-preference.md (Where
-        it is defined).
+        body. updatedAt is server-recorded and is not settable. See
+        docs/agent-approval-preference.md for who may write
+        agentsActWithoutApproval.
       additionalProperties: false
       properties:
         meshAdapters:

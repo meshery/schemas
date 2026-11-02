@@ -514,6 +514,24 @@ func TestAgentsActWithoutApprovalPreference(t *testing.T) {
 	}
 }
 
+// The write rule is declared on the route that carries the field. A token may
+// not set agentsActWithoutApproval or change the free-form copy, so the merged
+// route (owned by v1beta3) answers 403 for it, using the shared response.
+func TestAgentsActWithoutApprovalWriteRefusesTokens(t *testing.T) {
+	doc := loadSpec(t, userV1beta3Spec)
+	item := doc.Paths.Find(preferencesRoute)
+	if item == nil || item.Put == nil {
+		t.Fatalf("PUT %s is not declared", preferencesRoute)
+	}
+	resp := item.Put.Responses.Status(403)
+	if resp == nil {
+		t.Fatal("updateUserPreferences must declare 403: a token-authenticated write of agentsActWithoutApproval is refused")
+	}
+	if resp.Ref != "#/components/responses/403" {
+		t.Errorf("updateUserPreferences 403 must reference the shared response, got %q", resp.Ref)
+	}
+}
+
 // Listing is for the signed-in session only. A token-authenticated listing
 // answers 403, because the page holds other clients' consents and those are not
 // disclosed to a client. An out-of-range pageSize answers 400.
