@@ -32,7 +32,7 @@ export interface paths {
         put?: never;
         /**
          * Submit an anonymous support request
-         * @description Accepts a support request without requiring a signed-in user, so a desktop client can offer a "Contact support" action whether or not the person is signed in. A signed-out client authenticates with the same per-client-kind `X-Client-Key` as submitFailureDiagnostic; a signed-in caller may use its bearer token instead, and only then is the organization attached. A request carrying neither is a 401. The email address is only ever sent when the person types it in, and diagnosticId links this report to the automatic failure diagnostic submitted for the same incident, when one exists. Served by Layer5 Cloud; see Blowhorn issue #771.
+         * @description Accepts a support request without requiring a signed-in user, so a desktop client can offer a "Contact support" action whether or not the person is signed in. A signed-out client authenticates with the same per-client-kind `X-Client-Key` as submitFailureDiagnostic; a signed-in caller may use its bearer token instead, and only then is the organization attached. A request carrying neither is a 401. The email address is only ever sent when the person types it in, and diagnosticId links this report to the automatic failure diagnostic submitted for the same incident, when one exists. Served by Layer5 Cloud; see the downstream desktop diagnostics issue #771.
          */
         post: operations["submitAnonymousSupportRequest"];
         delete?: never;

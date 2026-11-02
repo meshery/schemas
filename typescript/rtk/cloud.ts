@@ -2485,7 +2485,7 @@ export type SubmitFailureDiagnosticApiArg = {
     failure: {
       /** Where the failure first became visible to the person. */
       surface: "tray" | "popover" | "console" | "service";
-      /** Stable machine-readable name for the cause. Deliberately a patterned string, not a closed enum: new failure causes are named by the client over time, and a closed enum would make the server reject reports carrying a cause it does not know yet. Consumers must treat an unknown cause as opaque, never as an error. Known causes today are the Blowhorn engine's StoreUnavailable.cause names: unavailable, not_configured, incomplete, bad_setting, config_unreadable, tunnel_refused, tunnel_silent, tunnel_off, not_postgres, auth_rejected, host_not_permitted, database_missing, timeout, version_unreadable, ledger_unreadable, schema_behind, schema_ahead, schema_edited, no_organization, unknown_organization, plus other named causes as clients add them. */
+      /** Stable machine-readable name for the cause. Deliberately a patterned string, not a closed enum: new failure causes are named by the client over time, and a closed enum would make the server reject reports carrying a cause it does not know yet. Consumers must treat an unknown cause as opaque, never as an error. Known causes today are the desktop engine's StoreUnavailable.cause names: unavailable, not_configured, incomplete, bad_setting, config_unreadable, tunnel_refused, tunnel_silent, tunnel_off, not_postgres, auth_rejected, host_not_permitted, database_missing, timeout, version_unreadable, ledger_unreadable, schema_behind, schema_ahead, schema_edited, no_organization, unknown_organization, plus other named causes as clients add them. */
       cause: string;
       /** Machine-readable code for the failure, when the failure carries one beyond its cause (for example an exit or provider code). Kept a string so numeric and symbolic codes both fit; empty when the failure carries no code. */
       code: string;
@@ -2500,7 +2500,7 @@ export type SubmitFailureDiagnosticApiArg = {
       /** Version of the client-server contract this report was built against. Kept a string so dotted versions and plain numbers both fit. */
       contractVersion: string;
     };
-    /** Optional per-install id, present only when the person has not opted out of failure reports. A random uuid4 minted once per install (Blowhorn's installationId, written beside cloud.yaml and reused), never a hardware id. Omitted entirely when opted out. */
+    /** Optional per-install id, present only when the person has not opted out of failure reports. A random uuid4 minted once per install (the client's installationId, written beside cloud.yaml and reused), never a hardware id. Omitted entirely when opted out. */
     installId?: string;
   };
 };

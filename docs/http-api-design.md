@@ -96,7 +96,7 @@ are the emitting service's internal allocation and are renumbered. Two generator
 body plus a required `Retry-After` header carrying the integer number of seconds the caller must
 wait before retrying. Reference it, through a `MeshkitError429` alias under the construct's own
 `components/responses`, from every operation whose server applies a per-user rate limit. Layer5
-Cloud rate-limits the Blowhorn route families per user, so every operation of the v1beta3
+Cloud rate-limits the posting-client route families per user, so every operation of the v1beta3
 `claim`, `schedule`, `ledger`, `content_item`, `media_asset`, `mention_alias`, `event`, `profile`,
 `provider_capability` and `blowhorn_health` constructs declares it, as do the desktop `registerConnection`,
 `recordConnectionHeartbeat` and `deregisterDesktopConnection` connection operations. A client

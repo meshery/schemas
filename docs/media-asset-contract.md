@@ -122,8 +122,7 @@ example a video whose location the client could not remove.
   update, and Delete Content Item covers delete.
 - A `connectionId` that is not the caller's own live Google Drive connection
   in the session organization answers `404`.
-- Every operation declares `429` (`MeshkitError429`), as the other Blowhorn
-  route families do.
+- Every operation declares `429` (`MeshkitError429`), as the other posting-client route families do.
 
 `validation/media_asset_contract_test.go` pins the absence of credential
 and URL fields, the payload's server-owned exclusions, each operation's

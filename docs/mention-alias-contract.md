@@ -79,7 +79,7 @@ aliases only describe how content items tag people:
 A caller without the key gets `403` before any row is read. An id that is not
 an alias of the session organization, and a caller who is not a live member,
 get the same `404`. Every operation declares `429` (`MeshkitError429`), like
-the other Blowhorn route families. All operations are `x-internal: ["cloud"]`.
+the other posting-client route families. All operations are `x-internal: ["cloud"]`.
 
 Dedicated mention alias keys would have to start in the Features &
 Permissions sheet, which `build/permissions.csv` is refreshed from daily. Rows
@@ -91,7 +91,7 @@ reuses the existing keys.
 | Repo | What it must do |
 | --- | --- |
 | `layer5io/meshery-cloud` | Add a `mention_aliases` table (`id`, `organization_id`, `entity`, `platform`, `handle`, `confirmed_by` with `ON DELETE SET NULL`, `created_at`, `updated_at`) with a unique index on (`organization_id`, `lower(entity)`, `platform`). Serve the three routes under the `/api` group with the keys above, scoping every statement to the session organization and a live membership. |
-| Blowhorn | Read the aliases for a message's tags with one `getMentionAliases` call per order and write the confirmed answers with `upsertMentionAliases`. |
+| The posting client | Read the aliases for a message's tags with one `getMentionAliases` call per order and write the confirmed answers with `upsertMentionAliases`. |
 
 `validation/mention_alias_contract_test.go` pins the payload, entity shape,
 routes and platform enum.
