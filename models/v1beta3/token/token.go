@@ -59,6 +59,48 @@ type NativeCodeExchangePayload struct {
 	CodeVerifier string `json:"codeVerifier" yaml:"codeVerifier"`
 }
 
+// TokenIntrospection Describes an access token introspectToken accepted, using the RFC 7662 member names where they are single words and their camelCase form where they are not (clientId, tokenType).
+type TokenIntrospection struct {
+	// Active Always true; a token that is not active is answered with 401 instead.
+	Active bool `json:"active" yaml:"active"`
+
+	// Aud The resources the token is bound to (RFC 8707 resource identifiers). Always a JSON array, never null or absent: [] for a token the server issued to its own first-party clients, which is valid for every protected resource the server issues tokens for.
+	Aud []string `json:"aud" yaml:"aud"`
+
+	// Sub The subject the token was issued for.
+	Sub *string `json:"sub,omitempty" yaml:"sub,omitempty"`
+
+	// ClientId The OAuth client the token was issued to.
+	ClientId *string `json:"clientId,omitempty" yaml:"clientId,omitempty"`
+
+	// Scope Space-separated scopes granted to the token.
+	Scope *string `json:"scope,omitempty" yaml:"scope,omitempty"`
+
+	// Exp Expiry, in seconds since the Unix epoch. Absent for a token that does not expire.
+	Exp *int64 `json:"exp,omitempty" yaml:"exp,omitempty"`
+
+	// Iat Issue time, in seconds since the Unix epoch.
+	Iat *int64 `json:"iat,omitempty" yaml:"iat,omitempty"`
+
+	// Nbf Not-before time, in seconds since the Unix epoch.
+	Nbf *int64 `json:"nbf,omitempty" yaml:"nbf,omitempty"`
+
+	// Iss The issuer of the token.
+	Iss *string `json:"iss,omitempty" yaml:"iss,omitempty"`
+
+	// TokenType Always "Bearer".
+	TokenType *string `json:"tokenType,omitempty" yaml:"tokenType,omitempty"`
+}
+
+// TokenIntrospectionPayload Carries the token that introspectToken checks, and the protected resource asking.
+type TokenIntrospectionPayload struct {
+	// Token The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected.
+	Token string `json:"token" yaml:"token"`
+
+	// Resource RFC 8707 resource identifier of the protected resource asking, as published in its RFC 9728 protected resource metadata. Omitted, the REST API. A value that is not a protected resource this server issues tokens for is rejected with 400 "invalid_target".
+	Resource *string `json:"resource,omitempty" yaml:"resource,omitempty"`
+}
+
 // TokenPage A paginated list of tokens.
 type TokenPage struct {
 	// Tokens Tokens returned on the current page.
@@ -74,7 +116,7 @@ type TokenPage struct {
 	PageSize int `json:"pageSize" yaml:"pageSize"`
 }
 
-// TokenPayload Carries the token that revokeToken revokes or introspectToken checks.
+// TokenPayload Carries the token that revokeToken revokes.
 type TokenPayload struct {
 	// Token The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected.
 	Token string `json:"token" yaml:"token"`
