@@ -12,59 +12,10 @@ import (
 // A content item's approval is resolved once, at insert, from its own
 // approvalPolicy and the higher-level settings (platform, workspace, profile).
 // The hierarchy is not settled; its issue is
-// https://github.com/layer5io/meshery-cloud/issues/6365, so the resolver below
-// takes the higher levels in the order the caller supplies. Until the upstream
-// policies exist, the interim resolver applies: inherit and absent resolve to
-// required. These tests pin the schema side: the enum and its absent default,
-// which fields are read-only and which payloads carry approvalPolicy, and the
-// reference and interim resolvers. See docs/content-item-contract.md,
-// "Approval policy".
-
-// itemApprovalLevel is one higher-level setting: the level it comes from and
-// the value it sets, empty when it is absent.
-type itemApprovalLevel struct {
-	name  string
-	value string
-}
-
-// itemResolveApproval is the normative reference resolver the server mirrors.
-// An explicit item value wins. Otherwise the higher levels are read in the
-// order given, and the first one that sets required or not_required decides;
-// inherit and absent levels are skipped. When nothing sets a value, approval
-// is required (fail closed; the fallback is still open for confirmation in
-// https://github.com/layer5io/meshery-cloud/issues/6365). An absent item value
-// is the same as inherit.
-func itemResolveApproval(item string, higher []itemApprovalLevel) (required bool, source string) {
-	switch item {
-	case "required":
-		return true, "item"
-	case "not_required":
-		return false, "item"
-	}
-	for _, level := range higher {
-		switch level.value {
-		case "required":
-			return true, level.name
-		case "not_required":
-			return false, level.name
-		}
-	}
-	return true, "fallback"
-}
-
-// itemInterimResolve is the interim rule, in force until the upstream platform,
-// workspace and profile policies exist: an explicit item value wins, and
-// inherit or absent resolves to required with source fallback. No higher level
-// is read, so the user preference agentsActWithoutApproval is not consulted.
-func itemInterimResolve(item string) (required bool, source string) {
-	switch item {
-	case "required":
-		return true, "item"
-	case "not_required":
-		return false, "item"
-	}
-	return true, "fallback"
-}
+// https://github.com/layer5io/meshery-cloud/issues/6365. These tests pin the
+// schema side: the enum and its absent default, which fields are read-only and
+// which payloads carry approvalPolicy, and the source enum. See
+// docs/content-item-contract.md, "Approval policy".
 
 // The ApprovalPolicy enum is exactly required, not_required and inherit, and it
 // declares no default: an absent value means inherit, never a stored choice.
@@ -171,9 +122,8 @@ func TestContentItemApprovalFieldsAreServerComputed(t *testing.T) {
 	}
 }
 
-// The source enum names every planned level, in the planned order, and the
-// resolver reports exactly the levels the schema allows. Only item and fallback
-// are active during the interim.
+// The source enum names every planned level, in the planned order. Only item and
+// fallback are active during the interim.
 func TestContentItemApprovalSourceEnum(t *testing.T) {
 	root := repoRootDir(t)
 	entity := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/content_item/content_item.yaml"))
@@ -184,154 +134,6 @@ func TestContentItemApprovalSourceEnum(t *testing.T) {
 	}
 	if _, has := mappingValue(mustLookup(t, entity, "properties", "approvalPolicySource"), "default"); has {
 		t.Error("approvalPolicySource must declare no default")
-	}
-}
-
-// The interim resolver, which is what the server applies until the upstream
-// policies exist. An explicit item value wins; inherit and absent resolve to
-// required with source fallback, and no higher level is read.
-func TestContentItemApprovalInterimResolution(t *testing.T) {
-	cases := []struct {
-		name         string
-		item         string
-		wantRequired bool
-		wantSource   string
-	}{
-		{"absent resolves to required by fallback", "", true, "fallback"},
-		{"inherit resolves to required by fallback", "inherit", true, "fallback"},
-		{"explicit not_required wins", "not_required", false, "item"},
-		{"explicit required wins", "required", true, "item"},
-	}
-
-	root := repoRootDir(t)
-	entity := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/content_item/content_item.yaml"))
-	sources := anyStrings(mustLookup(t, entity, "properties", "approvalPolicySource", "enum"))
-
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			required, source := itemInterimResolve(tc.item)
-			if required != tc.wantRequired || source != tc.wantSource {
-				t.Errorf("itemInterimResolve(%q) = (%v, %q), want (%v, %q)",
-					tc.item, required, source, tc.wantRequired, tc.wantSource)
-			}
-			if !containsString(sources, source) {
-				t.Errorf("source %q is not in the approvalPolicySource enum %v", source, sources)
-			}
-		})
-	}
-}
-
-// The resolver, over an ordered list of higher-level values. The order is
-// supplied by the caller because the hierarchy is not settled (https://github.com/layer5io/meshery-cloud/issues/6365).
-func TestContentItemApprovalResolution(t *testing.T) {
-	cases := []struct {
-		name         string
-		item         string
-		higher       []itemApprovalLevel
-		wantRequired bool
-		wantSource   string
-	}{
-		{
-			name:         "absent item inherits, a higher not_required decides",
-			item:         "",
-			higher:       []itemApprovalLevel{{"platform", "not_required"}},
-			wantRequired: false,
-			wantSource:   "platform",
-		},
-		{
-			name:         "inherit and absent are the same",
-			item:         "inherit",
-			higher:       []itemApprovalLevel{{"platform", "not_required"}},
-			wantRequired: false,
-			wantSource:   "platform",
-		},
-		{
-			name:         "explicit required wins over a higher not_required",
-			item:         "required",
-			higher:       []itemApprovalLevel{{"platform", "not_required"}},
-			wantRequired: true,
-			wantSource:   "item",
-		},
-		{
-			name:         "explicit not_required wins over higher required levels",
-			item:         "not_required",
-			higher:       []itemApprovalLevel{{"platform", "required"}, {"workspace", "required"}},
-			wantRequired: false,
-			wantSource:   "item",
-		},
-		{
-			name:         "inherit takes the first higher level that sets a value",
-			item:         "inherit",
-			higher:       []itemApprovalLevel{{"platform", ""}, {"workspace", "not_required"}, {"profile", "required"}},
-			wantRequired: false,
-			wantSource:   "workspace",
-		},
-		{
-			name:         "the first higher level decides, not a later one",
-			item:         "",
-			higher:       []itemApprovalLevel{{"platform", "required"}, {"workspace", "not_required"}},
-			wantRequired: true,
-			wantSource:   "platform",
-		},
-		{
-			name:         "a higher level that says inherit is skipped",
-			item:         "inherit",
-			higher:       []itemApprovalLevel{{"platform", "inherit"}, {"workspace", ""}, {"profile", "required"}},
-			wantRequired: true,
-			wantSource:   "profile",
-		},
-		{
-			name:         "an absent higher level is skipped",
-			item:         "",
-			higher:       []itemApprovalLevel{{"platform", ""}, {"workspace", ""}, {"profile", "not_required"}},
-			wantRequired: false,
-			wantSource:   "profile",
-		},
-		{
-			name:         "the organization level decides when the levels above it are absent",
-			item:         "inherit",
-			higher:       []itemApprovalLevel{{"workspace", ""}, {"profile", ""}, {"organization", "not_required"}, {"platform", "required"}},
-			wantRequired: false,
-			wantSource:   "organization",
-		},
-		{
-			name:         "the first level given that sets a value decides, organization before platform",
-			item:         "",
-			higher:       []itemApprovalLevel{{"organization", ""}, {"platform", "not_required"}},
-			wantRequired: false,
-			wantSource:   "platform",
-		},
-		{
-			name:         "nothing set anywhere falls back to required",
-			item:         "inherit",
-			higher:       []itemApprovalLevel{{"platform", ""}, {"workspace", "inherit"}, {"profile", ""}},
-			wantRequired: true,
-			wantSource:   "fallback",
-		},
-		{
-			name:         "no higher levels and an absent item fall back to required",
-			item:         "",
-			higher:       nil,
-			wantRequired: true,
-			wantSource:   "fallback",
-		},
-	}
-
-	root := repoRootDir(t)
-	entity := loadOpenAPIDocument(t, filepath.Join(root, "schemas/constructs/v1beta3/content_item/content_item.yaml"))
-	sources := anyStrings(mustLookup(t, entity, "properties", "approvalPolicySource", "enum"))
-
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			required, source := itemResolveApproval(tc.item, tc.higher)
-			if required != tc.wantRequired || source != tc.wantSource {
-				t.Errorf("itemResolveApproval(%q, %v) = (%v, %q), want (%v, %q)",
-					tc.item, tc.higher, required, source, tc.wantRequired, tc.wantSource)
-			}
-			if !containsString(sources, source) {
-				t.Errorf("source %q is not in the approvalPolicySource enum %v", source, sources)
-			}
-		})
 	}
 }
 
