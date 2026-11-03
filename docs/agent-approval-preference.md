@@ -144,17 +144,19 @@ merge order:
 - `x-supersedes` stays in the merged output, as `x-internal` does.
 
 The bundler owns and checks the ownership rule. The consumer audit's endpoint
-index (`validation/endpoint_index.go`) walks only each construct's latest version,
-so it indexes the owner's `v1beta3` declaration once, and the superseded `v1beta2`
-declaration is never indexed. The index has no ownership logic of its own.
+index (`validation/endpoint_index.go`) walks each construct's latest non-deprecated
+version. While `v1beta3` is that latest version, it indexes the owner's `v1beta3`
+declaration once, and the superseded `v1beta2` declaration is never indexed. The
+index has no ownership logic of its own.
 
 The route answers `201` with no body on success, as before.
 
-**TypeScript.** The request type for `updateUserPreferences` in the merged cloud
-client (`typescript/rtk/cloud.ts`) now comes from the `v1beta3` generated output,
-so its body includes `agentsActWithoutApproval`. Code that imports the
-`v1beta2` types directly keeps them unchanged. The `v1beta2` generated
-`updateUserPreferences` types are not affected.
+**TypeScript.** Once master regenerates the clients, the request type for
+`updateUserPreferences` in the merged cloud client (`typescript/rtk/cloud.ts`)
+comes from the `v1beta3` generated output, and its body includes
+`agentsActWithoutApproval`. The committed client does not include it yet. Code
+that imports the `v1beta2` types directly keeps them unchanged. The `v1beta2`
+generated `updateUserPreferences` types are not affected.
 
 ## Who can write it
 

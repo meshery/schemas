@@ -214,11 +214,17 @@ move a route to a later version:
   version, the superseded declaration carries no `x-supersedes` (ownership does
   not chain), their `operationId`s match, and their `x-internal` targets match as
   sets. The route declaration resolves the same way in either merge order.
+- The owner's `x-supersedes` must name a declaration of the same route (same
+  construct, method and path). If the named version declares no such route, the
+  merge fails with `x-supersedes names no declaration`, after all specs are
+  merged, so merge order does not matter.
 - The bundler owns and checks this rule. The endpoint index behind the consumer
-  audit (`validation/endpoint_index.go`) has no ownership logic: it walks only
-  each construct's latest version, so the superseded declaration of an older
-  version is never indexed beside the owner's, and the route is indexed once, as
-  the owner declares it.
+  audit (`validation/endpoint_index.go`) has no ownership logic: it walks each
+  construct's latest non-deprecated version, so it indexes the owner's
+  declaration once while the owner is that latest version, and the superseded
+  declaration of an older version is never indexed beside it.
+  `TestEndpointIndexIndexesEverySupersedingOwnerOnce` checks every owner in the
+  tree against the index.
 - Any other duplicate fails the merge with `Duplicate path operation during merge`.
 - Component names are not versioned. Two versions of one construct that define
   the same component name overwrite each other in the merged `components`, and
