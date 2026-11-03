@@ -262,9 +262,9 @@ components:
         private-use app redirects), and the `verified` mark. `verified` marks
         trust and never blocks: it is true only when every redirect URI of the
         client matches one operator-listed known-client entry, and an
-        unverified client may still be allowed. The server classifies each registered redirect URI by its
-        scheme into exactly one of the two lists, and at least one of them is
-        non-empty.
+        unverified client may still be allowed. The server classifies each
+        registered redirect URI by its scheme into exactly one of the two
+        lists, and at least one of them is non-empty.
       required:
         - clientId
         - clientName

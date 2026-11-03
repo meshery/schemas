@@ -74,8 +74,8 @@ response of the authentication middleware.
   schemes). A client that registers a known client's name, or only some of its
   redirect targets alongside its own, is not verified. An unverified client is
   shown as unverified; the user may still allow it. It is the only trust
-  mark. The page is shown only for dynamically registered
-  clients, whose name is self-asserted, so the construct carries no
+  mark. The page is shown only for dynamically registered clients, whose
+  name is self-asserted, so the construct carries no
   client-chosen home page or logo that could help a client pose as a known
   brand, and no logo URL the browser would fetch from a host the client chose.
 
@@ -102,8 +102,9 @@ into exactly one list:
   hostname appears in IDNA A-label (punycode) form (`xn--bcher-kva.example`,
   never `bücher.example`), so a look-alike Unicode host cannot pass for a
   familiar one. A colon appears only inside IPv6 brackets, so
-  `app.example.com:8080`, `127.0.0.1:8080` and `[::1]:8080` are rejected. A bare single-label name is not a host, so `localhost` and
-  `vscode` are rejected here.
+  `app.example.com:8080`, `127.0.0.1:8080` and `[::1]:8080` are rejected.
+  A bare single-label name is not a host, so `localhost` and `vscode` are
+  rejected here.
 - **`appSchemes`** lists the private-use URI scheme (RFC 8252 section 7.1) of
   each app redirect URI, in lowercase RFC 3986 scheme form with no `:` or `//`
   (`vscode`, `com.example.app`). Cloud accepts a private-use scheme at
@@ -133,5 +134,5 @@ This is the read-through exception to Rule 1 in
 [the authoring reference](schema-authoring-reference.md#read-through-constructs-have-no-stored-row).
 
 `validation/oauth_consent_request_contract_test.go` pins the operations and
-their tags, the required query parameter, the payload fields and the declared responses, and
-runs the schemas against request and response bodies.
+their tags, the required query parameter, the payload fields and the declared
+responses, and runs the schemas against request and response bodies.
