@@ -148,7 +148,10 @@ test("model constructs define items for relationships and components arrays (#12
 test("bundled openapi specs contain no bare array schemas without items (#1241)", () => {
   for (const bundle of ["meshery_openapi.yml", "cloud_openapi.yml"]) {
     const specPath = paths.fromRoot(config.paths.buildDir, bundle);
-    if (!paths.fileExists(specPath)) continue;
+    assert.ok(
+      paths.fileExists(specPath),
+      `bundled spec ${bundle} not found at ${specPath}; run 'node build/bundle-openapi.js' first`,
+    );
     const spec = yaml.load(fs.readFileSync(specPath, "utf-8"));
     const bareArrays = [];
 
