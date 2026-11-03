@@ -153,9 +153,11 @@ function mergeComponentMaps(baseComponents, incomingComponents) {
  * Route declarations resolve the same way in either merge order. Component
  * names are not versioned: two versions of one construct that define the same
  * component name (User_PreferencePayload, for example) overwrite each other in
- * merge order, and the last one merged wins. Packages merge in sorted directory
- * order, so the newest version merges last. An owned operation must therefore
- * not keep a $ref, because its body would resolve through those shared names.
+ * merge order, and the last one merged wins. Packages merge in lexically sorted
+ * directory order, which is not version order (v1beta10 sorts before v1beta2)
+ * and only happens to put the newest version last in today's tree. An owned
+ * operation must therefore not keep a $ref, because its body would resolve
+ * through those shared names.
  * bundleSchema dereferences every version, so an owned body is inlined.
  */
 const SUPERSEDES_EXTENSION = "x-supersedes";

@@ -236,9 +236,10 @@ move a route to a later version:
 - Any other duplicate fails the merge with `Duplicate path operation during merge`.
 - Component names are not versioned. Two versions of one construct that define
   the same component name overwrite each other in the merged `components`, and
-  the last one merged wins. Packages merge in sorted directory order, so the
-  newest version merges last. An owned operation does not depend on this, because
-  its body is inlined.
+  the last one merged wins. Packages merge in lexically sorted directory order,
+  which is not version order (`v1beta10` sorts before `v1beta2`) and only
+  happens to put the newest version last in today's tree. An owned operation
+  does not depend on this, because its body is inlined.
 - `x-supersedes` stays in the merged output, as `x-internal` does.
 
 ```yaml
