@@ -328,6 +328,10 @@ paths:
         for. A 401 body is "invalid access token" when the signature or expiry
         check fails, "revoked access token used" when the token has been
         revoked, or "token audience does not include the requested resource".
+        A caller that sends `resource` must also check that `aud` in the 200
+        body includes its own identifier, and must refuse the token when the
+        200 carries no body: a server that predates `resource` ignores it and
+        answers 200 with an empty body for any valid token.
       security: []
       requestBody:
         required: true
@@ -635,8 +639,8 @@ components:
           type: array
           description: >-
             The resources the token is bound to (RFC 8707 resource identifiers).
-            Empty for a token issued to the server's own client and for a
-            user-created API token.
+            Always a JSON array, never null or absent: [] for a token issued to
+            the server's own client and for a user-created API token.
           items:
             type: string
           x-order: 2
