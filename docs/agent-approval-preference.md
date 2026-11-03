@@ -143,10 +143,12 @@ merge order:
   `components`, so the merged owner does not reference them.
 - `x-supersedes` stays in the merged output, as `x-internal` does.
 
-The consumer audit's endpoint index (`validation/endpoint_index.go`) drops the
-superseded declaration, so the route is audited once, against `v1beta3`. It fails
-on a chained, `operationId` or `x-internal` mismatch between the two; the other
-duplicate checks are the bundler's. The route answers `201` with no body on success, as before.
+The bundler owns and checks the ownership rule. The consumer audit's endpoint
+index (`validation/endpoint_index.go`) walks only each construct's latest version,
+so it indexes the owner's `v1beta3` declaration once, and the superseded `v1beta2`
+declaration is never indexed. The index has no ownership logic of its own.
+
+The route answers `201` with no body on success, as before.
 
 **TypeScript.** The request type for `updateUserPreferences` in the merged cloud
 client (`typescript/rtk/cloud.ts`) now comes from the `v1beta3` generated output,
