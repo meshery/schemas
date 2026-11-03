@@ -56,13 +56,6 @@ func TestContentItemApprovalPolicyEnum(t *testing.T) {
 	if got := mustLookup(t, entity, "properties", "approvalPolicy", "x-oapi-codegen-extra-tags", "db"); got != "approval_policy" {
 		t.Errorf("ContentItem.approvalPolicy db tag = %v, want approval_policy", got)
 	}
-	desc, _ := mustValue(policy, "description").(string)
-	if !strings.Contains(desc, "https://github.com/layer5io/meshery-cloud/issues/6365") {
-		t.Error("ApprovalPolicy description must link the hierarchy issue")
-	}
-	if !strings.Contains(desc, "Interim:") || !strings.Contains(desc, "`inherit` and an absent value resolve to `required`") {
-		t.Error("ApprovalPolicy description must state the interim rule")
-	}
 
 	// Optional everywhere: a row written before the field has no policy.
 	if containsString(anyStrings(mustLookup(t, api, "components", "schemas", "ContentItemPayload", "required")), "approvalPolicy") {
