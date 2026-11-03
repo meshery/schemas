@@ -747,6 +747,19 @@ func TestHostedMcpIdentifiersAreProductNeutral(t *testing.T) {
 		}
 		check("request api.yml "+section, string(encoded))
 	}
+	// Doc headings are identifiers too.
+	for _, rel := range []string{"docs/mcp-operation-contract.md", "docs/request-contract.md", "docs/schedule-pause-contract.md"} {
+		data, err := os.ReadFile(filepath.Join(root, rel))
+		if err != nil {
+			t.Errorf("read %s: %v", rel, err)
+			continue
+		}
+		for _, line := range strings.Split(string(data), "\n") {
+			if strings.HasPrefix(line, "#") {
+				check(rel+" heading", line)
+			}
+		}
+	}
 	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T) {
 		for _, item := range doc.Paths.Map() {
 			for _, method := range httpMethods {
