@@ -390,9 +390,9 @@ The rules a consumer must enforce:
   "Release claims of other members" releases; anyone else gets 409 and the claim is never taken back.
 - A claim past `expiresAt` reads as `expired` and the resource is claimable again; at most one claim
   per resource is active in an organization.
-- Only organization admins may set or lift the organization-wide pause. A create or update that
-  changes `schedulePause` from anyone else is refused with 403. Omitting `schedulePause` from a
-  preferences write keeps the current pause unchanged. Lifting it (`paused` false) clears
+- An `updateOrg` or `patchOrgPreferences` write that changes `schedulePause` requires organization
+  admin; a write from anyone else that changes it is refused with 403. Omitting `schedulePause`
+  from a preferences write keeps the current pause unchanged. Lifting it (`paused` false) clears
   `reason`, `pausedAt` and `pausedBy`, so a stored `paused` false never carries a stale pause.
 - Pause state is data, never a path segment: a schedule is paused or resumed by setting `paused`
   (and optionally `pauseReason`) on `PUT /api/schedules/{scheduleId}`, and the organization-wide
