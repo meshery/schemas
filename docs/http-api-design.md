@@ -249,11 +249,14 @@ declared paths carry no `/api` prefix:
 - `POST /introspect` (`introspectToken`) answers `200` when an access token is authentic, unexpired,
   not revoked and valid for the protected resource asking, with a `TokenIntrospection` body that
   carries `aud` - the RFC 8707 resource identifiers the token is bound to - and the other RFC 7662
-  members (single-word names as in RFC 7662, `clientId`, `tokenType` and `tokenUse` in camelCase).
+  members (single-word names as in RFC 7662, `clientId` and `tokenType` in camelCase).
   The body is a `TokenIntrospectionPayload`: `token`, and an optional `resource` naming the
-  protected resource asking; omitted, it is the REST API. A token issued to a third-party OAuth
-  client is valid only for a resource its `aud` names; a token issued to the server's own client
-  with an empty `aud`, and a user-created API token, are valid for the REST API only. A `401` means
+  protected resource asking; omitted, it is the REST API. The server is the single decider: a
+  token it issued to its own first-party clients (a personal API token, a native sign-in token, a
+  first-party sign-in session) is valid for every protected resource it issues tokens for, while a
+  token issued to a third-party OAuth client is valid only for a resource its `aud` names. An
+  inactive or refused token is a `401`, not RFC 7662 section 2.2's `200` with `active: false`: this
+  is the server's status API, and existing callers read only the status. A `401` means
   the signature or expiry check failed, the token was revoked, or its audience does not include the
   resource. A `400` means the body is malformed, `token` is missing or empty, or `resource` is not a
   protected resource the server issues tokens for (`invalid_target`). A `503` means signing keys or

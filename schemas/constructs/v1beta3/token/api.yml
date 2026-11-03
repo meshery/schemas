@@ -315,11 +315,15 @@ paths:
         it. Possessing the token is the credential, so no session or bearer
         token is required. `resource` names the protected resource asking (an
         RFC 8707 resource identifier, as published in that resource's RFC 9728
-        protected resource metadata); omitted, it is the REST API. A token
-        issued to a third-party OAuth client is valid only for a resource its
-        `aud` names. A token issued to the server's own client with an empty
-        `aud`, and a user-created API token, are valid for the REST API and
-        for nothing else. The server trims whitespace from `token`. The server
+        protected resource metadata); omitted, it is the REST API. The server
+        is the single decider: a token the server issued to its own
+        first-party clients (a personal API token, a native sign-in token, a
+        first-party sign-in session) is valid for every protected resource the
+        server issues tokens for; a token issued to a third-party OAuth client
+        is valid only for a resource its `aud` names. An inactive or refused
+        token is answered with a 401, not with RFC 7662 section 2.2's 200 and
+        `active: false`: this is the server's status API, and existing callers
+        read only the status. The server trims whitespace from `token`. The server
         reads only the first 1 MiB (1048576 bytes) of the body and ignores the
         rest; JSON that does not complete within it fails to decode (400). A
         400 body is "Error reading token payload" or "Error decoding token"
@@ -328,10 +332,12 @@ paths:
         for. A 401 body is "invalid access token" when the signature or expiry
         check fails, "revoked access token used" when the token has been
         revoked, or "token audience does not include the requested resource".
-        A caller that sends `resource` must also check that `aud` in the 200
-        body includes its own identifier, and must refuse the token when the
-        200 carries no body: a server that predates `resource` ignores it and
-        answers 200 with an empty body for any valid token.
+        A caller that sends `resource` takes the 200 as the server's decision
+        for that resource - `aud` is [] for a first-party token that is valid
+        everywhere, so a caller must not re-derive the decision from it - and
+        must refuse the token when the 200 carries no body: a server that
+        predates `resource` ignores it and answers 200 with an empty body for
+        any valid token.
       security: []
       requestBody:
         required: true
@@ -639,8 +645,9 @@ components:
           type: array
           description: >-
             The resources the token is bound to (RFC 8707 resource identifiers).
-            Always a JSON array, never null or absent: [] for a token issued to
-            the server's own client and for a user-created API token.
+            Always a JSON array, never null or absent: [] for a token the server
+            issued to its own first-party clients, which is valid for every
+            protected resource the server issues tokens for.
           items:
             type: string
           x-order: 2
