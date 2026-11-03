@@ -8,8 +8,10 @@ info:
     whose effective approval is required, by a person or an AI app: that
     item waits unapproved until a person approves or denies its request in
     the app. An item whose approval is not required opens no request on insert.
-    A content edit or approvalPolicy change that leaves the item unapproved
-    opens a fresh request, whatever the result. approveRequest is the only
+    A content edit supersedes the item's open request and, when it leaves the
+    item unapproved, opens a fresh one, whatever the resolved approval. An
+    approvalPolicy change opens one when it resets an approved item or finds an
+    unapproved item with no open request. approveRequest is the only
     way a content item's `approved` becomes true; ContentItemPayload has no
     `approved`. A request names its subject by type and ID, so any construct
     can be the subject of a kind. Requests are created by the server, not by
@@ -126,14 +128,13 @@ paths:
         `content_item_approval` the server also sets the subject content
         item's `approved` to true in the same transaction; this is the only
         operation that does, since no content item request body carries
-        `approved`. A request that is
-        not `pending` answers 409 and is never changed: a decided request, and
-        a `superseded` one, whose content has changed since it opened, so an
-        approval always applies to the content as of the open request. A
-        soft-deleted subject answers 409, because deleting it already
-        superseded the request; when the subject no longer exists
-        (hard-deleted) the answer is 404. In both cases nothing changes and
-        the request stays as it was. The body may be omitted.
+        `approved`. The refusals are checked in this order, and each changes
+        nothing and leaves the request as it was: a request that is not
+        `pending` (decided or `superseded`) answers 409 whatever its subject;
+        a pending request whose subject is soft-deleted answers 409, because
+        the delete superseded it; a pending request whose subject is
+        hard-deleted answers 404, as does an unknown request. The body may be
+        omitted.
       parameters:
         - $ref: "#/components/parameters/currentOrgId"
         - $ref: "#/components/parameters/requestId"
@@ -175,12 +176,13 @@ paths:
         the session user, `decidedAt` to now and `note` to the optional
         note. The caller must hold the deciding permission key of the
         request's `kind`, else 403 and nothing changes. For
-        `content_item_approval` the subject content item stays unapproved. A
-        request that is not `pending` answers 409 and is never changed, a
-        `superseded` one included. A soft-deleted subject answers 409, because
-        deleting it already superseded the request; when the subject no longer
-        exists (hard-deleted) the answer is 404. In both cases nothing changes
-        and the request stays as it was. The body may be omitted.
+        `content_item_approval` the subject content item stays unapproved.
+        The refusals are checked in this order, and each changes nothing and
+        leaves the request as it was: a request that is not `pending` (decided
+        or `superseded`) answers 409 whatever its subject; a pending request
+        whose subject is soft-deleted answers 409, because the delete
+        superseded it; a pending request whose subject is hard-deleted answers
+        404, as does an unknown request. The body may be omitted.
       parameters:
         - $ref: "#/components/parameters/currentOrgId"
         - $ref: "#/components/parameters/requestId"
