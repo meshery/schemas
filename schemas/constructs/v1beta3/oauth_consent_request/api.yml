@@ -78,7 +78,7 @@ paths:
         identity provider does not know, that has expired, or that was
         already accepted or rejected answers 404. A missing or blank
         challenge answers 400. A 503 means the identity provider could not
-        be reached; the 503 response says when to retry.
+        be reached; the 503 response says that the read may be retried.
       parameters:
         - $ref: "#/components/parameters/consentChallenge"
       responses:
