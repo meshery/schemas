@@ -33,6 +33,7 @@ export const addTagTypes = [
   "Ledger_ledgers",
   "MediaAsset_mediaAssets",
   "MentionAlias_mentionAliases",
+  "OauthConsent_oauthConsents",
   "OauthConsentRequest_oauthConsentRequests",
   "OauthConsentRequest_oauthConsentDecisions",
   "PatternResource_patternResources",
@@ -1803,6 +1804,26 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/mention-aliases/${queryArg.mentionAliasId}`, method: "DELETE" }),
         invalidatesTags: ["MentionAlias_mentionAliases"],
       }),
+      getOauthConsents: build.query<GetOauthConsentsApiResponse, GetOauthConsentsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consents`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["OauthConsent_oauthConsents"],
+      }),
+      deleteOauthConsent: build.mutation<DeleteOauthConsentApiResponse, DeleteOauthConsentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consents`,
+          method: "DELETE",
+          params: {
+            clientId: queryArg?.clientId,
+          },
+        }),
+        invalidatesTags: ["OauthConsent_oauthConsents"],
+      }),
       getOauthConsentRequest: build.query<GetOauthConsentRequestApiResponse, GetOauthConsentRequestApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/oauth/consent-requests`,
@@ -2180,6 +2201,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/identity/tokens`,
           method: "POST",
+          body: queryArg.body,
           params: {
             name: queryArg?.name,
             purpose: queryArg?.purpose,
@@ -3101,7 +3123,7 @@ export type TestOrganizationSmtpConfigurationApiResponse =
 export type TestOrganizationSmtpConfigurationApiArg = {
   /** Organization ID */
   orgId: string;
-  body: {
+  body?: {
     /** Recipient of the test message. Defaults to the calling administrator's own address. */
     to?: string;
   };
@@ -5476,7 +5498,7 @@ export type AddTeamToOrgApiArg = {
   orgId: string;
   /** Team ID. */
   teamId: string;
-  body: {
+  body?: {
     /** Internal action to perform on the team resource. */
     action?: "delete";
   };
@@ -6642,10 +6664,12 @@ export type UpdateUserPreferencesApiArg = {
     usersExtensionPreferences?: {
       [key: string]: any;
     };
-    /** The remote provider preferences of the preference. */
+    /** The remote provider preferences of the preference. Writers set the typed agentsActWithoutApproval field, not a provider's free-form agentsActWithoutApproval entry. A token-authenticated request that would change the stored state of a provider's agentsActWithoutApproval entry (a different value, adding it where absent, or removing it where present) is answered 403, and no part of the payload is applied. Writing back the stored entry unchanged is accepted. Once the typed field has been written, the entry is never read again (see Preference.agentsActWithoutApproval). */
     remoteProviderPreferences?: {
       [key: string]: any;
     };
+    /** Interim rule (temporary): until the upstream platform, workspace and profile policies exist, inherit (including absent) resolves to required, and this field is stored but not consulted by approval resolution (see Preference.agentsActWithoutApproval; the hierarchy proposal is https://github.com/layer5io/meshery-cloud/issues/6365). Target model, once the hierarchy places the profile level: one profile-level source for agent writes, consulted only for an AI-app activity whose approvalPolicy is inherit or absent, and only when no higher-level setting (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365) has decided (see Preference.agentsActWithoutApproval): true means not_required, false means required, and absent sets nothing. Three states on write: true or false stores that value; null clears the stored value back to absent (inherit); omitted keeps the stored value. No schema default is declared. An API token, of any kind, cannot set this field: a token-authenticated request whose payload names this field, with any value including null and whatever the stored state is, is answered 403 and no part of the payload is applied. Only a request authenticated by the signed-in session can set it. A token client doing read-modify-write must omit this field: echoing the value it read, or null, answers 403 for the whole payload. See docs/agent-approval-preference.md. */
+    agentsActWithoutApproval?: boolean | null;
   };
 };
 export type GetUserProfileOverviewApiResponse = /** status 200 Profile overview counts for the caller */ {
@@ -18538,6 +18562,50 @@ export type DeleteMentionAliasApiArg = {
   /** Mention alias ID */
   mentionAliasId: string;
 };
+export type GetOauthConsentsApiResponse = /** status 200 OAuth consents of the signed-in user */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** OAuth consents included on this page of results. */
+  oauthConsents: {
+    /** Server-generated consent ID. */
+    id: string;
+    /** OAuth client ID the consent was granted to. An identifier issued by the authorization server, not a UUID. Unique per user among live consents. */
+    clientId: string;
+    /** Display name the client registered, shown to the user as the connected app's name. */
+    clientName: string;
+    /** Home page of the client, when it registered one. Omitted otherwise. */
+    clientUri?: string;
+    /** Logo of the client, when it registered one. Omitted otherwise. */
+    logoUri?: string;
+    /** Scopes the user granted the client, as the strings the authorization server issues. A scope names one keychain, so the client's tokens are limited to the keys of those keychains (see the token scoping contract). At least one scope must map to a keychain in the server's scope map. The server refuses (`400`, nothing stored) a first consent without one (a re-consent without one revokes the consent and the client's tokens), and refuses a scope string the scope map does not know; it never drops one silently. Standard non-keychain scopes never count toward that minimum. The schema enforces only that the list is not empty; the rule is enforced by the server against the scope map. See the description of this schema. */
+    scopes: string[];
+    /** ID of the root organization the consent names. The client acts only in this organization and its descendants. A re-consent keeps it unless the user explicitly chooses another organization on the consent screen; see the description of this schema. */
+    organizationId: string;
+    /** Time the user first granted the consent. A re-consent keeps it. */
+    createdAt: string;
+    /** Time the consent was last granted or changed. Server-set: equal to `createdAt` when the consent is created, and advanced when the same user consents to the same live client again, which replaces `scopes`. */
+    updatedAt: string;
+    /** Time the client last used a token issued under this consent. Null when the client has not used it yet or the server does not record use. */
+    lastUsedAt?: string | null;
+    /** Time the consent was revoked (soft-deleted). Null while the consent is live. getOauthConsents returns live consents only. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetOauthConsentsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of consents per page, at most 1000. Bounded here because the list is the signed-in user's whole consent set. */
+  pageSize?: number;
+};
+export type DeleteOauthConsentApiResponse = unknown;
+export type DeleteOauthConsentApiArg = {
+  /** OAuth client ID of the consent to revoke. An identifier issued by the authorization server, not a UUID. */
+  clientId: string;
+};
 export type GetOauthConsentRequestApiResponse = /** status 200 The pending OAuth consent request */ {
   /** Opaque challenge the identity provider issued for this consent request, echoed unchanged. Send it back in OauthConsentDecisionPayload to allow or deny the request. */
   consentChallenge: string;
@@ -21326,6 +21394,12 @@ export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
     createdAt: string;
     /** Timestamp when the token was last updated. */
     updatedAt: string;
+    /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+    expiresAt?: string | null;
+    /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+    keychainScoped?: boolean;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -21373,6 +21447,12 @@ export type GenerateTokenApiResponse = /** status 201 Token generated */ {
     createdAt: string;
     /** Timestamp when the token was last updated. */
     updatedAt: string;
+    /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+    expiresAt?: string | null;
+    /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+    keychainScoped?: boolean;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -21386,6 +21466,12 @@ export type GenerateTokenApiArg = {
   name: string;
   /** Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
   purpose?: string;
+  body?: {
+    /** IDs of the keychains the token is limited to. A non-empty list limits the token to the keys of those keychains, intersected with the owner's keys in the request's organization. An absent list creates an unrestricted token. An explicit empty list is refused with 400, so a selection that ends up empty never mints a full-access token. The server records keychainScoped from this list; clients do not set it. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means it never expires. */
+    expiresAt?: string | null;
+  };
 };
 export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
   /** Tokens returned on the current page. */
@@ -21410,6 +21496,12 @@ export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
     createdAt: string;
     /** Timestamp when the token was last updated. */
     updatedAt: string;
+    /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+    expiresAt?: string | null;
+    /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+    keychainScoped?: boolean;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -21443,6 +21535,12 @@ export type DownloadTokenApiResponse = /** status 200 Token response */ {
   createdAt: string;
   /** Timestamp when the token was last updated. */
   updatedAt: string;
+  /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+  keychainIds?: string[];
+  /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+  expiresAt?: string | null;
+  /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+  keychainScoped?: boolean;
 };
 export type DownloadTokenApiArg = {
   /** Token ID */
@@ -21471,6 +21569,12 @@ export type IssueIndefiniteLifetimeTokenApiResponse = /** status 200 Token gener
     createdAt: string;
     /** Timestamp when the token was last updated. */
     updatedAt: string;
+    /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+    expiresAt?: string | null;
+    /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+    keychainScoped?: boolean;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -21523,6 +21627,12 @@ export type ExchangeNativeAuthorizationCodeApiResponse = /** status 201 API toke
   createdAt: string;
   /** Timestamp when the token was last updated. */
   updatedAt: string;
+  /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+  keychainIds?: string[];
+  /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+  expiresAt?: string | null;
+  /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+  keychainScoped?: boolean;
 };
 export type ExchangeNativeAuthorizationCodeApiArg = {
   body: {
@@ -23566,6 +23676,9 @@ export const {
   useLazyGetMentionAliasesQuery,
   useUpsertMentionAliasesMutation,
   useDeleteMentionAliasMutation,
+  useGetOauthConsentsQuery,
+  useLazyGetOauthConsentsQuery,
+  useDeleteOauthConsentMutation,
   useGetOauthConsentRequestQuery,
   useLazyGetOauthConsentRequestQuery,
   useAcceptOauthConsentRequestMutation,

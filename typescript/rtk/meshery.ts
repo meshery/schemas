@@ -13019,7 +13019,7 @@ export type AddTeamToOrgApiArg = {
   orgId: string;
   /** Team ID. */
   teamId: string;
-  body: {
+  body?: {
     /** Internal action to perform on the team resource. */
     action?: "delete";
   };
