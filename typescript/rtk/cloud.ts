@@ -33,6 +33,8 @@ export const addTagTypes = [
   "Ledger_ledgers",
   "MediaAsset_mediaAssets",
   "MentionAlias_mentionAliases",
+  "OauthConsentRequest_oauthConsentRequests",
+  "OauthConsentRequest_oauthConsentDecisions",
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
@@ -1800,6 +1802,31 @@ const injectedRtkApi = api
       deleteMentionAlias: build.mutation<DeleteMentionAliasApiResponse, DeleteMentionAliasApiArg>({
         query: (queryArg) => ({ url: `/api/mention-aliases/${queryArg.mentionAliasId}`, method: "DELETE" }),
         invalidatesTags: ["MentionAlias_mentionAliases"],
+      }),
+      getOauthConsentRequest: build.query<GetOauthConsentRequestApiResponse, GetOauthConsentRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consent-requests`,
+          params: {
+            consentChallenge: queryArg?.consentChallenge,
+          },
+        }),
+        providesTags: ["OauthConsentRequest_oauthConsentRequests"],
+      }),
+      acceptOauthConsentRequest: build.mutation<AcceptOauthConsentRequestApiResponse, AcceptOauthConsentRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consent-requests/accept`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["OauthConsentRequest_oauthConsentDecisions"],
+      }),
+      rejectOauthConsentRequest: build.mutation<RejectOauthConsentRequestApiResponse, RejectOauthConsentRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consent-requests/reject`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["OauthConsentRequest_oauthConsentDecisions"],
       }),
       getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
         query: (queryArg) => ({
@@ -18511,6 +18538,53 @@ export type DeleteMentionAliasApiArg = {
   /** Mention alias ID */
   mentionAliasId: string;
 };
+export type GetOauthConsentRequestApiResponse = /** status 200 The pending OAuth consent request */ {
+  /** Opaque challenge the identity provider issued for this consent request, echoed unchanged. Send it back in OauthConsentDecisionPayload to allow or deny the request. */
+  consentChallenge: string;
+  /** The OAuth client that asks for consent. */
+  client: {
+    /** OAuth client ID. An identifier issued by the identity provider, not a UUID. */
+    clientId: string;
+    /** Display name the client registered. Empty when it registered none. Self-asserted by the client; only `verified` marks trust. */
+    clientName: string;
+    /** The network hosts the client can send the user to after the decision: the host of each https redirect URI (for example `app.example.com`) and of each loopback redirect URI (`127.0.0.1` or `[::1]`), without duplicates. Only redirect URIs whose scheme is `https`, or `http` on a loopback IP literal, are listed here; the `localhost` hostname is never registered (RFC 8252 section 8.3), and a private-use app redirect is listed in `appSchemes` instead. Lowercase ASCII, with no scheme, port or path; an internationalized hostname is sent in IDNA A-label (punycode) form. Empty when the client registered only app redirects; `redirectHosts` and `appSchemes` are never both empty. */
+    redirectHosts: string[];
+    /** The private-use URI schemes (RFC 8252 section 7.1) of the client's app redirect URIs, without duplicates, for example `vscode` or `com.example.app`: the app that claims the scheme on the user's device receives the user after the decision. Registration accepts a private-use scheme only when it is on the server-side app-scheme allowlist read from configuration (defaults `vscode` and `cursor`), so only allowlisted schemes appear here. A reverse-domain scheme such as `com.example.app` names an app, not a host, and must not be shown as one. Empty when the client registered only https and loopback redirects; `redirectHosts` and `appSchemes` are never both empty. */
+    appSchemes: string[];
+    /** Derived only from the client's redirect targets, never from `clientName` or `clientId`: true only when every redirect URI of the client matches one operator-listed known-client entry (that entry's https hosts or its app schemes). Marks trust and never blocks: a false value is shown as an unverified client, and the user may still allow it. */
+    verified: boolean;
+  };
+  /** Scopes the client asks for, as the identity provider recorded them. An accept grants only what the client requested, never more: these scopes, and any audience the client asked the identity provider for. Empty when the client asks for none. */
+  requestedScopes: string[];
+};
+export type GetOauthConsentRequestApiArg = {
+  /** Opaque consent challenge the identity provider issued, as the consent page received it. Required; a missing or blank value answers 400. */
+  consentChallenge: string;
+};
+export type AcceptOauthConsentRequestApiResponse = /** status 200 Consent request allowed; navigate to redirectTo */ {
+  /** Absolute URL the browser must navigate to next, issued by the identity provider. It continues the authorization and returns the user to the client. */
+  redirectTo: string;
+};
+export type AcceptOauthConsentRequestApiArg = {
+  body: {
+    /** The challenge of the request being decided, as getOauthConsentRequest returned it. A blank value answers 400. */
+    consentChallenge: string;
+    /** On accept, true asks the identity provider to remember the grant, so a later request from the same client for the same scopes is not shown again while the grant is remembered. False or omitted grants this request only. Ignored on reject. */
+    remember?: boolean;
+  };
+};
+export type RejectOauthConsentRequestApiResponse = /** status 200 Consent request denied; navigate to redirectTo */ {
+  /** Absolute URL the browser must navigate to next, issued by the identity provider. It continues the authorization and returns the user to the client. */
+  redirectTo: string;
+};
+export type RejectOauthConsentRequestApiArg = {
+  body: {
+    /** The challenge of the request being decided, as getOauthConsentRequest returned it. A blank value answers 400. */
+    consentChallenge: string;
+    /** On accept, true asks the identity provider to remember the grant, so a later request from the same client for the same scopes is not shown again while the grant is remembered. False or omitted grants this request only. Ignored on reject. */
+    remember?: boolean;
+  };
+};
 export type GetPatternResourcesApiResponse = /** status 200 Pattern resources page */ {
   /** Current page number of the result set. */
   page?: number;
@@ -23468,6 +23542,10 @@ export const {
   useLazyGetMentionAliasesQuery,
   useUpsertMentionAliasesMutation,
   useDeleteMentionAliasMutation,
+  useGetOauthConsentRequestQuery,
+  useLazyGetOauthConsentRequestQuery,
+  useAcceptOauthConsentRequestMutation,
+  useRejectOauthConsentRequestMutation,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,
