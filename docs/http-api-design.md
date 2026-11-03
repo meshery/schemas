@@ -175,7 +175,11 @@ refetches the imported-designs inventory, with no consumer-side tag wiring.
 The tag picks the cache within a construct, so an operation that must stay out of it takes its own
 tag. `getGithubRepositoryBranches` sits beside the import operations in `v1beta3/design` but reads
 only GitHub, so it is tagged `github` (`Design_github`): a design write does not refetch the branch
-list. `validation/design_github_import_contract_test.go` pins each operation's tag.
+list. `validation/design_github_import_contract_test.go` pins each operation's tag. The same
+holds in reverse for a write that must not refetch a read: `v1beta3/oauth_consent_request` tags
+its accept and reject decisions `oauthConsentDecisions`, apart from the read's
+`oauthConsentRequests`, because a decision consumes the single-use challenge and a refetch of the
+read would only answer `404` (see [the contract](oauth-consent-request-contract.md)).
 
 The GitHub integration operations that touch no design - the connection status, an installation's
 repositories, a repository's file tree, the Kanvas workflow check and install, and the two browser
@@ -259,6 +263,21 @@ declared paths carry no `/api` prefix:
   tokens are still revoked but the answer is the failure one - `303` for a browser document
   navigation, an empty `500` otherwise. Cookies are cleared either way. On an organization custom
   domain the user is identified from `provider_token`.
+
+## OAuth consent requests
+
+`v1beta3/oauth_consent_request` is the consent page's API, under `/api/identity/oauth/consent-requests`.
+`getOauthConsentRequest` reads a pending request by the required `consentChallenge` query parameter
+(a query parameter because identity provider challenges are long opaque strings), and
+`acceptOauthConsentRequest` and `rejectOauthConsentRequest` (`POST .../accept`, `POST .../reject`,
+body `OauthConsentDecisionPayload`) decide it, answering the `redirectTo` the browser must navigate
+to. Only the signed-in user the challenge was issued for may read or decide it (`403` otherwise), a
+challenge is single use (`404` once decided or expired), an accept grants only what the client
+requested, and `client.verified` marks trust without blocking. `client.redirectHosts` (https and
+loopback hosts) and `client.appSchemes` (private-use app schemes) are separate lists, so an app is
+never shown as a host. A `503` on a decision means the outcome is unknown: a retry that answers
+`404` means the challenge was already decided. Full contract:
+[`oauth-consent-request-contract.md`](oauth-consent-request-contract.md).
 
 ## Schedules and claims
 
