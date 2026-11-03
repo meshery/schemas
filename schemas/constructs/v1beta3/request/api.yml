@@ -130,11 +130,10 @@ paths:
         operation that does, since no content item request body carries
         `approved`. The refusals are checked in this order, and each changes
         nothing and leaves the request as it was: a request that is not
-        `pending` (decided or `superseded`) answers 409 whatever its subject;
-        a pending request whose subject is soft-deleted answers 409, because
-        the delete superseded it; a pending request whose subject is
-        hard-deleted answers 404, as does an unknown request. The body may be
-        omitted.
+        `pending` answers 409 whatever its subject (decided, or `superseded`,
+        including by a soft delete of its subject); a pending request whose
+        subject is hard-deleted answers 404, as does an unknown request. The
+        body may be omitted.
       parameters:
         - $ref: "#/components/parameters/currentOrgId"
         - $ref: "#/components/parameters/requestId"
@@ -178,11 +177,11 @@ paths:
         request's `kind`, else 403 and nothing changes. For
         `content_item_approval` the subject content item stays unapproved.
         The refusals are checked in this order, and each changes nothing and
-        leaves the request as it was: a request that is not `pending` (decided
-        or `superseded`) answers 409 whatever its subject; a pending request
-        whose subject is soft-deleted answers 409, because the delete
-        superseded it; a pending request whose subject is hard-deleted answers
-        404, as does an unknown request. The body may be omitted.
+        leaves the request as it was: a request that is not `pending` answers
+        409 whatever its subject (decided, or `superseded`, including by a
+        soft delete of its subject); a pending request whose subject is
+        hard-deleted answers 404, as does an unknown request. The body may be
+        omitted.
       parameters:
         - $ref: "#/components/parameters/currentOrgId"
         - $ref: "#/components/parameters/requestId"
