@@ -127,8 +127,7 @@ nothing: the request stays as it was.
 | The request | The subject content item | Answer |
 | --- | --- | --- |
 | Pending | Live | `200`, decided |
-| Not pending (decided or superseded) | Any | `409` |
-| Soft-deleted subject (`deletedAt` set) | Any | `409`: the delete superseded the request, so it is not pending |
+| Not pending (decided, or superseded by a soft delete of the subject) | Any | `409` |
 | Pending | Hard-deleted (no row) | `404` |
 | Unknown, or in another organization | Any | `404` |
 
