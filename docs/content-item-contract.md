@@ -228,7 +228,7 @@ can never change the policy.
   `inherit` stores null, so the item inherits.
 - **Update.** Omitted keeps the stored value and is not a change, so it is never
   refused. An explicit value different from the stored one is a change, and
-  `inherit` returns the item to inheriting. Absent, null and `inherit` are one
+  `inherit` returns the item to inheriting. Absent and `inherit` are one
   value: the server stores `inherit` as null, so writing `inherit` over an
   inheriting item changes nothing and is never refused.
 - **Write-back.** A caller without the key that reads an item and writes it back
@@ -391,7 +391,7 @@ without parsing `data`:
 
 | Field | Type | Meaning |
 | --- | --- | --- |
-| `approved` | boolean | Whether a person approved the item to run. Server-set and read-only. The client that runs the queue reads it. |
+| `approved` | boolean | Whether the item is approved to run. Set true by `approveRequest`, or by an insert whose effective approval is not required (no person decides). Server-set and read-only. The client that runs the queue reads it. |
 | `createdByClient` | string | OAuth client ID of the AI app that created the item. Server-set from the access token; empty or absent for an item a person created. |
 
 **`approved` is in the entity only, never in a request body.**
@@ -408,11 +408,12 @@ server ignores an `approved` that
 an older client still sends, because the payload is not closed. The generated
 Go and TypeScript payloads have no such field.
 
-**Approval goes only through the request construct.** Inserting an item whose
-effective approval is required creates a `pending` `content_item_approval`
-request for it (see [`request-contract.md`](request-contract.md)). An item
-whose approval is not required opens no request. After insert, `approveRequest`
-is the only operation that sets the item's `approved` to true, in the same
+**A person's approval goes only through the request construct.** Inserting an
+item whose effective approval is required creates a `pending`
+`content_item_approval` request for it (see
+[`request-contract.md`](request-contract.md)). An item whose approval is not
+required opens no request and lands `approved` true, with no person deciding.
+After insert, `approveRequest` is the only operation that sets the item's `approved` to true, in the same
 transaction that decides the request; `denyRequest` leaves it false. Both need the Decide Content
 Item Approvals key and carry no `x-mcp`, and no OAuth scope keychain carries
 that key, so an AI app can never approve an item, its own or another's. The
@@ -476,18 +477,19 @@ backfill is the only time `Approved?` sets `approved`.
   true with no request when it is not; resolve `approvalPolicy` at insert, at
   each content edit and at each change to the stored policy, and write
   `approval_required` and `approval_policy_source` at those times; on a content
-  edit that resolves to required, reset `approved` to false, supersede the
-  item's open request and, when the item is left unapproved, open a fresh pending
-  one (for not required as well as required); on a policy change that resolves to
-  required, reset an approved item to false and open a pending request unless one
-  is already pending, and open one for any unapproved item with none open, under
-  either result (the [open-request invariant](#the-open-request-invariant));
+  edit, supersede the item's open request, if any, and open a fresh pending one
+  when the item is left unapproved (for not required as well as required); on a
+  content edit that resolves to required, also reset `approved` to false; on a
+  policy change that resolves to required, reset an approved item to false and
+  open a pending request unless one is already pending, and open one for any
+  unapproved item with none open, under either result (the
+  [open-request invariant](#the-open-request-invariant));
   on a delete, close the item's open request as `superseded` in the delete
   transaction;
   never set `approved` on an update; refuse with a 403 an
   `approvalPolicy` change from a caller without Decide Content Item Approvals
   (`required` or `not_required` on insert; on update, a value different from the
-  stored one, with absent, null and `inherit` as one value); and own
+  stored one, with absent and `inherit` as one value); and own
   `data["Approved?"]` while it is mirrored. Also tell an omitted
   `rulesOfEngagement` from `null` on update, extend the fingerprint, serve the
   `threadId` filter, and answer `409` with `code` `idempotency_key_in_flight`

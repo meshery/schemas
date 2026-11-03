@@ -261,7 +261,7 @@ paths:
         change whose resolved result is required, can reset it, as described
         below. A caller without Decide Content Item
         Approvals gets a 403 if it sends an `approvalPolicy` different from
-        the stored one (absent, null and `inherit` count as one value, since
+        the stored one (absent and `inherit` count as one value, since
         the server stores `inherit` as null);
         sending back the unchanged stored value is accepted and changes
         nothing. An omitted `approvalPolicy` keeps the stored value and is not
@@ -279,15 +279,16 @@ paths:
         `approvalPolicy` (a change to it alone is handled below),
         `expectedFingerprint`, `id` and the thread fields (`threadId`,
         `replyToId`, `threadIndex`, fixed at insert).
-        When approval resolves to required, an item that was `approved` is set
-        to `approved` false. The item's open `content_item_approval` request,
-        if it has one, is superseded: it is closed with `status` `superseded`,
-        `decidedAt` set to the edit time, and no `decidedBy` and no `note`.
-        When approval resolves to not required, `approved` is unchanged: an
-        approved item stays approved and opens no request. Whatever the
-        resolved approval, an item the edit leaves unapproved gets a fresh
-        pending request for the content as it now is, in the same
-        transaction, so after the edit an unapproved item has an open request
+        Whatever the resolved approval, the item's open
+        `content_item_approval` request, if it has one, is superseded: it is
+        closed with `status` `superseded`, `decidedAt` set to the edit time,
+        and no `decidedBy` and no `note`. When approval resolves to required,
+        an item that was `approved` is set to `approved` false. When approval
+        resolves to not required, `approved` is unchanged: an approved item
+        stays approved and opens no request. An item the edit leaves
+        unapproved gets a fresh pending request for the content as it now is,
+        in the same transaction, so after the edit an unapproved item has an
+        open request
         (the open-request invariant in docs/content-item-contract.md). An
         update never approves: the item stays unapproved until a decider
         approves that request. A failed write keeps none of these changes, the item and
@@ -596,12 +597,13 @@ components:
           description: |
             The item's own approval policy. Optional: omitted on insert, the
             item inherits; omitted on update, the stored value is kept;
-            `inherit` on update clears an explicit value back to inherit.
+            `inherit` on update clears an explicit value back to inherit; the
+            field does not accept null.
             A caller without Decide Content Item Approvals in the session
             organization is refused with a 403 and nothing changes when it
             sends a value that would change the stored one: on insert,
             `required` or `not_required`; on update, a value different from
-            the stored one (absent, null and `inherit` are one value, since the
+            the stored one (absent and `inherit` are one value, since the
             server stores `inherit` as null). Sending back the unchanged stored value
             is accepted, and an omitted value on update keeps the stored one and is
             never refused. An AI app token never carries that key. Interim: until
