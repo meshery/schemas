@@ -386,7 +386,8 @@ paths:
         `schedule:write`), seeded to the organization admin role; a caller
         without it receives 403 and nothing is written. The broad
         updateOrg and patchOrgPreferences operations can still change
-        `schedulePause`, and stay role-gated as before. The caller must be a
+        `schedulePause`; there the change requires organization admin, as
+        before. The caller must be a
         live member of the organization named by `orgId`; a caller who is not
         receives 404, and this operation does not take `X-Current-Orgid` (see
         the organization selector in docs/mcp-operation-contract.md). See
@@ -884,10 +885,12 @@ components:
           x-go-type: "SchedulePause"
           $ref: "#/components/schemas/SchedulePause"
           description: >-
-            Organization-wide schedule pause. Only organization admins may set
-            or lift it; a write from anyone else that changes it is refused with
-            403. Omitting schedulePause from a preferences write keeps the
-            current pause unchanged; it does not lift the pause.
+            Organization-wide schedule pause. Changing it through updateOrg or
+            patchOrgPreferences requires organization admin; a write from anyone
+            else that changes it is refused with 403. updateOrgSchedulePause sets
+            it under the Pause schedules key instead. Omitting schedulePause
+            from a preferences write keeps the current pause unchanged; it does
+            not lift the pause.
 
     SchedulePause:
       type: object
@@ -966,10 +969,12 @@ components:
           x-go-type: "SchedulePausePayload"
           $ref: "#/components/schemas/SchedulePausePayload"
           description: >-
-            Organization-wide schedule pause. Only organization admins may set
-            or lift it; a write from anyone else that changes it is refused with
-            403. Omitting schedulePause from a preferences write keeps the
-            current pause unchanged; it does not lift the pause.
+            Organization-wide schedule pause. Changing it through updateOrg or
+            patchOrgPreferences requires organization admin; a write from anyone
+            else that changes it is refused with 403. updateOrgSchedulePause sets
+            it under the Pause schedules key instead. Omitting schedulePause
+            from a preferences write keeps the current pause unchanged; it does
+            not lift the pause.
 
     PreferencesPatchPayload:
       type: object
@@ -1002,10 +1007,11 @@ components:
           x-go-type: "SchedulePausePayload"
           $ref: "#/components/schemas/SchedulePausePayload"
           description: >-
-            Organization-wide schedule pause. Only organization admins may set
-            or lift it; a write from anyone else that changes it is refused with
-            403. Omitted keeps the current pause unchanged; it does not lift the
-            pause.
+            Organization-wide schedule pause. Changing it through updateOrg or
+            patchOrgPreferences requires organization admin; a write from anyone
+            else that changes it is refused with 403. updateOrgSchedulePause sets
+            it under the Pause schedules key instead. Omitted keeps the current
+            pause unchanged; it does not lift the pause.
 
     OrgMetadata:
       type: object
