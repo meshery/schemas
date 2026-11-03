@@ -107,8 +107,8 @@ type Pagesize = string
 // Search defines model for search.
 type Search = string
 
-// CoreMeshKitError403 defines model for 403.
-type CoreMeshKitError403 struct {
+// CoreN403 defines model for 403.
+type CoreN403 struct {
 	// Code MeshKit error code.
 	Code string `json:"code" yaml:"code"`
 

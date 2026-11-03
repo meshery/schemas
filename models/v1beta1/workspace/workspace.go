@@ -263,8 +263,8 @@ type ViewId = core.ViewId
 // WorkspaceId defines model for workspaceId.
 type WorkspaceId = core.WorkspaceId
 
-// CoreMeshKitError403 defines model for 403.
-type CoreMeshKitError403 struct {
+// CoreN403 defines model for 403.
+type CoreN403 struct {
 	// Code MeshKit error code.
 	Code string `json:"code" yaml:"code"`
 
