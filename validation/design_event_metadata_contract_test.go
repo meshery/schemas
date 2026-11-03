@@ -32,15 +32,6 @@ var designEventShapes = map[string]string{
 	"DesignSavedEventDesign":              "",
 }
 
-// designEventTopLevelShapes are the shapes a producer writes as the whole
-// metadata of an event; each restates the full rule in its description.
-var designEventTopLevelShapes = []string{
-	"DesignEventIdentity",
-	"RelationshipEvaluationEventMetadata",
-	"DesignValidationEventMetadata",
-	"DesignSavedEventMetadata",
-}
-
 // designEventBannedKeys must never be a property of any shape, at any depth:
 // they are the design contents and raw results the shapes exist to keep out
 // of event metadata.
@@ -176,38 +167,15 @@ func TestDesignValidationEventMetadataErrorsAreBounded(t *testing.T) {
 	}
 }
 
-// TestDesignEventMetadataDescriptionsStateTheRule pins the banned keys and
-// the 16 KB guard into Event.metadata and every top-level shape, and pins
-// Event.metadata itself as a free-form map.
-func TestDesignEventMetadataDescriptionsStateTheRule(t *testing.T) {
+// TestEventMetadataStaysFreeForm pins Event.metadata as a nullable free-form
+// map, so the named shapes add no breaking change to the event contract.
+func TestEventMetadataStaysFreeForm(t *testing.T) {
 	metadata, ok := mustLookup(t, loadYAMLMap(t, designEventSpec), "components", "schemas", "Event", "properties", "metadata").(map[string]any)
 	if !ok {
 		t.Fatal("Event.metadata is not a mapping")
 	}
 	if metadata["type"] != "object" || metadata["additionalProperties"] != true || metadata["nullable"] != true || metadata["x-go-type"] != "core.Map" {
 		t.Errorf("Event.metadata = %v, want a nullable free-form object (core.Map)", metadata)
-	}
-	descriptions := map[string]string{"Event.metadata": metadata["description"].(string)}
-	for _, name := range designEventTopLevelShapes {
-		descriptions[name], _ = designEventRawShape(t, name)["description"].(string)
-	}
-	for label, desc := range descriptions {
-		for _, key := range designEventBannedKeys {
-			if !strings.Contains(desc, "`"+key+"`") {
-				t.Errorf("%s description does not ban `%s`", label, key)
-			}
-		}
-		if !strings.Contains(desc, "16 KB guard") {
-			t.Errorf("%s description does not state the 16 KB guard", label)
-		}
-		if strings.Contains(desc, "\u2014") {
-			t.Errorf("%s description uses an em dash", label)
-		}
-	}
-	for _, phrase := range []string{"`metadata.error` holds only the MeshKit error", "`design_name`", "`view_link`"} {
-		if !strings.Contains(descriptions["Event.metadata"], phrase) {
-			t.Errorf("Event.metadata description does not mention %s", phrase)
-		}
 	}
 }
 

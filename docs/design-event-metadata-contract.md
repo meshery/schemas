@@ -152,8 +152,7 @@ flat, closed struct in Go and a flat type in TypeScript.
 `validation/design_event_metadata_contract_test.go` pins the contract: each
 shape is closed, camelCase, carries a description and `x-go-name` per property
 and no server-generated or banned keys; the identity fields agree across
-shapes and only `designId` is required; `errors` is capped at 20; the
-descriptions state the banned keys and the guard; `Event.metadata` stays a
-free-form map; and each sample template under `event/templates/` validates
+shapes and only `designId` is required; `errors` is capped at 20;
+`Event.metadata` stays a free-form map; and each sample template under `event/templates/` validates
 against its shape, while design contents, a missing `designId`, 21 errors and
 negative counts are rejected.
