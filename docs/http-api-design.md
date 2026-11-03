@@ -175,7 +175,11 @@ refetches the imported-designs inventory, with no consumer-side tag wiring.
 The tag picks the cache within a construct, so an operation that must stay out of it takes its own
 tag. `getGithubRepositoryBranches` sits beside the import operations in `v1beta3/design` but reads
 only GitHub, so it is tagged `github` (`Design_github`): a design write does not refetch the branch
-list. `validation/design_github_import_contract_test.go` pins each operation's tag.
+list. `validation/design_github_import_contract_test.go` pins each operation's tag. The same
+holds in reverse for a write that must not refetch a read: `v1beta3/oauth_consent_request` tags
+its accept and reject decisions `oauthConsentDecisions`, apart from the read's
+`oauthConsentRequests`, because a decision consumes the single-use challenge and a refetch of the
+read would only answer `404` (see [the contract](oauth-consent-request-contract.md)).
 
 The GitHub integration operations that touch no design - the connection status, an installation's
 repositories, a repository's file tree, the Kanvas workflow check and install, and the two browser

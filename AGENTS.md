@@ -110,6 +110,8 @@ The YAML file for an entity represents the **full server-side object** as return
 
 Exception: an **event-metadata construct** (no endpoints; recorded and read back verbatim as an `Event`'s `metadata`) has no server-generated fields, so it declares none and its `*Payload` carries the same field set. See [the authoring reference](docs/schema-authoring-reference.md#event-metadata-constructs-have-no-server-generated-fields).
 
+Exception: a **read-through construct** (has endpoints but no stored row; every call reads the object from another system or computes it, e.g. `oauth_consent_request`) declares no `id`, `created_at`, `updated_at` or `deleted_at`. See [the authoring reference](docs/schema-authoring-reference.md#read-through-constructs-have-no-stored-row).
+
 ### Rule 2: Every writable entity needs a `*Payload` schema in `api.yml`
 
 For any entity that has `POST` or `PUT` operations, define a `{Construct}Payload` schema in `api.yml` that:

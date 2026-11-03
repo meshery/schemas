@@ -49,7 +49,12 @@ security:
   - jwt: []
 tags:
   - name: oauthConsentRequests
-    description: Operations on the pending OAuth consent requests of the signed-in user.
+    description: Reads of the pending OAuth consent requests of the signed-in user.
+  - name: oauthConsentDecisions
+    description: >-
+      Allow and deny decisions on a pending OAuth consent request. A separate
+      tag from the read, so a decision does not refetch the request it just
+      consumed: the challenge is single use, and that refetch would answer 404.
 
 paths:
   /api/identity/oauth/consent-requests:
@@ -71,7 +76,7 @@ paths:
         identity provider does not know, that has expired, or that was
         already accepted or rejected answers 404. A missing or blank
         challenge answers 400. A 503 means the identity provider could not
-        be reached; nothing was read and the call may be retried.
+        be reached; the 503 response says when to retry.
       parameters:
         - $ref: "#/components/parameters/consentChallenge"
       responses:
@@ -97,7 +102,7 @@ paths:
     post:
       x-internal: ["cloud"]
       tags:
-        - oauthConsentRequests
+        - oauthConsentDecisions
       summary: Allow a pending OAuth consent request
       operationId: acceptOauthConsentRequest
       description: |
@@ -119,11 +124,8 @@ paths:
         a challenge issued for another user answers 403 and is not decided.
         A challenge the identity provider does not know, that has expired, or
         that was already accepted or rejected answers 404. A malformed body,
-        or a missing or blank `consentChallenge`, answers 400. A 503 means
-        the identity provider could not be reached or did not answer, so the
-        outcome is unknown: the request may already have been decided. The
-        caller may retry; a retry that answers 404 means the challenge was
-        already decided, and the user should restart sign-in from the client.
+        or a missing or blank `consentChallenge`, answers 400. A 503 leaves
+        the outcome unknown; the 503 response says how to retry.
       requestBody:
         required: true
         content:
@@ -153,7 +155,7 @@ paths:
     post:
       x-internal: ["cloud"]
       tags:
-        - oauthConsentRequests
+        - oauthConsentDecisions
       summary: Deny a pending OAuth consent request
       operationId: rejectOauthConsentRequest
       description: |
@@ -171,11 +173,8 @@ paths:
         a challenge issued for another user answers 403 and is not decided.
         A challenge the identity provider does not know, that has expired, or
         that was already accepted or rejected answers 404. A malformed body,
-        or a missing or blank `consentChallenge`, answers 400. A 503 means
-        the identity provider could not be reached or did not answer, so the
-        outcome is unknown: the request may already have been decided. The
-        caller may retry; a retry that answers 404 means the challenge was
-        already decided, and the user should restart sign-in from the client.
+        or a missing or blank `consentChallenge`, answers 400. A 503 leaves
+        the outcome unknown; the 503 response says how to retry.
       requestBody:
         required: true
         content:

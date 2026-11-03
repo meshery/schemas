@@ -36,12 +36,26 @@ func loadOauthConsentRequestSpec(t *testing.T) *openapi3.T {
 func TestOauthConsentRequestOperations(t *testing.T) {
 	spec := loadOauthConsentRequestSpec(t)
 
+	// The read and the decisions take different tags, so each names its own
+	// RTK cache tag (OauthConsentRequest_<tag>): a decision must not
+	// invalidate the read, whose single-use challenge it just consumed, or
+	// RTK would refetch a request that now answers 404.
 	cases := []struct {
-		path, method, operationID, body, success string
+		path, method, operationID, tag, body, success string
 	}{
-		{"/api/identity/oauth/consent-requests", "GET", "getOauthConsentRequest", "", "OauthConsentRequest"},
-		{"/api/identity/oauth/consent-requests/accept", "POST", "acceptOauthConsentRequest", "OauthConsentDecisionPayload", "OauthConsentRedirect"},
-		{"/api/identity/oauth/consent-requests/reject", "POST", "rejectOauthConsentRequest", "OauthConsentDecisionPayload", "OauthConsentRedirect"},
+		{"/api/identity/oauth/consent-requests", "GET", "getOauthConsentRequest", "oauthConsentRequests", "", "OauthConsentRequest"},
+		{"/api/identity/oauth/consent-requests/accept", "POST", "acceptOauthConsentRequest", "oauthConsentDecisions", "OauthConsentDecisionPayload", "OauthConsentRedirect"},
+		{"/api/identity/oauth/consent-requests/reject", "POST", "rejectOauthConsentRequest", "oauthConsentDecisions", "OauthConsentDecisionPayload", "OauthConsentRedirect"},
+	}
+	if spec.Info.Title != "OauthConsentRequest" {
+		t.Errorf("info.title = %q, want \"OauthConsentRequest\" (it prefixes the generated RTK cache tags)", spec.Info.Title)
+	}
+	var declaredTags []string
+	for _, tag := range spec.Tags {
+		declaredTags = append(declaredTags, tag.Name)
+	}
+	if want := []string{"oauthConsentRequests", "oauthConsentDecisions"}; !reflect.DeepEqual(declaredTags, want) {
+		t.Errorf("top-level tags = %v, want %v", declaredTags, want)
 	}
 	if got := slices.Sorted(maps.Keys(spec.Paths.Map())); len(got) != len(cases) {
 		t.Errorf("declared paths = %v, want exactly the %d consent request paths", got, len(cases))
@@ -74,8 +88,8 @@ func TestOauthConsentRequestOperations(t *testing.T) {
 		if !reflect.DeepEqual(internal, []string{"cloud"}) {
 			t.Errorf("%s x-internal = %v, want [cloud]", c.operationID, internal)
 		}
-		if !reflect.DeepEqual(op.Tags, []string{"oauthConsentRequests"}) {
-			t.Errorf("%s tags = %v, want [oauthConsentRequests]", c.operationID, op.Tags)
+		if !reflect.DeepEqual(op.Tags, []string{c.tag}) {
+			t.Errorf("%s tags = %v, want [%s] (its only tag names the cache it provides or invalidates)", c.operationID, op.Tags, c.tag)
 		}
 		// The operations keep the construct's session security; none is public.
 		if op.Security != nil {

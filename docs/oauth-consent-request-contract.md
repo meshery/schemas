@@ -26,6 +26,15 @@ required, `remember` optional, default `false`; reject reads only
 not a path segment, because identity provider challenges are long opaque
 strings. It is printable ASCII with no spaces, 1 to 8192 characters.
 
+The read is tagged `oauthConsentRequests` and the two decisions
+`oauthConsentDecisions`, so the generated RTK client gives them different cache
+tags (`OauthConsentRequest_oauthConsentRequests` and
+`OauthConsentRequest_oauthConsentDecisions`). A decision therefore does not
+invalidate the read. If it did, RTK would refetch the request the page still
+holds, and since the decision just consumed the single-use challenge, that
+refetch would answer `404` and flip the page into an error while the browser
+navigates to `redirectTo`. Keep the decisions off the read's tag.
+
 Every operation declares the same refusals. `400`, `403`, `404`, `500` and
 `503` carry the MeshKit JSON error body; `401` is the shared plain-text
 response of the authentication middleware.
@@ -111,6 +120,9 @@ identity provider was unreachable or did not answer rather than a store
 failure. A decision that answers `503` may still have reached the identity
 provider, which is why its outcome is unknown and a retry can answer `404`.
 
-`validation/oauth_consent_request_contract_test.go` pins the operations, the
-required query parameter, the payload fields and the declared responses, and
+This is the read-through exception to Rule 1 in
+[the authoring reference](schema-authoring-reference.md#read-through-constructs-have-no-stored-row).
+
+`validation/oauth_consent_request_contract_test.go` pins the operations and
+their tags, the required query parameter, the payload fields and the declared responses, and
 runs the schemas against request and response bodies.
