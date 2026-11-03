@@ -2,9 +2,6 @@ package validation
 
 import (
 	"fmt"
-	"maps"
-	"os"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -20,8 +17,6 @@ type schemaEndpoint struct {
 	OperationID       string             // "getConnection"
 	Tags              []string           // operation tags -> derive Category / Sub-Category
 	XInternal         []string           // ["meshery"], ["cloud"], or nil (= both repos)
-	Supersedes        string             // x-supersedes: the older version this declaration replaces, or ""
-	Title             string             // info.title of the construct version: the bundler's construct identity
 	RequestShape      *schemaShape       // nil for GET/DELETE without body
 	ResponseShape     *schemaShape       // from primary 2xx response
 	SuccessStatusCode int                // primary 2xx response code (200/201/202/204)
@@ -84,25 +79,58 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 		if spec.LoadErr != nil {
 			return nil // skip specs that fail to load; schema validator reports the violation
 		}
-		endpoints, err := specEndpoints(spec)
-		if err != nil {
-			return err
+		doc := spec.Doc
+		if doc == nil || doc.Paths == nil {
+			return nil
 		}
-		index.Endpoints = append(index.Endpoints, endpoints...)
+		for path, pathItem := range doc.Paths.Map() {
+			if pathItem == nil {
+				continue
+			}
+			for _, method := range httpMethods {
+				op := getOperation(pathItem, method)
+				if op == nil {
+					continue
+				}
+
+				xInternal, err := parseXInternal(op.Extensions)
+				if err != nil {
+					return err
+				}
+
+				ep := schemaEndpoint{
+					Method:      strings.ToUpper(method),
+					Path:        path,
+					OperationID: op.OperationID,
+					Tags:        append([]string(nil), op.Tags...),
+					XInternal:   xInternal,
+					Deprecated:  op.Deprecated,
+					Public:      isExplicitlyPublic(op, doc),
+					Construct:   spec.Construct,
+					Version:     spec.Version,
+					SourceFile:  spec.RelativePath,
+				}
+
+				if op.RequestBody != nil && op.RequestBody.Value != nil {
+					ep.RequestBody = true
+					for _, media := range op.RequestBody.Value.Content {
+						if media != nil && media.Schema != nil {
+							ep.RequestShape = buildSchemaShape(media.Schema)
+							break
+						}
+					}
+				}
+
+				ep.ResponseShape, ep.HasSuccessRef, ep.Has2xx, ep.SuccessStatusCode = pickResponseShape(op)
+				ep.QueryParams = mergeQueryParams(pathItem.Parameters, op.Parameters)
+
+				index.Endpoints = append(index.Endpoints, ep)
+			}
+		}
 		return nil
 	}); err != nil {
 		return nil, err
 	}
-
-	named, err := supersededDeclarations(rootDir, index.Endpoints)
-	if err != nil {
-		return nil, err
-	}
-	superseded, err := dropSupersededEndpoints(append(index.Endpoints, named...))
-	if err != nil {
-		return nil, err
-	}
-	index.Endpoints = superseded
 
 	sort.Slice(index.Endpoints, func(i, j int) bool {
 		if index.Endpoints[i].Path != index.Endpoints[j].Path {
@@ -112,125 +140,6 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 	})
 
 	return index, nil
-}
-
-// specEndpoints indexes every operation one construct spec declares.
-func specEndpoints(spec constructSpec) ([]schemaEndpoint, error) {
-	doc := spec.Doc
-	if doc == nil || doc.Paths == nil {
-		return nil, nil
-	}
-	title := ""
-	if doc.Info != nil {
-		title = doc.Info.Title
-	}
-	var endpoints []schemaEndpoint
-	for path, pathItem := range doc.Paths.Map() {
-		if pathItem == nil {
-			continue
-		}
-		for _, method := range httpMethods {
-			op := getOperation(pathItem, method)
-			if op == nil {
-				continue
-			}
-
-			xInternal, err := parseXInternal(op.Extensions)
-			if err != nil {
-				return nil, err
-			}
-			supersedes, err := parseSupersedes(op.Extensions)
-			if err != nil {
-				return nil, err
-			}
-
-			ep := schemaEndpoint{
-				Method:      strings.ToUpper(method),
-				Path:        path,
-				OperationID: op.OperationID,
-				Tags:        append([]string(nil), op.Tags...),
-				XInternal:   xInternal,
-				Supersedes:  supersedes,
-				Title:       title,
-				Deprecated:  op.Deprecated,
-				Public:      isExplicitlyPublic(op, doc),
-				Construct:   spec.Construct,
-				Version:     spec.Version,
-				SourceFile:  spec.RelativePath,
-			}
-
-			if op.RequestBody != nil && op.RequestBody.Value != nil {
-				ep.RequestBody = true
-				for _, media := range op.RequestBody.Value.Content {
-					if media != nil && media.Schema != nil {
-						ep.RequestShape = buildSchemaShape(media.Schema)
-						break
-					}
-				}
-			}
-
-			ep.ResponseShape, ep.HasSuccessRef, ep.Has2xx, ep.SuccessStatusCode = pickResponseShape(op)
-			ep.QueryParams = mergeQueryParams(pathItem.Parameters, op.Parameters)
-
-			endpoints = append(endpoints, ep)
-		}
-	}
-	return endpoints, nil
-}
-
-// supersededDeclarations loads, from the version each owner's x-supersedes
-// names, the declarations of the owners' routes. The walker indexes only each
-// construct's latest version, so without them dropSupersededEndpoints would
-// never see the pair it checks. Only routes an owner names are returned: the
-// older version's other routes stay unindexed, as the walker leaves them.
-func supersededDeclarations(rootDir string, endpoints []schemaEndpoint) ([]schemaEndpoint, error) {
-	type route struct{ method, path string }
-	named := make(map[[2]string]map[route]bool)
-	for _, ep := range endpoints {
-		if ep.Supersedes == "" {
-			continue
-		}
-		key := [2]string{ep.Construct, ep.Supersedes}
-		if named[key] == nil {
-			named[key] = make(map[route]bool)
-		}
-		named[key][route{ep.Method, ep.Path}] = true
-	}
-	keys := make([][2]string, 0, len(named))
-	for key := range named {
-		keys = append(keys, key)
-	}
-	sort.Slice(keys, func(i, j int) bool {
-		return keys[i][0] < keys[j][0] || (keys[i][0] == keys[j][0] && keys[i][1] < keys[j][1])
-	})
-
-	var out []schemaEndpoint
-	for _, key := range keys {
-		construct, version := key[0], key[1]
-		apiYmlPath := filepath.Join(rootDir, "schemas", "constructs", version, construct, "api.yml")
-		if _, err := os.Stat(apiYmlPath); err != nil {
-			continue // nothing declares the route there; the bundler rejects that owner
-		}
-		doc, err := loadAPISpec(apiYmlPath)
-		if err != nil {
-			return nil, fmt.Errorf("loading %s, superseded by a later %s: %w", relativeToRoot(apiYmlPath, rootDir), construct, err)
-		}
-		declared, err := specEndpoints(constructSpec{
-			Version:      version,
-			Construct:    construct,
-			RelativePath: relativeToRoot(apiYmlPath, rootDir),
-			Doc:          doc,
-		})
-		if err != nil {
-			return nil, err
-		}
-		for _, ep := range declared {
-			if named[key][route{ep.Method, ep.Path}] {
-				out = append(out, ep)
-			}
-		}
-	}
-	return out, nil
 }
 
 // mergeQueryParams collects query parameters from path-level and
@@ -262,82 +171,6 @@ func mergeQueryParams(pathLevel, opLevel openapi3.Parameters) []schemaQueryParam
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Name < out[j].Name })
 	return out
-}
-
-// parseSupersedes extracts the x-supersedes version from operation extensions.
-func parseSupersedes(extensions map[string]any) (string, error) {
-	raw, ok := extensions["x-supersedes"]
-	if !ok {
-		return "", nil
-	}
-	version, ok := raw.(string)
-	if !ok {
-		return "", fmt.Errorf("x-supersedes must be a version string")
-	}
-	return version, nil
-}
-
-// dropSupersededEndpoints removes each declaration that a newer version of the
-// same construct supersedes, so a route the bundler resolves to its owner is
-// indexed once, as the owner declares it. Both declarations cannot stay: the
-// matcher would join one consumer endpoint to two rows and count the route twice.
-// A superseded pair that chains or differs in operationId or x-internal fails as
-// it does in the bundler (build/bundle-openapi.js resolveRouteOwner). The
-// bundler's other duplicate checks are not repeated here: an owner whose
-// x-supersedes names no declaration of the route leaves every row in place.
-func dropSupersededEndpoints(endpoints []schemaEndpoint) ([]schemaEndpoint, error) {
-	type declaration struct {
-		title, construct, method, path, version string
-	}
-	byDeclaration := make(map[declaration]int, len(endpoints))
-	for i, ep := range endpoints {
-		byDeclaration[declaration{ep.Title, ep.Construct, ep.Method, ep.Path, ep.Version}] = i
-	}
-	dropped := make(map[int]bool)
-	for _, owner := range endpoints {
-		if owner.Supersedes == "" {
-			continue
-		}
-		i, ok := byDeclaration[declaration{owner.Title, owner.Construct, owner.Method, owner.Path, owner.Supersedes}]
-		if !ok {
-			continue
-		}
-		old := endpoints[i]
-		reason := ""
-		switch {
-		case old.Supersedes != "":
-			reason = "ownership does not chain: " + old.Version + " carries x-supersedes"
-		case owner.OperationID != old.OperationID:
-			reason = "operationIds differ"
-		case !sameTargets(owner.XInternal, old.XInternal):
-			reason = "x-internal differs between the declarations"
-		}
-		if reason != "" {
-			return nil, fmt.Errorf("duplicate path operation during merge: %s %s %s (%s)",
-				owner.Version, strings.ToUpper(owner.Method), owner.Path, reason)
-		}
-		dropped[i] = true
-	}
-	kept := make([]schemaEndpoint, 0, len(endpoints))
-	for i, ep := range endpoints {
-		if !dropped[i] {
-			kept = append(kept, ep)
-		}
-	}
-	return kept, nil
-}
-
-// sameTargets reports whether two x-internal target lists name the same set.
-func sameTargets(a, b []string) bool {
-	as := make(map[string]bool, len(a))
-	for _, t := range a {
-		as[t] = true
-	}
-	bs := make(map[string]bool, len(b))
-	for _, t := range b {
-		bs[t] = true
-	}
-	return maps.Equal(as, bs)
 }
 
 // parseXInternal extracts the explicit x-internal target list from operation

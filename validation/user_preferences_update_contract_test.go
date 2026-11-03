@@ -1,10 +1,8 @@
 package validation
 
 import (
-	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -147,7 +145,9 @@ func TestUpdateUserPreferencesOwnedByV1beta3(t *testing.T) {
 }
 
 // The endpoint index feeds the consumer audit, which must see the moved route
-// once, as v1beta3 declares it.
+// once, as v1beta3 declares it. The index walks only each construct's latest
+// version, so the v1beta2 declaration is never indexed beside the owner's. The
+// ownership rule itself is checked by the bundler, not here.
 func TestEndpointIndexIndexesMovedRouteOnce(t *testing.T) {
 	idx, err := buildEndpointIndex(repoRootDir(t))
 	if err != nil {
@@ -162,122 +162,24 @@ func TestEndpointIndexIndexesMovedRouteOnce(t *testing.T) {
 	if len(found) != 1 {
 		t.Fatalf("PUT %s indexed %d times, want once", preferencesRoute, len(found))
 	}
-	if found[0].Version != "v1beta3" || found[0].OperationID != "updateUserPreferences" {
-		t.Errorf("PUT %s indexed as %s %s, want v1beta3 updateUserPreferences", preferencesRoute, found[0].Version, found[0].OperationID)
+	ep := found[0]
+	if ep.Version != "v1beta3" || ep.OperationID != "updateUserPreferences" {
+		t.Errorf("PUT %s indexed as %s %s, want v1beta3 updateUserPreferences", preferencesRoute, ep.Version, ep.OperationID)
 	}
-}
-
-// dropSupersededEndpoints applies the bundler's ownership rule: a declaration
-// goes only when its owner names its version, and an x-supersedes the bundler
-// would reject is an error, not a silent drop.
-func TestDropSupersededEndpointsMirrorsBundlerRule(t *testing.T) {
-	declaration := func(version, supersedes, operationID string, internal ...string) schemaEndpoint {
-		return schemaEndpoint{Title: "User", Construct: "user", Method: "PUT", Path: preferencesRoute, Version: version, Supersedes: supersedes, OperationID: operationID, XInternal: internal}
+	if ep.SourceFile != userV1beta3Spec {
+		t.Fatalf("indexed from %s, want %s", ep.SourceFile, userV1beta3Spec)
 	}
-	older := declaration("v1beta2", "", "updateUserPreferences", "cloud")
-	owner := declaration("v1beta3", "v1beta2", "updateUserPreferences", "cloud")
-	otherTitle := owner
-	otherTitle.Title = "Token"
-	cases := []struct {
-		name      string
-		endpoints []schemaEndpoint
-		want      int
-		wantErr   string
-	}{
-		{"owner drops the superseded declaration", []schemaEndpoint{older, owner}, 1, ""},
-		{"x-internal is compared as a set", []schemaEndpoint{declaration("v1beta2", "", "updateUserPreferences", "cloud", "meshery"), declaration("v1beta3", "v1beta2", "updateUserPreferences", "meshery", "cloud")}, 1, ""},
-		{"an owner with nothing to supersede is kept", []schemaEndpoint{owner}, 1, ""},
-		{"an owner naming a version nothing declares keeps both", []schemaEndpoint{older, declaration("v1beta3", "v1beta1", "updateUserPreferences", "cloud")}, 2, ""},
-		{"an undeclared duplicate keeps both", []schemaEndpoint{older, declaration("v1beta3", "", "updateUserPreferences", "cloud")}, 2, ""},
-		{"a different construct title keeps both", []schemaEndpoint{older, otherTitle}, 2, ""},
-		{"an operationId mismatch fails", []schemaEndpoint{older, declaration("v1beta3", "v1beta2", "setUserPreferences", "cloud")}, 0, "operationIds differ"},
-		{"an x-internal mismatch fails", []schemaEndpoint{declaration("v1beta2", "", "updateUserPreferences", "cloud", "meshery"), owner}, 0, "x-internal differs"},
-		{"ownership does not chain", []schemaEndpoint{declaration("v1beta1", "", "updateUserPreferences", "cloud"), declaration("v1beta2", "v1beta1", "updateUserPreferences", "cloud"), owner}, 0, "does not chain"},
+	if ep.RequestShape == nil || ep.RequestShape.Name != "PreferencePayload" {
+		t.Fatalf("indexed request shape = %+v, want PreferencePayload", ep.RequestShape)
 	}
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			kept, err := dropSupersededEndpoints(tc.endpoints)
-			if tc.wantErr != "" {
-				if err == nil || !strings.Contains(err.Error(), tc.wantErr) {
-					t.Fatalf("err = %v, want one containing %q", err, tc.wantErr)
-				}
-				return
-			}
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
-			if len(kept) != tc.want {
-				t.Errorf("kept %d endpoints, want %d", len(kept), tc.want)
-			}
-		})
+	if _, ok := ep.RequestShape.Fields["agentsActWithoutApproval"]; !ok {
+		t.Error("indexed request shape lacks agentsActWithoutApproval: the v1beta2 body was indexed")
 	}
-}
-
-// buildEndpointIndex walks only the latest version of each construct, so it
-// must load the declaration an owner's x-supersedes names to check the pair.
-// Each case writes a two-version construct and runs the real walk.
-func TestEndpointIndexChecksSupersededDeclaration(t *testing.T) {
-	spec := func(version, route, operationID, supersedes, internal string) string {
-		extra := ""
-		if supersedes != "" {
-			extra = "\n      x-supersedes: " + supersedes
-		}
-		return `openapi: 3.0.0
-info:
-  title: Widget
-  version: ` + version + `
-paths:
-  ` + route + `:
-    put:
-      operationId: ` + operationID + `
-      x-internal: ` + internal + extra + `
-      responses:
-        "204":
-          description: Updated
-`
-	}
-	write := func(t *testing.T, root, version, body string) {
-		dir := filepath.Join(root, "schemas", "constructs", version, "widget")
-		if err := os.MkdirAll(dir, 0o755); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(filepath.Join(dir, "api.yml"), []byte(body), 0o644); err != nil {
-			t.Fatal(err)
-		}
-	}
-	const route = "/api/widgets"
-	older := spec("v1beta2", route, "updateWidget", "", "[cloud]")
-	cases := []struct {
-		name    string
-		older   string
-		owner   string
-		wantErr string
-	}{
-		{"a matching owner is indexed once", older, spec("v1beta3", route, "updateWidget", "v1beta2", "[cloud]"), ""},
-		{"an owner whose named version does not declare the route is indexed once", spec("v1beta2", "/api/other", "updateOther", "", "[cloud]"), spec("v1beta3", route, "updateWidget", "v1beta2", "[cloud]"), ""},
-		{"an operationId mismatch fails", older, spec("v1beta3", route, "putWidget", "v1beta2", "[cloud]"), "operationIds differ"},
-		{"an x-internal mismatch fails", older, spec("v1beta3", route, "updateWidget", "v1beta2", "[cloud, meshery]"), "x-internal differs"},
-		{"ownership does not chain", spec("v1beta2", route, "updateWidget", "v1beta1", "[cloud]"), spec("v1beta3", route, "updateWidget", "v1beta2", "[cloud]"), "does not chain"},
-	}
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			root := t.TempDir()
-			write(t, root, "v1beta2", tc.older)
-			write(t, root, "v1beta3", tc.owner)
-			idx, err := buildEndpointIndex(root)
-			if tc.wantErr != "" {
-				if err == nil || !strings.Contains(err.Error(), tc.wantErr) {
-					t.Fatalf("err = %v, want one containing %q", err, tc.wantErr)
-				}
-				return
-			}
-			if err != nil {
-				t.Fatalf("buildEndpointIndex: %v", err)
-			}
-			if len(idx.Endpoints) != 1 || idx.Endpoints[0].Version != "v1beta3" || idx.Endpoints[0].Path != route {
-				t.Fatalf("indexed %+v, want only the v1beta3 PUT %s", idx.Endpoints, route)
-			}
-		})
+	op := loadSpec(t, ep.SourceFile).Paths.Find(preferencesRoute).Put
+	if resp := op.Responses.Status(403); resp == nil {
+		t.Error("indexed updateUserPreferences must document 403")
+	} else if resp.Ref != "#/components/responses/403" {
+		t.Errorf("indexed updateUserPreferences 403 must reference the shared response, got %q", resp.Ref)
 	}
 }
 
