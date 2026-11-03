@@ -245,6 +245,13 @@
     "extension": true
   },
   {
+    "construct": "oauth_consent_request",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/oauth_consent_request/oauth_consent_request.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "organization",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/organization/organization.yaml",
