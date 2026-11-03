@@ -21539,11 +21539,35 @@ export type RevokeTokenApiArg = {
     token: string;
   };
 };
-export type IntrospectTokenApiResponse = unknown;
+export type IntrospectTokenApiResponse =
+  /** status 200 The token is authentic, unexpired, not revoked and valid for the requested resource. The body describes it. */ {
+    /** Always true; a token that is not active is answered with 401 instead. */
+    active: boolean;
+    /** The resources the token is bound to (RFC 8707 resource identifiers). Always a JSON array, never null or absent: [] for a token the server issued to its own first-party clients, which is valid for every protected resource the server issues tokens for. */
+    aud: string[];
+    /** The subject the token was issued for. */
+    sub?: string;
+    /** The OAuth client the token was issued to. */
+    clientId?: string;
+    /** Space-separated scopes granted to the token. */
+    scope?: string;
+    /** Expiry, in seconds since the Unix epoch. Absent for a token that does not expire. */
+    exp?: number;
+    /** Issue time, in seconds since the Unix epoch. */
+    iat?: number;
+    /** Not-before time, in seconds since the Unix epoch. */
+    nbf?: number;
+    /** The issuer of the token. */
+    iss?: string;
+    /** Always "Bearer". */
+    tokenType?: string;
+  };
 export type IntrospectTokenApiArg = {
   body: {
     /** The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
     token: string;
+    /** RFC 8707 resource identifier of the protected resource asking, as published in its RFC 9728 protected resource metadata. Omitted, the REST API. A value that is not a protected resource this server issues tokens for is rejected with 400 "invalid_target". */
+    resource?: string;
   };
 };
 export type LogoutUserApiResponse = unknown;
