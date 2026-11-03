@@ -221,8 +221,11 @@ move a route to a later version:
 - The owner's `x-supersedes` must name a declaration of the same route (same
   construct, method and path). If the named version declares no such route, the
   merge fails with `x-supersedes names no declaration`, after all specs are
-  merged, so merge order does not matter. An owner that names its own version
-  fails the merge with `names its own version`.
+  merged, so merge order does not matter. An owner whose `x-supersedes` does not
+  name a strictly older construct version (its own version, a newer one, or a
+  string that is not a construct version) fails the merge with
+  `which is not older than`. Versions order by major, then alpha, beta and GA,
+  then number (`v1beta3` is older than `v1`).
 - The bundler owns and checks this rule. The endpoint index behind the consumer
   audit (`validation/endpoint_index.go`) has no ownership logic: it walks each
   construct's latest non-deprecated version, so it indexes the owner's

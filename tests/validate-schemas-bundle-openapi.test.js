@@ -460,9 +460,69 @@ test("route ownership: an owner cannot name its own version", () => {
   for (const specs of [[selfOwned], [v1beta2Preferences, selfOwned], [selfOwned, v1beta2Preferences]]) {
     assert.throws(
       () => mergeInOrder(specs),
-      /x-supersedes on \/api\/identity\/users\/preferences put names its own version \(v1beta3\)/,
+      /x-supersedes on \/api\/identity\/users\/preferences put names v1beta3, which is not older than v1beta3/,
     );
   }
+});
+
+test("route ownership: an owner cannot name a newer version", () => {
+  // The older declaration names the newer one by mistake. Without the guard the
+  // merge would keep the v1beta2 body, which lacks the v1beta3 403.
+  const backwards = userVersionSpec("v1beta2", {
+    "x-supersedes": "v1beta3",
+    responses: { "201": { description: "Preferences updated (v1beta2)" } },
+  });
+  const unannotated = userVersionSpec("v1beta3", {
+    responses: { "201": { description: "Preferences updated (v1beta3)" } },
+  });
+
+  for (const specs of [
+    [backwards, unannotated],
+    [unannotated, backwards],
+  ]) {
+    assert.throws(
+      () => mergeInOrder(specs),
+      /x-supersedes on \/api\/identity\/users\/preferences put names v1beta3, which is not older than v1beta2/,
+    );
+  }
+});
+
+test("route ownership: versions order by major, then stage, then number, not lexically", () => {
+  const declaration = (version, supersedes) =>
+    userVersionSpec(version, {
+      ...(supersedes === undefined ? {} : { "x-supersedes": supersedes }),
+      responses: { "201": { description: `Preferences updated (${version})` } },
+    });
+
+  for (const [owner, superseded] of [
+    ["v1", "v1beta3"],
+    ["v1beta2", "v1alpha9"],
+    ["v1beta10", "v1beta9"],
+    ["v2alpha1", "v1"],
+  ]) {
+    const merged = mergeInOrder([declaration(superseded), declaration(owner, superseded)]);
+    assert.equal(merged.paths[PREFERENCES_PATH].put.responses["201"].description, `Preferences updated (${owner})`);
+  }
+
+  for (const [owner, superseded] of [
+    ["v1beta3", "v1"],
+    ["v1alpha9", "v1beta2"],
+    ["v1beta9", "v1beta10"],
+  ]) {
+    assert.throws(
+      () => mergeInOrder([declaration(superseded), declaration(owner, superseded)]),
+      new RegExp(`names ${superseded}, which is not older than ${owner}`),
+    );
+  }
+});
+
+test("route ownership: x-supersedes must name a construct version", () => {
+  const malformed = userVersionSpec("v1beta3", {
+    "x-supersedes": "beta2",
+    responses: { "201": { description: "Preferences updated (v1beta3)" } },
+  });
+
+  assert.throws(() => mergeInOrder([v1beta2Preferences, malformed]), /names beta2, which is not older than v1beta3/);
 });
 
 test("the real user specs merge to one updateUserPreferences, owned by v1beta3, in either order", async () => {

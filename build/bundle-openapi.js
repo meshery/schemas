@@ -198,15 +198,44 @@ function sameTargets(a, b) {
   return normalize(a) === normalize(b);
 }
 
+// Construct versions order by major, then alpha < beta < GA, then number:
+// v1alpha1 < v1beta1 < v1beta2 < v1 < v2alpha1. Returns undefined for anything
+// that is not a construct version.
+const CONSTRUCT_VERSION = /^v(\d+)(?:(alpha|beta)(\d+))?$/;
+const VERSION_STAGES = { alpha: 0, beta: 1 };
+
+function constructVersionRank(version) {
+  const match = typeof version === "string" ? CONSTRUCT_VERSION.exec(version) : null;
+  if (!match) {
+    return undefined;
+  }
+  const [, major, stage, number] = match;
+  return [Number(major), stage === undefined ? 2 : VERSION_STAGES[stage], Number(number ?? 0)];
+}
+
+function isOlderVersion(candidate, version) {
+  const a = constructVersionRank(candidate);
+  const b = constructVersionRank(version);
+  if (!a || !b) {
+    return false;
+  }
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) {
+      return a[i] < b[i];
+    }
+  }
+  return false;
+}
+
 function declareOperation(route, method, operation, origin) {
   const supersedes = operation?.[SUPERSEDES_EXTENSION];
   if (supersedes !== undefined && typeof supersedes !== "string") {
     throw new Error(`${SUPERSEDES_EXTENSION} on ${route} ${method} must be a version string`);
   }
   if (supersedes !== undefined) {
-    if (supersedes === origin.version) {
+    if (!isOlderVersion(supersedes, origin.version)) {
       throw new Error(
-        `${SUPERSEDES_EXTENSION} on ${route} ${method} names its own version (${supersedes}): an owner must name the older version it supersedes`,
+        `${SUPERSEDES_EXTENSION} on ${route} ${method} names ${supersedes}, which is not older than ${origin.version}: an owner must name the older version it supersedes`,
       );
     }
     const ref = firstRef(operation);
