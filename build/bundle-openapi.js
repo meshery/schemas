@@ -76,35 +76,40 @@ function prefixTags(tags, prefix) {
   });
 }
 
-function prefixInternalReferences(value, prefix) {
-  if (Array.isArray(value)) {
-    return value.map((item) => prefixInternalReferences(item, prefix));
-  }
-
+// Copies value with internal $refs prefixed. copies maps each source object to
+// its copy, so a circular graph from dereferencing is copied once and keeps its
+// cycle instead of recursing forever.
+function prefixInternalReferences(value, prefix, copies = new Map()) {
   if (!value || typeof value !== "object") {
     return value;
   }
+  if (copies.has(value)) {
+    return copies.get(value);
+  }
 
-  return Object.fromEntries(
-    Object.entries(value).map(([key, currentValue]) => {
-      if (key === "$ref" && typeof currentValue === "string") {
-        return [key, prefixComponentRef(currentValue, prefix)];
-      }
+  if (Array.isArray(value)) {
+    const copy = [];
+    copies.set(value, copy);
+    for (const item of value) {
+      copy.push(prefixInternalReferences(item, prefix, copies));
+    }
+    return copy;
+  }
 
-      if (key === "tags") {
-        return [key, prefixTags(currentValue, prefix)];
-      }
-
-      if (key === "security" && Array.isArray(currentValue)) {
-        return [
-          key,
-          currentValue.map((requirement) => prefixSecurityRequirement(requirement, prefix)),
-        ];
-      }
-
-      return [key, prefixInternalReferences(currentValue, prefix)];
-    }),
-  );
+  const copy = {};
+  copies.set(value, copy);
+  for (const [key, currentValue] of Object.entries(value)) {
+    if (key === "$ref" && typeof currentValue === "string") {
+      copy[key] = prefixComponentRef(currentValue, prefix);
+    } else if (key === "tags") {
+      copy[key] = prefixTags(currentValue, prefix);
+    } else if (key === "security" && Array.isArray(currentValue)) {
+      copy[key] = currentValue.map((requirement) => prefixSecurityRequirement(requirement, prefix));
+    } else {
+      copy[key] = prefixInternalReferences(currentValue, prefix, copies);
+    }
+  }
+  return copy;
 }
 
 function prefixComponents(components, prefix) {
@@ -169,16 +174,18 @@ function mergeOriginOf(operation) {
   return operation && typeof operation === "object" ? operation[MERGE_ORIGIN] : undefined;
 }
 
-// First $ref string found anywhere under value, or undefined.
-function firstRef(value) {
-  if (!value || typeof value !== "object") {
+// First $ref string found anywhere under value, or undefined. Dereferencing can
+// leave circular object graphs, so each object is visited once.
+function firstRef(value, visited = new WeakSet()) {
+  if (!value || typeof value !== "object" || visited.has(value)) {
     return undefined;
   }
+  visited.add(value);
   if (typeof value.$ref === "string") {
     return value.$ref;
   }
   for (const child of Object.values(value)) {
-    const ref = firstRef(child);
+    const ref = firstRef(child, visited);
     if (ref !== undefined) {
       return ref;
     }
@@ -257,11 +264,27 @@ function resolveRouteOwner(route, method, existing, incoming) {
   fail();
 }
 
-function mergePaths(basePaths, incomingPaths, origin) {
+// Every (construct, route, method, version) declaration seen by the merge, kept
+// on the merged spec so the owner check can run after all specs are merged.
+const DECLARED_ROUTES = Symbol("declaredRoutes");
+
+function declarationKey(prefix, route, method, version) {
+  return JSON.stringify([prefix, route, method, version]);
+}
+
+function declaredRoutesOf(spec) {
+  if (!Object.prototype.hasOwnProperty.call(spec, DECLARED_ROUTES)) {
+    Object.defineProperty(spec, DECLARED_ROUTES, { value: new Set(), configurable: true });
+  }
+  return spec[DECLARED_ROUTES];
+}
+
+function mergePaths(basePaths, incomingPaths, origin, declaredRoutes) {
   for (const [route, pathItem] of Object.entries(incomingPaths || {})) {
     const currentPath = (basePaths[route] ??= {});
 
     for (const [method, operation] of Object.entries(pathItem || {})) {
+      declaredRoutes.add(declarationKey(origin.prefix, route, method, origin.version));
       const declared = declareOperation(route, method, operation, origin);
 
       if (!Object.prototype.hasOwnProperty.call(currentPath, method)) {
@@ -271,6 +294,29 @@ function mergePaths(basePaths, incomingPaths, origin) {
 
       if (resolveRouteOwner(route, method, currentPath[method], declared) === "incoming") {
         currentPath[method] = declared;
+      }
+    }
+  }
+}
+
+/**
+ * Fails when an owner's x-supersedes names a version that declares no such
+ * route (same construct, method and path). Runs after every spec is merged, so
+ * the result does not depend on merge order.
+ */
+function assertSupersededRoutesDeclared(baseSpec) {
+  const declaredRoutes = declaredRoutesOf(baseSpec);
+
+  for (const [route, pathItem] of Object.entries(baseSpec.paths ?? {})) {
+    for (const [method, operation] of Object.entries(pathItem || {})) {
+      const origin = mergeOriginOf(operation);
+      if (origin?.supersedes === undefined) {
+        continue;
+      }
+      if (!declaredRoutes.has(declarationKey(origin.prefix, route, method, origin.supersedes))) {
+        throw new Error(
+          `x-supersedes names no declaration: ${origin.prefix} ${origin.supersedes} declares no ${method.toUpperCase()} ${route} for the ${origin.version} owner to supersede`,
+        );
       }
     }
   }
@@ -299,12 +345,30 @@ function mergeOpenapiSpec(baseSpec, specToMerge) {
   const normalizedSpec = prefixInternalReferences(specToMerge, prefix);
 
   mergeTags(baseSpec.tags ?? (baseSpec.tags = []), normalizedSpec.tags || []);
-  mergePaths(baseSpec.paths ?? (baseSpec.paths = {}), normalizedSpec.paths || {}, origin);
+  mergePaths(
+    baseSpec.paths ?? (baseSpec.paths = {}),
+    normalizedSpec.paths || {},
+    origin,
+    declaredRoutesOf(baseSpec),
+  );
   mergeComponentMaps(
     baseSpec.components ?? (baseSpec.components = {}),
     prefixComponents(normalizedSpec.components, prefix),
   );
 
+  return baseSpec;
+}
+
+/**
+ * Merges every spec into baseSpec, then checks that each x-supersedes owner
+ * names a declaration it supersedes. The check runs after all specs are merged,
+ * so the order of specs does not matter.
+ */
+function mergeOpenapiSpecs(baseSpec, specs) {
+  for (const spec of specs) {
+    mergeOpenapiSpec(baseSpec, spec);
+  }
+  assertSupersededRoutesDeclared(baseSpec);
   return baseSpec;
 }
 
@@ -373,10 +437,10 @@ async function mergeSchemas() {
 
   const mergedSpec = yaml.load(fs.readFileSync(baseSpec, "utf-8"));
 
-  for (const spec of specsToMerge) {
-    const specDocument = JSON.parse(fs.readFileSync(spec, "utf-8"));
-    mergeOpenapiSpec(mergedSpec, specDocument);
-  }
+  mergeOpenapiSpecs(
+    mergedSpec,
+    specsToMerge.map((spec) => JSON.parse(fs.readFileSync(spec, "utf-8"))),
+  );
 
   fs.writeFileSync(outputPath, yaml.dump(mergedSpec, { noRefs: true, lineWidth: 120 }), "utf-8");
 
@@ -467,6 +531,7 @@ if (require.main === module) {
 module.exports = {
   dereferenceOpenapiSpec,
   mergeOpenapiSpec,
+  mergeOpenapiSpecs,
   prefixComponentRef,
   prefixInternalReferences,
   prefixComponents,

@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const path = require("node:path");
 
 const config = require("../build/lib/config");
-const { dereferenceOpenapiSpec, mergeOpenapiSpec } = require("../build/bundle-openapi");
+const { dereferenceOpenapiSpec, mergeOpenapiSpec, mergeOpenapiSpecs } = require("../build/bundle-openapi");
 const { filterOpenapiByTag } = require("../build/filterOpenapiByTag");
 
 test("mergeOpenapiSpec prefixes tags, components, refs, and security requirements", () => {
@@ -262,10 +262,7 @@ const v1beta3Preferences = userVersionSpec("v1beta3", {
 // can be checked for each order.
 function mergeInOrder(specs) {
   const base = { openapi: "3.0.3", info: { title: "Meshery Cloud", version: "v0.0.0" }, tags: [], paths: {}, components: {} };
-  for (const spec of specs) {
-    mergeOpenapiSpec(base, JSON.parse(JSON.stringify(spec)));
-  }
-  return base;
+  return mergeOpenapiSpecs(base, specs.map((spec) => JSON.parse(JSON.stringify(spec))));
 }
 
 test("route ownership: the newer version owns a moved route in either merge order", () => {
@@ -385,6 +382,51 @@ test("route ownership: an owned body is the owner's in either order even when co
     const merged = mergeInOrder(specs);
     const body = merged.paths[PREFERENCES_PATH].put.requestBody.content["application/json"].schema;
     assert.ok(body.properties.agentsActWithoutApproval, "the owner's inline body is kept");
+  }
+});
+
+test("route ownership: an owner whose superseded version declares no such route throws in either order", () => {
+  // The v1beta2 user spec is in the merge, but it declares a different route, so
+  // the owner's x-supersedes names no declaration of the moved route.
+  const otherRoute = {
+    ...userVersionSpec("v1beta2", { responses: { "200": { description: "Users" } } }),
+    paths: { "/api/identity/users": { get: { operationId: "listUsers", responses: { "200": { description: "Users" } } } } },
+  };
+
+  for (const specs of [
+    [otherRoute, v1beta3Preferences],
+    [v1beta3Preferences, otherRoute],
+  ]) {
+    assert.throws(
+      () => mergeInOrder(specs),
+      /x-supersedes names no declaration: User v1beta2 declares no PUT \/api\/identity\/users\/preferences for the v1beta3 owner/,
+    );
+  }
+});
+
+test("route ownership: a recursive owner body without a $ref merges in either order", () => {
+  // Dereferencing can leave a circular graph. The owner's body refers to itself
+  // and holds no $ref, so the merge must finish instead of overflowing the stack.
+  const recursiveBody = { type: "object", properties: {} };
+  recursiveBody.properties.next = recursiveBody;
+  const owner = userVersionSpec("v1beta3", {
+    "x-supersedes": "v1beta2",
+    requestBody: { content: { "application/json": { schema: recursiveBody } } },
+    responses: { "201": { description: "Preferences updated (v1beta3)" } },
+  });
+
+  for (const specs of [
+    [v1beta2Preferences, owner],
+    [owner, v1beta2Preferences],
+  ]) {
+    const merged = mergeOpenapiSpecs(
+      { openapi: "3.0.3", info: { title: "Meshery Cloud", version: "v0.0.0" }, tags: [], paths: {}, components: {} },
+      specs,
+    );
+    const operation = merged.paths[PREFERENCES_PATH].put;
+    assert.equal(operation["x-supersedes"], "v1beta2");
+    const body = operation.requestBody.content["application/json"].schema;
+    assert.equal(body.properties.next, body, "the cycle is kept");
   }
 });
 
