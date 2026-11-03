@@ -626,7 +626,7 @@ components:
       description: >-
         Describes an access token introspectToken accepted, using the RFC 7662
         member names where they are single words and their camelCase form where
-        they are not (clientId, tokenType, tokenUse).
+        they are not (clientId, tokenType).
       required:
       - active
       - aud
@@ -679,10 +679,6 @@ components:
           type: string
           description: Always "Bearer".
           x-order: 10
-        tokenUse:
-          type: string
-          description: Always "access_token".
-          x-order: 11
     NativeAuthorizationPayload:
       type: object
       description: Query fields of GET /api/identity/native/authorize. The signed-in session issues the authorization code from these fields.

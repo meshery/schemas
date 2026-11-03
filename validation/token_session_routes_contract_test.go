@@ -64,10 +64,13 @@ func TestTokenSessionRoutesContract(t *testing.T) {
 	if got := sequenceStrings(mustValue(introspection, "required")); !reflect.DeepEqual(got, []string{"active", "aud"}) {
 		t.Errorf("TokenIntrospection required = %v, want [active aud]", got)
 	}
-	for _, member := range []string{"active", "aud", "sub", "clientId", "scope", "exp", "iat", "nbf", "iss", "tokenType", "tokenUse"} {
+	for _, member := range []string{"active", "aud", "sub", "clientId", "scope", "exp", "iat", "nbf", "iss", "tokenType"} {
 		if _, ok := mappingValue(mustValue(introspection, "properties"), member); !ok {
 			t.Errorf("TokenIntrospection must declare %s", member)
 		}
+	}
+	if _, ok := mappingValue(mustValue(introspection, "properties"), "tokenUse"); ok {
+		t.Error("TokenIntrospection must not declare tokenUse: it was removed before release")
 	}
 	introspectPayload := mustLookup(t, doc, "components", "schemas", "TokenIntrospectionPayload")
 	if got := sequenceStrings(mustValue(introspectPayload, "required")); !reflect.DeepEqual(got, []string{"token"}) {
