@@ -1,0 +1,55 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Activity Result Schema
+description: |
+  The result of one activity: whether it went out on each platform and for
+  each profile it was addressed to, how it was received where reception is
+  collected, and the follower change around it. One entry per profile and
+  platform. Every figure says whether it was measured or derived, and
+  anything not collected says so with a reason instead of a zero.
+type: object
+additionalProperties: false
+required:
+  - activityId
+  - kind
+  - platform
+  - generatedAt
+  - entries
+properties:
+  activityId:
+    type: string
+    description: Identifier of the activity the result describes (for a content item, its row number as a string).
+    minLength: 1
+    maxLength: 255
+    x-order: 1
+  kind:
+    type: string
+    description: What the activity does, such as post, repost, comment, like, connect or invite.
+    minLength: 1
+    maxLength: 64
+    x-order: 2
+  platform:
+    type: string
+    description: Platform the activity targets (for example linkedin, x, bluesky).
+    minLength: 1
+    maxLength: 64
+    x-order: 3
+  title:
+    type: string
+    description: Short human-readable preview of the activity.
+    maxLength: 512
+    x-order: 4
+  state:
+    type: string
+    description: The activity's queue state when the result was read (for example done, partial, pending, scheduled, draft).
+    maxLength: 64
+    x-order: 5
+  generatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: When this result was assembled.
+    x-order: 6
+  entries:
+    type: array
+    description: One entry per profile and platform the activity is addressed to.
+    items:
+      $ref: ./api.yml#/components/schemas/ActivityResultEntry
+    x-order: 7

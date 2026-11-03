@@ -9,6 +9,15 @@ on:
       - README.md
       - schemas/base_cloud.yml
       - schemas/base_meshery.yml
+# One run at a time. Two merges landing minutes apart both regenerate the same
+# files, and the later one to reach "Pull changes from remote" fails because
+# its uncommitted output collides with the earlier run's commit (#1299, #1309).
+# Queue rather than cancel: a run is never cut off mid-push, and the queued run
+# checks out master after the earlier commit, so it regenerates from everything
+# merged so far. GitHub keeps one pending run per group, which suffices.
+concurrency:
+  group: generate-artifacts-from-schemas
+  cancel-in-progress: false
 jobs:
   build-artifacts:
     # Skip auto-commits made by the release flow (publish-schemas.yml + publish-npm-package.yml)

@@ -134,13 +134,13 @@ const AcademySchema: Record<string, unknown> = {
                             ]
                           },
                           "org_id": {
-                            "type": "string",
-                            "description": "Organization ID that owns this learning path",
-                            "example": "meshery",
                             "x-oapi-codegen-extra-tags": {
                               "db": "org_id",
                               "json": "org_id"
-                            }
+                            },
+                            "type": "string",
+                            "description": "Organization ID that owns this learning path",
+                            "example": "meshery"
                           },
                           "visibility": {
                             "description": "Visibility of the Curricula",
@@ -205,24 +205,10 @@ const AcademySchema: Record<string, unknown> = {
                             }
                           },
                           "invite_id": {
-                            "allOf": [
-                              {
-                                "type": "string",
-                                "format": "uuid",
-                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                                "x-go-type": "uuid.UUID",
-                                "x-go-type-import": {
-                                  "path": "github.com/gofrs/uuid"
-                                }
-                              }
-                            ],
-                            "description": "ID of the invite associated with this Curricula",
                             "x-oapi-codegen-extra-tags": {
                               "db": "invite_id",
                               "json": "invite_id"
-                            }
-                          },
-                          "workspace_id": {
+                            },
                             "allOf": [
                               {
                                 "type": "string",
@@ -234,13 +220,31 @@ const AcademySchema: Record<string, unknown> = {
                                 }
                               }
                             ],
-                            "description": "ID of the workspace to which this Curricula belongs",
+                            "description": "ID of the invite associated with this Curricula"
+                          },
+                          "workspace_id": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "workspace_id",
                               "json": "workspace_id"
-                            }
+                            },
+                            "allOf": [
+                              {
+                                "type": "string",
+                                "format": "uuid",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              }
+                            ],
+                            "description": "ID of the workspace to which this Curricula belongs"
                           },
                           "created_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "json": "created_at"
+                            },
                             "allOf": [
                               {
                                 "type": "string",
@@ -248,13 +252,13 @@ const AcademySchema: Record<string, unknown> = {
                                 "x-go-type-skip-optional-pointer": true
                               }
                             ],
-                            "description": "When the Curricula item was created",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "json": "created_at"
-                            }
+                            "description": "When the Curricula item was created"
                           },
                           "updated_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "json": "updated_at"
+                            },
                             "allOf": [
                               {
                                 "type": "string",
@@ -263,13 +267,13 @@ const AcademySchema: Record<string, unknown> = {
                               }
                             ],
                             "description": "When the Curricula was last updated",
-                            "x-go-type": "core.Time",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "updated_at",
-                              "json": "updated_at"
-                            }
+                            "x-go-type": "core.Time"
                           },
                           "deleted_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deleted_at"
+                            },
                             "allOf": [
                               {
                                 "description": "Timestamp when the resource was deleted.",
@@ -284,11 +288,7 @@ const AcademySchema: Record<string, unknown> = {
                                 "x-go-type-skip-optional-pointer": true
                               }
                             ],
-                            "x-go-type": "core.NullTime",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "deleted_at",
-                              "json": "deleted_at"
-                            }
+                            "x-go-type": "core.NullTime"
                           },
                           "metadata": {
                             "type": "object",
@@ -996,13 +996,13 @@ const AcademySchema: Record<string, unknown> = {
                       ]
                     },
                     "org_id": {
-                      "type": "string",
-                      "description": "Organization ID that owns this learning path",
-                      "example": "meshery",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
-                      }
+                      },
+                      "type": "string",
+                      "description": "Organization ID that owns this learning path",
+                      "example": "meshery"
                     },
                     "visibility": {
                       "description": "Visibility of the Curricula",
@@ -1067,24 +1067,10 @@ const AcademySchema: Record<string, unknown> = {
                       }
                     },
                     "invite_id": {
-                      "allOf": [
-                        {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          }
-                        }
-                      ],
-                      "description": "ID of the invite associated with this Curricula",
                       "x-oapi-codegen-extra-tags": {
                         "db": "invite_id",
                         "json": "invite_id"
-                      }
-                    },
-                    "workspace_id": {
+                      },
                       "allOf": [
                         {
                           "type": "string",
@@ -1096,13 +1082,31 @@ const AcademySchema: Record<string, unknown> = {
                           }
                         }
                       ],
-                      "description": "ID of the workspace to which this Curricula belongs",
+                      "description": "ID of the invite associated with this Curricula"
+                    },
+                    "workspace_id": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "workspace_id",
                         "json": "workspace_id"
-                      }
+                      },
+                      "allOf": [
+                        {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        }
+                      ],
+                      "description": "ID of the workspace to which this Curricula belongs"
                     },
                     "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "created_at"
+                      },
                       "allOf": [
                         {
                           "type": "string",
@@ -1110,13 +1114,13 @@ const AcademySchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true
                         }
                       ],
-                      "description": "When the Curricula item was created",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "json": "created_at"
-                      }
+                      "description": "When the Curricula item was created"
                     },
                     "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updated_at"
+                      },
                       "allOf": [
                         {
                           "type": "string",
@@ -1125,13 +1129,13 @@ const AcademySchema: Record<string, unknown> = {
                         }
                       ],
                       "description": "When the Curricula was last updated",
-                      "x-go-type": "core.Time",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "json": "updated_at"
-                      }
+                      "x-go-type": "core.Time"
                     },
                     "deleted_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "json": "deleted_at"
+                      },
                       "allOf": [
                         {
                           "description": "Timestamp when the resource was deleted.",
@@ -1146,11 +1150,7 @@ const AcademySchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true
                         }
                       ],
-                      "x-go-type": "core.NullTime",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at",
-                        "json": "deleted_at"
-                      }
+                      "x-go-type": "core.NullTime"
                     },
                     "metadata": {
                       "type": "object",
@@ -1624,13 +1624,13 @@ const AcademySchema: Record<string, unknown> = {
                                 ]
                               },
                               "org_id": {
-                                "type": "string",
-                                "description": "Organization ID that owns this learning path",
-                                "example": "meshery",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "org_id",
                                   "json": "org_id"
-                                }
+                                },
+                                "type": "string",
+                                "description": "Organization ID that owns this learning path",
+                                "example": "meshery"
                               },
                               "visibility": {
                                 "description": "Visibility of the Curricula",
@@ -1695,24 +1695,10 @@ const AcademySchema: Record<string, unknown> = {
                                 }
                               },
                               "invite_id": {
-                                "allOf": [
-                                  {
-                                    "type": "string",
-                                    "format": "uuid",
-                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                                    "x-go-type": "uuid.UUID",
-                                    "x-go-type-import": {
-                                      "path": "github.com/gofrs/uuid"
-                                    }
-                                  }
-                                ],
-                                "description": "ID of the invite associated with this Curricula",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "invite_id",
                                   "json": "invite_id"
-                                }
-                              },
-                              "workspace_id": {
+                                },
                                 "allOf": [
                                   {
                                     "type": "string",
@@ -1724,13 +1710,31 @@ const AcademySchema: Record<string, unknown> = {
                                     }
                                   }
                                 ],
-                                "description": "ID of the workspace to which this Curricula belongs",
+                                "description": "ID of the invite associated with this Curricula"
+                              },
+                              "workspace_id": {
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "workspace_id",
                                   "json": "workspace_id"
-                                }
+                                },
+                                "allOf": [
+                                  {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  }
+                                ],
+                                "description": "ID of the workspace to which this Curricula belongs"
                               },
                               "created_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "created_at"
+                                },
                                 "allOf": [
                                   {
                                     "type": "string",
@@ -1738,13 +1742,13 @@ const AcademySchema: Record<string, unknown> = {
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 ],
-                                "description": "When the Curricula item was created",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "created_at",
-                                  "json": "created_at"
-                                }
+                                "description": "When the Curricula item was created"
                               },
                               "updated_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updated_at"
+                                },
                                 "allOf": [
                                   {
                                     "type": "string",
@@ -1753,13 +1757,13 @@ const AcademySchema: Record<string, unknown> = {
                                   }
                                 ],
                                 "description": "When the Curricula was last updated",
-                                "x-go-type": "core.Time",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "updated_at",
-                                  "json": "updated_at"
-                                }
+                                "x-go-type": "core.Time"
                               },
                               "deleted_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "deleted_at",
+                                  "json": "deleted_at"
+                                },
                                 "allOf": [
                                   {
                                     "description": "Timestamp when the resource was deleted.",
@@ -1774,11 +1778,7 @@ const AcademySchema: Record<string, unknown> = {
                                     "x-go-type-skip-optional-pointer": true
                                   }
                                 ],
-                                "x-go-type": "core.NullTime",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "deleted_at",
-                                  "json": "deleted_at"
-                                }
+                                "x-go-type": "core.NullTime"
                               },
                               "metadata": {
                                 "type": "object",
@@ -2157,13 +2157,13 @@ const AcademySchema: Record<string, unknown> = {
                       ]
                     },
                     "org_id": {
-                      "type": "string",
-                      "description": "Organization ID that owns this learning path",
-                      "example": "meshery",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
-                      }
+                      },
+                      "type": "string",
+                      "description": "Organization ID that owns this learning path",
+                      "example": "meshery"
                     },
                     "visibility": {
                       "description": "Visibility of the Curricula",
@@ -2228,24 +2228,10 @@ const AcademySchema: Record<string, unknown> = {
                       }
                     },
                     "invite_id": {
-                      "allOf": [
-                        {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          }
-                        }
-                      ],
-                      "description": "ID of the invite associated with this Curricula",
                       "x-oapi-codegen-extra-tags": {
                         "db": "invite_id",
                         "json": "invite_id"
-                      }
-                    },
-                    "workspace_id": {
+                      },
                       "allOf": [
                         {
                           "type": "string",
@@ -2257,13 +2243,31 @@ const AcademySchema: Record<string, unknown> = {
                           }
                         }
                       ],
-                      "description": "ID of the workspace to which this Curricula belongs",
+                      "description": "ID of the invite associated with this Curricula"
+                    },
+                    "workspace_id": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "workspace_id",
                         "json": "workspace_id"
-                      }
+                      },
+                      "allOf": [
+                        {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        }
+                      ],
+                      "description": "ID of the workspace to which this Curricula belongs"
                     },
                     "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "created_at"
+                      },
                       "allOf": [
                         {
                           "type": "string",
@@ -2271,13 +2275,13 @@ const AcademySchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true
                         }
                       ],
-                      "description": "When the Curricula item was created",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "json": "created_at"
-                      }
+                      "description": "When the Curricula item was created"
                     },
                     "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updated_at"
+                      },
                       "allOf": [
                         {
                           "type": "string",
@@ -2286,13 +2290,13 @@ const AcademySchema: Record<string, unknown> = {
                         }
                       ],
                       "description": "When the Curricula was last updated",
-                      "x-go-type": "core.Time",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "json": "updated_at"
-                      }
+                      "x-go-type": "core.Time"
                     },
                     "deleted_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "json": "deleted_at"
+                      },
                       "allOf": [
                         {
                           "description": "Timestamp when the resource was deleted.",
@@ -2307,11 +2311,7 @@ const AcademySchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true
                         }
                       ],
-                      "x-go-type": "core.NullTime",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at",
-                        "json": "deleted_at"
-                      }
+                      "x-go-type": "core.NullTime"
                     },
                     "metadata": {
                       "type": "object",
@@ -3627,13 +3627,13 @@ const AcademySchema: Record<string, unknown> = {
                           ]
                         },
                         "org_id": {
-                          "type": "string",
-                          "description": "Organization ID that owns this learning path",
-                          "example": "meshery",
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
                             "json": "org_id"
-                          }
+                          },
+                          "type": "string",
+                          "description": "Organization ID that owns this learning path",
+                          "example": "meshery"
                         },
                         "visibility": {
                           "description": "Visibility of the Curricula",
@@ -3698,24 +3698,10 @@ const AcademySchema: Record<string, unknown> = {
                           }
                         },
                         "invite_id": {
-                          "allOf": [
-                            {
-                              "type": "string",
-                              "format": "uuid",
-                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                              "x-go-type": "uuid.UUID",
-                              "x-go-type-import": {
-                                "path": "github.com/gofrs/uuid"
-                              }
-                            }
-                          ],
-                          "description": "ID of the invite associated with this Curricula",
                           "x-oapi-codegen-extra-tags": {
                             "db": "invite_id",
                             "json": "invite_id"
-                          }
-                        },
-                        "workspace_id": {
+                          },
                           "allOf": [
                             {
                               "type": "string",
@@ -3727,13 +3713,31 @@ const AcademySchema: Record<string, unknown> = {
                               }
                             }
                           ],
-                          "description": "ID of the workspace to which this Curricula belongs",
+                          "description": "ID of the invite associated with this Curricula"
+                        },
+                        "workspace_id": {
                           "x-oapi-codegen-extra-tags": {
                             "db": "workspace_id",
                             "json": "workspace_id"
-                          }
+                          },
+                          "allOf": [
+                            {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            }
+                          ],
+                          "description": "ID of the workspace to which this Curricula belongs"
                         },
                         "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "json": "created_at"
+                          },
                           "allOf": [
                             {
                               "type": "string",
@@ -3741,13 +3745,13 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-skip-optional-pointer": true
                             }
                           ],
-                          "description": "When the Curricula item was created",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at",
-                            "json": "created_at"
-                          }
+                          "description": "When the Curricula item was created"
                         },
                         "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "json": "updated_at"
+                          },
                           "allOf": [
                             {
                               "type": "string",
@@ -3756,13 +3760,13 @@ const AcademySchema: Record<string, unknown> = {
                             }
                           ],
                           "description": "When the Curricula was last updated",
-                          "x-go-type": "core.Time",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at",
-                            "json": "updated_at"
-                          }
+                          "x-go-type": "core.Time"
                         },
                         "deleted_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "deleted_at",
+                            "json": "deleted_at"
+                          },
                           "allOf": [
                             {
                               "description": "Timestamp when the resource was deleted.",
@@ -3777,11 +3781,7 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-skip-optional-pointer": true
                             }
                           ],
-                          "x-go-type": "core.NullTime",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "deleted_at",
-                            "json": "deleted_at"
-                          }
+                          "x-go-type": "core.NullTime"
                         },
                         "metadata": {
                           "type": "object",
@@ -4376,13 +4376,13 @@ const AcademySchema: Record<string, unknown> = {
                           ]
                         },
                         "org_id": {
-                          "type": "string",
-                          "description": "Organization ID that owns this learning path",
-                          "example": "meshery",
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
                             "json": "org_id"
-                          }
+                          },
+                          "type": "string",
+                          "description": "Organization ID that owns this learning path",
+                          "example": "meshery"
                         },
                         "visibility": {
                           "description": "Visibility of the Curricula",
@@ -4447,24 +4447,10 @@ const AcademySchema: Record<string, unknown> = {
                           }
                         },
                         "invite_id": {
-                          "allOf": [
-                            {
-                              "type": "string",
-                              "format": "uuid",
-                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                              "x-go-type": "uuid.UUID",
-                              "x-go-type-import": {
-                                "path": "github.com/gofrs/uuid"
-                              }
-                            }
-                          ],
-                          "description": "ID of the invite associated with this Curricula",
                           "x-oapi-codegen-extra-tags": {
                             "db": "invite_id",
                             "json": "invite_id"
-                          }
-                        },
-                        "workspace_id": {
+                          },
                           "allOf": [
                             {
                               "type": "string",
@@ -4476,13 +4462,31 @@ const AcademySchema: Record<string, unknown> = {
                               }
                             }
                           ],
-                          "description": "ID of the workspace to which this Curricula belongs",
+                          "description": "ID of the invite associated with this Curricula"
+                        },
+                        "workspace_id": {
                           "x-oapi-codegen-extra-tags": {
                             "db": "workspace_id",
                             "json": "workspace_id"
-                          }
+                          },
+                          "allOf": [
+                            {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            }
+                          ],
+                          "description": "ID of the workspace to which this Curricula belongs"
                         },
                         "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "json": "created_at"
+                          },
                           "allOf": [
                             {
                               "type": "string",
@@ -4490,13 +4494,13 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-skip-optional-pointer": true
                             }
                           ],
-                          "description": "When the Curricula item was created",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at",
-                            "json": "created_at"
-                          }
+                          "description": "When the Curricula item was created"
                         },
                         "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "json": "updated_at"
+                          },
                           "allOf": [
                             {
                               "type": "string",
@@ -4505,13 +4509,13 @@ const AcademySchema: Record<string, unknown> = {
                             }
                           ],
                           "description": "When the Curricula was last updated",
-                          "x-go-type": "core.Time",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at",
-                            "json": "updated_at"
-                          }
+                          "x-go-type": "core.Time"
                         },
                         "deleted_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "deleted_at",
+                            "json": "deleted_at"
+                          },
                           "allOf": [
                             {
                               "description": "Timestamp when the resource was deleted.",
@@ -4526,11 +4530,7 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-skip-optional-pointer": true
                             }
                           ],
-                          "x-go-type": "core.NullTime",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "deleted_at",
-                            "json": "deleted_at"
-                          }
+                          "x-go-type": "core.NullTime"
                         },
                         "metadata": {
                           "type": "object",
@@ -8867,13 +8867,13 @@ const AcademySchema: Record<string, unknown> = {
             ]
           },
           "org_id": {
-            "type": "string",
-            "description": "Organization ID that owns this learning path",
-            "example": "meshery",
             "x-oapi-codegen-extra-tags": {
               "db": "org_id",
               "json": "org_id"
-            }
+            },
+            "type": "string",
+            "description": "Organization ID that owns this learning path",
+            "example": "meshery"
           },
           "visibility": {
             "description": "Visibility of the Curricula",
@@ -8938,24 +8938,10 @@ const AcademySchema: Record<string, unknown> = {
             }
           },
           "invite_id": {
-            "allOf": [
-              {
-                "type": "string",
-                "format": "uuid",
-                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                "x-go-type": "uuid.UUID",
-                "x-go-type-import": {
-                  "path": "github.com/gofrs/uuid"
-                }
-              }
-            ],
-            "description": "ID of the invite associated with this Curricula",
             "x-oapi-codegen-extra-tags": {
               "db": "invite_id",
               "json": "invite_id"
-            }
-          },
-          "workspace_id": {
+            },
             "allOf": [
               {
                 "type": "string",
@@ -8967,13 +8953,31 @@ const AcademySchema: Record<string, unknown> = {
                 }
               }
             ],
-            "description": "ID of the workspace to which this Curricula belongs",
+            "description": "ID of the invite associated with this Curricula"
+          },
+          "workspace_id": {
             "x-oapi-codegen-extra-tags": {
               "db": "workspace_id",
               "json": "workspace_id"
-            }
+            },
+            "allOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              }
+            ],
+            "description": "ID of the workspace to which this Curricula belongs"
           },
           "created_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "json": "created_at"
+            },
             "allOf": [
               {
                 "type": "string",
@@ -8981,13 +8985,13 @@ const AcademySchema: Record<string, unknown> = {
                 "x-go-type-skip-optional-pointer": true
               }
             ],
-            "description": "When the Curricula item was created",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "json": "created_at"
-            }
+            "description": "When the Curricula item was created"
           },
           "updated_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "json": "updated_at"
+            },
             "allOf": [
               {
                 "type": "string",
@@ -8996,13 +9000,13 @@ const AcademySchema: Record<string, unknown> = {
               }
             ],
             "description": "When the Curricula was last updated",
-            "x-go-type": "core.Time",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "json": "updated_at"
-            }
+            "x-go-type": "core.Time"
           },
           "deleted_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "json": "deleted_at"
+            },
             "allOf": [
               {
                 "description": "Timestamp when the resource was deleted.",
@@ -9017,11 +9021,7 @@ const AcademySchema: Record<string, unknown> = {
                 "x-go-type-skip-optional-pointer": true
               }
             ],
-            "x-go-type": "core.NullTime",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "json": "deleted_at"
-            }
+            "x-go-type": "core.NullTime"
           },
           "metadata": {
             "type": "object",
@@ -9312,13 +9312,13 @@ const AcademySchema: Record<string, unknown> = {
                 ]
               },
               "org_id": {
-                "type": "string",
-                "description": "Organization ID that owns this learning path",
-                "example": "meshery",
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
                   "json": "org_id"
-                }
+                },
+                "type": "string",
+                "description": "Organization ID that owns this learning path",
+                "example": "meshery"
               },
               "visibility": {
                 "description": "Visibility of the Curricula",
@@ -9383,24 +9383,10 @@ const AcademySchema: Record<string, unknown> = {
                 }
               },
               "invite_id": {
-                "allOf": [
-                  {
-                    "type": "string",
-                    "format": "uuid",
-                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                    "x-go-type": "uuid.UUID",
-                    "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
-                    }
-                  }
-                ],
-                "description": "ID of the invite associated with this Curricula",
                 "x-oapi-codegen-extra-tags": {
                   "db": "invite_id",
                   "json": "invite_id"
-                }
-              },
-              "workspace_id": {
+                },
                 "allOf": [
                   {
                     "type": "string",
@@ -9412,13 +9398,31 @@ const AcademySchema: Record<string, unknown> = {
                     }
                   }
                 ],
-                "description": "ID of the workspace to which this Curricula belongs",
+                "description": "ID of the invite associated with this Curricula"
+              },
+              "workspace_id": {
                 "x-oapi-codegen-extra-tags": {
                   "db": "workspace_id",
                   "json": "workspace_id"
-                }
+                },
+                "allOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  }
+                ],
+                "description": "ID of the workspace to which this Curricula belongs"
               },
               "created_at": {
+                "x-oapi-codegen-extra-tags": {
+                  "db": "created_at",
+                  "json": "created_at"
+                },
                 "allOf": [
                   {
                     "type": "string",
@@ -9426,13 +9430,13 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-type-skip-optional-pointer": true
                   }
                 ],
-                "description": "When the Curricula item was created",
-                "x-oapi-codegen-extra-tags": {
-                  "db": "created_at",
-                  "json": "created_at"
-                }
+                "description": "When the Curricula item was created"
               },
               "updated_at": {
+                "x-oapi-codegen-extra-tags": {
+                  "db": "updated_at",
+                  "json": "updated_at"
+                },
                 "allOf": [
                   {
                     "type": "string",
@@ -9441,13 +9445,13 @@ const AcademySchema: Record<string, unknown> = {
                   }
                 ],
                 "description": "When the Curricula was last updated",
-                "x-go-type": "core.Time",
-                "x-oapi-codegen-extra-tags": {
-                  "db": "updated_at",
-                  "json": "updated_at"
-                }
+                "x-go-type": "core.Time"
               },
               "deleted_at": {
+                "x-oapi-codegen-extra-tags": {
+                  "db": "deleted_at",
+                  "json": "deleted_at"
+                },
                 "allOf": [
                   {
                     "description": "Timestamp when the resource was deleted.",
@@ -9462,11 +9466,7 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-type-skip-optional-pointer": true
                   }
                 ],
-                "x-go-type": "core.NullTime",
-                "x-oapi-codegen-extra-tags": {
-                  "db": "deleted_at",
-                  "json": "deleted_at"
-                }
+                "x-go-type": "core.NullTime"
               },
               "metadata": {
                 "type": "object",
@@ -10331,13 +10331,13 @@ const AcademySchema: Record<string, unknown> = {
                 ]
               },
               "org_id": {
-                "type": "string",
-                "description": "Organization ID that owns this learning path",
-                "example": "meshery",
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
                   "json": "org_id"
-                }
+                },
+                "type": "string",
+                "description": "Organization ID that owns this learning path",
+                "example": "meshery"
               },
               "visibility": {
                 "description": "Visibility of the Curricula",
@@ -10402,24 +10402,10 @@ const AcademySchema: Record<string, unknown> = {
                 }
               },
               "invite_id": {
-                "allOf": [
-                  {
-                    "type": "string",
-                    "format": "uuid",
-                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                    "x-go-type": "uuid.UUID",
-                    "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
-                    }
-                  }
-                ],
-                "description": "ID of the invite associated with this Curricula",
                 "x-oapi-codegen-extra-tags": {
                   "db": "invite_id",
                   "json": "invite_id"
-                }
-              },
-              "workspace_id": {
+                },
                 "allOf": [
                   {
                     "type": "string",
@@ -10431,13 +10417,31 @@ const AcademySchema: Record<string, unknown> = {
                     }
                   }
                 ],
-                "description": "ID of the workspace to which this Curricula belongs",
+                "description": "ID of the invite associated with this Curricula"
+              },
+              "workspace_id": {
                 "x-oapi-codegen-extra-tags": {
                   "db": "workspace_id",
                   "json": "workspace_id"
-                }
+                },
+                "allOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  }
+                ],
+                "description": "ID of the workspace to which this Curricula belongs"
               },
               "created_at": {
+                "x-oapi-codegen-extra-tags": {
+                  "db": "created_at",
+                  "json": "created_at"
+                },
                 "allOf": [
                   {
                     "type": "string",
@@ -10445,13 +10449,13 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-type-skip-optional-pointer": true
                   }
                 ],
-                "description": "When the Curricula item was created",
-                "x-oapi-codegen-extra-tags": {
-                  "db": "created_at",
-                  "json": "created_at"
-                }
+                "description": "When the Curricula item was created"
               },
               "updated_at": {
+                "x-oapi-codegen-extra-tags": {
+                  "db": "updated_at",
+                  "json": "updated_at"
+                },
                 "allOf": [
                   {
                     "type": "string",
@@ -10460,13 +10464,13 @@ const AcademySchema: Record<string, unknown> = {
                   }
                 ],
                 "description": "When the Curricula was last updated",
-                "x-go-type": "core.Time",
-                "x-oapi-codegen-extra-tags": {
-                  "db": "updated_at",
-                  "json": "updated_at"
-                }
+                "x-go-type": "core.Time"
               },
               "deleted_at": {
+                "x-oapi-codegen-extra-tags": {
+                  "db": "deleted_at",
+                  "json": "deleted_at"
+                },
                 "allOf": [
                   {
                     "description": "Timestamp when the resource was deleted.",
@@ -10481,11 +10485,7 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-type-skip-optional-pointer": true
                   }
                 ],
-                "x-go-type": "core.NullTime",
-                "x-oapi-codegen-extra-tags": {
-                  "db": "deleted_at",
-                  "json": "deleted_at"
-                }
+                "x-go-type": "core.NullTime"
               },
               "metadata": {
                 "type": "object",
@@ -10804,13 +10804,13 @@ const AcademySchema: Record<string, unknown> = {
                   ]
                 },
                 "org_id": {
-                  "type": "string",
-                  "description": "Organization ID that owns this learning path",
-                  "example": "meshery",
                   "x-oapi-codegen-extra-tags": {
                     "db": "org_id",
                     "json": "org_id"
-                  }
+                  },
+                  "type": "string",
+                  "description": "Organization ID that owns this learning path",
+                  "example": "meshery"
                 },
                 "visibility": {
                   "description": "Visibility of the Curricula",
@@ -10875,24 +10875,10 @@ const AcademySchema: Record<string, unknown> = {
                   }
                 },
                 "invite_id": {
-                  "allOf": [
-                    {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      }
-                    }
-                  ],
-                  "description": "ID of the invite associated with this Curricula",
                   "x-oapi-codegen-extra-tags": {
                     "db": "invite_id",
                     "json": "invite_id"
-                  }
-                },
-                "workspace_id": {
+                  },
                   "allOf": [
                     {
                       "type": "string",
@@ -10904,13 +10890,31 @@ const AcademySchema: Record<string, unknown> = {
                       }
                     }
                   ],
-                  "description": "ID of the workspace to which this Curricula belongs",
+                  "description": "ID of the invite associated with this Curricula"
+                },
+                "workspace_id": {
                   "x-oapi-codegen-extra-tags": {
                     "db": "workspace_id",
                     "json": "workspace_id"
-                  }
+                  },
+                  "allOf": [
+                    {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    }
+                  ],
+                  "description": "ID of the workspace to which this Curricula belongs"
                 },
                 "created_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "json": "created_at"
+                  },
                   "allOf": [
                     {
                       "type": "string",
@@ -10918,13 +10922,13 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     }
                   ],
-                  "description": "When the Curricula item was created",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "created_at",
-                    "json": "created_at"
-                  }
+                  "description": "When the Curricula item was created"
                 },
                 "updated_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "json": "updated_at"
+                  },
                   "allOf": [
                     {
                       "type": "string",
@@ -10933,13 +10937,13 @@ const AcademySchema: Record<string, unknown> = {
                     }
                   ],
                   "description": "When the Curricula was last updated",
-                  "x-go-type": "core.Time",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "updated_at",
-                    "json": "updated_at"
-                  }
+                  "x-go-type": "core.Time"
                 },
                 "deleted_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "json": "deleted_at"
+                  },
                   "allOf": [
                     {
                       "description": "Timestamp when the resource was deleted.",
@@ -10954,11 +10958,7 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     }
                   ],
-                  "x-go-type": "core.NullTime",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "deleted_at",
-                    "json": "deleted_at"
-                  }
+                  "x-go-type": "core.NullTime"
                 },
                 "metadata": {
                   "type": "object",
@@ -11269,13 +11269,13 @@ const AcademySchema: Record<string, unknown> = {
                       ]
                     },
                     "org_id": {
-                      "type": "string",
-                      "description": "Organization ID that owns this learning path",
-                      "example": "meshery",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
-                      }
+                      },
+                      "type": "string",
+                      "description": "Organization ID that owns this learning path",
+                      "example": "meshery"
                     },
                     "visibility": {
                       "description": "Visibility of the Curricula",
@@ -11340,24 +11340,10 @@ const AcademySchema: Record<string, unknown> = {
                       }
                     },
                     "invite_id": {
-                      "allOf": [
-                        {
-                          "type": "string",
-                          "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          }
-                        }
-                      ],
-                      "description": "ID of the invite associated with this Curricula",
                       "x-oapi-codegen-extra-tags": {
                         "db": "invite_id",
                         "json": "invite_id"
-                      }
-                    },
-                    "workspace_id": {
+                      },
                       "allOf": [
                         {
                           "type": "string",
@@ -11369,13 +11355,31 @@ const AcademySchema: Record<string, unknown> = {
                           }
                         }
                       ],
-                      "description": "ID of the workspace to which this Curricula belongs",
+                      "description": "ID of the invite associated with this Curricula"
+                    },
+                    "workspace_id": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "workspace_id",
                         "json": "workspace_id"
-                      }
+                      },
+                      "allOf": [
+                        {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        }
+                      ],
+                      "description": "ID of the workspace to which this Curricula belongs"
                     },
                     "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "created_at"
+                      },
                       "allOf": [
                         {
                           "type": "string",
@@ -11383,13 +11387,13 @@ const AcademySchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true
                         }
                       ],
-                      "description": "When the Curricula item was created",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "json": "created_at"
-                      }
+                      "description": "When the Curricula item was created"
                     },
                     "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updated_at"
+                      },
                       "allOf": [
                         {
                           "type": "string",
@@ -11398,13 +11402,13 @@ const AcademySchema: Record<string, unknown> = {
                         }
                       ],
                       "description": "When the Curricula was last updated",
-                      "x-go-type": "core.Time",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "json": "updated_at"
-                      }
+                      "x-go-type": "core.Time"
                     },
                     "deleted_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "json": "deleted_at"
+                      },
                       "allOf": [
                         {
                           "description": "Timestamp when the resource was deleted.",
@@ -11419,11 +11423,7 @@ const AcademySchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true
                         }
                       ],
-                      "x-go-type": "core.NullTime",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at",
-                        "json": "deleted_at"
-                      }
+                      "x-go-type": "core.NullTime"
                     },
                     "metadata": {
                       "type": "object",

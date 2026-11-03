@@ -47,7 +47,7 @@ generate-site-index: site-data-generate
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup generate-ts generate-enums-ts test-enums-ts publish-ts bundle-openapi generate-golang test-gofmt generate-rtk test-rtk generate-python test-python test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
+.PHONY: setup generate-ts generate-enums-ts test-enums-ts test-generated-outputs publish-ts bundle-openapi generate-golang test-gofmt generate-rtk test-rtk generate-python test-python test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -66,6 +66,10 @@ generate-enums-ts:
 ## Run enum constant generation regression tests
 test-enums-ts:
 	node --test tests/generate-enums-ts.test.js
+
+## Fail when generated output remains for a removed construct, and test the prune
+test-generated-outputs:
+	node --test tests/generated-outputs.test.js
 
 ## Bundle Typescript library, json templates, yaml templates
 build-ts: generate-ts

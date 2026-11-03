@@ -41,7 +41,7 @@ export interface paths {
         };
         /**
          * Download token
-         * @description Downloads a specific token by its ID for use as a local credential file (e.g. mesheryctl's auth.json). Gated by the Download Token permission and recorded as a distinct audit event from viewing or listing tokens.
+         * @description Downloads a specific token by its ID for use as a local credential file (e.g. a CLI auth file). Gated by the Download Token permission and recorded as a distinct audit event from viewing or listing tokens.
          */
         get: operations["downloadToken"];
         put?: never;
@@ -64,6 +64,106 @@ export interface paths {
          * @description Creates a non-expiring user token for provider admin use cases.
          */
         get: operations["issueIndefiniteLifetimeToken"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/native/authorize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Authorize native client sign-in
+         * @description Browser-facing step of the native client sign-in flow (RFC 8252 loopback redirect with RFC 7636 PKCE). Requires the session cookie of a signed-in user and the Create Token permission. Validates the request. When the request names the client application (`client`) and its version (`clientVersion`) and that version is below the provider minimum, it renders the update page with status 426 and issues nothing. Otherwise it stores a single-use authorization code that expires after 60 seconds, bound to the user, the client name and the PKCE code challenge, and redirects the browser to http://127.0.0.1:{port}/callback with code and state query parameters. Only the 127.0.0.1 loopback IP literal is ever used; no token or cookie is placed in the redirect; no consent page is shown.
+         */
+        get: operations["getNativeClientAuthorization"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/native/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Exchange native client authorization code
+         * @description Redeems a single-use authorization code from the native client sign-in flow. The caller proves possession of the PKCE code verifier (BASE64URL(SHA256(codeVerifier)) must equal the stored S256 challenge). The code is consumed on the first redemption attempt, whether or not the verifier matches. On success an API token is minted for the user with name and purpose set to the client name. This call is authenticated by the code and verifier, not by a session.
+         */
+        post: operations["exchangeNativeAuthorizationCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revoke token
+         * @description Revokes an OAuth access or refresh token issued by the identity provider, for example when an OAuth client signs out, or a user-created API token (the token envelope that generateToken returns, or the bare JWT inside it). Possessing the token is the credential, so no session or bearer token is required. The server first checks whether `token` is a user-created API token whose signature verifies. If it is, the server retires it locally, scoped to the owner named in the token, exactly as deleteUserToken does, and evicts cached introspection results so the token stops authenticating immediately. A token issued to a third-party OAuth client (any client other than the server's own) ends that user's whole grant to that client, revoking every access and refresh token it minted. Any other token is forwarded to the OAuth2 server's RFC 7009 revocation endpoint with the server's own client credentials, which revokes that token and the tokens issued alongside it from the same authorization. On every path an unknown, anonymous or already-revoked token is a no-op that still answers 200, so the answer reveals nothing about validity. The server trims whitespace from `token`. The server reads only the first 1 MiB (1048576 bytes) of the body and ignores the rest; JSON that does not complete within it fails to decode (400). A 400 body is one of "Error reading token payload", "Error decoding token" or "missing token". A 503 body is "token revocation status is temporarily unavailable" when signing keys (JWKS) or the token store cannot be read, or when the OAuth2 server cannot be asked who the token belongs to; the token was not revoked and the caller should retry. A 500 body is "Error revoking token at the moment", answered when the revocation call itself fails: the OAuth2 server's revocation returns an error response or cannot be reached.
+         */
+        post: operations["revokeToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/introspect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Introspect access token
+         * @description Reports whether an access token (a JWT) is authentic, unexpired, not revoked and issued for a protected resource, and on success describes it. Possessing the token is the credential, so no session or bearer token is required. `resource` names the protected resource asking (an RFC 8707 resource identifier, as published in that resource's RFC 9728 protected resource metadata); omitted, it is the REST API. The server is the single decider: a token the server issued to its own first-party clients (a personal API token, a native sign-in token, a first-party sign-in session) is valid for every protected resource the server issues tokens for; a token issued to a third-party OAuth client is valid only for a resource its `aud` names. An inactive or refused token is answered with a 401, not with RFC 7662 section 2.2's 200 and `active: false`: this is the server's status API, and existing callers read only the status. The server trims whitespace from `token`. The server reads only the first 1 MiB (1048576 bytes) of the body and ignores the rest; JSON that does not complete within it fails to decode (400). A 400 body is "Error reading token payload" or "Error decoding token" (also answered when `token` is missing or empty), or "invalid_target" when `resource` is not a protected resource this server issues tokens for. A 401 body is "invalid access token" when the signature or expiry check fails, "revoked access token used" when the token has been revoked, or "token audience does not include the requested resource". A caller that sends `resource` takes the 200 as the server's decision for that resource - `aud` is [] for a first-party token that is valid everywhere, so a caller must not re-derive the decision from it - and must refuse the token when the 200 carries no body: a server that predates `resource` ignores it and answers 200 with an empty body for any valid token.
+         */
+        post: operations["introspectToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sign out
+         * @description Browser navigation that signs the user out. The session is identified by the session_cookie and provider_token cookies, not by a bearer token. Ends the identity provider session, revokes the OAuth access and refresh tokens carried by the provider_token cookie, clears every session cookie and redirects to /login. Cookies are cleared on every outcome, including failure. User-created API tokens are not affected; they are revoked with revokeToken or deleteUserToken. On the canonical host a complete sign-out needs both cookies - session_cookie lets the identity provider end its session and provider_token carries the OAuth tokens to revoke. With only session_cookie, the identity provider session ends but no OAuth tokens are revoked, and the answer is the success 303. With only provider_token, the identity provider cannot start its logout flow, so the OAuth tokens are still revoked but the answer is the failure one - 303 for a browser document navigation, an empty 500 otherwise. Cookies are cleared either way. On an organization custom domain the user is identified from provider_token, sign-out is best-effort and it always answers 302.
+         */
+        get: operations["logoutUser"];
         put?: never;
         post?: never;
         delete?: never;
@@ -110,6 +210,83 @@ export interface components {
              * @description Timestamp when the token was last updated.
              */
             updatedAt: string;
+        };
+        /** @description Carries the token that revokeToken revokes. */
+        TokenPayload: {
+            /** @description The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
+            token: string;
+        };
+        /** @description Carries the token that introspectToken checks, and the protected resource asking. */
+        TokenIntrospectionPayload: {
+            /** @description The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
+            token: string;
+            /**
+             * Format: uri
+             * @description RFC 8707 resource identifier of the protected resource asking, as published in its RFC 9728 protected resource metadata. Omitted, the REST API. A value that is not a protected resource this server issues tokens for is rejected with 400 "invalid_target".
+             */
+            resource?: string;
+        };
+        /** @description Describes an access token introspectToken accepted, using the RFC 7662 member names where they are single words and their camelCase form where they are not (clientId, tokenType). */
+        TokenIntrospection: {
+            /** @description Always true; a token that is not active is answered with 401 instead. */
+            active: boolean;
+            /** @description The resources the token is bound to (RFC 8707 resource identifiers). Always a JSON array, never null or absent: [] for a token the server issued to its own first-party clients, which is valid for every protected resource the server issues tokens for. */
+            aud: string[];
+            /** @description The subject the token was issued for. */
+            sub?: string;
+            /** @description The OAuth client the token was issued to. */
+            clientId?: string;
+            /** @description Space-separated scopes granted to the token. */
+            scope?: string;
+            /**
+             * Format: int64
+             * @description Expiry, in seconds since the Unix epoch. Absent for a token that does not expire.
+             */
+            exp?: number;
+            /**
+             * Format: int64
+             * @description Issue time, in seconds since the Unix epoch.
+             */
+            iat?: number;
+            /**
+             * Format: int64
+             * @description Not-before time, in seconds since the Unix epoch.
+             */
+            nbf?: number;
+            /** @description The issuer of the token. */
+            iss?: string;
+            /** @description Always "Bearer". */
+            tokenType?: string;
+        };
+        /** @description Query fields of GET /api/identity/native/authorize. The signed-in session issues the authorization code from these fields. */
+        NativeAuthorizationPayload: {
+            /** @description Display name of the native client. */
+            clientName: string;
+            /** @description Port on 127.0.0.1 for the callback. */
+            port: number;
+            /** @description PKCE S256 code challenge. */
+            codeChallenge: string;
+            /**
+             * @description PKCE challenge method.
+             * @enum {string}
+             */
+            codeChallengeMethod: "S256";
+            /** @description Opaque client state returned on the callback. */
+            state: string;
+        };
+        /** @description Redeems a native client authorization code with its PKCE verifier. */
+        NativeCodeExchangePayload: {
+            /** @description Single-use authorization code from the loopback callback. */
+            code: string;
+            /** @description PKCE code verifier (RFC 7636, 43 to 128 unreserved characters). */
+            codeVerifier: string;
+        };
+        /** @description Query parameters of the loopback redirect that getNativeClientAuthorization answers with, http://127.0.0.1:{port}/callback?code=...&state=... The code is single-use and expires after 60 seconds; no token is ever placed in the URL. The native client compares state with the one it sent before redeeming the code at /api/identity/native/token. */
+        NativeAuthorizationCallback: {
+            /** @description Single-use authorization code, redeemed with the PKCE code verifier. */
+            code: string;
+            /** @description The state the native client sent on the authorize request, unchanged. */
+            state: string;
         };
         /** @description A paginated list of tokens. */
         TokenPage: {
@@ -175,6 +352,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Forbidden */
+        403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Result not found */
         404: {
             headers: {
@@ -186,6 +372,15 @@ export interface components {
         };
         /** @description Internal server error */
         500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Signing keys or token revocation status are temporarily unavailable. The token is refused, but the caller should retry rather than sign the user out. */
+        503: {
             headers: {
                 [name: string]: unknown;
             };
@@ -220,8 +415,22 @@ export interface components {
         isOauth: boolean;
         /** @description Name of the token. */
         name: string;
-        /** @description Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
+        /** @description Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
         purpose: string;
+        /** @description Display name of the native client asking to sign in. Used as the name and purpose of the minted token. */
+        nativeClientName: string;
+        /** @description Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`. */
+        nativeClient: string;
+        /** @description Version of the client application, for example `v1.25.0`. */
+        nativeClientVersion: string;
+        /** @description Port on 127.0.0.1 where the native client listens for the callback. */
+        nativePort: number;
+        /** @description PKCE code challenge, BASE64URL(SHA256(codeVerifier)) without padding. */
+        nativeCodeChallenge: string;
+        /** @description PKCE challenge method. Only S256 is accepted. */
+        nativeCodeChallengeMethod: "S256";
+        /** @description Opaque value from the native client, returned unchanged on the callback. */
+        nativeState: string;
     };
     requestBodies: never;
     headers: never;
@@ -234,7 +443,7 @@ export interface operations {
             query?: {
                 /** @description Whether to retrieve OAuth-backed sessions instead of API tokens. */
                 isOauth?: boolean;
-                /** @description Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
+                /** @description Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
                 purpose?: string;
                 /** @description Get responses by page */
                 page?: number;
@@ -332,7 +541,7 @@ export interface operations {
             query: {
                 /** @description Name of the token. */
                 name: string;
-                /** @description Token purpose. Tokens are minted with this purpose on generate, and listed tokens are filtered to this purpose on list (e.g. blowhorn device tokens). */
+                /** @description Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
                 purpose?: string;
             };
             header?: never;
@@ -687,6 +896,358 @@ export interface operations {
                 content: {
                     "text/plain": string;
                 };
+            };
+        };
+    };
+    getNativeClientAuthorization: {
+        parameters: {
+            query: {
+                /** @description Display name of the native client asking to sign in. Used as the name and purpose of the minted token. */
+                clientName: string;
+                /** @description Identifier of the client application, as in the capabilities `client` parameter. Selects the minimum version checked against `clientVersion`. */
+                client?: string;
+                /** @description Version of the client application, for example `v1.25.0`. */
+                clientVersion?: string;
+                /** @description Port on 127.0.0.1 where the native client listens for the callback. */
+                port: number;
+                /** @description PKCE code challenge, BASE64URL(SHA256(codeVerifier)) without padding. */
+                codeChallenge: string;
+                /** @description PKCE challenge method. Only S256 is accepted. */
+                codeChallengeMethod: "S256";
+                /** @description Opaque value from the native client, returned unchanged on the callback. */
+                state: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Redirect to the loopback callback carrying code and state. The callback's query parameters are described by NativeAuthorizationCallback. */
+            302: {
+                headers: {
+                    /** @description http://127.0.0.1:{port}/callback?code=...&state=..., whose query is a NativeAuthorizationCallback. */
+                    Location: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Update page; the client's version is below the provider's minimum for that client. */
+            426: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    exchangeNativeAuthorizationCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Single-use authorization code from the loopback callback. */
+                    code: string;
+                    /** @description PKCE code verifier (RFC 7636, 43 to 128 unreserved characters). */
+                    codeVerifier: string;
+                };
+            };
+        };
+        responses: {
+            /** @description API token minted for the native client */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the token.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description UUID of the user who owns the token.
+                         */
+                        owner: string;
+                        /** @description Authentication provider associated with the token. */
+                        provider: string;
+                        /** @description Access token value. */
+                        accessToken: string;
+                        /** @description Refresh token value when applicable. */
+                        refreshToken?: string;
+                        /** @description Human-readable token name. */
+                        name: string;
+                        /** @description Purpose for which the token was created. */
+                        purpose: string;
+                        /** @description Whether this entry represents an OAuth session. */
+                        isOauth: boolean;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the token was created.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the token was last updated.
+                         */
+                        updatedAt: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    revokeToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
+                    token: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Token revoked, or unknown or already revoked (no-op). The body is empty and the session cookie is cleared. */
+            200: {
+                headers: {
+                    /** @description Clears the session cookie (session_cookie=; Path=/; Max-Age=0; HttpOnly). */
+                    "Set-Cookie"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Signing keys (JWKS) or the token store could not be read, or the OAuth2 server could not be asked who the token belongs to, so the token was not revoked. The body is "token revocation status is temporarily unavailable"; the caller should retry. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    introspectToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
+                    token: string;
+                    /**
+                     * Format: uri
+                     * @description RFC 8707 resource identifier of the protected resource asking, as published in its RFC 9728 protected resource metadata. Omitted, the REST API. A value that is not a protected resource this server issues tokens for is rejected with 400 "invalid_target".
+                     */
+                    resource?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description The token is authentic, unexpired, not revoked and valid for the requested resource. The body describes it. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Always true; a token that is not active is answered with 401 instead. */
+                        active: boolean;
+                        /** @description The resources the token is bound to (RFC 8707 resource identifiers). Always a JSON array, never null or absent: [] for a token the server issued to its own first-party clients, which is valid for every protected resource the server issues tokens for. */
+                        aud: string[];
+                        /** @description The subject the token was issued for. */
+                        sub?: string;
+                        /** @description The OAuth client the token was issued to. */
+                        clientId?: string;
+                        /** @description Space-separated scopes granted to the token. */
+                        scope?: string;
+                        /**
+                         * Format: int64
+                         * @description Expiry, in seconds since the Unix epoch. Absent for a token that does not expire.
+                         */
+                        exp?: number;
+                        /**
+                         * Format: int64
+                         * @description Issue time, in seconds since the Unix epoch.
+                         */
+                        iat?: number;
+                        /**
+                         * Format: int64
+                         * @description Not-before time, in seconds since the Unix epoch.
+                         */
+                        nbf?: number;
+                        /** @description The issuer of the token. */
+                        iss?: string;
+                        /** @description Always "Bearer". */
+                        tokenType?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Signing keys or token revocation status are temporarily unavailable. The token is refused, but the caller should retry rather than sign the user out. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    logoutUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Redirect to /login on an organization custom domain, where sign-out is best-effort. The body is a short HTML link to /login. */
+            302: {
+                headers: {
+                    /** @description /login */
+                    Location: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Redirect to /login. Answered when sign-out completes on the canonical host, and also when the identity provider failed but the request is a browser document navigation. The body is a short HTML link to /login. */
+            303: {
+                headers: {
+                    /** @description /login */
+                    Location: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description The identity provider failed and the request was not a browser document navigation. The body is empty; cookies are still cleared. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

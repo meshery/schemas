@@ -10,7 +10,7 @@ import (
 // FeatureName (schemas/constructs/v1beta1/feature/api.yml) is the closed set of
 // entitlements a Layer5 Cloud plan can grant. Every consumer keys on the
 // literal string: meshery-cloud mirrors it as the Postgres `feature_name` enum
-// and seeds plan features from it, and the Blowhorn entitlement client
+// and seeds plan features from it, and the downstream entitlement client
 // (leecalcote/blowhorn, outbox/entitlement.py) maps each Blowhorn* literal to a
 // design flag and ignores names it does not know. A value that is renamed or
 // dropped therefore fails silently downstream - the client reads an absent
@@ -18,7 +18,7 @@ import (
 // silently renumber any positional enum extension.
 //
 // These tests pin what that contract depends on: the published values in
-// their published order, the Blowhorn set the client reads, the casing
+// their published order, the posting-client set the client reads, the casing
 // exemption that lets Rule 8 accept the PascalCase convention this enum was
 // published with, and a description for every literal so the published
 // OpenAPI documentation says how each quantity is read. See
@@ -26,7 +26,7 @@ import (
 
 const featureAPISpec = "schemas/constructs/v1beta1/feature/api.yml"
 
-// publishedFeatureNames predate the Blowhorn set. Their order is part of the
+// publishedFeatureNames predate the posting-client set. Their order is part of the
 // contract: new values are appended after them, never inserted between.
 var publishedFeatureNames = []string{
 	"ComponentsInDesign",
@@ -37,7 +37,7 @@ var publishedFeatureNames = []string{
 	"SizePerDesign",
 }
 
-// blowhornFeatureNames is the set the Blowhorn entitlement client reads, in the
+// blowhornFeatureNames is the set the downstream entitlement client reads, in the
 // order the schema declares them.
 var blowhornFeatureNames = []string{
 	"BlowhornProfiles",

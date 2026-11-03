@@ -158,9 +158,9 @@ func checkRule4(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 // property name / JSON tag is camelCase regardless of DB backing. Rule 6 is
 // therefore unconditional - DB-mirrored fields are no longer exempt and are
 // flagged through the same `--style-debt` severity path as any other
-// legacy snake_case wire identifier. Known legacy DB-mirrored names are
-// still tracked via the `dbMirroredFields` set in casing.go for use by
-// matcher.go's consumer-type diff.
+// legacy snake_case wire identifier. Whether a property is DB-backed is
+// determined from its x-oapi-codegen-extra-tags annotations via
+// IsDBBackedProperty (see casing.go), never from a hardcoded name list.
 func checkRule6ForAPI(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
 	sev := classifyStyleIssue(opts)
 	if sev == nil {
@@ -221,7 +221,7 @@ func checkPropertyNameCasing(filePath, schemaName string, schema *openapi3.Schem
 				if suggestion != "" {
 					msg += fmt.Sprintf(` Use: %q.`, suggestion)
 				}
-				msg += schemaPropertyDBContext(propName)
+				msg += schemaPropertyDBContext(propName, IsDBBackedProperty(schema.Properties[propName]))
 				msg += ` See docs/casing-rules.md.`
 				out = append(out, Violation{File: filePath, Message: msg, Severity: sev, RuleNumber: 6})
 			}
@@ -258,15 +258,15 @@ func checkPropertyNameCasing(filePath, schemaName string, schema *openapi3.Schem
 
 // schemaPropertyDBContext returns a short suffix to append to a Rule 6
 // violation message for schema / entity property names, calling out either
-// the legacy-DB-mirrored migration hint (when the name is in the known
-// mirrored set) or a generic reminder that snake_case belongs only on the
-// `db:` tag (for other snake_case property names). Returns the empty
-// string when no DB-specific context applies - so that this helper can be
-// reused by Rule 6's entity path without pushing DB-specific wording into
-// GetCamelCaseIssues (which is shared with non-DB contexts such as
-// query/header parameter names).
-func schemaPropertyDBContext(propName string) string {
-	if dbMirroredFields[propName] {
+// the legacy-DB-mirrored migration hint (when the property is DB-backed per
+// its x-oapi-codegen-extra-tags annotations - see IsDBBackedProperty) or a
+// generic reminder that snake_case belongs only on the `db:` tag (for other
+// snake_case property names). Returns the empty string when no DB-specific
+// context applies - so that this helper can be reused by Rule 6's entity
+// path without pushing DB-specific wording into GetCamelCaseIssues (which
+// is shared with non-DB contexts such as query/header parameter names).
+func schemaPropertyDBContext(propName string, dbBacked bool) string {
+	if dbBacked {
 		return ` (legacy DB-mirrored name - migrate at the resource's next API-version bump per docs/casing-rules.md)`
 	}
 	if HasUnderscore(propName) {
@@ -483,13 +483,13 @@ func getExtraTag(extensions map[string]any, tagName string) string {
 //
 // Casing families (see classifyCasingFamily for the full taxonomy):
 //   - camel     - starts lowercase, contains at least one uppercase, no
-//                 consecutive-uppercase acronym run (`userId`, `orgId`).
+//     consecutive-uppercase acronym run (`userId`, `orgId`).
 //   - snake     - contains an underscore (`user_id`, `created_at`).
 //   - screaming - all-uppercase, or contains a 2+ consecutive-uppercase
-//                 acronym token (`ID`, `URL`, `orgID`, `pageURL`).
+//     acronym token (`ID`, `URL`, `orgID`, `pageURL`).
 //   - lowercase - single-word all-lowercase, no underscore, no uppercase
-//                 (`id`, `name`, `metadata`). Agnostic bucket: does NOT
-//                 count toward the mixed-family trigger.
+//     (`id`, `name`, `metadata`). Agnostic bucket: does NOT
+//     count toward the mixed-family trigger.
 //
 // Pure-camel and pure-snake structs both pass - a fully-legacy-snake
 // struct is caught by Rule 6 independently. The rule fires only when
@@ -651,20 +651,20 @@ func collectCasingFamilies(schema *openapi3.Schema, families map[string][]string
 // identifier. The buckets used by Rule 45 are:
 //
 //   - "camel"     - camelCase (starts lowercase, at least one uppercase,
-//                   no consecutive uppercase acronym). Example: "userId".
+//     no consecutive uppercase acronym). Example: "userId".
 //   - "snake"     - contains an underscore. Example: "user_id".
 //   - "screaming" - entirely uppercase, OR contains a 2+ consecutive-
-//                   uppercase acronym token (e.g. "ID" in "orgID",
-//                   "URL" in "pageURL", "HPA" in "HPAReplicas").
+//     uppercase acronym token (e.g. "ID" in "orgID",
+//     "URL" in "pageURL", "HPA" in "HPAReplicas").
 //   - "lowercase" - all-lowercase single word with no underscore. This
-//                   is an agnostic bucket: `id`, `name`, `owner`,
-//                   `metadata`, `status` - identifiers that are the
-//                   canonical single-word form for both camel and snake
-//                   traditions. Rule 45 treats this bucket as
-//                   non-conflicting: it does not count as "the camel
-//                   half of a snake/camel mix", because a legacy-snake
-//                   struct that uses `id` alongside `user_id` is not a
-//                   partial migration.
+//     is an agnostic bucket: `id`, `name`, `owner`,
+//     `metadata`, `status` - identifiers that are the
+//     canonical single-word form for both camel and snake
+//     traditions. Rule 45 treats this bucket as
+//     non-conflicting: it does not count as "the camel
+//     half of a snake/camel mix", because a legacy-snake
+//     struct that uses `id` alongside `user_id` is not a
+//     partial migration.
 //   - "other"     - empty input or a form that doesn't fit any bucket.
 func classifyCasingFamily(name string) string {
 	if name == "" {

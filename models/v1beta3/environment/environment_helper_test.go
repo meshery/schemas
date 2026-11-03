@@ -44,36 +44,35 @@ func TestEffectivePurposeResolvesAbsentToUser(t *testing.T) {
 	}
 }
 
-// TestEnvironmentPayloadCannotCarryPurpose is the schema half of the guarantee
-// that permission to create an environment does not confer permission to make
-// one administrative: EnvironmentPayload has no field the property can decode
-// into, so a request that supplies one is dropped rather than honoured.
+// TestEnvironmentPayloadCannotCarryPrivilegedPurpose is the schema half of the
+// guarantee that permission to create an environment does not confer
+// permission to make one administrative: EnvironmentPayload carries purpose
+// only as EnvironmentPayloadPurpose, whose client-settable values are the
+// non-privileged ones, so a server that checks IsClientSettable refuses a
+// request naming a privileged purpose.
 //
 // This is a codegen guarantee, not access control. Every consumer must also
-// refuse to set Purpose from request input on its own side - a consumer that
-// copies an entity struct straight out of a request body bypasses this
-// entirely. The test exists so that adding Purpose to the payload schema,
-// which would remove the guarantee, cannot pass unnoticed. It is the only
-// mechanism in the schema, because the readOnly annotation that would normally
-// accompany it corrupts the generated RTK client - see
-// docs/environment-purpose-contract.md.
-func TestEnvironmentPayloadCannotCarryPurpose(t *testing.T) {
+// refuse to set a privileged Purpose from request input on its own side.
+func TestEnvironmentPayloadCannotCarryPrivilegedPurpose(t *testing.T) {
 	var payload EnvironmentPayload
 	body := []byte(`{"name":"attacker","organizationId":"00000000-0000-0000-0000-000000000000","purpose":"administrative"}`)
-	if err := json.Unmarshal(body, &payload); err != nil {
-		t.Fatalf("unmarshal payload: %v", err)
+	if err := json.Unmarshal(body, &payload); err == nil {
+		t.Fatalf("decoding a privileged purpose must fail, got purpose %v", payload.Purpose)
 	}
-
-	round, err := json.Marshal(payload)
-	if err != nil {
-		t.Fatalf("marshal payload: %v", err)
+	for _, value := range []string{"user"} {
+		var ok EnvironmentPayload
+		if err := json.Unmarshal([]byte(`{"name":"ok","purpose":"`+value+`"}`), &ok); err != nil {
+			t.Fatalf("decoding client-settable purpose %q: %v", value, err)
+		}
+		if ok.Purpose == nil || string(*ok.Purpose) != value {
+			t.Fatalf("decoded purpose = %v, want %q", ok.Purpose, value)
+		}
 	}
-	var got map[string]any
-	if err := json.Unmarshal(round, &got); err != nil {
-		t.Fatalf("unmarshal round-tripped payload: %v", err)
-	}
-	if _, present := got["purpose"]; present {
-		t.Fatal("EnvironmentPayload round-tripped a purpose field; the payload schema must not expose purpose - see schemas/constructs/v1beta3/environment/api.yml")
+	for _, bad := range []string{"", "profile", "Profile", " user", "administrative"} {
+		var p EnvironmentPayloadPurpose
+		if err := json.Unmarshal([]byte(`"`+bad+`"`), &p); err == nil {
+			t.Errorf("decoding purpose %q must fail", bad)
+		}
 	}
 }
 
