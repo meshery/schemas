@@ -7,8 +7,8 @@ organization from being claimed. It can be set or lifted two ways:
 | Operation | Writes | Gate |
 | --- | --- | --- |
 | `updateOrgSchedulePause` (`PUT /api/identity/orgs/{orgId}/schedule-pause`) | `schedulePause` and nothing else | The key Pause schedules (Workflow Management / Schedules), in the Schedule Edit keychain, seeded to the organization admin role |
-| `patchOrgPreferences` | One or more organization preferences, including branding and links | The same gate as `updateOrg` for every member; changing `schedulePause` also requires organization admin |
-| `updateOrg` | The organization and its preferences, including branding and links | Changing `schedulePause` requires organization admin |
+| `patchOrgPreferences` | One or more organization preferences, including branding and links | Authorization is the same as `updateOrg` for every member; changing `schedulePause` also requires organization admin (403, nothing written) |
+| `updateOrg` | The organization and its preferences, including branding and links | Changing `schedulePause` requires organization admin (403 otherwise); its description states no other gate |
 
 ## Why a second operation
 
