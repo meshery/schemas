@@ -192,7 +192,7 @@ properties:
   approved:
     type: boolean
     description: >
-      Whether a person approved the item to run. Server-set and read-only:
+      Whether the item is approved to run. Server-set and read-only:
       it is not in ContentItemPayload. At insert the server sets it from the
       effective approval, which is resolved at insert, again at each content
       edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request
