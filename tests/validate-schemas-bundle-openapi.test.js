@@ -451,6 +451,20 @@ test("route ownership: x-supersedes must be a version string", () => {
   assert.throws(() => mergeInOrder([v1beta2Preferences, malformed]), /x-supersedes on \/api\/identity\/users\/preferences put must be a version string/);
 });
 
+test("route ownership: an owner cannot name its own version", () => {
+  const selfOwned = userVersionSpec("v1beta3", {
+    "x-supersedes": "v1beta3",
+    responses: { "201": { description: "Preferences updated (v1beta3)" } },
+  });
+
+  for (const specs of [[selfOwned], [v1beta2Preferences, selfOwned], [selfOwned, v1beta2Preferences]]) {
+    assert.throws(
+      () => mergeInOrder(specs),
+      /x-supersedes on \/api\/identity\/users\/preferences put names its own version \(v1beta3\)/,
+    );
+  }
+});
+
 test("the real user specs merge to one updateUserPreferences, owned by v1beta3, in either order", async () => {
   const userSpec = (version) =>
     dereferenceOpenapiSpec(path.resolve(__dirname, "..", "schemas/constructs", version, "user/api.yml"));

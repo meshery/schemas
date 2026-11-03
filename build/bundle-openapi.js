@@ -204,6 +204,11 @@ function declareOperation(route, method, operation, origin) {
     throw new Error(`${SUPERSEDES_EXTENSION} on ${route} ${method} must be a version string`);
   }
   if (supersedes !== undefined) {
+    if (supersedes === origin.version) {
+      throw new Error(
+        `${SUPERSEDES_EXTENSION} on ${route} ${method} names its own version (${supersedes}): an owner must name the older version it supersedes`,
+      );
+    }
     const ref = firstRef(operation);
     if (ref !== undefined) {
       throw new Error(
