@@ -391,7 +391,7 @@ without parsing `data`:
 
 | Field | Type | Meaning |
 | --- | --- | --- |
-| `approved` | boolean | Whether the item is approved to run. Set true by `approveRequest`, or by an insert whose effective approval is not required (no person decides). Server-set and read-only. The client that runs the queue reads it. |
+| `approved` | boolean | Whether the item is approved to run. Set true by `approveRequest`, by an insert whose effective approval is not required (no person decides), or by the one-time backfill of a row written before the field shipped ([Migrating from the `Approved?` column](#migrating-from-the-approved-column)). Server-set and read-only. The client that runs the queue reads it. |
 | `createdByClient` | string | OAuth client ID of the AI app that created the item. Server-set from the access token; empty or absent for an item a person created. |
 
 **`approved` is in the entity only, never in a request body.**
