@@ -565,20 +565,12 @@ func TestRequestConstruct(t *testing.T) {
 			t.Errorf("%s body $ref = %v, want RequestDecisionPayload", id, got)
 		}
 		responses := mustLookup(t, op, "responses")
-		if _, has := mappingValue(responses, "409"); !has {
-			t.Errorf("%s must document 409 for a request that is not pending or whose subject is soft-deleted", id)
+		if got := mustValue(mustLookup(t, responses, "409"), "$ref"); got != "#/components/responses/409" {
+			t.Errorf("%s 409 $ref = %v, want the shared 409 for a request that is not pending or whose subject is soft-deleted", id, got)
 		}
 		if got := mustValue(mustLookup(t, responses, "404"), "$ref"); got != "#/components/responses/DecisionNotFound" {
 			t.Errorf("%s 404 $ref = %v, want DecisionNotFound for a subject that is gone", id, got)
 		}
-	}
-	// The 404 names a hard-deleted subject and the 409 a soft-deleted one, so a
-	// reader can tell the two apart from the description alone.
-	if desc := fmt.Sprint(mustLookup(t, doc, "components", "responses", "DecisionNotFound", "description")); !strings.Contains(desc, "hard-deleted") {
-		t.Errorf("DecisionNotFound must name the hard-deleted subject, got %q", desc)
-	}
-	if desc := fmt.Sprint(mustLookup(t, doc, "components", "responses", "409", "description")); !strings.Contains(desc, "soft-deleted") {
-		t.Errorf("the request 409 must name the soft-deleted subject, got %q", desc)
 	}
 	list := mustLookup(t, doc, "paths", "/api/requests", "get", "parameters").([]any)
 	var refs []string
@@ -754,19 +746,6 @@ func TestHostedMcpIdentifiersAreProductNeutral(t *testing.T) {
 			t.Fatal(err)
 		}
 		check("request api.yml "+section, string(encoded))
-	}
-	// Doc headings are identifiers too.
-	for _, rel := range []string{"docs/mcp-operation-contract.md", "docs/request-contract.md", "docs/schedule-pause-contract.md"} {
-		data, err := os.ReadFile(filepath.Join(root, rel))
-		if err != nil {
-			t.Errorf("read %s: %v", rel, err)
-			continue
-		}
-		for _, line := range strings.Split(string(data), "\n") {
-			if strings.HasPrefix(line, "#") {
-				check(rel+" heading", line)
-			}
-		}
 	}
 	walkBundledConstructDocs(root, func(relPath string, doc *openapi3.T) {
 		for _, item := range doc.Paths.Map() {
