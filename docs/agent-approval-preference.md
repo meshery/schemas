@@ -126,22 +126,9 @@ both user versions, and each declaration has its own job:
 
 The merged cloud spec (`_openapi_build/cloud_openapi.yml`), which the RTK client
 is generated from, declares the route once, as `v1beta3` owns it. The bundler
-(`build/bundle-openapi.js`) resolves the two declarations the same way in either
-merge order:
-
-- The collision resolves to the owner only when both declarations belong to the
-  same construct (same title), their `operationId`s match, their `x-internal`
-  targets match, the owner's `x-supersedes` names exactly the other declaration's
-  version, and the superseded declaration carries no `x-supersedes` (ownership
-  does not chain).
-- Any other duplicate throws `Duplicate path operation during merge`, so a route
-  cannot change owner by accident.
-- The `v1beta3` `api.yml` declares the body with `$ref`; `bundleSchema`
-  dereferences it before the merge, and the merge fails if the bundled owner
-  still holds a `$ref`. Component names such as `User_PreferencePayload` are
-  shared by the versions of the construct and the last one merged wins in
-  `components`, so the merged owner does not reference them.
-- `x-supersedes` stays in the merged output, as `x-internal` does.
+(`build/bundle-openapi.js`) resolves the two declarations under the rules in
+[Route ownership across versions](http-api-design.md#route-ownership-across-versions),
+which is the single source for them.
 
 The bundler owns and checks the ownership rule. The consumer audit's endpoint
 index (`validation/endpoint_index.go`) walks each construct's latest non-deprecated
