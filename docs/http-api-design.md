@@ -244,8 +244,9 @@ declared paths carry no `/api` prefix:
   user's whole grant to that client. Any other token is forwarded to the OAuth2 server's RFC 7009
   revocation endpoint, which ends the grant it belongs to. An unknown, anonymous or already-revoked
   token is a no-op that answers `200`. A `200` clears the session cookie. A `503` means signing keys or the token store
-  could not be read, so the token was not revoked; the caller should retry. A `500` means the OAuth2
-  server failed: it returned an error response or could not be reached.
+  could not be read, or the OAuth2 server could not be asked who the token belongs to, so the token
+  was not revoked; the caller should retry. A `500` means the revocation call itself failed: the
+  OAuth2 server's revocation returned an error response or could not be reached.
 - `POST /introspect` (`introspectToken`) answers `200` when an access token is authentic, unexpired,
   not revoked and valid for the protected resource asking, with a `TokenIntrospection` body that
   carries `aud` - the RFC 8707 resource identifiers the token is bound to - and the other RFC 7662

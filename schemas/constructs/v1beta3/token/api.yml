@@ -269,10 +269,12 @@ paths:
         JSON that does not complete within it fails to decode (400). A 400 body
         is one of "Error reading token payload", "Error decoding token" or
         "missing token". A 503 body is "token revocation status is temporarily
-        unavailable" when signing keys (JWKS) or the token store cannot be read;
-        the token was not revoked and the caller should retry. A 500 body is
-        "Error revoking token at the moment", answered when the OAuth2 server
-        returns an error response or cannot be reached.
+        unavailable" when signing keys (JWKS) or the token store cannot be read,
+        or when the OAuth2 server cannot be asked who the token belongs to; the
+        token was not revoked and the caller should retry. A 500 body is "Error
+        revoking token at the moment", answered when the revocation call itself
+        fails: the OAuth2 server's revocation returns an error response or
+        cannot be reached.
       security: []
       requestBody:
         required: true
@@ -294,7 +296,8 @@ paths:
           $ref: '#/components/responses/500'
         '503':
           description: >-
-            Signing keys (JWKS) or the token store could not be read, so the
+            Signing keys (JWKS) or the token store could not be read, or the
+            OAuth2 server could not be asked who the token belongs to, so the
             token was not revoked. The body is "token revocation status is
             temporarily unavailable"; the caller should retry.
           content:
