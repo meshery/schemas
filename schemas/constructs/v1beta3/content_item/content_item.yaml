@@ -197,9 +197,10 @@ properties:
       effective approval, which is resolved at insert, again at each content
       edit, and again when `approvalPolicy` changes: `false` with a pending `content_item_approval` request
       when `approvalRequired` is true, and `true` with no request when it is
-      false. Afterwards only `approveRequest` in the request construct sets it
-      to true; that operation needs the Decide Content Item Approvals key and
-      is never an AI app tool. A content edit that resolves to required sets
+      false. Afterwards `approveRequest` in the request construct sets it to
+      true, and so does the one-time backfill of a row written before this
+      field shipped (see below); that operation needs the Decide Content Item
+      Approvals key and is never an AI app tool. A content edit that resolves to required sets
       it back to false. Any content edit that leaves it unapproved supersedes
       an open request with a fresh pending one, so after the edit an
       unapproved item has an open request (see updateContentItem). A change to
