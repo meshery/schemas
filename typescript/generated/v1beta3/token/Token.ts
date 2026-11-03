@@ -123,7 +123,7 @@ export interface paths {
         put?: never;
         /**
          * Revoke token
-         * @description Revokes an OAuth access or refresh token issued by the identity provider, for example when an OAuth client signs out, or a user-created API token (the token envelope that generateToken returns, or the bare JWT inside it). Possessing the token is the credential, so no session or bearer token is required. The server first checks whether `token` is a user-created API token whose signature verifies. If it is, the server retires it locally, scoped to the owner named in the token, exactly as deleteUserToken does, and evicts cached introspection results so the token stops authenticating immediately. Any other token is forwarded to the OAuth2 server's RFC 7009 revocation endpoint with the server's own client credentials. On either path an unknown, anonymous or already-revoked token is a no-op that still answers 200, so the answer reveals nothing about validity. The server trims whitespace from `token`. The server reads only the first 1 MiB (1048576 bytes) of the body and ignores the rest; JSON that does not complete within it fails to decode (400). A 400 body is one of "Error reading token payload", "Error decoding token" or "missing token". A 503 body is "token revocation status is temporarily unavailable" when signing keys (JWKS) or the token store cannot be read; the token was not revoked and the caller should retry. A 500 body is "Error revoking token at the moment", answered only on the forwarding path when the OAuth2 server returns an error response or cannot be reached.
+         * @description Revokes an OAuth access or refresh token issued by the identity provider, for example when an OAuth client signs out, or a user-created API token (the token envelope that generateToken returns, or the bare JWT inside it). Possessing the token is the credential, so no session or bearer token is required. The server first checks whether `token` is a user-created API token whose signature verifies. If it is, the server retires it locally, scoped to the owner named in the token, exactly as deleteUserToken does, and evicts cached introspection results so the token stops authenticating immediately. A token issued to a third-party OAuth client (any client other than the server's own) ends that user's whole grant to that client, revoking every access and refresh token it minted. Any other token is forwarded to the OAuth2 server's RFC 7009 revocation endpoint with the server's own client credentials, which revokes that token and the tokens issued alongside it from the same authorization. On every path an unknown, anonymous or already-revoked token is a no-op that still answers 200, so the answer reveals nothing about validity. The server trims whitespace from `token`. The server reads only the first 1 MiB (1048576 bytes) of the body and ignores the rest; JSON that does not complete within it fails to decode (400). A 400 body is one of "Error reading token payload", "Error decoding token" or "missing token". A 503 body is "token revocation status is temporarily unavailable" when signing keys (JWKS) or the token store cannot be read, or when the OAuth2 server cannot be asked who the token belongs to; the token was not revoked and the caller should retry. A 500 body is "Error revoking token at the moment", answered when the revocation call itself fails: the OAuth2 server's revocation returns an error response or cannot be reached.
          */
         post: operations["revokeToken"];
         delete?: never;
@@ -143,7 +143,7 @@ export interface paths {
         put?: never;
         /**
          * Introspect access token
-         * @description Reports whether an access token (a JWT) is authentic, unexpired and not revoked. Possessing the token is the credential, so no session or bearer token is required. The server trims whitespace from `token`. The server reads only the first 1 MiB (1048576 bytes) of the body and ignores the rest; JSON that does not complete within it fails to decode (400). A 400 body is "Error reading token payload" or "Error decoding token" (also answered when `token` is missing or empty); a 401 body is "invalid access token" when the signature or expiry check fails, or "revoked access token used" when the token has been revoked.
+         * @description Reports whether an access token (a JWT) is authentic, unexpired, not revoked and issued for a protected resource, and on success describes it. Possessing the token is the credential, so no session or bearer token is required. `resource` names the protected resource asking (an RFC 8707 resource identifier, as published in that resource's RFC 9728 protected resource metadata); omitted, it is the REST API. The server is the single decider: a token the server issued to its own first-party clients (a personal API token, a native sign-in token, a first-party sign-in session) is valid for every protected resource the server issues tokens for; a token issued to a third-party OAuth client is valid only for a resource its `aud` names. An inactive or refused token is answered with a 401, not with RFC 7662 section 2.2's 200 and `active: false`: this is the server's status API, and existing callers read only the status. The server trims whitespace from `token`. The server reads only the first 1 MiB (1048576 bytes) of the body and ignores the rest; JSON that does not complete within it fails to decode (400). A 400 body is "Error reading token payload" or "Error decoding token" (also answered when `token` is missing or empty), or "invalid_target" when `resource` is not a protected resource this server issues tokens for. A 401 body is "invalid access token" when the signature or expiry check fails, "revoked access token used" when the token has been revoked, or "token audience does not include the requested resource". A caller that sends `resource` takes the 200 as the server's decision for that resource - `aud` is [] for a first-party token that is valid everywhere, so a caller must not re-derive the decision from it - and must refuse the token when the 200 carries no body: a server that predates `resource` ignores it and answers 200 with an empty body for any valid token.
          */
         post: operations["introspectToken"];
         delete?: never;
@@ -211,10 +211,52 @@ export interface components {
              */
             updatedAt: string;
         };
-        /** @description Carries the token that revokeToken revokes or introspectToken checks. */
+        /** @description Carries the token that revokeToken revokes. */
         TokenPayload: {
             /** @description The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
             token: string;
+        };
+        /** @description Carries the token that introspectToken checks, and the protected resource asking. */
+        TokenIntrospectionPayload: {
+            /** @description The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
+            token: string;
+            /**
+             * Format: uri
+             * @description RFC 8707 resource identifier of the protected resource asking, as published in its RFC 9728 protected resource metadata. Omitted, the REST API. A value that is not a protected resource this server issues tokens for is rejected with 400 "invalid_target".
+             */
+            resource?: string;
+        };
+        /** @description Describes an access token introspectToken accepted, using the RFC 7662 member names where they are single words and their camelCase form where they are not (clientId, tokenType). */
+        TokenIntrospection: {
+            /** @description Always true; a token that is not active is answered with 401 instead. */
+            active: boolean;
+            /** @description The resources the token is bound to (RFC 8707 resource identifiers). Always a JSON array, never null or absent: [] for a token the server issued to its own first-party clients, which is valid for every protected resource the server issues tokens for. */
+            aud: string[];
+            /** @description The subject the token was issued for. */
+            sub?: string;
+            /** @description The OAuth client the token was issued to. */
+            clientId?: string;
+            /** @description Space-separated scopes granted to the token. */
+            scope?: string;
+            /**
+             * Format: int64
+             * @description Expiry, in seconds since the Unix epoch. Absent for a token that does not expire.
+             */
+            exp?: number;
+            /**
+             * Format: int64
+             * @description Issue time, in seconds since the Unix epoch.
+             */
+            iat?: number;
+            /**
+             * Format: int64
+             * @description Not-before time, in seconds since the Unix epoch.
+             */
+            nbf?: number;
+            /** @description The issuer of the token. */
+            iss?: string;
+            /** @description Always "Bearer". */
+            tokenType?: string;
         };
         /** @description Query fields of GET /api/identity/native/authorize. The signed-in session issues the authorization code from these fields. */
         NativeAuthorizationPayload: {
@@ -1069,7 +1111,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Signing keys (JWKS) or the token store could not be read, so the token was not revoked. The body is "token revocation status is temporarily unavailable"; the caller should retry. */
+            /** @description Signing keys (JWKS) or the token store could not be read, or the OAuth2 server could not be asked who the token belongs to, so the token was not revoked. The body is "token revocation status is temporarily unavailable"; the caller should retry. */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -1092,16 +1134,53 @@ export interface operations {
                 "application/json": {
                     /** @description The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
                     token: string;
+                    /**
+                     * Format: uri
+                     * @description RFC 8707 resource identifier of the protected resource asking, as published in its RFC 9728 protected resource metadata. Omitted, the REST API. A value that is not a protected resource this server issues tokens for is rejected with 400 "invalid_target".
+                     */
+                    resource?: string;
                 };
             };
         };
         responses: {
-            /** @description Token is authentic, unexpired and not revoked. The body is empty. */
+            /** @description The token is authentic, unexpired, not revoked and valid for the requested resource. The body describes it. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @description Always true; a token that is not active is answered with 401 instead. */
+                        active: boolean;
+                        /** @description The resources the token is bound to (RFC 8707 resource identifiers). Always a JSON array, never null or absent: [] for a token the server issued to its own first-party clients, which is valid for every protected resource the server issues tokens for. */
+                        aud: string[];
+                        /** @description The subject the token was issued for. */
+                        sub?: string;
+                        /** @description The OAuth client the token was issued to. */
+                        clientId?: string;
+                        /** @description Space-separated scopes granted to the token. */
+                        scope?: string;
+                        /**
+                         * Format: int64
+                         * @description Expiry, in seconds since the Unix epoch. Absent for a token that does not expire.
+                         */
+                        exp?: number;
+                        /**
+                         * Format: int64
+                         * @description Issue time, in seconds since the Unix epoch.
+                         */
+                        iat?: number;
+                        /**
+                         * Format: int64
+                         * @description Not-before time, in seconds since the Unix epoch.
+                         */
+                        nbf?: number;
+                        /** @description The issuer of the token. */
+                        iss?: string;
+                        /** @description Always "Bearer". */
+                        tokenType?: string;
+                    };
+                };
             };
             /** @description Invalid request body or request param */
             400: {

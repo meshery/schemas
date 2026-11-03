@@ -8,7 +8,7 @@ import (
 
 const meshkitError429Ref = "../../v1beta2/core/api.yml#/components/responses/MeshkitError429"
 
-// Layer5 Cloud rate-limits the Blowhorn route families per user. A construct
+// Layer5 Cloud rate-limits the posting-client route families per user. A construct
 // listed with nil operations declares 429 on every operation; otherwise only on
 // the named ones.
 var rateLimitedOperations = map[string][]string{
