@@ -242,7 +242,8 @@ declared paths carry no `/api` prefix:
   user-created API token whose signature verifies is retired for its owner, as `deleteUserToken`
   does, and stops authenticating immediately. A token issued to a third-party OAuth client ends that
   user's whole grant to that client. Any other token is forwarded to the OAuth2 server's RFC 7009
-  revocation endpoint, which ends the grant it belongs to. An unknown, anonymous or already-revoked
+  revocation endpoint, which revokes that token and the tokens issued alongside it from the same
+  authorization. An unknown, anonymous or already-revoked
   token is a no-op that answers `200`. A `200` clears the session cookie. A `503` means signing keys or the token store
   could not be read, or the OAuth2 server could not be asked who the token belongs to, so the token
   was not revoked; the caller should retry. A `500` means the revocation call itself failed: the

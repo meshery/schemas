@@ -262,7 +262,8 @@ paths:
         that user's whole grant to that client, revoking every access and
         refresh token it minted. Any other token is forwarded to the OAuth2
         server's RFC 7009 revocation endpoint with the server's own client
-        credentials, which also ends the grant it belongs to. On every path an
+        credentials, which revokes that token and the tokens issued alongside
+        it from the same authorization. On every path an
         unknown, anonymous or already-revoked token is a no-op that still
         answers 200, so the answer reveals nothing about validity. The server trims whitespace from `token`. The server reads
         only the first 1 MiB (1048576 bytes) of the body and ignores the rest;
