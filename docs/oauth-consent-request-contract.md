@@ -94,7 +94,10 @@ into exactly one list:
   `127.0.0.1` or `[::1]`: Cloud rejects the `localhost` hostname at
   registration (loopback redirects must use an IP literal, RFC 8252 section
   8.3), so `localhost` is never registered and never listed. Entries are
-  lowercase with no scheme, port or path; a colon appears only inside IPv6
+  lowercase ASCII with no scheme, port or path, and an internationalized
+  hostname appears in IDNA A-label (punycode) form (`xn--bcher-kva.example`,
+  never `bücher.example`), so a look-alike Unicode host cannot pass for a
+  familiar one; a colon appears only inside IPv6
   brackets, so `app.example.com:8080`, `127.0.0.1:8080` and `[::1]:8080` are
   rejected. A bare single-label name is not a host, so `localhost` and
   `vscode` are rejected here.

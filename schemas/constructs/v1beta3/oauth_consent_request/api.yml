@@ -297,7 +297,9 @@ components:
             is `https`, or `http` on a loopback IP literal, are listed here;
             the `localhost` hostname is never registered (RFC 8252 section
             8.3), and a private-use app redirect is listed in `appSchemes`
-            instead. Lowercase, with no scheme, port or path. Empty when the
+            instead. Lowercase ASCII, with no scheme, port or path; an
+            internationalized hostname is sent in IDNA A-label (punycode)
+            form. Empty when the
             client registered only app redirects; `redirectHosts` and
             `appSchemes` are never both empty.
           maxItems: 100
@@ -306,7 +308,8 @@ components:
             type: string
             description: >-
               One network host: a DNS hostname of at least two labels whose
-              last label starts with a letter, a dotted-decimal IPv4 literal,
+              last label starts with a letter, in IDNA A-label (punycode)
+              form when internationalized, a dotted-decimal IPv4 literal,
               or a bracketed hexadecimal IPv6 literal. A colon appears only
               inside IPv6 brackets, so no entry carries a port, and a bare
               single-label name such as `localhost` or an app scheme

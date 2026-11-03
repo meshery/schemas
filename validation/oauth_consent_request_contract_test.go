@@ -322,6 +322,7 @@ func TestOauthConsentClientRedirectTargets(t *testing.T) {
 				"::1",       // IPv6 must be bracketed
 				"256.0.0.1", // not an IPv4 literal, and not a hostname
 				"App.Example.com",
+				"bücher.example", // internationalized hosts are sent as IDNA A-labels
 				"app.example.com.",
 				"-app.example.com",
 			},
