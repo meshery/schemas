@@ -39,6 +39,26 @@ make audit-schemas-style-full \
 
 Do not add new entries to the baseline by hand - every entry must correspond to a real audit finding that is deferred to a Phase 3 migration.
 
+## Environment connection response types
+
+`getEnvironmentConnections` (`GET /api/environments/{environmentId}/connections`)
+uses the canonical v1beta3 `Connection` response schema for each item in
+`EnvironmentConnectionsPage.connections`, matching the items returned by
+`getConnections`. Consumers can use `GetEnvironmentConnectionsApiResponse` from
+`@meshery/schemas/cloudApi` or `@meshery/schemas/mesheryApi` to read typed connection
+fields such as `id`, `name`, and the connection-status union. The pagination
+envelope retains `page`, `pageSize`, `totalCount`, and `connections`.
+
+The array's `x-go-type` preserves the existing Go map representation because the
+Go `connection` package already imports `environment`; importing it in the
+opposite direction would create a package cycle. TypeScript follows `items.$ref`.
+
+This listing is distinct from `EnvironmentConnectionMappingPage`, whose items
+describe environment-to-connection junction records for assignment operations.
+Run `node --test tests/environment-connections-response.test.js` to check schema
+reuse and compile a consumer of freshly generated RTK response types, including
+rejected invalid IDs, names, statuses, and unknown properties.
+
 ## Consumer audit
 
 The consumer audit joins the schemas endpoint index against the routers and RTK Query clients of the downstream repos, producing a per-endpoint coverage and drift report. Three parsers are registered:
