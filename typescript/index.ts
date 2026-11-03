@@ -44,6 +44,7 @@ import { components as V1Beta2SubscriptionComponents } from "./generated/v1beta2
 import { components as V1Beta2TokenComponents } from "./generated/v1beta2/token/Token";
 
 // v1beta3
+import { components as V1Beta3EventComponents } from "./generated/v1beta3/event/Event";
 import { components as V1Beta3UserComponents } from "./generated/v1beta3/user/User";
 
 /**
@@ -230,6 +231,19 @@ export namespace v1beta2 {
 }
 
 export namespace v1beta3 {
+  // Design event metadata shapes (docs/design-event-metadata-contract.md).
+  export type DesignEventIdentity =
+    V1Beta3EventComponents["schemas"]["DesignEventIdentity"];
+  export type RelationshipEvaluationEventMetadata =
+    V1Beta3EventComponents["schemas"]["RelationshipEvaluationEventMetadata"];
+  export type DesignValidationEventMetadata =
+    V1Beta3EventComponents["schemas"]["DesignValidationEventMetadata"];
+  export type DesignValidationEventError =
+    V1Beta3EventComponents["schemas"]["DesignValidationEventError"];
+  export type DesignSavedEventMetadata =
+    V1Beta3EventComponents["schemas"]["DesignSavedEventMetadata"];
+  export type DesignSavedEventDesign =
+    V1Beta3EventComponents["schemas"]["DesignSavedEventDesign"];
   export type User = V1Beta3UserComponents["schemas"]["User"];
   export type PublicUser = V1Beta3UserComponents["schemas"]["PublicUser"];
   export type PublicUsersPage =

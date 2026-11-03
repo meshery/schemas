@@ -587,7 +587,23 @@ components:
           type: object
           description: >
             Event-specific details; the structure varies by event kind. `null`
-            when the producer attached none.
+            when the producer attached none. It stays a free-form map; design
+            events fill it with a named shape: RelationshipEvaluationEventMetadata
+            (category `relationship`, action `evaluation`),
+            DesignValidationEventMetadata (category `pattern`, actions
+            `validate`, `deploy`, `undeploy`, `dry-run`) and
+            DesignSavedEventMetadata (category `pattern`, actions `create`,
+            `update`); DesignEventIdentity names the design. Never put design
+            contents into event metadata - no `designFile`, `patternFile`,
+            `components`, `relationships`, `trace`, `evaluationResponse`, the
+            raw `summary` or `validationResult`. Meshery Server applies a 16 KB
+            guard that drops oversized metadata down to the identity fields
+            (`designId`, `designName`, `designVersion`, `designLink`,
+            `viewLink`). On an error event, `metadata.error` holds only the
+            MeshKit error, never the design or the request that failed. Older
+            Meshery Cloud rows may carry the legacy `design_name` and
+            `view_link` keys; readers should fall back to them when
+            `designName` and `viewLink` are absent.
           additionalProperties: true
           nullable: true
           x-go-type: core.Map
@@ -762,3 +778,301 @@ components:
           type: string
           description: Human-readable error message.
           maxLength: 500
+    # Design event metadata shapes (meshery/meshery#22764). Each names the
+    # `metadata` of one kind of design event. They are sub-shapes of
+    # Event.metadata, which stays a free-form map, not standalone
+    # constructs, so they have no `*Payload` twins: the producer builds and
+    # the reader decodes the same shape (docs/design-event-metadata-contract.md).
+    # The identity fields are restated in each shape, not composed with
+    # allOf, so every generator emits one flat, closed type; the
+    # validation/design_event_metadata_contract_test.go test pins them equal.
+    DesignEventIdentity:
+      type: object
+      description: >
+        The fields that identify the design a design event is about. Every
+        design event that names a design carries them, and they are what
+        remains when Meshery Server's 16 KB guard drops oversized metadata.
+        Event metadata names a design, it never carries one: never put design
+        contents into event metadata - no `designFile`, `patternFile`,
+        `components`, `relationships`, `trace`, `evaluationResponse`, the raw
+        `summary` or `validationResult`. Meshery Server applies a 16 KB guard
+        that drops oversized metadata down to these identity fields. Older
+        Meshery Cloud rows may carry the legacy `design_name` and `view_link`
+        keys instead of `designName` and `viewLink`; readers should fall back
+        to them.
+      additionalProperties: false
+      required:
+        - designId
+      properties:
+        designId:
+          type: string
+          format: uuid
+          description: ID of the design the event is about.
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-name: DesignID
+        designName:
+          type: string
+          description: Name of the design when the event was recorded.
+          maxLength: 255
+          x-go-name: DesignName
+        designVersion:
+          type: string
+          description: Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it.
+          maxLength: 50
+          x-go-name: DesignVersion
+        designLink:
+          type: string
+          format: uri
+          description: >
+            Link that opens the design in the designer view, for example
+            `<base>/extension/meshmap?mode=design&design=<designId>`.
+          maxLength: 2048
+          x-go-name: DesignLink
+        viewLink:
+          type: string
+          format: uri
+          description: >
+            Link that opens the design in the operator view, for example
+            `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`;
+            omitted when the producer has no operator view to link.
+          maxLength: 2048
+          x-go-name: ViewLink
+    RelationshipEvaluationEventMetadata:
+      type: object
+      description: >
+        Metadata of a relationship evaluation event (category `relationship`,
+        action `evaluation`): the design's identity fields (DesignEventIdentity)
+        plus counts of what the evaluation changed. It summarizes the
+        evaluation; it does not carry it. Never put design contents into event
+        metadata - no `designFile`, `patternFile`, `components`,
+        `relationships`, `trace`, `evaluationResponse`, the raw `summary` or
+        `validationResult`. Meshery Server applies a 16 KB guard that drops
+        oversized metadata down to the identity fields.
+      additionalProperties: false
+      required:
+        - designId
+      properties:
+        designId:
+          type: string
+          format: uuid
+          description: ID of the design the event is about.
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-name: DesignID
+        designName:
+          type: string
+          description: Name of the design when the event was recorded.
+          maxLength: 255
+          x-go-name: DesignName
+        designVersion:
+          type: string
+          description: Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it.
+          maxLength: 50
+          x-go-name: DesignVersion
+        designLink:
+          type: string
+          format: uri
+          description: >
+            Link that opens the design in the designer view, for example
+            `<base>/extension/meshmap?mode=design&design=<designId>`.
+          maxLength: 2048
+          x-go-name: DesignLink
+        viewLink:
+          type: string
+          format: uri
+          description: >
+            Link that opens the design in the operator view, for example
+            `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`;
+            omitted when the producer has no operator view to link.
+          maxLength: 2048
+          x-go-name: ViewLink
+        historyTitle:
+          type: string
+          description: One-line title of the evaluation for the design's history, for example `3 changes made at version v0.0.3`.
+          maxLength: 500
+          x-go-name: HistoryTitle
+        evaluatedAt:
+          type: string
+          format: date-time
+          description: When the evaluation ran.
+          x-go-name: EvaluatedAt
+        relationshipsAdded:
+          type: integer
+          minimum: 0
+          description: Number of relationships the evaluation added to the design.
+          x-go-name: RelationshipsAdded
+        relationshipsRemoved:
+          type: integer
+          minimum: 0
+          description: Number of relationships the evaluation removed from the design.
+          x-go-name: RelationshipsRemoved
+        relationshipsUpdated:
+          type: integer
+          minimum: 0
+          description: Number of existing relationships the evaluation updated.
+          x-go-name: RelationshipsUpdated
+        evaluationStatus:
+          type: string
+          description: Outcome of the evaluation as the evaluator reports it, for example `completed`; consumers must tolerate values they do not know.
+          maxLength: 255
+          x-go-name: EvaluationStatus
+        evaluationDurationMs:
+          type: integer
+          minimum: 0
+          description: How long the evaluation took, in milliseconds.
+          x-go-name: EvaluationDurationMs
+    DesignValidationEventMetadata:
+      type: object
+      description: >
+        Metadata of a design validate, deploy, undeploy or dry-run event
+        (category `pattern`, action `validate`, `deploy`, `undeploy` or
+        `dry-run`): the design's identity fields (DesignEventIdentity) plus the
+        outcome and at most 20 of its errors. It summarizes the result; it does
+        not carry it. Never put design contents into event metadata - no
+        `designFile`, `patternFile`, `components`, `relationships`, `trace`,
+        `evaluationResponse`, the raw `summary` or `validationResult`. Meshery
+        Server applies a 16 KB guard that drops oversized metadata down to the
+        identity fields.
+      additionalProperties: false
+      required:
+        - designId
+      properties:
+        designId:
+          type: string
+          format: uuid
+          description: ID of the design the event is about.
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-name: DesignID
+        designName:
+          type: string
+          description: Name of the design when the event was recorded.
+          maxLength: 255
+          x-go-name: DesignName
+        designVersion:
+          type: string
+          description: Version of the design when the event was recorded, for example `v0.0.3`; omitted when the producer does not know it.
+          maxLength: 50
+          x-go-name: DesignVersion
+        designLink:
+          type: string
+          format: uri
+          description: >
+            Link that opens the design in the designer view, for example
+            `<base>/extension/meshmap?mode=design&design=<designId>`.
+          maxLength: 2048
+          x-go-name: DesignLink
+        viewLink:
+          type: string
+          format: uri
+          description: >
+            Link that opens the design in the operator view, for example
+            `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`;
+            omitted when the producer has no operator view to link.
+          maxLength: 2048
+          x-go-name: ViewLink
+        status:
+          type: string
+          description: Outcome of the operation as the producer reports it, for example `failed`; consumers must tolerate values they do not know.
+          maxLength: 255
+          x-go-name: Status
+        errorCount:
+          type: integer
+          minimum: 0
+          description: >
+            Total number of errors the operation found. It may exceed the
+            number of entries in `errors`, which lists at most 20.
+          x-go-name: ErrorCount
+        errors:
+          type: array
+          maxItems: 20
+          description: >
+            Up to 20 of the errors the operation found, each naming its error
+            code and the component it is about. `truncated` says whether more
+            were found than are listed.
+          items:
+            $ref: '#/components/schemas/DesignValidationEventError'
+          x-go-name: Errors
+        truncated:
+          type: boolean
+          description: True when `errorCount` is greater than the number of entries in `errors`, so the list is not complete.
+          x-go-name: Truncated
+    DesignValidationEventError:
+      type: object
+      description: >
+        One error a design validate, deploy, undeploy or dry-run operation
+        found: a code and the component it is about, never the offending
+        component itself.
+      additionalProperties: false
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          description: >
+            The error's code: a JSON-schema validator keyword such as
+            `required` or `type` when design validation rejected the design,
+            or a MeshKit error code (for example `meshery-server-1234`) when a
+            server-side step failed. Consumers must tolerate codes they do not
+            know.
+          maxLength: 255
+          x-go-name: Code
+        componentId:
+          type: string
+          description: >
+            ID of the design component the error is about, as the design names
+            it; omitted when the error is about the design as a whole. It is
+            not checked as a UUID, because an invalid design can carry any
+            value here and one bad value must not make the event unreadable.
+          maxLength: 255
+          x-id-format: external
+          x-go-name: ComponentID
+    DesignSavedEventMetadata:
+      type: object
+      description: >
+        Metadata of a design saved event (category `pattern`, action `create`
+        or `update`): a history title and the saved design's ID and name, never
+        its contents. Never put design contents into event metadata - no
+        `designFile`, `patternFile`, `components`, `relationships`, `trace`,
+        `evaluationResponse`, the raw `summary` or `validationResult`. Meshery
+        Server applies a 16 KB guard that drops oversized metadata down to the
+        identity fields.
+      additionalProperties: false
+      required:
+        - design
+      properties:
+        historyTitle:
+          type: string
+          description: One-line title of the save for the design's history, for example `Version v0.0.3 - 12 components and 9 relationships`.
+          maxLength: 500
+          x-go-name: HistoryTitle
+        design:
+          $ref: '#/components/schemas/DesignSavedEventDesign'
+          description: The saved design's ID and name.
+          x-go-name: Design
+    DesignSavedEventDesign:
+      type: object
+      description: >
+        The ID and name of the design a saved event is about - only those two
+        fields, never the design file or any of its contents.
+      additionalProperties: false
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of the saved design.
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-name: ID
+        name:
+          type: string
+          description: Name of the saved design.
+          maxLength: 255
+          x-go-name: Name
