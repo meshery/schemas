@@ -74,7 +74,7 @@ func TestDesignEventMetadataShapesAreClosedAndCamelCase(t *testing.T) {
 				}
 				// DesignSavedEventDesign.id is the saved design's ID, not a
 				// server-generated field of the metadata.
-				if slices.Contains(serverGenerated, prop) && !(name == "DesignSavedEventDesign" && prop == "id") {
+				if slices.Contains(serverGenerated, prop) && (name != "DesignSavedEventDesign" || prop != "id") {
 					t.Errorf("property %q is server-generated; event metadata has none", prop)
 				}
 				if desc, _ := def["description"].(string); strings.TrimSpace(desc) == "" {
