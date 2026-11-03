@@ -264,6 +264,9 @@ declared paths carry no `/api` prefix:
   protected resource the server issues tokens for (`invalid_target`). A `503` means signing keys or
   revocation status are temporarily unavailable: the token is refused, but the caller should retry
   rather than sign the user out. Callers that read only the status code are unaffected by the body.
+  A caller that sends `resource` takes the `200` as the decision and must not re-derive it from
+  `aud`, which is `[]` for a first-party token valid everywhere; it must refuse a `200` with no body,
+  which a server predating `resource` returns for any valid token.
 - `GET /logout` (`logoutUser`) is a browser navigation identified by the `session_cookie` and
   `provider_token` cookies (the `sessionCookie` and `providerTokenCookie` security schemes). It ends
   the identity provider session, revokes the OAuth tokens in `provider_token`, clears every session
