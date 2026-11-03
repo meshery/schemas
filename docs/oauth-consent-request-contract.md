@@ -67,10 +67,14 @@ response of the authentication middleware.
   identity provider) to finish: after an accept it continues the authorization,
   after a reject it returns the user to the client with an `access_denied`
   error.
-- **The verified mark marks trust, never blocks.** `client.verified` is true
-  only when the client matches the operator-configured known-client list. An
-  unverified client is shown as unverified; the user may still allow it. It is
-  the only trust mark. The page is shown only for dynamically registered
+- **The verified mark marks trust, never blocks.** `client.verified` is
+  derived only from the client's redirect targets, never from `clientName` or
+  `clientId`: it is true only when every redirect URI of the client matches one
+  operator-listed known-client entry (that entry's https hosts or its app
+  schemes). A client that registers a known client's name, or only some of its
+  redirect targets alongside its own, is not verified. An unverified client is
+  shown as unverified; the user may still allow it. It is the only trust
+  mark. The page is shown only for dynamically registered
   clients, whose name is self-asserted, so the construct carries no
   client-chosen home page or logo that could help a client pose as a known
   brand, and no logo URL the browser would fetch from a host the client chose.
@@ -97,13 +101,15 @@ into exactly one list:
   lowercase ASCII with no scheme, port or path, and an internationalized
   hostname appears in IDNA A-label (punycode) form (`xn--bcher-kva.example`,
   never `bücher.example`), so a look-alike Unicode host cannot pass for a
-  familiar one; a colon appears only inside IPv6
-  brackets, so `app.example.com:8080`, `127.0.0.1:8080` and `[::1]:8080` are
-  rejected. A bare single-label name is not a host, so `localhost` and
+  familiar one. A colon appears only inside IPv6 brackets, so
+  `app.example.com:8080`, `127.0.0.1:8080` and `[::1]:8080` are rejected. A bare single-label name is not a host, so `localhost` and
   `vscode` are rejected here.
 - **`appSchemes`** lists the private-use URI scheme (RFC 8252 section 7.1) of
   each app redirect URI, in lowercase RFC 3986 scheme form with no `:` or `//`
-  (`vscode`, `com.example.app`). `http` and `https` are rejected here; their
+  (`vscode`, `com.example.app`). Cloud accepts a private-use scheme at
+  registration only when it is on the server-side app-scheme allowlist, read
+  from configuration (defaults `vscode` and `cursor`), so `appSchemes` only
+  ever holds allowlisted schemes. `http` and `https` are rejected here; their
   redirects belong in `redirectHosts`.
 
 Both lists are deduplicated, and either may be empty, but never both: every

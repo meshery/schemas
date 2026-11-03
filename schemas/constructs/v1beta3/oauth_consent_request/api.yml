@@ -22,9 +22,11 @@ info:
     - An accept grants only what the client requested, never more: the
       scopes in `requestedScopes`, and any audience the client asked the
       identity provider for. The decision body cannot widen or narrow it.
-    - `client.verified` marks trust and never blocks. It is true only when
-      the client matches the operator's known-client list; an unverified
-      client is shown as unverified and the user may still allow it.
+    - `client.verified` marks trust and never blocks. It is derived only
+      from the client's redirect targets, never from `clientName` or
+      `clientId`: true only when every redirect URI of the client matches one
+      operator-listed known-client entry. An unverified client is shown as
+      unverified and the user may still allow it.
 
     The server stores nothing of its own for a pending request: it reads the
     request from the identity provider on every call, so a 503 means the
@@ -258,9 +260,9 @@ components:
         its ID and registered name, where it can send the user afterwards
         (`redirectHosts` for https and loopback redirects, `appSchemes` for
         private-use app redirects), and the `verified` mark. `verified` marks
-        trust and never blocks: it is true only when the client matches the
-        operator's known-client list, and an unverified client may still be
-        allowed. The server classifies each registered redirect URI by its
+        trust and never blocks: it is true only when every redirect URI of the
+        client matches one operator-listed known-client entry, and an
+        unverified client may still be allowed. The server classifies each registered redirect URI by its
         scheme into exactly one of the two lists, and at least one of them is
         non-empty.
       required:
@@ -299,9 +301,8 @@ components:
             8.3), and a private-use app redirect is listed in `appSchemes`
             instead. Lowercase ASCII, with no scheme, port or path; an
             internationalized hostname is sent in IDNA A-label (punycode)
-            form. Empty when the
-            client registered only app redirects; `redirectHosts` and
-            `appSchemes` are never both empty.
+            form. Empty when the client registered only app redirects;
+            `redirectHosts` and `appSchemes` are never both empty.
           maxItems: 100
           uniqueItems: true
           items:
@@ -324,7 +325,10 @@ components:
             The private-use URI schemes (RFC 8252 section 7.1) of the client's
             app redirect URIs, without duplicates, for example `vscode` or
             `com.example.app`: the app that claims the scheme on the user's
-            device receives the user after the decision. A reverse-domain
+            device receives the user after the decision. Registration accepts
+            a private-use scheme only when it is on the server-side app-scheme
+            allowlist read from configuration (defaults `vscode` and
+            `cursor`), so only allowlisted schemes appear here. A reverse-domain
             scheme such as `com.example.app` names an app, not a host, and
             must not be shown as one. Empty when the client registered only
             https and loopback redirects; `redirectHosts` and `appSchemes` are
@@ -346,9 +350,12 @@ components:
         verified:
           type: boolean
           description: >-
-            True only when the client matches the operator's known-client
-            list. Marks trust and never blocks: a false value is shown as an
-            unverified client, and the user may still allow it.
+            Derived only from the client's redirect targets, never from
+            `clientName` or `clientId`: true only when every redirect URI of
+            the client matches one operator-listed known-client entry (that
+            entry's https hosts or its app schemes). Marks trust and never
+            blocks: a false value is shown as an unverified client, and the
+            user may still allow it.
           x-order: 5
     OauthConsentDecisionPayload:
       type: object

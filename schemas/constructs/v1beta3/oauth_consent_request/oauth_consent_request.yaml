@@ -8,9 +8,10 @@ description: |
 
   The request belongs to the one signed-in user it was issued for. Only that
   user may read it or decide it, and a challenge is single use: once accepted
-  or rejected it can no longer be read or decided. `client.verified` marks
-  trust and never blocks: an unverified client is shown as such, and the user
-  may still allow it.
+  or rejected it can no longer be read or decided. `client.verified` is
+  derived only from the client's redirect targets, never from its name or ID.
+  It marks trust and never blocks: an unverified client is shown as such, and
+  the user may still allow it.
 type: object
 additionalProperties: false
 required:
