@@ -65,10 +65,12 @@ key.
    ([Approval policy](content-item-contract.md#approval-policy)). When it is
    required, the item lands `approved` false and Cloud creates a `pending`
    request in the same transaction as the item (if either write fails, neither
-   is kept, so an unapproved live item always has its request) whose subject is the
-   item and whose `requesterId` and `createdByClient` come from the session or
-   token. When it is not required, the item lands `approved` true and no
-   request is created. A content edit re-resolves the approval the same way
+   is kept), so an item inserted unapproved never lacks its request. That
+   request's subject is the item, and its `requesterId` and `createdByClient`
+   come from the session or token. After insert, the
+   [open-request invariant](content-item-contract.md#the-open-request-invariant)
+   governs the request, with its denial and soft-delete exceptions. When it is
+   not required, the item lands `approved` true and no request is created. A content edit re-resolves the approval the same way
    ([Approval on a content edit](content-item-contract.md#approval-on-a-content-edit)):
    it supersedes the open request, if any, and opens a fresh pending one
    whenever it leaves the item unapproved, whatever the resolved approval; an
