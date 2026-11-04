@@ -103,6 +103,7 @@ test-rtk: bundle-openapi
 	node --test tests/generate-rtk.test.js
 	node --test tests/readonly-request-body.test.js
 	node --test tests/validate-schemas-bundle-openapi.test.js
+	node --test tests/bundled-openapi-documents.test.js
 
 ## Generate Python client, pilot constructs only (requires bundle-openapi and the pinned pip toolchain)
 generate-python: bundle-openapi

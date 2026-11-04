@@ -161,6 +161,9 @@ func Audit(opts AuditOptions) AuditResult {
 		// Validate template files (Rule 18, 34).
 		auditTemplateFiles(spec.ConstructDir, spec.Construct, opts, baseline, &result)
 
+		// Rule 48 on helper files such as feature_operations.yml.
+		auditRule48HelperFiles(spec.ConstructDir, opts, baseline, &result)
+
 		// Validate api.yml if it exists. spec.Doc is nil when load failed;
 		// auditAPISpec handles nil docs by reporting a blocking violation.
 		if spec.APIExists {
@@ -366,6 +369,8 @@ func auditRule48OlderVersions(opts AuditOptions, audited map[string]bool,
 			addViolation(result, v, baseline)
 		}
 
+		auditRule48HelperFiles(constructDir, opts, baseline, result)
+
 		for _, entityPath := range entitySchemaFiles(constructDir) {
 			entity, err := loadEntitySchema(entityPath)
 			if err != nil || entity == nil {
@@ -385,6 +390,50 @@ func isDeprecatedRawDoc(doc map[string]any) bool {
 	info, _ := doc["info"].(map[string]any)
 	deprecated, _ := info["x-deprecated"].(bool)
 	return deprecated
+}
+
+// helperSchemaFiles returns the helper files (*.yml, not api.yml and not
+// templates) in a construct directory, in sorted order. A helper such as
+// feature_operations.yml holds path items that api.yml pulls in by $ref, so
+// the bundler reaches every $ref inside it.
+func helperSchemaFiles(constructDir string) []string {
+	entries, err := os.ReadDir(constructDir)
+	if err != nil {
+		return nil
+	}
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Name() < entries[j].Name()
+	})
+
+	var files []string
+	for _, e := range entries {
+		name := e.Name()
+		if e.IsDir() || !strings.HasSuffix(name, ".yml") {
+			continue
+		}
+		if name == "api.yml" || strings.Contains(name, "_template") {
+			continue
+		}
+		files = append(files, filepath.Join(constructDir, name))
+	}
+	return files
+}
+
+// auditRule48HelperFiles runs Rule 48 on the helper files of a construct.
+// Helpers are not entity schemas, so no other rule runs on them.
+func auditRule48HelperFiles(constructDir string, opts AuditOptions,
+	baseline map[string]bool, result *AuditResult) {
+
+	for _, helperPath := range helperSchemaFiles(constructDir) {
+		doc, err := loadYAMLDoc(helperPath)
+		if err != nil || doc == nil {
+			continue
+		}
+		relPath := relativeToRoot(helperPath, opts.RootDir)
+		for _, v := range checkRule48(relPath, helperPath, doc) {
+			addViolation(result, v, baseline)
+		}
+	}
 }
 
 // auditTemplateFiles validates template files in a construct directory.
@@ -422,6 +471,12 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 			Severity:   SeverityBlocking,
 			RuleNumber: 12,
 		}, baseline)
+		// Rule 48 needs only the raw YAML, so it still runs and names the
+		// $ref to fix.
+		rawDoc, _ := loadAPISpecRaw(apiYmlPath)
+		for _, v := range checkRule48(relPath, apiYmlPath, rawDoc) {
+			addViolation(result, v, baseline)
+		}
 		return
 	}
 

@@ -150,6 +150,39 @@ func TestCheckRule48(t *testing.T) {
 `,
 		},
 		{
+			name: "percent-encoded path is decoded before the check",
+			yaml: `components:
+  schemas:
+    Page:
+      $ref: "../doc/doc%2Eyaml"
+`,
+			wantPointers: []string{"#/components/schemas/Page"},
+			wantText:     []string{"openapi: 3.0.0"},
+		},
+		{
+			name: "path that does not percent-decode is left to other checks",
+			yaml: `components:
+  schemas:
+    Page:
+      $ref: "../doc/doc%zz.yaml"
+`,
+		},
+		{
+			// The bundler dereferences every $ref, including one inside an
+			// example value, so it would inline the document there too.
+			name: "a $ref inside an example value is checked too",
+			yaml: `components:
+  schemas:
+    Page:
+      type: object
+      example:
+        nested:
+          $ref: "../doc/doc.yaml"
+`,
+			wantPointers: []string{"#/components/schemas/Page/example/nested"},
+			wantText:     []string{"openapi: 3.0.0"},
+		},
+		{
 			name: "remote ref with no fragment is flagged",
 			yaml: `components:
   schemas:
@@ -168,6 +201,16 @@ func TestCheckRule48(t *testing.T) {
 `,
 			wantPointers: []string{"#/components/schemas/Page"},
 			wantText:     []string{"is a remote URL with no fragment", `"https://example.com/doc.yaml#/components/schemas/<SchemaName>"`},
+		},
+		{
+			name: "network-path ref with no fragment is flagged as remote",
+			yaml: `components:
+  schemas:
+    Page:
+      $ref: "//example.com/doc.yaml"
+`,
+			wantPointers: []string{"#/components/schemas/Page"},
+			wantText:     []string{"is a remote URL with no fragment"},
 		},
 		{
 			name: "remote ref with a fragment is allowed",
@@ -266,6 +309,9 @@ func TestIsRemoteWholeFileRef(t *testing.T) {
 		"https://example.com/doc.yaml":                           true,
 		"https://example.com/doc.yaml#":                          true,
 		"https://example.com/doc.yaml#/components/schemas/Thing": false,
+		"//example.com/doc.yaml":                                 true,
+		"//example.com/doc.yaml#":                                true,
+		"//example.com/doc.yaml#/components/schemas/Thing":       false,
 		"../doc/doc.yaml":                                        false,
 		"#/components/schemas/Thing":                             false,
 		"":                                                       false,
@@ -309,13 +355,17 @@ func TestOpenAPIVersionOf(t *testing.T) {
 }
 
 // TestAuditRule48 runs the full Audit over a small repository tree, so it
-// fails if Rule 48 is unhooked from the entity schema pass, the api.yml pass
-// or the pass over older construct versions. The tree holds:
+// fails if Rule 48 is unhooked from any pass: entity schemas, api.yml, helper
+// .yml files, an api.yml that fails to load, or older construct versions. The
+// tree holds:
 //
-//	v1alpha1/target  an OpenAPI document that the widget files point at whole
+//	v1alpha1/target  an OpenAPI document that the other files point at whole
 //	v1alpha1/widget  an older, non-deprecated version: checked
 //	v1alpha2/widget  an older, deprecated version: not checked
 //	v1beta1/widget   the newest version: checked
+//	v1beta1/broken   an api.yml that fails to load: still checked
+//
+// Each widget version has an api.yml, an entity schema and a helper .yml.
 func TestAuditRule48(t *testing.T) {
 	root := t.TempDir()
 	write := func(rel, content string) {
@@ -366,6 +416,16 @@ properties:
 required:
   - thing
 `
+	const widgetHelper = `collection:
+  get:
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "../../v1alpha1/target/api.yml"
+`
 	for _, w := range []struct{ version, infoExtra string }{
 		{"v1alpha1", ""},
 		{"v1alpha2", "  x-deprecated: true\n"},
@@ -374,7 +434,22 @@ required:
 		dir := "schemas/constructs/" + w.version + "/widget/"
 		write(dir+"api.yml", widgetAPI(w.version, w.infoExtra))
 		write(dir+"widget.yaml", widgetEntity)
+		write(dir+"widget_operations.yml", widgetHelper)
 	}
+
+	// The $ref to a missing file makes the kin-openapi load fail.
+	write("schemas/constructs/v1beta1/broken/api.yml", `openapi: 3.0.0
+info:
+  title: Broken
+  version: v1beta1
+paths: {}
+components:
+  schemas:
+    Missing:
+      $ref: "./missing.yaml#/Missing"
+    Whole:
+      $ref: "../../v1alpha1/target/api.yml"
+`)
 
 	result := Audit(AuditOptions{RootDir: root})
 
@@ -390,11 +465,24 @@ required:
 		}
 	}
 
+	loadFailed := false
+	for _, v := range result.Blocking {
+		if v.RuleNumber == 12 && v.File == "schemas/constructs/v1beta1/broken/api.yml" {
+			loadFailed = true
+		}
+	}
+	if !loadFailed {
+		t.Fatal("fixture schemas/constructs/v1beta1/broken/api.yml should fail to load (Rule 12)")
+	}
+
 	want := []string{
 		"schemas/constructs/v1alpha1/widget/api.yml",
 		"schemas/constructs/v1alpha1/widget/widget.yaml",
+		"schemas/constructs/v1alpha1/widget/widget_operations.yml",
+		"schemas/constructs/v1beta1/broken/api.yml",
 		"schemas/constructs/v1beta1/widget/api.yml",
 		"schemas/constructs/v1beta1/widget/widget.yaml",
+		"schemas/constructs/v1beta1/widget/widget_operations.yml",
 	}
 	for _, file := range want {
 		if got[file] != 1 {

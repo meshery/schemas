@@ -2,6 +2,7 @@ package validation
 
 import (
 	"fmt"
+	"net/url"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -26,14 +27,20 @@ import (
 // `#/components/schemas/RelationshipDefinition` inside that file.
 //
 // The rule reads raw YAML so it sees every $ref exactly as written, wherever
-// it sits in the file (schemas, parameters, responses, paths). Refs to local
-// files that cannot be read are skipped: this rule only judges what a
-// whole-file $ref points at, not whether the target exists.
+// it sits in the file (schemas, parameters, responses, paths). That includes
+// a $ref inside an `example` value: the bundler
+// (@apidevtools/json-schema-ref-parser) dereferences every $ref it finds, so
+// it would inline the whole document there too. Local paths are
+// percent-decoded first, as the bundler does. Refs to local files that cannot
+// be read are skipped: this rule only judges what a whole-file $ref points at,
+// not whether the target exists.
 //
-// A remote (URL) $ref with no fragment is also reported. The validator does
-// not fetch remote files, so it cannot tell whether the target is an OpenAPI
-// document, while the bundler would fetch and inline the whole file. A remote
-// $ref with a fragment is allowed.
+// A remote $ref with no fragment is also reported. That covers a URL with a
+// scheme (`https://...`) and a network-path ref (`//host/...`), which the
+// bundler fetches over HTTPS. The validator does not fetch remote files, so it
+// cannot tell whether the target is an OpenAPI document, while the bundler
+// would fetch and inline the whole file. A remote $ref with a fragment is
+// allowed.
 
 // checkRule48 reports every $ref in a raw YAML document (an api.yml or an
 // entity schema) that has no fragment and resolves to a file whose root is an
@@ -140,10 +147,19 @@ func escapeJSONPointerToken(key string) string {
 	return jsonPointerEscaper.Replace(key)
 }
 
-// isRemoteWholeFileRef reports whether ref is a URL (it has a scheme, such as
-// `https://`) with no fragment or an empty one.
+// isRemoteRef reports whether ref names a remote file: a URL with a scheme
+// (`https://...`) or a network-path ref (`//host/...`).
+func isRemoteRef(ref string) bool {
+	if strings.HasPrefix(ref, "#") {
+		return false
+	}
+	return strings.HasPrefix(ref, "//") || strings.Contains(ref, "://")
+}
+
+// isRemoteWholeFileRef reports whether ref is a remote ref with no fragment or
+// an empty one.
 func isRemoteWholeFileRef(ref string) bool {
-	if strings.HasPrefix(ref, "#") || !strings.Contains(ref, "://") {
+	if !isRemoteRef(ref) {
 		return false
 	}
 	_, fragment, _ := strings.Cut(ref, "#")
@@ -152,16 +168,22 @@ func isRemoteWholeFileRef(ref string) bool {
 
 // wholeFileRefTarget returns the local file a $ref names when the ref has no
 // fragment (or an empty one), so it pulls in the whole file. Local refs
-// (`#/...`) and remote refs (`https://...`) are not local whole-file refs.
+// (`#/...`) and remote refs are not local whole-file refs. The path is
+// percent-decoded, as the bundler decodes it, so `doc%2Eyaml` names
+// `doc.yaml`. A path that does not decode is skipped.
 func wholeFileRefTarget(baseDir, ref string) (string, bool) {
-	if ref == "" || strings.HasPrefix(ref, "#") || strings.Contains(ref, "://") {
+	if ref == "" || strings.HasPrefix(ref, "#") || isRemoteRef(ref) {
 		return "", false
 	}
 	file, fragment, _ := strings.Cut(ref, "#")
 	if file == "" || fragment != "" {
 		return "", false
 	}
-	return filepath.Clean(filepath.Join(baseDir, filepath.FromSlash(file))), true
+	decoded, err := url.PathUnescape(file)
+	if err != nil {
+		return "", false
+	}
+	return filepath.Clean(filepath.Join(baseDir, filepath.FromSlash(decoded))), true
 }
 
 // openAPIVersionOf reports whether the YAML file at path is an OpenAPI
