@@ -310,6 +310,11 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 		for _, v := range checkEntityPropertyConstraints(relPath, entity, opts) {
 			addViolation(result, v, baseline)
 		}
+
+		// Rule 48: a $ref with no fragment must not point at an OpenAPI document.
+		for _, v := range checkRule48(relPath, entityPath, entity.raw) {
+			addViolation(result, v, baseline)
+		}
 	}
 }
 
@@ -376,6 +381,12 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 
 	// Rules 15-16: cross-construct refs (raw YAML needed for $ref siblings).
 	for _, v := range checkRule15(relPath, rawDoc, doc, opts) {
+		addViolation(result, v, baseline)
+	}
+
+	// Rule 48: a $ref with no fragment must not point at an OpenAPI document
+	// (raw YAML, so every $ref is seen exactly as written).
+	for _, v := range checkRule48(relPath, apiYmlPath, rawDoc) {
 		addViolation(result, v, baseline)
 	}
 
