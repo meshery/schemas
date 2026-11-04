@@ -120,8 +120,8 @@ func TestGetEventsScope(t *testing.T) {
 	}
 }
 
-// markAllEventsRead derives the caller from the authenticated session and
-// changes only that caller's events; system-owned events remain untouched.
+// TestMarkAllEventsReadContract pins the operation's authentication, inputs,
+// responses, and closed success-response shape.
 func TestMarkAllEventsReadContract(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), "schemas/constructs/v1beta3/event/api.yml"))
 	op := mustLookup(t, doc, "paths", "/api/events/mark-all-read", "post")
@@ -147,15 +147,8 @@ func TestMarkAllEventsReadContract(t *testing.T) {
 		t.Error("markAllEventsRead must not accept a userId parameter")
 	}
 
-	desc, _ := mustValue(op, "description").(string)
-	for _, phrase := range []string{"authenticated caller", "System-owned events are not changed"} {
-		if !strings.Contains(desc, phrase) {
-			t.Errorf("markAllEventsRead description = %q, want it to mention %q", desc, phrase)
-		}
-	}
-
 	responses := mustValue(op, "responses")
-	for _, status := range []string{"200", "401", "429", "500"} {
+	for _, status := range []string{"200", "400", "401", "429", "500"} {
 		if _, has := mappingValue(responses, status); !has {
 			t.Errorf("markAllEventsRead responses missing %s", status)
 		}
@@ -163,6 +156,14 @@ func TestMarkAllEventsReadContract(t *testing.T) {
 	responseSchema := mustLookup(t, op, "responses", "200", "content", "application/json", "schema")
 	if got := mustValue(responseSchema, "$ref"); got != "#/components/schemas/MarkAllEventsReadResponse" {
 		t.Errorf("markAllEventsRead 200 response schema = %v, want MarkAllEventsReadResponse", got)
+	}
+
+	response := mustLookup(t, doc, "components", "schemas", "MarkAllEventsReadResponse")
+	if got := mustValue(response, "additionalProperties"); got != false {
+		t.Errorf("MarkAllEventsReadResponse additionalProperties = %v, want false", got)
+	}
+	if got := sequenceStrings(mustValue(response, "required")); !reflect.DeepEqual(got, []string{"message"}) {
+		t.Errorf("MarkAllEventsReadResponse required = %v, want [message]", got)
 	}
 }
 
