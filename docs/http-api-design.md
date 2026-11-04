@@ -41,6 +41,15 @@ post:
       description: Patterns deleted
 ```
 
+### Optional request bodies
+
+A request body is optional unless it declares `required: true` (the OpenAPI default is `false`).
+Declare it optional only when omitting it has defined meaning - `generateToken` omits it to mint an
+unrestricted token. `@rtk-query/codegen-openapi` ignores `required: false` and types every body as
+required, so `build/generate-rtk.js` (`markOptionalRequestBodies`) rewrites the generated
+`*ApiArg` member to `body?:` for each such operation and fails the build if it cannot find it.
+`tests/generate-rtk.test.js` type-checks a body-less call against the rewritten type.
+
 ## HTTP response codes
 
 | Code | Meaning | When to use |
@@ -187,6 +196,62 @@ navigations of the authorization trip - are declared in their own `v1beta3/githu
 they share the `GitHub_github` tag: a workflow install refetches the status, repository and tree
 reads, and no design write refetches any of them. `validation/github_integration_contract_test.go`
 pins them.
+
+## Route ownership across versions
+
+Every version of a construct is bundled and merged into one cloud spec, so one
+route can be declared by two versions of the same construct. Use this only to
+move a route to a later version:
+
+- The owning operation sets `x-supersedes: <older version>` (for example
+  `x-supersedes: v1beta2`) and keeps the same `operationId`, method and path. It
+  may use `$ref` in its `api.yml`: `bundleSchema` dereferences each version
+  before the merge, and the merge fails if the bundled owner still holds a
+  `$ref`. Component names are shared across the versions of one construct, so an
+  owned body that kept a `$ref` would resolve through a name another version may
+  overwrite.
+- The older version keeps its declaration, unchanged, for its own per-version
+  bundle and generated types.
+- `build/bundle-openapi.js` keeps the owner's declaration in the merged spec.
+  The collision resolves only when both declarations belong to the same
+  construct (same title), the owner names exactly the other declaration's
+  version, the superseded declaration carries no `x-supersedes` (ownership does
+  not chain), their `operationId`s match, and their `x-internal` targets match as
+  sets. The route declaration resolves the same way in either merge order.
+- The owner's `x-supersedes` must name a declaration of the same route (same
+  construct, method and path). If the named version declares no such route, the
+  merge fails with `x-supersedes names no declaration`, after all specs are
+  merged, so merge order does not matter. An owner whose `x-supersedes` does not
+  name a strictly older construct version (its own version, a newer one, or a
+  string that is not a construct version) fails the merge with
+  `which is not older than`. Versions order by major, then alpha, beta and GA,
+  then number (`v1beta3` is older than `v1`).
+- The bundler owns and checks this rule. The endpoint index behind the consumer
+  audit (`validation/endpoint_index.go`) has no ownership logic: it walks each
+  construct's latest non-deprecated version, so it indexes the owner's
+  declaration once while the owner is that latest version, and the superseded
+  declaration of an older version is never indexed beside it.
+  `TestEndpointIndexIndexesEverySupersedingOwnerOnce` checks every owner in the
+  tree against the index.
+- Any other duplicate fails the merge with `Duplicate path operation during merge`.
+- Component names are not versioned. Two versions of one construct that define
+  the same component name overwrite each other in the merged `components`, and
+  the last one merged wins. Packages merge in lexically sorted directory order,
+  which is not version order (`v1beta10` sorts before `v1beta2`) and only
+  happens to put the newest version last in today's tree. An owned operation
+  does not depend on this, because its body is inlined.
+- `x-supersedes` stays in the merged output, as `x-internal` does.
+
+```yaml
+  /api/identity/users/preferences:
+    put:
+      x-internal: ["cloud"]
+      x-supersedes: v1beta2
+      operationId: updateUserPreferences
+```
+
+See [`docs/agent-approval-preference.md`](agent-approval-preference.md#where-the-route-is-declared)
+for the route that uses this rule.
 
 ## GitHub integration: verified installations
 
