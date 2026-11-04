@@ -240,6 +240,8 @@ export namespace v1beta3 {
     V1Beta3EventComponents["schemas"]["DesignValidationEventMetadata"];
   export type DesignValidationEventError =
     V1Beta3EventComponents["schemas"]["DesignValidationEventError"];
+  export type DesignEventOperationError =
+    V1Beta3EventComponents["schemas"]["DesignEventOperationError"];
   export type DesignSavedEventMetadata =
     V1Beta3EventComponents["schemas"]["DesignSavedEventMetadata"];
   export type DesignSavedEventDesign =

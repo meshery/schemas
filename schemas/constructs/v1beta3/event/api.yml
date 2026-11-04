@@ -600,7 +600,9 @@ components:
             guard that drops oversized metadata down to the identity fields
             (`designId`, `designName`, `designVersion`, `designLink`,
             `viewLink`). On an error event, `metadata.error` holds only the
-            MeshKit error, never the design or the request that failed. Older
+            MeshKit error, never the design or the request that failed; a
+            design validation event whose operation did not complete (`status`
+            `error`) carries it as a DesignEventOperationError. Older
             Meshery Cloud rows may carry the legacy `design_name` and
             `view_link` keys; readers should fall back to them when
             `designName` and `viewLink` are absent.
@@ -931,11 +933,16 @@ components:
         (category `pattern`, action `validate`, `deploy`, `undeploy` or
         `dry-run`): the design's identity fields (DesignEventIdentity) plus the
         outcome and at most 20 of its errors. It summarizes the result; it does
-        not carry it. Never put design contents into event metadata - no
-        `designFile`, `patternFile`, `components`, `relationships`, `trace`,
-        `evaluationResponse`, the raw `summary` or `validationResult`. Meshery
-        Server applies a 16 KB guard that drops oversized metadata down to the
-        identity fields.
+        not carry it. When the operation did not complete (`status` `error`),
+        there is no verdict: `errors` is empty or omitted, `errorCount` and
+        `truncated` are omitted, the identity fields are kept, `error` names
+        why the operation failed, and the event is recorded with severity
+        `error` under its usual category `pattern` and action (`validate` for
+        a design validation). Never put design contents into event metadata -
+        no `designFile`, `patternFile`, `components`, `relationships`,
+        `trace`, `evaluationResponse`, the raw `summary` or
+        `validationResult`. Meshery Server applies a 16 KB guard that drops
+        oversized metadata down to the identity fields.
       additionalProperties: false
       required:
         - designId
@@ -977,7 +984,14 @@ components:
           x-go-name: ViewLink
         status:
           type: string
-          description: Outcome of the operation as the producer reports it, for example `failed`; consumers must tolerate values they do not know.
+          description: >
+            Outcome of the operation as the producer reports it: `success`
+            (the operation ran and found no errors), `partial` (the operation
+            ran and part of it succeeded), `failed` (the operation ran and
+            found errors, listed in `errors`) or `error` (the operation did
+            not complete, so there is no verdict; `error` says why). It is an
+            open string, not an enum: consumers must tolerate values they do
+            not know.
           maxLength: 255
           x-go-name: Status
         errorCount:
@@ -985,7 +999,9 @@ components:
           minimum: 0
           description: >
             Total number of errors the operation found. It may exceed the
-            number of entries in `errors`, which lists at most 20.
+            number of entries in `errors`, which lists at most 20. Omitted
+            when `status` is `error`, because an operation that did not
+            complete found nothing.
           x-go-name: ErrorCount
         errors:
           type: array
@@ -993,14 +1009,22 @@ components:
           description: >
             Up to 20 of the errors the operation found, each naming its error
             code and the component it is about. `truncated` says whether more
-            were found than are listed.
+            were found than are listed. Empty or omitted when `status` is
+            `error`.
           items:
             $ref: '#/components/schemas/DesignValidationEventError'
           x-go-name: Errors
         truncated:
           type: boolean
-          description: True when `errorCount` is greater than the number of entries in `errors`, so the list is not complete.
+          description: True when `errorCount` is greater than the number of entries in `errors`, so the list is not complete. Omitted when `status` is `error`.
           x-go-name: Truncated
+        error:
+          $ref: '#/components/schemas/DesignEventOperationError'
+          description: >
+            Why the operation did not complete. Present only when `status` is
+            `error`; omitted for every other status, including `failed`,
+            whose findings are in `errors`.
+          x-go-name: Error
     DesignValidationEventError:
       type: object
       description: >
@@ -1031,6 +1055,35 @@ components:
           maxLength: 255
           x-id-format: external
           x-go-name: ComponentID
+    DesignEventOperationError:
+      type: object
+      description: >
+        Why a design operation did not complete, carried as `error` on design
+        event metadata whose `status` is `error`. It holds only the error's
+        code and one short line, never the design, the request or the failed
+        operation's response.
+      additionalProperties: false
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          description: >
+            The error's code: a MeshKit error code (for example
+            `meshery-server-1130`) when the failure has one, otherwise a code
+            the producer names, such as `validator-exception` (the validator
+            threw) or `validator-no-result` (no result came back). Consumers
+            must tolerate codes they do not know.
+          minLength: 1
+          maxLength: 255
+          x-go-name: Code
+        message:
+          type: string
+          description: >
+            One short, human-readable line saying what went wrong; omitted
+            when the producer has none. Never design contents.
+          maxLength: 512
+          x-go-name: Message
     DesignSavedEventMetadata:
       type: object
       description: >
