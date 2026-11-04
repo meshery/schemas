@@ -55,11 +55,11 @@ properties:
       yaml: format
       json: format
   model:
-    $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelDefinition
-    x-go-type: '*modelv1beta1.ModelDefinition'
+    $ref: ../../v1beta2/model/api.yml#/components/schemas/ModelDefinition
+    x-go-type: '*modelv1beta2.ModelDefinition'
     x-go-type-import:
-      path: github.com/meshery/schemas/models/v1beta1/model
-      name: modelv1beta1
+      path: github.com/meshery/schemas/models/v1beta2/model
+      name: modelv1beta2
     x-order: 7
     description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
     x-oapi-codegen-extra-tags:
@@ -67,11 +67,11 @@ properties:
       json: model
       yaml: model
   modelReference:
-    $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelReference
-    x-go-type: modelv1beta1.ModelReference
+    $ref: ../../v1beta2/model/api.yml#/components/schemas/ModelReference
+    x-go-type: modelv1beta2.ModelReference
     x-go-type-import:
-      path: github.com/meshery/schemas/models/v1beta1/model
-      name: modelv1beta1
+      path: github.com/meshery/schemas/models/v1beta2/model
+      name: modelv1beta2
     x-order: 8
     description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
     x-oapi-codegen-extra-tags:
