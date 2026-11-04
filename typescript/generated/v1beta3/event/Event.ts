@@ -286,7 +286,7 @@ export interface components {
             category: string;
             /** @description Human-readable summary of what happened. */
             description: string;
-            /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
+            /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
             metadata: {
                 [key: string]: unknown;
             } | null;
@@ -473,7 +473,7 @@ export interface components {
             /** @description How long the evaluation took, in milliseconds. */
             evaluationDurationMs?: number;
         };
-        /** @description Metadata of a design validate, deploy, undeploy or dry-run event (category `pattern`, action `validate`, `deploy`, `undeploy` or `dry-run`): the design's identity fields (DesignEventIdentity) plus the outcome and at most 20 of its errors. It summarizes the result; it does not carry it. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields. */
+        /** @description Metadata of a design validate, deploy, undeploy or dry-run event (category `pattern`, action `validate`, `deploy`, `undeploy` or `dry-run`): the design's identity fields (DesignEventIdentity) plus the outcome and at most 20 of its errors. It summarizes the result; it does not carry it. When the operation did not complete (`status` `error`), there is no verdict: `errors` is empty or omitted, `errorCount` and `truncated` are omitted, the identity fields are kept, `error` names why the operation failed, and the event is recorded with severity `error` under its usual category `pattern` and action (`validate` for a design validation). Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields. */
         DesignValidationEventMetadata: {
             /**
              * Format: uuid
@@ -494,19 +494,26 @@ export interface components {
              * @description Link that opens the design in the operator view, for example `<base>/extension/meshmap?mode=operator&type=view&design_id=<designId>`; omitted when the producer has no operator view to link.
              */
             viewLink?: string;
-            /** @description Outcome of the operation as the producer reports it, for example `failed`; consumers must tolerate values they do not know. */
+            /** @description Outcome of the operation as the producer reports it: `success` (the operation ran and found no errors), `partial` (the operation ran and part of it succeeded), `failed` (the operation ran and found errors, listed in `errors`) or `error` (the operation did not complete, so there is no verdict; `error` says why). It is an open string, not an enum: consumers must tolerate values they do not know. */
             status?: string;
-            /** @description Total number of errors the operation found. It may exceed the number of entries in `errors`, which lists at most 20. */
+            /** @description Total number of errors the operation found. It may exceed the number of entries in `errors`, which lists at most 20. Omitted when `status` is `error`, because an operation that did not complete found nothing. */
             errorCount?: number;
-            /** @description Up to 20 of the errors the operation found, each naming its error code and the component it is about. `truncated` says whether more were found than are listed. */
+            /** @description Up to 20 of the errors the operation found, each naming its error code and the component it is about. `truncated` says whether more were found than are listed. Empty or omitted when `status` is `error`. */
             errors?: {
                 /** @description The error's code: a JSON-schema validator keyword such as `required` or `type` when design validation rejected the design, or a MeshKit error code (for example `meshery-server-1234`) when a server-side step failed. Consumers must tolerate codes they do not know. */
                 code: string;
                 /** @description ID of the design component the error is about, as the design names it; omitted when the error is about the design as a whole. It is not checked as a UUID, because an invalid design can carry any value here and one bad value must not make the event unreadable. */
                 componentId?: string;
             }[];
-            /** @description True when `errorCount` is greater than the number of entries in `errors`, so the list is not complete. */
+            /** @description True when `errorCount` is greater than the number of entries in `errors`, so the list is not complete. Omitted when `status` is `error`. */
             truncated?: boolean;
+            /** @description Why the operation did not complete. Present only when `status` is `error`; omitted for every other status, including `failed`, whose findings are in `errors`. */
+            error?: {
+                /** @description The error's code: a MeshKit error code (for example `meshery-server-1130`) when the failure has one, otherwise a code the producer names, such as `validator-exception` (the validator threw) or `validator-no-result` (no result came back). Consumers must tolerate codes they do not know. */
+                code: string;
+                /** @description One short, human-readable line saying what went wrong; omitted when the producer has none. Never design contents. */
+                message?: string;
+            };
         };
         /** @description One error a design validate, deploy, undeploy or dry-run operation found: a code and the component it is about, never the offending component itself. */
         DesignValidationEventError: {
@@ -514,6 +521,13 @@ export interface components {
             code: string;
             /** @description ID of the design component the error is about, as the design names it; omitted when the error is about the design as a whole. It is not checked as a UUID, because an invalid design can carry any value here and one bad value must not make the event unreadable. */
             componentId?: string;
+        };
+        /** @description Why a design operation did not complete, carried as `error` on design event metadata whose `status` is `error`. It holds only the error's code and one short line, never the design, the request or the failed operation's response. */
+        DesignEventOperationError: {
+            /** @description The error's code: a MeshKit error code (for example `meshery-server-1130`) when the failure has one, otherwise a code the producer names, such as `validator-exception` (the validator threw) or `validator-no-result` (no result came back). Consumers must tolerate codes they do not know. */
+            code: string;
+            /** @description One short, human-readable line saying what went wrong; omitted when the producer has none. Never design contents. */
+            message?: string;
         };
         /** @description Metadata of a design saved event (category `pattern`, action `create` or `update`): a history title and the saved design's ID and name, never its contents. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields. */
         DesignSavedEventMetadata: {
@@ -1307,7 +1321,7 @@ export interface operations {
                         category: string;
                         /** @description Human-readable summary of what happened. */
                         description: string;
-                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
+                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
                         metadata: {
                             [key: string]: unknown;
                         } | null;
@@ -1376,7 +1390,7 @@ export interface operations {
                         category: string;
                         /** @description Human-readable summary of what happened. */
                         description: string;
-                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
+                        /** @description Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed; a design validation event whose operation did not complete (`status` `error`) carries it as a DesignEventOperationError. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent. */
                         metadata: {
                             [key: string]: unknown;
                         } | null;
