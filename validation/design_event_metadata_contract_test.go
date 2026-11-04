@@ -21,15 +21,17 @@ import (
 
 const designEventSpec = "schemas/constructs/v1beta3/event/api.yml"
 
-// designEventShapes maps each shape to its sample template under
-// event/templates, or "" for a shape that only appears nested in another.
-var designEventShapes = map[string]string{
-	"DesignEventIdentity":                 "design_event_identity",
-	"RelationshipEvaluationEventMetadata": "relationship_evaluation_event_metadata",
-	"DesignValidationEventMetadata":       "design_validation_event_metadata",
-	"DesignValidationEventError":          "",
-	"DesignSavedEventMetadata":            "design_saved_event_metadata",
-	"DesignSavedEventDesign":              "",
+// designEventShapes maps each shape to its sample templates under
+// event/templates, or none for a shape that only appears nested in another.
+// Together a shape's templates use every one of its properties.
+var designEventShapes = map[string][]string{
+	"DesignEventIdentity":                 {"design_event_identity"},
+	"RelationshipEvaluationEventMetadata": {"relationship_evaluation_event_metadata"},
+	"DesignValidationEventMetadata":       {"design_validation_event_metadata", "design_validation_event_metadata_error"},
+	"DesignValidationEventError":          nil,
+	"DesignEventOperationError":           {"design_event_operation_error"},
+	"DesignSavedEventMetadata":            {"design_saved_event_metadata"},
+	"DesignSavedEventDesign":              nil,
 }
 
 // designEventBannedKeys must never be a property of any shape, at any depth:
@@ -161,6 +163,16 @@ func TestDesignValidationEventMetadataErrorsAreBounded(t *testing.T) {
 	if got := sortedKeys(entry); !reflect.DeepEqual(got, []string{"code", "componentId"}) {
 		t.Errorf("DesignValidationEventError properties = %v, want [code componentId]", got)
 	}
+	opErr := designEventRawShape(t, "DesignEventOperationError")
+	if got := sortedKeys(eventMetadataProperties(t, "DesignEventOperationError", opErr)); !reflect.DeepEqual(got, []string{"code", "message"}) {
+		t.Errorf("DesignEventOperationError properties = %v, want only [code message]", got)
+	}
+	if got := eventMetadataRequired(t, "DesignEventOperationError", opErr); !reflect.DeepEqual(got, []string{"code"}) {
+		t.Errorf("DesignEventOperationError required = %v, want [code]", got)
+	}
+	if ref := mustLookup(t, designEventRawShape(t, "DesignValidationEventMetadata"), "properties", "error", "$ref"); ref != "#/components/schemas/DesignEventOperationError" {
+		t.Errorf("DesignValidationEventMetadata.error $ref = %v, want DesignEventOperationError", ref)
+	}
 	saved := eventMetadataProperties(t, "DesignSavedEventDesign", designEventRawShape(t, "DesignSavedEventDesign"))
 	if got := sortedKeys(saved); !reflect.DeepEqual(got, []string{"id", "name"}) {
 		t.Errorf("DesignSavedEventDesign properties = %v, want only [id name]", got)
@@ -210,24 +222,65 @@ func designEventTemplate(t *testing.T, base, ext string) map[string]any {
 // and yaml alike, against its shape, and that the pair agree.
 func TestDesignEventMetadataTemplatesValidate(t *testing.T) {
 	doc := loadSpec(t, designEventSpec)
-	for name, base := range designEventShapes {
-		if base == "" {
+	for name, bases := range designEventShapes {
+		if len(bases) == 0 {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
 			schema := schemaOf(t, doc, name)
-			asJSON := designEventTemplate(t, base, "json")
-			asYAML := designEventTemplate(t, base, "yaml")
-			if !reflect.DeepEqual(asJSON, asYAML) {
-				t.Errorf("json and yaml templates differ:\njson %v\nyaml %v", asJSON, asYAML)
+			used := map[string]any{}
+			for _, base := range bases {
+				asJSON := designEventTemplate(t, base, "json")
+				asYAML := designEventTemplate(t, base, "yaml")
+				if !reflect.DeepEqual(asJSON, asYAML) {
+					t.Errorf("%s: json and yaml templates differ:\njson %v\nyaml %v", base, asJSON, asYAML)
+				}
+				if err := schema.VisitJSON(asJSON); err != nil {
+					t.Errorf("%s: template does not validate: %v", base, err)
+				}
+				for key, value := range asJSON {
+					used[key] = value
+				}
 			}
-			if err := schema.VisitJSON(asJSON); err != nil {
-				t.Errorf("template does not validate: %v", err)
-			}
-			if got, want := sortedKeys(asJSON), sortedKeys(eventMetadataProperties(t, name, designEventRawShape(t, name))); !reflect.DeepEqual(got, want) {
+			if got, want := sortedKeys(used), sortedKeys(eventMetadataProperties(t, name, designEventRawShape(t, name))); !reflect.DeepEqual(got, want) {
 				t.Errorf("template keys = %v, want every property %v", got, want)
 			}
 		})
+	}
+}
+
+// TestDesignValidationEventMetadataTemplatesFollowTheStatusRule checks the
+// documented status rule on the shipped examples: a completed operation
+// carries its findings and no error, and one that did not complete (status
+// error) carries an error, keeps the identity fields and has no verdict.
+func TestDesignValidationEventMetadataTemplatesFollowTheStatusRule(t *testing.T) {
+	failed := designEventTemplate(t, "design_validation_event_metadata", "json")
+	if failed["status"] == "error" {
+		t.Fatal("design_validation_event_metadata template has status error; it is the completed-operation example")
+	}
+	if _, ok := failed["error"]; ok {
+		t.Errorf("status %v template carries error; error is present only when status is error", failed["status"])
+	}
+
+	errored := designEventTemplate(t, "design_validation_event_metadata_error", "json")
+	if errored["status"] != "error" {
+		t.Fatalf("design_validation_event_metadata_error status = %v, want error", errored["status"])
+	}
+	if _, ok := errored["error"].(map[string]any); !ok {
+		t.Errorf("status error template has no error object: %v", errored["error"])
+	}
+	for _, key := range []string{"errorCount", "truncated"} {
+		if _, ok := errored[key]; ok {
+			t.Errorf("status error template carries %q; an operation that did not complete has no verdict", key)
+		}
+	}
+	if errs, ok := errored["errors"].([]any); ok && len(errs) > 0 {
+		t.Errorf("status error template lists %d errors, want none", len(errs))
+	}
+	for _, key := range []string{"designId", "designName", "designVersion", "designLink"} {
+		if _, ok := errored[key]; !ok {
+			t.Errorf("status error template drops identity field %q", key)
+		}
 	}
 }
 
@@ -296,6 +349,40 @@ func TestDesignEventMetadataRejectsContents(t *testing.T) {
 		{"validation with validationResult", with(validation, "validationResult", map[string]any{}), true},
 		{"validation error without code", with(validation, "errors", []any{map[string]any{"componentId": "c"}}), true},
 		{"validation error carrying the component", with(validation, "errors", []any{map[string]any{"code": "type", "component": map[string]any{}}}), true},
+	})
+
+	// status error: the operation did not complete, so there is no verdict
+	// and error names why.
+	errored := designEventTemplate(t, "design_validation_event_metadata_error", "json")
+	checkCases(t, schemaOf(t, doc, "DesignValidationEventMetadata"), opts, []struct {
+		name    string
+		body    map[string]any
+		wantErr bool
+	}{
+		{"status error with error code", map[string]any{"designId": sampleUUID, "status": "error", "error": map[string]any{"code": "validator-exception"}}, false},
+		{"status error with MeshKit code and message", with(errored, "error", map[string]any{"code": "meshery-server-1130", "message": "Validation failed to run."}), false},
+		{"status error with empty errors", with(errored, "errors", []any{}), false},
+		{"status unknown to the schema", with(validation, "status", "skipped"), false},
+		{"status error without error code", with(errored, "error", map[string]any{"message": "Validation failed to run."}), true},
+		{"status error with empty error code", with(errored, "error", map[string]any{"code": ""}), true},
+		{"status error with unknown error property", with(errored, "error", map[string]any{"code": "validator-exception", "stack": "panic: ..."}), true},
+		{"status error with design contents in error", with(errored, "error", map[string]any{"code": "validator-exception", "designFile": map[string]any{}}), true},
+		{"status error with message over 512 characters", with(errored, "error", map[string]any{"code": "validator-exception", "message": strings.Repeat("x", 513)}), true},
+		{"status error with error as a bare string", with(errored, "error", "validator-exception"), true},
+	})
+
+	operationError := designEventTemplate(t, "design_event_operation_error", "json")
+	checkCases(t, schemaOf(t, doc, "DesignEventOperationError"), opts, []struct {
+		name    string
+		body    map[string]any
+		wantErr bool
+	}{
+		{"operation error with code only", map[string]any{"code": "validator-no-result"}, false},
+		{"operation error with code and message", operationError, false},
+		{"operation error with message at 512 characters", with(operationError, "message", strings.Repeat("x", 512)), false},
+		{"operation error without code", with(operationError, "code", nil), true},
+		{"operation error with code over 255 characters", with(operationError, "code", strings.Repeat("x", 256)), true},
+		{"operation error with unknown property", with(operationError, "severity", "error"), true},
 	})
 
 	saved := designEventTemplate(t, "design_saved_event_metadata", "json")

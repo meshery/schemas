@@ -16,6 +16,7 @@ one.**
 | `relationship` / `evaluation` | `RelationshipEvaluationEventMetadata` |
 | `pattern` / `validate`, `deploy`, `undeploy`, `dry-run` | `DesignValidationEventMetadata` |
 | `pattern` / `create`, `update` (design saved) | `DesignSavedEventMetadata` |
+| `pattern` / `validate` whose operation did not complete | `DesignValidationEventMetadata` with `status` `error` and `error` (`DesignEventOperationError`) |
 | Any error event | `metadata.error` holds only the MeshKit error (see below) |
 
 `DesignEventIdentity` is the set of fields that identify the design:
@@ -34,8 +35,14 @@ one.**
 `evaluationDurationMs` (milliseconds). Counts are integers, minimum 0.
 
 `DesignValidationEventMetadata` is the identity fields plus `status`,
-`errorCount`, `errors` and `truncated`:
+`errorCount`, `errors`, `truncated` and `error`:
 
+- `status` is what the producer reports: `success` (the operation ran and
+  found no errors), `partial` (it ran and part of it succeeded), `failed` (it
+  ran and found errors, listed in `errors`) or `error` (it did not complete,
+  so there is no verdict; see [Operation errors](#operation-errors-status-error)).
+  It is an open string, not an enum: consumers must tolerate values they do
+  not know.
 - `errorCount` is the total number of errors found. It may exceed the length
   of `errors`.
 - `errors` lists at most 20 `DesignValidationEventError` entries, each
@@ -43,6 +50,8 @@ one.**
   error is about the design as a whole.
 - `truncated` is true when `errorCount` is greater than the number of entries
   in `errors`.
+- `error` (`DesignEventOperationError`) says why the operation did not
+  complete. It is present only when `status` is `error`.
 
 `DesignSavedEventMetadata` is `historyTitle` plus `design`
 (`DesignSavedEventDesign`: `id` and `name` only). `design` and `design.id` are
@@ -92,11 +101,61 @@ Both are strings in one field. Consumers must tolerate codes they do not know.
 as a UUID (`x-id-format: external`), because an invalid design can carry any
 value there and one bad value must not make the whole event unreadable.
 
+## Operation errors (`status` `error`)
+
+A design validation can fail in two different ways, and the event says which:
+
+- **The operation ran and the design failed** - `status` `failed`, with the
+  findings in `errorCount`, `errors` and `truncated`. That is a verdict on
+  the design.
+- **The operation did not complete** - the validator threw, or no result came
+  back. That is not a verdict: nothing is known about the design. The
+  producer records it with `status` `error`.
+
+When `status` is `error`:
+
+| Part of the event | Rule |
+| --- | --- |
+| `metadata.error` | Present, a `DesignEventOperationError`. |
+| `metadata.errors` | Empty or omitted. |
+| `metadata.errorCount`, `metadata.truncated` | Omitted. |
+| `metadata.designId`, `designName`, `designVersion`, `designLink` | Kept, so the event still names the design. `viewLink` follows its usual rule. |
+| Envelope `category` / `action` | `pattern` / `validate` for a design validation (the operation's usual action). |
+| Envelope `severity` | `error`. |
+
+`DesignEventOperationError` is a closed object:
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `code` | string, 1 to 255 characters | Required. The MeshKit error code (for example `meshery-server-1130`) when the failure has one, otherwise a producer code such as `validator-exception` (the validator threw) or `validator-no-result` (no result came back). Consumers must tolerate codes they do not know. |
+| `message` | string, up to 512 characters | Optional. One short, human-readable line. Never design contents. |
+
+```json
+{
+  "designId": "6c4b8a52-1f3e-4d2b-9a7c-0e5f3b2d1a90",
+  "designName": "Online Boutique",
+  "designVersion": "v0.0.3",
+  "designLink": "https://cloud.layer5.io/extension/meshmap?mode=design&design=6c4b8a52-1f3e-4d2b-9a7c-0e5f3b2d1a90",
+  "status": "error",
+  "error": { "code": "validator-no-result" }
+}
+```
+
+The schema cannot tie `error` to `status` (OpenAPI 3.0 has no `if`/`then`,
+and a `oneOf` would split the generated types), so the rule binds producers
+through this contract and the schema descriptions, and readers must not
+assume it: a reader that sees `error` with another `status`, or `status`
+`error` without `error`, treats the operation as not completed and shows no
+verdict.
+
 ## Error events
 
 On an error event, `metadata.error` holds only the MeshKit error, never the
-design, the request body or the failed operation's response. No new error
-schema is defined for it; it is MeshKit's error as MeshKit serializes it.
+design, the request body or the failed operation's response. On a design
+validation event whose operation did not complete, that error is a
+`DesignEventOperationError` (see above): the MeshKit code, or a producer code
+when there is none, and at most one short line. Other error events carry
+MeshKit's error as MeshKit serializes it.
 
 ## Legacy keys on old Cloud rows
 
@@ -138,7 +197,9 @@ flat, closed struct in Go and a flat type in TypeScript.
 - Go, package `github.com/meshery/schemas/models/v1beta3/event`:
   `DesignEventIdentity`, `RelationshipEvaluationEventMetadata`,
   `DesignValidationEventMetadata`, `DesignValidationEventError`,
-  `DesignSavedEventMetadata`, `DesignSavedEventDesign`. Fields: `DesignID`
+  `DesignEventOperationError`, `DesignSavedEventMetadata`,
+  `DesignSavedEventDesign`. `DesignValidationEventMetadata.Error` is a
+  `*DesignEventOperationError`. Fields: `DesignID`
   (`uuid.UUID`), `DesignName`, `DesignVersion`, `DesignLink`, `ViewLink`,
   `ComponentID`, `EvaluationDurationMs` and so on; optional fields are pointers
   with `omitempty`.
@@ -153,6 +214,10 @@ flat, closed struct in Go and a flat type in TypeScript.
 shape is closed, camelCase, carries a description and `x-go-name` per property
 and no server-generated or banned keys; the identity fields agree across
 shapes and only `designId` is required; `errors` is capped at 20;
-`Event.metadata` stays a free-form map; and each sample template under `event/templates/` validates
-against its shape, while design contents, a missing `designId`, 21 errors and
-negative counts are rejected.
+`DesignEventOperationError` holds only `code` (required) and `message`;
+`Event.metadata` stays a free-form map; each sample template under
+`event/templates/` validates against its shape, and the `status` `error`
+example keeps the identity fields and carries no verdict; while design
+contents, a missing `designId`, 21 errors, negative counts, an operation error
+without `code`, with an unknown property or with an over-long `message` are
+rejected.
