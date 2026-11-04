@@ -246,6 +246,17 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/integrations/credentials/${queryArg.credentialId}` }),
         providesTags: ["credential_credentials"],
       }),
+      transferCredentialOwnership: build.mutation<
+        TransferCredentialOwnershipApiResponse,
+        TransferCredentialOwnershipApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/credentials/${queryArg.credentialId}/transfer`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["credential_credentials"],
+      }),
       getUserKeys: build.query<GetUserKeysApiResponse, GetUserKeysApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs/${queryArg.orgId}/users/keys`,
@@ -3484,6 +3495,34 @@ export type GetCredentialByIdApiResponse = /** status 200 Credential response */
 export type GetCredentialByIdApiArg = {
   /** Credential ID */
   credentialId: string;
+};
+export type TransferCredentialOwnershipApiResponse = /** status 200 Credential ownership transferred successfully */ {
+  /** Unique identifier for the credential. */
+  id: string;
+  /** Human-readable name for the credential. */
+  name: string;
+  /** UUID of the user who owns this credential. */
+  userId: string;
+  /** UUID of the organization designated as the owner of this credential, for credentials that belong to a brand profile rather than to a person. Optional and independent of userId: userId continues to identify the user who created and owns the record, while orgOwner designates the organization the credential is for. */
+  orgOwner?: string;
+  /** Credential type (e.g. token, basic, AWS). */
+  type: string;
+  /** Key-value pairs containing the sensitive credential data. */
+  secret?: object;
+  /** Timestamp when the credential was created. */
+  createdAt: string;
+  /** Timestamp when the credential was last updated. */
+  updatedAt: string;
+  /** Timestamp when the credential was soft-deleted. */
+  deletedAt?: string;
+};
+export type TransferCredentialOwnershipApiArg = {
+  /** Credential ID */
+  credentialId: string;
+  body: {
+    /** UUID of the user to whom ownership will be transferred. */
+    newOwnerId: string;
+  };
 };
 export type GetUserKeysApiResponse = /** status 200 Returns user keys based on roles assigned to user */ {
   /** Zero-based page index returned in this response. */
@@ -23396,6 +23435,7 @@ export const {
   useDeleteUserCredentialMutation,
   useGetCredentialByIdQuery,
   useLazyGetCredentialByIdQuery,
+  useTransferCredentialOwnershipMutation,
   useGetUserKeysQuery,
   useLazyGetUserKeysQuery,
   useGetKeysQuery,
