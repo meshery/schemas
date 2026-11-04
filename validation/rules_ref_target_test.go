@@ -355,17 +355,21 @@ func TestOpenAPIVersionOf(t *testing.T) {
 }
 
 // TestAuditRule48 runs the full Audit over a small repository tree, so it
-// fails if Rule 48 is unhooked from any pass: entity schemas, api.yml, helper
-// .yml files, an api.yml that fails to load, or older construct versions. The
-// tree holds:
+// fails if Rule 48 stops covering any file kind (api.yml, entity schema,
+// helper .yml), any version, or any load failure. The tree holds:
 //
 //	v1alpha1/target  an OpenAPI document that the other files point at whole
 //	v1alpha1/widget  an older, non-deprecated version: checked
 //	v1alpha2/widget  an older, deprecated version: not checked
+//	v1alpha3/widget  an older version whose api.yml is not valid YAML: its
+//	                 entity schema and helper are still checked
 //	v1beta1/widget   the newest version: checked
-//	v1beta1/broken   an api.yml that fails to load: still checked
+//	v1beta1/broken   an api.yml that kin-openapi fails to load: still checked
+//	v1beta1/legacy   a deprecated api.yml that kin-openapi fails to load:
+//	                 not checked
 //
-// Each widget version has an api.yml, an entity schema and a helper .yml.
+// Each widget version and legacy have an api.yml, an entity schema and a
+// helper .yml, each with a whole-document $ref.
 func TestAuditRule48(t *testing.T) {
 	root := t.TempDir()
 	write := func(rel, content string) {
@@ -426,13 +430,14 @@ required:
             schema:
               $ref: "../../v1alpha1/target/api.yml"
 `
-	for _, w := range []struct{ version, infoExtra string }{
-		{"v1alpha1", ""},
-		{"v1alpha2", "  x-deprecated: true\n"},
-		{"v1beta1", ""},
+	for _, w := range []struct{ version, api string }{
+		{"v1alpha1", widgetAPI("v1alpha1", "")},
+		{"v1alpha2", widgetAPI("v1alpha2", "  x-deprecated: true\n")},
+		{"v1alpha3", "openapi: 3.0.0\ninfo: [\n"},
+		{"v1beta1", widgetAPI("v1beta1", "")},
 	} {
 		dir := "schemas/constructs/" + w.version + "/widget/"
-		write(dir+"api.yml", widgetAPI(w.version, w.infoExtra))
+		write(dir+"api.yml", w.api)
 		write(dir+"widget.yaml", widgetEntity)
 		write(dir+"widget_operations.yml", widgetHelper)
 	}
@@ -451,6 +456,24 @@ components:
       $ref: "../../v1alpha1/target/api.yml"
 `)
 
+	// Deprecated, and the $ref to a missing file makes the kin-openapi load
+	// fail, so only the raw api.yml says the version is deprecated.
+	write("schemas/constructs/v1beta1/legacy/api.yml", `openapi: 3.0.0
+info:
+  title: Legacy
+  version: v1beta1
+  x-deprecated: true
+paths: {}
+components:
+  schemas:
+    Missing:
+      $ref: "./missing.yaml#/Missing"
+    Whole:
+      $ref: "../../v1alpha1/target/api.yml"
+`)
+	write("schemas/constructs/v1beta1/legacy/legacy.yaml", widgetEntity)
+	write("schemas/constructs/v1beta1/legacy/legacy_operations.yml", widgetHelper)
+
 	result := Audit(AuditOptions{RootDir: root})
 
 	got := map[string]int{}
@@ -465,20 +488,29 @@ components:
 		}
 	}
 
-	loadFailed := false
+	// The broken and legacy fixtures only test their case if the typed load
+	// really fails.
+	loadFailed := map[string]bool{}
 	for _, v := range result.Blocking {
-		if v.RuleNumber == 12 && v.File == "schemas/constructs/v1beta1/broken/api.yml" {
-			loadFailed = true
+		if v.RuleNumber == 12 {
+			loadFailed[v.File] = true
 		}
 	}
-	if !loadFailed {
-		t.Fatal("fixture schemas/constructs/v1beta1/broken/api.yml should fail to load (Rule 12)")
+	for _, file := range []string{
+		"schemas/constructs/v1beta1/broken/api.yml",
+		"schemas/constructs/v1beta1/legacy/api.yml",
+	} {
+		if !loadFailed[file] {
+			t.Fatalf("fixture %s should fail to load (Rule 12)", file)
+		}
 	}
 
 	want := []string{
 		"schemas/constructs/v1alpha1/widget/api.yml",
 		"schemas/constructs/v1alpha1/widget/widget.yaml",
 		"schemas/constructs/v1alpha1/widget/widget_operations.yml",
+		"schemas/constructs/v1alpha3/widget/widget.yaml",
+		"schemas/constructs/v1alpha3/widget/widget_operations.yml",
 		"schemas/constructs/v1beta1/broken/api.yml",
 		"schemas/constructs/v1beta1/widget/api.yml",
 		"schemas/constructs/v1beta1/widget/widget.yaml",

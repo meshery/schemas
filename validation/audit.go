@@ -151,18 +151,12 @@ func Audit(opts AuditOptions) AuditResult {
 	// Walk validated construct specs. Errors are intentionally ignored:
 	// Audit returns AuditResult, not error, and individual load failures
 	// are reported as blocking violations inside auditAPISpec.
-	audited := make(map[string]bool)
 	_ = walkValidatedConstructSpecs(opts.RootDir, func(spec constructSpec) error {
-		audited[spec.APIYMLPath] = true
-
 		// Validate entity schemas (*.yaml, not api.yml).
 		auditEntitySchemas(spec.ConstructDir, opts, baseline, &result)
 
 		// Validate template files (Rule 18, 34).
 		auditTemplateFiles(spec.ConstructDir, spec.Construct, opts, baseline, &result)
-
-		// Rule 48 on helper files such as feature_operations.yml.
-		auditRule48HelperFiles(spec.ConstructDir, opts, baseline, &result)
 
 		// Validate api.yml if it exists. spec.Doc is nil when load failed;
 		// auditAPISpec handles nil docs by reporting a blocking violation.
@@ -178,8 +172,8 @@ func Audit(opts AuditOptions) AuditResult {
 		return nil
 	})
 
-	// Rule 48 on the older construct versions the walk above skips.
-	auditRule48OlderVersions(opts, audited, baseline, &result)
+	// Rule 48: a $ref with no fragment must not point at an OpenAPI document.
+	auditRule48(opts, baseline, &result)
 
 	// Rule 29: report cross-construct duplicates.
 	for _, v := range reportDuplicateSchemas(fingerprints, opts) {
@@ -302,11 +296,6 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 		for _, v := range checkEntityPropertyConstraints(relPath, entity, opts) {
 			addViolation(result, v, baseline)
 		}
-
-		// Rule 48: a $ref with no fragment must not point at an OpenAPI document.
-		for _, v := range checkRule48(relPath, entityPath, entity.raw) {
-			addViolation(result, v, baseline)
-		}
 	}
 }
 
@@ -335,15 +324,20 @@ func entitySchemaFiles(constructDir string) []string {
 	return files
 }
 
-// auditRule48OlderVersions runs Rule 48 on every non-deprecated construct
-// version that walkValidatedConstructSpecs does not visit. The walk keeps only
-// the newest version of each construct, but the generators bundle every
-// version, so a $ref that pulls a whole OpenAPI document into an older version
-// would still reach generated code. audited holds the api.yml paths the walk
-// already checked. The other rules stay limited to the newest version.
-func auditRule48OlderVersions(opts AuditOptions, audited map[string]bool,
-	baseline map[string]bool, result *AuditResult) {
-
+// auditRule48 runs Rule 48 on every non-deprecated construct version: its
+// api.yml, entity schemas and helper .yml files. It is a pass of its own, not
+// part of walkValidatedConstructSpecs, because:
+//
+//   - the walk keeps only the newest version of each construct, but the
+//     generators bundle every version;
+//   - Rule 48 reads raw YAML only, so it must not depend on kin-openapi
+//     loading the api.yml;
+//   - deprecation is read from the raw api.yml, so it is known even when the
+//     typed load fails.
+//
+// An api.yml that is not valid YAML cannot say whether its version is
+// deprecated, so the other files of that version are still checked.
+func auditRule48(opts AuditOptions, baseline map[string]bool, result *AuditResult) {
 	pattern := filepath.Join(opts.RootDir, "schemas", "constructs", "*", "*", "api.yml")
 	apiYmlPaths, err := filepath.Glob(pattern)
 	if err != nil {
@@ -351,34 +345,31 @@ func auditRule48OlderVersions(opts AuditOptions, audited map[string]bool,
 	}
 	sort.Strings(apiYmlPaths)
 
-	for _, apiYmlPath := range apiYmlPaths {
-		if audited[apiYmlPath] {
-			continue
+	check := func(path string, doc map[string]any) {
+		relPath := relativeToRoot(path, opts.RootDir)
+		for _, v := range checkRule48(relPath, path, doc) {
+			addViolation(result, v, baseline)
 		}
+	}
+
+	for _, apiYmlPath := range apiYmlPaths {
 		constructDir := filepath.Dir(apiYmlPath)
 		if !shouldValidateVersion(filepath.Base(filepath.Dir(constructDir))) {
 			continue
 		}
-		rawDoc, err := loadAPISpecRaw(apiYmlPath)
-		if err != nil || isDeprecatedRawDoc(rawDoc) {
-			continue
-		}
 
-		relPath := relativeToRoot(apiYmlPath, opts.RootDir)
-		for _, v := range checkRule48(relPath, apiYmlPath, rawDoc) {
-			addViolation(result, v, baseline)
-		}
-
-		auditRule48HelperFiles(constructDir, opts, baseline, result)
-
-		for _, entityPath := range entitySchemaFiles(constructDir) {
-			entity, err := loadEntitySchema(entityPath)
-			if err != nil || entity == nil {
+		if rawDoc, err := loadAPISpecRaw(apiYmlPath); err == nil {
+			if isDeprecatedRawDoc(rawDoc) {
 				continue
 			}
-			relPath := relativeToRoot(entityPath, opts.RootDir)
-			for _, v := range checkRule48(relPath, entityPath, entity.raw) {
-				addViolation(result, v, baseline)
+			check(apiYmlPath, rawDoc)
+		}
+
+		files := append(helperSchemaFiles(constructDir), entitySchemaFiles(constructDir)...)
+		sort.Strings(files)
+		for _, path := range files {
+			if doc, err := loadYAMLDoc(path); err == nil {
+				check(path, doc)
 			}
 		}
 	}
@@ -419,23 +410,6 @@ func helperSchemaFiles(constructDir string) []string {
 	return files
 }
 
-// auditRule48HelperFiles runs Rule 48 on the helper files of a construct.
-// Helpers are not entity schemas, so no other rule runs on them.
-func auditRule48HelperFiles(constructDir string, opts AuditOptions,
-	baseline map[string]bool, result *AuditResult) {
-
-	for _, helperPath := range helperSchemaFiles(constructDir) {
-		doc, err := loadYAMLDoc(helperPath)
-		if err != nil || doc == nil {
-			continue
-		}
-		relPath := relativeToRoot(helperPath, opts.RootDir)
-		for _, v := range checkRule48(relPath, helperPath, doc) {
-			addViolation(result, v, baseline)
-		}
-	}
-}
-
 // auditTemplateFiles validates template files in a construct directory.
 func auditTemplateFiles(constructDir, constructName string, opts AuditOptions,
 	baseline map[string]bool, result *AuditResult) {
@@ -471,12 +445,6 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 			Severity:   SeverityBlocking,
 			RuleNumber: 12,
 		}, baseline)
-		// Rule 48 needs only the raw YAML, so it still runs and names the
-		// $ref to fix.
-		rawDoc, _ := loadAPISpecRaw(apiYmlPath)
-		for _, v := range checkRule48(relPath, apiYmlPath, rawDoc) {
-			addViolation(result, v, baseline)
-		}
 		return
 	}
 
@@ -505,12 +473,6 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 
 	// Rules 15-16: cross-construct refs (raw YAML needed for $ref siblings).
 	for _, v := range checkRule15(relPath, rawDoc, doc, opts) {
-		addViolation(result, v, baseline)
-	}
-
-	// Rule 48: a $ref with no fragment must not point at an OpenAPI document
-	// (raw YAML, so every $ref is seen exactly as written).
-	for _, v := range checkRule48(relPath, apiYmlPath, rawDoc) {
 		addViolation(result, v, baseline)
 	}
 
