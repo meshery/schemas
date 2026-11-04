@@ -41,6 +41,15 @@ post:
       description: Patterns deleted
 ```
 
+### Optional request bodies
+
+A request body is optional unless it declares `required: true` (the OpenAPI default is `false`).
+Declare it optional only when omitting it has defined meaning - `generateToken` omits it to mint an
+unrestricted token. `@rtk-query/codegen-openapi` ignores `required: false` and types every body as
+required, so `build/generate-rtk.js` (`markOptionalRequestBodies`) rewrites the generated
+`*ApiArg` member to `body?:` for each such operation and fails the build if it cannot find it.
+`tests/generate-rtk.test.js` type-checks a body-less call against the rewritten type.
+
 ## HTTP response codes
 
 | Code | Meaning | When to use |
@@ -96,7 +105,7 @@ are the emitting service's internal allocation and are renumbered. Two generator
 body plus a required `Retry-After` header carrying the integer number of seconds the caller must
 wait before retrying. Reference it, through a `MeshkitError429` alias under the construct's own
 `components/responses`, from every operation whose server applies a per-user rate limit. Layer5
-Cloud rate-limits the Blowhorn route families per user, so every operation of the v1beta3
+Cloud rate-limits the posting-client route families per user, so every operation of the v1beta3
 `claim`, `schedule`, `ledger`, `content_item`, `media_asset`, `mention_alias`, `event`, `profile`,
 `provider_capability` and `blowhorn_health` constructs declares it, as do the desktop `registerConnection`,
 `recordConnectionHeartbeat` and `deregisterDesktopConnection` connection operations. A client
@@ -175,7 +184,11 @@ refetches the imported-designs inventory, with no consumer-side tag wiring.
 The tag picks the cache within a construct, so an operation that must stay out of it takes its own
 tag. `getGithubRepositoryBranches` sits beside the import operations in `v1beta3/design` but reads
 only GitHub, so it is tagged `github` (`Design_github`): a design write does not refetch the branch
-list. `validation/design_github_import_contract_test.go` pins each operation's tag.
+list. `validation/design_github_import_contract_test.go` pins each operation's tag. The same
+holds in reverse for a write that must not refetch a read: `v1beta3/oauth_consent_request` tags
+its accept and reject decisions `oauthConsentDecisions`, apart from the read's
+`oauthConsentRequests`, because a decision consumes the single-use challenge and a refetch of the
+read would only answer `404` (see [the contract](oauth-consent-request-contract.md)).
 
 The GitHub integration operations that touch no design - the connection status, an installation's
 repositories, a repository's file tree, the Kanvas workflow check and install, and the two browser
@@ -183,6 +196,62 @@ navigations of the authorization trip - are declared in their own `v1beta3/githu
 they share the `GitHub_github` tag: a workflow install refetches the status, repository and tree
 reads, and no design write refetches any of them. `validation/github_integration_contract_test.go`
 pins them.
+
+## Route ownership across versions
+
+Every version of a construct is bundled and merged into one cloud spec, so one
+route can be declared by two versions of the same construct. Use this only to
+move a route to a later version:
+
+- The owning operation sets `x-supersedes: <older version>` (for example
+  `x-supersedes: v1beta2`) and keeps the same `operationId`, method and path. It
+  may use `$ref` in its `api.yml`: `bundleSchema` dereferences each version
+  before the merge, and the merge fails if the bundled owner still holds a
+  `$ref`. Component names are shared across the versions of one construct, so an
+  owned body that kept a `$ref` would resolve through a name another version may
+  overwrite.
+- The older version keeps its declaration, unchanged, for its own per-version
+  bundle and generated types.
+- `build/bundle-openapi.js` keeps the owner's declaration in the merged spec.
+  The collision resolves only when both declarations belong to the same
+  construct (same title), the owner names exactly the other declaration's
+  version, the superseded declaration carries no `x-supersedes` (ownership does
+  not chain), their `operationId`s match, and their `x-internal` targets match as
+  sets. The route declaration resolves the same way in either merge order.
+- The owner's `x-supersedes` must name a declaration of the same route (same
+  construct, method and path). If the named version declares no such route, the
+  merge fails with `x-supersedes names no declaration`, after all specs are
+  merged, so merge order does not matter. An owner whose `x-supersedes` does not
+  name a strictly older construct version (its own version, a newer one, or a
+  string that is not a construct version) fails the merge with
+  `which is not older than`. Versions order by major, then alpha, beta and GA,
+  then number (`v1beta3` is older than `v1`).
+- The bundler owns and checks this rule. The endpoint index behind the consumer
+  audit (`validation/endpoint_index.go`) has no ownership logic: it walks each
+  construct's latest non-deprecated version, so it indexes the owner's
+  declaration once while the owner is that latest version, and the superseded
+  declaration of an older version is never indexed beside it.
+  `TestEndpointIndexIndexesEverySupersedingOwnerOnce` checks every owner in the
+  tree against the index.
+- Any other duplicate fails the merge with `Duplicate path operation during merge`.
+- Component names are not versioned. Two versions of one construct that define
+  the same component name overwrite each other in the merged `components`, and
+  the last one merged wins. Packages merge in lexically sorted directory order,
+  which is not version order (`v1beta10` sorts before `v1beta2`) and only
+  happens to put the newest version last in today's tree. An owned operation
+  does not depend on this, because its body is inlined.
+- `x-supersedes` stays in the merged output, as `x-internal` does.
+
+```yaml
+  /api/identity/users/preferences:
+    put:
+      x-internal: ["cloud"]
+      x-supersedes: v1beta2
+      operationId: updateUserPreferences
+```
+
+See [`docs/agent-approval-preference.md`](agent-approval-preference.md#where-the-route-is-declared)
+for the route that uses this rule.
 
 ## GitHub integration: verified installations
 
@@ -226,6 +295,71 @@ pattern bound by RFC 7636 PKCE, defined in `v1beta3/token`:
    client name.
 
 The construct is client-agnostic: no client is named in the schema.
+
+## Token revocation, introspection and sign-out
+
+`v1beta3/token` also defines three routes Meshery Cloud serves on its bare router, so their
+declared paths carry no `/api` prefix:
+
+- `POST /revoke` (`revokeToken`) revokes an OAuth access or refresh token issued by the identity
+  provider, or a user-created API token (the envelope `generateToken` returns, or the bare JWT inside
+  it). The body is a `TokenPayload`; possessing the token is the credential (`security: []`). A
+  user-created API token whose signature verifies is retired for its owner, as `deleteUserToken`
+  does, and stops authenticating immediately. A token issued to a third-party OAuth client ends that
+  user's whole grant to that client. Any other token is forwarded to the OAuth2 server's RFC 7009
+  revocation endpoint, which revokes that token and the tokens issued alongside it from the same
+  authorization. An unknown, anonymous or already-revoked
+  token is a no-op that answers `200`. A `200` clears the session cookie. A `503` means signing keys or the token store
+  could not be read, or the OAuth2 server could not be asked who the token belongs to, so the token
+  was not revoked; the caller should retry. A `500` means the revocation call itself failed: the
+  OAuth2 server's revocation returned an error response or could not be reached.
+- `POST /introspect` (`introspectToken`) answers `200` when an access token is authentic, unexpired,
+  not revoked and valid for the protected resource asking, with a `TokenIntrospection` body that
+  carries `aud` - the RFC 8707 resource identifiers the token is bound to - and the other RFC 7662
+  members (single-word names as in RFC 7662, `clientId` and `tokenType` in camelCase).
+  The body is a `TokenIntrospectionPayload`: `token`, and an optional `resource` naming the
+  protected resource asking; omitted, it is the REST API. The server is the single decider: a
+  token it issued to its own first-party clients (a personal API token, a native sign-in token, a
+  first-party sign-in session) is valid for every protected resource it issues tokens for, while a
+  token issued to a third-party OAuth client is valid only for a resource its `aud` names. An
+  inactive or refused token is a `401`, not RFC 7662 section 2.2's `200` with `active: false`: this
+  is the server's status API, and existing callers read only the status. A `401` means
+  the signature or expiry check failed, the token was revoked, or its audience does not include the
+  resource. A `400` means the body is malformed, `token` is missing or empty, or `resource` is not a
+  protected resource the server issues tokens for (`invalid_target`). A `503` means signing keys or
+  revocation status are temporarily unavailable: the token is refused, but the caller should retry
+  rather than sign the user out. Callers that read only the status code are unaffected by the body.
+  A caller that sends `resource` takes the `200` as the decision and must not re-derive it from
+  `aud`, which is `[]` for a first-party token valid everywhere; it must refuse a `200` with no body,
+  which a server predating `resource` returns for any valid token.
+- `GET /logout` (`logoutUser`) is a browser navigation identified by the `session_cookie` and
+  `provider_token` cookies (the `sessionCookie` and `providerTokenCookie` security schemes). It ends
+  the identity provider session, revokes the OAuth tokens in `provider_token`, clears every session
+  cookie on every outcome and redirects to `/login`: `303` on the canonical host (also on failure for
+  a browser document navigation), `302` on an organization custom domain where sign-out is
+  best-effort, and an empty `500` when the identity provider failed for any other caller. On the
+  canonical host a complete sign-out needs both cookies - `session_cookie` lets the identity provider
+  end its session and `provider_token` carries the OAuth tokens to revoke. With only `session_cookie`,
+  the identity provider session ends but no OAuth tokens are revoked, and the answer is the success
+  `303`. With only `provider_token`, the identity provider cannot start its logout flow, so the OAuth
+  tokens are still revoked but the answer is the failure one - `303` for a browser document
+  navigation, an empty `500` otherwise. Cookies are cleared either way. On an organization custom
+  domain the user is identified from `provider_token`.
+
+## OAuth consent requests
+
+`v1beta3/oauth_consent_request` is the consent page's API, under `/api/identity/oauth/consent-requests`.
+`getOauthConsentRequest` reads a pending request by the required `consentChallenge` query parameter
+(a query parameter because identity provider challenges are long opaque strings), and
+`acceptOauthConsentRequest` and `rejectOauthConsentRequest` (`POST .../accept`, `POST .../reject`,
+body `OauthConsentDecisionPayload`) decide it, answering the `redirectTo` the browser must navigate
+to. Only the signed-in user the challenge was issued for may read or decide it (`403` otherwise), a
+challenge is single use (`404` once decided or expired), an accept grants only what the client
+requested, and `client.verified` marks trust without blocking. `client.redirectHosts` (https and
+loopback hosts) and `client.appSchemes` (private-use app schemes) are separate lists, so an app is
+never shown as a host. A `503` on a decision means the outcome is unknown: a retry that answers
+`404` means the challenge was already decided. Full contract:
+[`oauth-consent-request-contract.md`](oauth-consent-request-contract.md).
 
 ## Schedules and claims
 

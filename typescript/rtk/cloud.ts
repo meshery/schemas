@@ -33,6 +33,9 @@ export const addTagTypes = [
   "Ledger_ledgers",
   "MediaAsset_mediaAssets",
   "MentionAlias_mentionAliases",
+  "OauthConsent_oauthConsents",
+  "OauthConsentRequest_oauthConsentRequests",
+  "OauthConsentRequest_oauthConsentDecisions",
   "PatternResource_patternResources",
   "Performance_Profile_performance",
   "Plan_Plans",
@@ -1801,6 +1804,51 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/mention-aliases/${queryArg.mentionAliasId}`, method: "DELETE" }),
         invalidatesTags: ["MentionAlias_mentionAliases"],
       }),
+      getOauthConsents: build.query<GetOauthConsentsApiResponse, GetOauthConsentsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consents`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+          },
+        }),
+        providesTags: ["OauthConsent_oauthConsents"],
+      }),
+      deleteOauthConsent: build.mutation<DeleteOauthConsentApiResponse, DeleteOauthConsentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consents`,
+          method: "DELETE",
+          params: {
+            clientId: queryArg?.clientId,
+          },
+        }),
+        invalidatesTags: ["OauthConsent_oauthConsents"],
+      }),
+      getOauthConsentRequest: build.query<GetOauthConsentRequestApiResponse, GetOauthConsentRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consent-requests`,
+          params: {
+            consentChallenge: queryArg?.consentChallenge,
+          },
+        }),
+        providesTags: ["OauthConsentRequest_oauthConsentRequests"],
+      }),
+      acceptOauthConsentRequest: build.mutation<AcceptOauthConsentRequestApiResponse, AcceptOauthConsentRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consent-requests/accept`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["OauthConsentRequest_oauthConsentDecisions"],
+      }),
+      rejectOauthConsentRequest: build.mutation<RejectOauthConsentRequestApiResponse, RejectOauthConsentRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/oauth/consent-requests/reject`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["OauthConsentRequest_oauthConsentDecisions"],
+      }),
       getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
         query: (queryArg) => ({
           url: `/api/content/patterns/resource`,
@@ -2153,6 +2201,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/identity/tokens`,
           method: "POST",
+          body: queryArg.body,
           params: {
             name: queryArg?.name,
             purpose: queryArg?.purpose,
@@ -2211,6 +2260,18 @@ const injectedRtkApi = api
       >({
         query: (queryArg) => ({ url: `/api/identity/native/token`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["token_tokens"],
+      }),
+      revokeToken: build.mutation<RevokeTokenApiResponse, RevokeTokenApiArg>({
+        query: (queryArg) => ({ url: `/revoke`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
+      }),
+      introspectToken: build.mutation<IntrospectTokenApiResponse, IntrospectTokenApiArg>({
+        query: (queryArg) => ({ url: `/introspect`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["token_tokens"],
+      }),
+      logoutUser: build.query<LogoutUserApiResponse, LogoutUserApiArg>({
+        query: () => ({ url: `/logout` }),
+        providesTags: ["token_tokens"],
       }),
       getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
         query: (queryArg) => ({
@@ -2473,7 +2534,7 @@ export type SubmitFailureDiagnosticApiArg = {
     failure: {
       /** Where the failure first became visible to the person. */
       surface: "tray" | "popover" | "console" | "service";
-      /** Stable machine-readable name for the cause. Deliberately a patterned string, not a closed enum: new failure causes are named by the client over time, and a closed enum would make the server reject reports carrying a cause it does not know yet. Consumers must treat an unknown cause as opaque, never as an error. Known causes today are the Blowhorn engine's StoreUnavailable.cause names: unavailable, not_configured, incomplete, bad_setting, config_unreadable, tunnel_refused, tunnel_silent, tunnel_off, not_postgres, auth_rejected, host_not_permitted, database_missing, timeout, version_unreadable, ledger_unreadable, schema_behind, schema_ahead, schema_edited, no_organization, unknown_organization, plus other named causes as clients add them. */
+      /** Stable machine-readable name for the cause. Deliberately a patterned string, not a closed enum: new failure causes are named by the client over time, and a closed enum would make the server reject reports carrying a cause it does not know yet. Consumers must treat an unknown cause as opaque, never as an error. Known causes today are the desktop engine's StoreUnavailable.cause names: unavailable, not_configured, incomplete, bad_setting, config_unreadable, tunnel_refused, tunnel_silent, tunnel_off, not_postgres, auth_rejected, host_not_permitted, database_missing, timeout, version_unreadable, ledger_unreadable, schema_behind, schema_ahead, schema_edited, no_organization, unknown_organization, plus other named causes as clients add them. */
       cause: string;
       /** Machine-readable code for the failure, when the failure carries one beyond its cause (for example an exit or provider code). Kept a string so numeric and symbolic codes both fit; empty when the failure carries no code. */
       code: string;
@@ -2488,7 +2549,7 @@ export type SubmitFailureDiagnosticApiArg = {
       /** Version of the client-server contract this report was built against. Kept a string so dotted versions and plain numbers both fit. */
       contractVersion: string;
     };
-    /** Optional per-install id, present only when the person has not opted out of failure reports. A random uuid4 minted once per install (Blowhorn's installationId, written beside cloud.yaml and reused), never a hardware id. Omitted entirely when opted out. */
+    /** Optional per-install id, present only when the person has not opted out of failure reports. A random uuid4 minted once per install (the client's installationId, written beside cloud.yaml and reused), never a hardware id. Omitted entirely when opted out. */
     installId?: string;
   };
 };
@@ -3062,7 +3123,7 @@ export type TestOrganizationSmtpConfigurationApiResponse =
 export type TestOrganizationSmtpConfigurationApiArg = {
   /** Organization ID */
   orgId: string;
-  body: {
+  body?: {
     /** Recipient of the test message. Defaults to the calling administrator's own address. */
     to?: string;
   };
@@ -5437,7 +5498,7 @@ export type AddTeamToOrgApiArg = {
   orgId: string;
   /** Team ID. */
   teamId: string;
-  body: {
+  body?: {
     /** Internal action to perform on the team resource. */
     action?: "delete";
   };
@@ -6603,10 +6664,12 @@ export type UpdateUserPreferencesApiArg = {
     usersExtensionPreferences?: {
       [key: string]: any;
     };
-    /** The remote provider preferences of the preference. */
+    /** The remote provider preferences of the preference. Writers set the typed agentsActWithoutApproval field, not a provider's free-form agentsActWithoutApproval entry. A token-authenticated request that would change the stored state of a provider's agentsActWithoutApproval entry (a different value, adding it where absent, or removing it where present) is answered 403, and no part of the payload is applied. Writing back the stored entry unchanged is accepted. Once the typed field has been written, the entry is never read again (see Preference.agentsActWithoutApproval). */
     remoteProviderPreferences?: {
       [key: string]: any;
     };
+    /** Interim rule (temporary): until the upstream platform, workspace and profile policies exist, inherit (including absent) resolves to required, and this field is stored but not consulted by approval resolution (see Preference.agentsActWithoutApproval; the hierarchy proposal is https://github.com/layer5io/meshery-cloud/issues/6365). Target model, once the hierarchy places the profile level: one profile-level source for agent writes, consulted only for an AI-app activity whose approvalPolicy is inherit or absent, and only when no higher-level setting (hierarchy defined in https://github.com/layer5io/meshery-cloud/issues/6365) has decided (see Preference.agentsActWithoutApproval): true means not_required, false means required, and absent sets nothing. Three states on write: true or false stores that value; null clears the stored value back to absent (inherit); omitted keeps the stored value. No schema default is declared. An API token, of any kind, cannot set this field: a token-authenticated request whose payload names this field, with any value including null and whatever the stored state is, is answered 403 and no part of the payload is applied. Only a request authenticated by the signed-in session can set it. A token client doing read-modify-write must omit this field: echoing the value it read, or null, answers 403 for the whole payload. See docs/agent-approval-preference.md. */
+    agentsActWithoutApproval?: boolean | null;
   };
 };
 export type GetUserProfileOverviewApiResponse = /** status 200 Profile overview counts for the caller */ {
@@ -15060,7 +15123,7 @@ export type ImportGithubRepositoryApiResponse =
       category: string;
       /** Human-readable summary of what happened. */
       description: string;
-      /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+      /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
        */
       metadata: {
         [key: string]: any;
@@ -16555,7 +16618,7 @@ export type CreateEventApiResponse =
         category: string;
         /** Human-readable summary of what happened. */
         description: string;
-        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
          */
         metadata: {
           [key: string]: any;
@@ -16593,7 +16656,7 @@ export type CreateEventApiResponse =
         category: string;
         /** Human-readable summary of what happened. */
         description: string;
-        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none.
+        /** Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.
          */
         metadata: {
           [key: string]: any;
@@ -18498,6 +18561,97 @@ export type DeleteMentionAliasApiResponse = unknown;
 export type DeleteMentionAliasApiArg = {
   /** Mention alias ID */
   mentionAliasId: string;
+};
+export type GetOauthConsentsApiResponse = /** status 200 OAuth consents of the signed-in user */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** OAuth consents included on this page of results. */
+  oauthConsents: {
+    /** Server-generated consent ID. */
+    id: string;
+    /** OAuth client ID the consent was granted to. An identifier issued by the authorization server, not a UUID. Unique per user among live consents. */
+    clientId: string;
+    /** Display name the client registered, shown to the user as the connected app's name. */
+    clientName: string;
+    /** Home page of the client, when it registered one. Omitted otherwise. */
+    clientUri?: string;
+    /** Logo of the client, when it registered one. Omitted otherwise. */
+    logoUri?: string;
+    /** Scopes the user granted the client, as the strings the authorization server issues. A scope names one keychain, so the client's tokens are limited to the keys of those keychains (see the token scoping contract). At least one scope must map to a keychain in the server's scope map. The server refuses (`400`, nothing stored) a first consent without one (a re-consent without one revokes the consent and the client's tokens), and refuses a scope string the scope map does not know; it never drops one silently. Standard non-keychain scopes never count toward that minimum. The schema enforces only that the list is not empty; the rule is enforced by the server against the scope map. See the description of this schema. */
+    scopes: string[];
+    /** ID of the root organization the consent names. The client acts only in this organization and its descendants. A re-consent keeps it unless the user explicitly chooses another organization on the consent screen; see the description of this schema. */
+    organizationId: string;
+    /** Time the user first granted the consent. A re-consent keeps it. */
+    createdAt: string;
+    /** Time the consent was last granted or changed. Server-set: equal to `createdAt` when the consent is created, and advanced when the same user consents to the same live client again, which replaces `scopes`. */
+    updatedAt: string;
+    /** Time the client last used a token issued under this consent. Null when the client has not used it yet or the server does not record use. */
+    lastUsedAt?: string | null;
+    /** Time the consent was revoked (soft-deleted). Null while the consent is live. getOauthConsents returns live consents only. */
+    deletedAt?: string | null;
+  }[];
+};
+export type GetOauthConsentsApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of consents per page, at most 1000. Bounded here because the list is the signed-in user's whole consent set. */
+  pageSize?: number;
+};
+export type DeleteOauthConsentApiResponse = unknown;
+export type DeleteOauthConsentApiArg = {
+  /** OAuth client ID of the consent to revoke. An identifier issued by the authorization server, not a UUID. */
+  clientId: string;
+};
+export type GetOauthConsentRequestApiResponse = /** status 200 The pending OAuth consent request */ {
+  /** Opaque challenge the identity provider issued for this consent request, echoed unchanged. Send it back in OauthConsentDecisionPayload to allow or deny the request. */
+  consentChallenge: string;
+  /** The OAuth client that asks for consent. */
+  client: {
+    /** OAuth client ID. An identifier issued by the identity provider, not a UUID. */
+    clientId: string;
+    /** Display name the client registered. Empty when it registered none. Self-asserted by the client; only `verified` marks trust. */
+    clientName: string;
+    /** The network hosts the client can send the user to after the decision: the host of each https redirect URI (for example `app.example.com`) and of each loopback redirect URI (`127.0.0.1` or `[::1]`), without duplicates. Only redirect URIs whose scheme is `https`, or `http` on a loopback IP literal, are listed here; the `localhost` hostname is never registered (RFC 8252 section 8.3), and a private-use app redirect is listed in `appSchemes` instead. Lowercase ASCII, with no scheme, port or path; an internationalized hostname is sent in IDNA A-label (punycode) form. Empty when the client registered only app redirects; `redirectHosts` and `appSchemes` are never both empty. */
+    redirectHosts: string[];
+    /** The private-use URI schemes (RFC 8252 section 7.1) of the client's app redirect URIs, without duplicates, for example `vscode` or `com.example.app`: the app that claims the scheme on the user's device receives the user after the decision. Registration accepts a private-use scheme only when it is on the server-side app-scheme allowlist read from configuration (defaults `vscode` and `cursor`), so only allowlisted schemes appear here. A reverse-domain scheme such as `com.example.app` names an app, not a host, and must not be shown as one. Empty when the client registered only https and loopback redirects; `redirectHosts` and `appSchemes` are never both empty. */
+    appSchemes: string[];
+    /** Derived only from the client's redirect targets, never from `clientName` or `clientId`: true only when every redirect URI of the client matches one operator-listed known-client entry (that entry's https hosts or its app schemes). Marks trust and never blocks: a false value is shown as an unverified client, and the user may still allow it. */
+    verified: boolean;
+  };
+  /** Scopes the client asks for, as the identity provider recorded them. An accept grants only what the client requested, never more: these scopes, and any audience the client asked the identity provider for. Empty when the client asks for none. */
+  requestedScopes: string[];
+};
+export type GetOauthConsentRequestApiArg = {
+  /** Opaque consent challenge the identity provider issued, as the consent page received it. Required; a missing or blank value answers 400. */
+  consentChallenge: string;
+};
+export type AcceptOauthConsentRequestApiResponse = /** status 200 Consent request allowed; navigate to redirectTo */ {
+  /** Absolute URL the browser must navigate to next, issued by the identity provider. It continues the authorization and returns the user to the client. */
+  redirectTo: string;
+};
+export type AcceptOauthConsentRequestApiArg = {
+  body: {
+    /** The challenge of the request being decided, as getOauthConsentRequest returned it. A blank value answers 400. */
+    consentChallenge: string;
+    /** On accept, true asks the identity provider to remember the grant, so a later request from the same client for the same scopes is not shown again while the grant is remembered. False or omitted grants this request only. Ignored on reject. */
+    remember?: boolean;
+  };
+};
+export type RejectOauthConsentRequestApiResponse = /** status 200 Consent request denied; navigate to redirectTo */ {
+  /** Absolute URL the browser must navigate to next, issued by the identity provider. It continues the authorization and returns the user to the client. */
+  redirectTo: string;
+};
+export type RejectOauthConsentRequestApiArg = {
+  body: {
+    /** The challenge of the request being decided, as getOauthConsentRequest returned it. A blank value answers 400. */
+    consentChallenge: string;
+    /** On accept, true asks the identity provider to remember the grant, so a later request from the same client for the same scopes is not shown again while the grant is remembered. False or omitted grants this request only. Ignored on reject. */
+    remember?: boolean;
+  };
 };
 export type GetPatternResourcesApiResponse = /** status 200 Pattern resources page */ {
   /** Current page number of the result set. */
@@ -21240,6 +21394,12 @@ export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
     createdAt: string;
     /** Timestamp when the token was last updated. */
     updatedAt: string;
+    /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+    expiresAt?: string | null;
+    /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+    keychainScoped?: boolean;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -21287,6 +21447,12 @@ export type GenerateTokenApiResponse = /** status 201 Token generated */ {
     createdAt: string;
     /** Timestamp when the token was last updated. */
     updatedAt: string;
+    /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+    expiresAt?: string | null;
+    /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+    keychainScoped?: boolean;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -21300,6 +21466,12 @@ export type GenerateTokenApiArg = {
   name: string;
   /** Token purpose. Tokens are minted with this purpose on generate. On list, only tokens whose purpose is exactly this value (case-sensitive, not a substring match) are returned; omit it to list every purpose. */
   purpose?: string;
+  body?: {
+    /** IDs of the keychains the token is limited to. A non-empty list limits the token to the keys of those keychains, intersected with the owner's keys in the request's organization. An absent list creates an unrestricted token. An explicit empty list is refused with 400, so a selection that ends up empty never mints a full-access token. The server records keychainScoped from this list; clients do not set it. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means it never expires. */
+    expiresAt?: string | null;
+  };
 };
 export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
   /** Tokens returned on the current page. */
@@ -21324,6 +21496,12 @@ export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
     createdAt: string;
     /** Timestamp when the token was last updated. */
     updatedAt: string;
+    /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+    expiresAt?: string | null;
+    /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+    keychainScoped?: boolean;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -21357,6 +21535,12 @@ export type DownloadTokenApiResponse = /** status 200 Token response */ {
   createdAt: string;
   /** Timestamp when the token was last updated. */
   updatedAt: string;
+  /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+  keychainIds?: string[];
+  /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+  expiresAt?: string | null;
+  /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+  keychainScoped?: boolean;
 };
 export type DownloadTokenApiArg = {
   /** Token ID */
@@ -21385,6 +21569,12 @@ export type IssueIndefiniteLifetimeTokenApiResponse = /** status 200 Token gener
     createdAt: string;
     /** Timestamp when the token was last updated. */
     updatedAt: string;
+    /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+    keychainIds?: string[];
+    /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+    expiresAt?: string | null;
+    /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+    keychainScoped?: boolean;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -21437,6 +21627,12 @@ export type ExchangeNativeAuthorizationCodeApiResponse = /** status 201 API toke
   createdAt: string;
   /** Timestamp when the token was last updated. */
   updatedAt: string;
+  /** IDs of the keychains this token is limited to. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent, so every token issued before this field existed keeps working unchanged. A non-empty list always makes the token scoped, whatever keychainScoped says. A scoped token may use only keys that belong to these keychains, intersected with the owner's keys in the organization of the request: the effective keys are never more than the user's own. A scoped token with an empty list holds no keys; it is not unrestricted. A server that stores keychainIds always stores keychainScoped true. Unknown keychain IDs are refused when the token is created. */
+  keychainIds?: string[];
+  /** Time after which the token is no longer accepted. Absent or null means the token never expires, which is the case for every token issued before this field existed. Set when the token is created and not changed afterwards. */
+  expiresAt?: string | null;
+  /** Whether the token is limited to the keys of its keychains. Set by the server at creation: true when the create has a non-empty `keychainIds`. A re-consent that narrows an unrestricted token (false) changes it to true; no other operation changes it, and it is never reset to false. It is read-only to clients. It is stored on the token and never reset, so a scoped token whose keychains have all been deleted stays scoped and holds no keys; a non-empty set of keychain mappings also always means scoped. A token is unrestricted only when keychainScoped is false or absent and keychainIds is empty or absent. A true flag is never unrestricted, even with an empty list. */
+  keychainScoped?: boolean;
 };
 export type ExchangeNativeAuthorizationCodeApiArg = {
   body: {
@@ -21446,6 +21642,46 @@ export type ExchangeNativeAuthorizationCodeApiArg = {
     codeVerifier: string;
   };
 };
+export type RevokeTokenApiResponse = unknown;
+export type RevokeTokenApiArg = {
+  body: {
+    /** The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
+    token: string;
+  };
+};
+export type IntrospectTokenApiResponse =
+  /** status 200 The token is authentic, unexpired, not revoked and valid for the requested resource. The body describes it. */ {
+    /** Always true; a token that is not active is answered with 401 instead. */
+    active: boolean;
+    /** The resources the token is bound to (RFC 8707 resource identifiers). Always a JSON array, never null or absent: [] for a token the server issued to its own first-party clients, which is valid for every protected resource the server issues tokens for. */
+    aud: string[];
+    /** The subject the token was issued for. */
+    sub?: string;
+    /** The OAuth client the token was issued to. */
+    clientId?: string;
+    /** Space-separated scopes granted to the token. */
+    scope?: string;
+    /** Expiry, in seconds since the Unix epoch. Absent for a token that does not expire. */
+    exp?: number;
+    /** Issue time, in seconds since the Unix epoch. */
+    iat?: number;
+    /** Not-before time, in seconds since the Unix epoch. */
+    nbf?: number;
+    /** The issuer of the token. */
+    iss?: string;
+    /** Always "Bearer". */
+    tokenType?: string;
+  };
+export type IntrospectTokenApiArg = {
+  body: {
+    /** The token. Surrounding whitespace is trimmed; a value that is empty after trimming is rejected. */
+    token: string;
+    /** RFC 8707 resource identifier of the protected resource asking, as published in its RFC 9728 protected resource metadata. Omitted, the REST API. A value that is not a protected resource this server issues tokens for is rejected with 400 "invalid_target". */
+    resource?: string;
+  };
+};
+export type LogoutUserApiResponse = unknown;
+export type LogoutUserApiArg = void;
 export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
   /** Current page number of the result set. */
   page: number;
@@ -23440,6 +23676,13 @@ export const {
   useLazyGetMentionAliasesQuery,
   useUpsertMentionAliasesMutation,
   useDeleteMentionAliasMutation,
+  useGetOauthConsentsQuery,
+  useLazyGetOauthConsentsQuery,
+  useDeleteOauthConsentMutation,
+  useGetOauthConsentRequestQuery,
+  useLazyGetOauthConsentRequestQuery,
+  useAcceptOauthConsentRequestMutation,
+  useRejectOauthConsentRequestMutation,
   useGetPatternResourcesQuery,
   useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,
@@ -23508,6 +23751,10 @@ export const {
   useGetNativeClientAuthorizationQuery,
   useLazyGetNativeClientAuthorizationQuery,
   useExchangeNativeAuthorizationCodeMutation,
+  useRevokeTokenMutation,
+  useIntrospectTokenMutation,
+  useLogoutUserQuery,
+  useLazyLogoutUserQuery,
   useGetUsersQuery,
   useLazyGetUsersQuery,
   useSearchUsersQuery,

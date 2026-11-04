@@ -56,7 +56,13 @@ properties:
       json: metadata
   created_at:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
+    x-oapi-codegen-extra-tags:
+      db: created_at
   updated_at:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
+    x-oapi-codegen-extra-tags:
+      db: updated_at
   deleted_at:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/deleted_at
+    x-oapi-codegen-extra-tags:
+      db: deleted_at

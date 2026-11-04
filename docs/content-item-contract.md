@@ -2,7 +2,7 @@
 
 `schemas/constructs/v1beta3/content_item` is an organization's queue of
 content: fingerprinted values keyed by organization and row number, with
-conditional updates. Blowhorn is its consumer. This page records the two
+conditional updates. The posting client is its consumer. This page records the two
 typed extensions on top of the free-form `data` blob, rules of engagement
 and threads, and why each rule sits where it does.
 
@@ -58,7 +58,7 @@ valid.
 
 A thread is a root item plus the items that follow it: the parts of a post
 split across several posts (X and Bluesky threads), or the replies of a
-conversation between profiles (Blowhorn's radio net). Three fields describe
+conversation between profiles (the posting client's radio net). Three fields describe
 it:
 
 | Field | Meaning |
@@ -136,7 +136,7 @@ contract nor Cloud enforces it:
    answer "is this ready to do?". A precondition specific to one resource
    type would make the claim contract know every resource's domain rules
    ([`claim-contract.md`](claim-contract.md#claims-are-exclusion-not-readiness)).
-3. **The claim would not even gate it.** Blowhorn's scheduler claims the
+3. **The claim would not even gate it.** The posting client's scheduler claims the
    `schedule` that runs an item, not the `content_item`, so a rule attached
    to content item claims would never be checked on that path.
 4. **The hold has several outcomes and the client already decides them.**
@@ -179,6 +179,6 @@ posts, in posting order. An item refers to an asset by id, never by URL.
   enforce the insert and update rules above, tell an omitted
   `rulesOfEngagement` from `null` on update, extend the fingerprint, and
   serve the `threadId` filter.
-- **Blowhorn** vendors the release, adds the fields to its `ContentItem`
+- **The posting client** vendors the release, adds the fields to its `ContentItem`
   reads and `ContentItemPayload` sends, and implements the tightening and
   the reply hold in the engine.

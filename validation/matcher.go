@@ -728,14 +728,16 @@ func containsInt(values []int, want int) bool {
 
 // diffFields compares a schema shape against a Go type's field set. When
 // requestSide is true, server-generated fields like id/created_at are
-// allowed to be missing from the consumer struct.
+// allowed to be missing from the consumer struct, as are DB-backed fields
+// (determined from the property's x-oapi-codegen-extra-tags annotations via
+// fieldShape.DBBacked, never from a hardcoded name list (meshery/schemas#724).
 func diffFields(shape *schemaShape, info *goTypeInfo, requestSide bool) []fieldDiff {
 	if shape == nil || info == nil {
 		return nil
 	}
 	var diffs []fieldDiff
 	for name, fs := range shape.Fields {
-		if requestSide && (serverGeneratedFields[name] || dbMirroredFields[name]) {
+		if requestSide && (serverGeneratedFields[name] || fs.DBBacked) {
 			continue
 		}
 		consumerType, ok := info.Fields[name]
@@ -765,7 +767,10 @@ func diffFields(shape *schemaShape, info *goTypeInfo, requestSide bool) []fieldD
 		if shape.AllowsAdditionalProperties {
 			continue
 		}
-		if requestSide && (serverGeneratedFields[name] || dbMirroredFields[name]) {
+		// A consumer field absent from the schema shape carries no schema
+		// annotations, so DB-backed-ness cannot be determined for it; only
+		// the server-generated names are exempt from the extra-field report.
+		if requestSide && serverGeneratedFields[name] {
 			continue
 		}
 		diffs = append(diffs, fieldDiff{

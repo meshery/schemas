@@ -7,7 +7,7 @@ const ScheduleStopSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Schedule Stop",
-    "description": "OpenAPI schema for the organization-wide stop of scheduled work,\nconsumed by Blowhorn's kill switch (`blowhorn stop --all`). The stop\nhas no endpoints of its own: it is read and written as the\n`scheduleStop` member of the organization's preferences (the\norganization construct's getOrgPreferences and patchOrgPreferences\non /api/identity/orgs/{orgId}/preferences), beside `schedulePause`,\nso this file declares the components only and the paths stay with\nthe organization construct. Only organization admins may set or\nlift it, as with the pause; a preferences patch that omits\n`scheduleStop` keeps the current stop unchanged.\n",
+    "description": "OpenAPI schema for the organization-wide stop of scheduled work,\nconsumed by the posting client's kill switch (`blowhorn stop --all`). The stop\nhas no endpoints of its own: it is read and written as the\n`scheduleStop` member of the organization's preferences (the\norganization construct's getOrgPreferences and patchOrgPreferences\non /api/identity/orgs/{orgId}/preferences), beside `schedulePause`,\nso this file declares the components only and the paths stay with\nthe organization construct. Only organization admins may set or\nlift it, as with the pause; a preferences patch that omits\n`scheduleStop` keeps the current stop unchanged.\n",
     "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",

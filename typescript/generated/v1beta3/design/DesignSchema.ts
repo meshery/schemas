@@ -11040,7 +11040,7 @@ const DesignSchema: Record<string, unknown> = {
                           },
                           "metadata": {
                             "type": "object",
-                            "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none.\n",
+                            "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
                             "additionalProperties": true,
                             "nullable": true,
                             "x-go-type": "core.Map",
@@ -17431,16 +17431,16 @@ const DesignSchema: Record<string, unknown> = {
                                     }
                                   },
                                   "created_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "yaml": "created_at"
+                                    },
                                     "x-order": 7,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "CreatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "created_at",
-                                      "yaml": "created_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "metadata": {
@@ -17455,16 +17455,16 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "object"
                                   },
                                   "updated_at": {
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "yaml": "updated_at"
+                                    },
                                     "x-order": 9,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-name": "UpdatedAt",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "updated_at",
-                                      "yaml": "updated_at"
-                                    },
                                     "x-go-type-skip-optional-pointer": true
                                   },
                                   "deleted_at": {
@@ -18067,29 +18067,29 @@ const DesignSchema: Record<string, unknown> = {
                           "minimum": 0
                         },
                         "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "yaml": "created_at"
+                          },
                           "x-order": 14,
                           "description": "Timestamp when the resource was created.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "CreatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at",
-                            "yaml": "created_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         },
                         "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "yaml": "updated_at"
+                          },
                           "x-order": 15,
                           "description": "Timestamp when the resource was updated.",
                           "x-go-type": "time.Time",
                           "type": "string",
                           "format": "date-time",
                           "x-go-name": "UpdatedAt",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at",
-                            "yaml": "updated_at"
-                          },
                           "x-go-type-skip-optional-pointer": true
                         }
                       },
@@ -19107,29 +19107,29 @@ const DesignSchema: Record<string, unknown> = {
                       ]
                     },
                     "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
                       "x-order": 14,
                       "description": "Timestamp when the resource was created.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
                       "x-order": 15,
                       "description": "Timestamp when the resource was updated.",
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     }
                   },
@@ -25313,7 +25313,7 @@ const DesignSchema: Record<string, unknown> = {
                 },
                 "metadata": {
                   "type": "object",
-                  "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none.\n",
+                  "description": "Event-specific details; the structure varies by event kind. `null` when the producer attached none. It stays a free-form map; design events fill it with a named shape: RelationshipEvaluationEventMetadata (category `relationship`, action `evaluation`), DesignValidationEventMetadata (category `pattern`, actions `validate`, `deploy`, `undeploy`, `dry-run`) and DesignSavedEventMetadata (category `pattern`, actions `create`, `update`); DesignEventIdentity names the design. Never put design contents into event metadata - no `designFile`, `patternFile`, `components`, `relationships`, `trace`, `evaluationResponse`, the raw `summary` or `validationResult`. Meshery Server applies a 16 KB guard that drops oversized metadata down to the identity fields (`designId`, `designName`, `designVersion`, `designLink`, `viewLink`). On an error event, `metadata.error` holds only the MeshKit error, never the design or the request that failed. Older Meshery Cloud rows may carry the legacy `design_name` and `view_link` keys; readers should fall back to them when `designName` and `viewLink` are absent.\n",
                   "additionalProperties": true,
                   "nullable": true,
                   "x-go-type": "core.Map",

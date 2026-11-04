@@ -15,7 +15,7 @@ export interface paths {
         put?: never;
         /**
          * Submit a failure diagnostic
-         * @description Accepts a small, anonymous, redacted diagnostic of a client-side failure, so maintainers learn about it before anyone writes in. Authentication is a per-client-kind, per-release-channel pre-shared key in the X-Client-Key header (a speed bump plus a revocation handle, not a strong secret: the key ships in the app and can be extracted). A signed-in caller may use its bearer token instead; then the organization is attached, and only then. The server enforces a body cap, strict decoding (unknown fields are rejected), rate limits, server-side re-redaction, and a 90-day retention on stored rows. Served by Layer5 Cloud (meshery-cloud #6330); see Blowhorn issue #771.
+         * @description Accepts a small, anonymous, redacted diagnostic of a client-side failure, so maintainers learn about it before anyone writes in. Authentication is a per-client-kind, per-release-channel pre-shared key in the X-Client-Key header (a speed bump plus a revocation handle, not a strong secret: the key ships in the app and can be extracted). A signed-in caller may use its bearer token instead; then the organization is attached, and only then. The server enforces a body cap, strict decoding (unknown fields are rejected), rate limits, server-side re-redaction, and a 90-day retention on stored rows. Served by Layer5 Cloud (meshery-cloud #6330); see the downstream desktop diagnostics issue #771.
          */
         post: operations["submitFailureDiagnostic"];
         delete?: never;
@@ -105,7 +105,7 @@ export interface components {
                 surface: "tray" | "popover" | "console" | "service";
                 /**
                  * Cause
-                 * @description Stable machine-readable name for the cause. Deliberately a patterned string, not a closed enum: new failure causes are named by the client over time, and a closed enum would make the server reject reports carrying a cause it does not know yet. Consumers must treat an unknown cause as opaque, never as an error. Known causes today are the Blowhorn engine's StoreUnavailable.cause names: unavailable, not_configured, incomplete, bad_setting, config_unreadable, tunnel_refused, tunnel_silent, tunnel_off, not_postgres, auth_rejected, host_not_permitted, database_missing, timeout, version_unreadable, ledger_unreadable, schema_behind, schema_ahead, schema_edited, no_organization, unknown_organization, plus other named causes as clients add them.
+                 * @description Stable machine-readable name for the cause. Deliberately a patterned string, not a closed enum: new failure causes are named by the client over time, and a closed enum would make the server reject reports carrying a cause it does not know yet. Consumers must treat an unknown cause as opaque, never as an error. Known causes today are the desktop engine's StoreUnavailable.cause names: unavailable, not_configured, incomplete, bad_setting, config_unreadable, tunnel_refused, tunnel_silent, tunnel_off, not_postgres, auth_rejected, host_not_permitted, database_missing, timeout, version_unreadable, ledger_unreadable, schema_behind, schema_ahead, schema_edited, no_organization, unknown_organization, plus other named causes as clients add them.
                  */
                 cause: string;
                 /**
@@ -140,7 +140,7 @@ export interface components {
             /**
              * Install ID
              * Format: uuid
-             * @description Optional per-install id, present only when the person has not opted out of failure reports. A random uuid4 minted once per install (Blowhorn's installationId, written beside cloud.yaml and reused), never a hardware id. Omitted entirely when opted out.
+             * @description Optional per-install id, present only when the person has not opted out of failure reports. A random uuid4 minted once per install (the client's installationId, written beside cloud.yaml and reused), never a hardware id. Omitted entirely when opted out.
              */
             installId?: string;
         };
@@ -345,7 +345,7 @@ export interface operations {
                         surface: "tray" | "popover" | "console" | "service";
                         /**
                          * Cause
-                         * @description Stable machine-readable name for the cause. Deliberately a patterned string, not a closed enum: new failure causes are named by the client over time, and a closed enum would make the server reject reports carrying a cause it does not know yet. Consumers must treat an unknown cause as opaque, never as an error. Known causes today are the Blowhorn engine's StoreUnavailable.cause names: unavailable, not_configured, incomplete, bad_setting, config_unreadable, tunnel_refused, tunnel_silent, tunnel_off, not_postgres, auth_rejected, host_not_permitted, database_missing, timeout, version_unreadable, ledger_unreadable, schema_behind, schema_ahead, schema_edited, no_organization, unknown_organization, plus other named causes as clients add them.
+                         * @description Stable machine-readable name for the cause. Deliberately a patterned string, not a closed enum: new failure causes are named by the client over time, and a closed enum would make the server reject reports carrying a cause it does not know yet. Consumers must treat an unknown cause as opaque, never as an error. Known causes today are the desktop engine's StoreUnavailable.cause names: unavailable, not_configured, incomplete, bad_setting, config_unreadable, tunnel_refused, tunnel_silent, tunnel_off, not_postgres, auth_rejected, host_not_permitted, database_missing, timeout, version_unreadable, ledger_unreadable, schema_behind, schema_ahead, schema_edited, no_organization, unknown_organization, plus other named causes as clients add them.
                          */
                         cause: string;
                         /**
@@ -380,7 +380,7 @@ export interface operations {
                     /**
                      * Install ID
                      * Format: uuid
-                     * @description Optional per-install id, present only when the person has not opted out of failure reports. A random uuid4 minted once per install (Blowhorn's installationId, written beside cloud.yaml and reused), never a hardware id. Omitted entirely when opted out.
+                     * @description Optional per-install id, present only when the person has not opted out of failure reports. A random uuid4 minted once per install (the client's installationId, written beside cloud.yaml and reused), never a hardware id. Omitted entirely when opted out.
                      */
                     installId?: string;
                 };
