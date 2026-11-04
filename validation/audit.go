@@ -151,7 +151,10 @@ func Audit(opts AuditOptions) AuditResult {
 	// Walk validated construct specs. Errors are intentionally ignored:
 	// Audit returns AuditResult, not error, and individual load failures
 	// are reported as blocking violations inside auditAPISpec.
+	audited := make(map[string]bool)
 	_ = walkValidatedConstructSpecs(opts.RootDir, func(spec constructSpec) error {
+		audited[spec.APIYMLPath] = true
+
 		// Validate entity schemas (*.yaml, not api.yml).
 		auditEntitySchemas(spec.ConstructDir, opts, baseline, &result)
 
@@ -171,6 +174,9 @@ func Audit(opts AuditOptions) AuditResult {
 		}
 		return nil
 	})
+
+	// Rule 48 on the older construct versions the walk above skips.
+	auditRule48OlderVersions(opts, audited, baseline, &result)
 
 	// Rule 29: report cross-construct duplicates.
 	for _, v := range reportDuplicateSchemas(fingerprints, opts) {
@@ -261,24 +267,7 @@ func isDeprecatedDoc(doc *openapi3.T) bool {
 func auditEntitySchemas(constructDir string, opts AuditOptions,
 	baseline map[string]bool, result *AuditResult) {
 
-	entries, err := os.ReadDir(constructDir)
-	if err != nil {
-		return
-	}
-	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].Name() < entries[j].Name()
-	})
-
-	for _, e := range entries {
-		name := e.Name()
-		if !strings.HasSuffix(name, ".yaml") {
-			continue
-		}
-		if name == "api.yml" || strings.Contains(name, "_template") {
-			continue
-		}
-
-		entityPath := filepath.Join(constructDir, name)
+	for _, entityPath := range entitySchemaFiles(constructDir) {
 		entity, err := loadEntitySchema(entityPath)
 		if err != nil || entity == nil {
 			continue
@@ -316,6 +305,86 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 			addViolation(result, v, baseline)
 		}
 	}
+}
+
+// entitySchemaFiles returns the entity schema files (*.yaml, not api.yml and
+// not templates) in a construct directory, in sorted order.
+func entitySchemaFiles(constructDir string) []string {
+	entries, err := os.ReadDir(constructDir)
+	if err != nil {
+		return nil
+	}
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].Name() < entries[j].Name()
+	})
+
+	var files []string
+	for _, e := range entries {
+		name := e.Name()
+		if !strings.HasSuffix(name, ".yaml") {
+			continue
+		}
+		if name == "api.yml" || strings.Contains(name, "_template") {
+			continue
+		}
+		files = append(files, filepath.Join(constructDir, name))
+	}
+	return files
+}
+
+// auditRule48OlderVersions runs Rule 48 on every non-deprecated construct
+// version that walkValidatedConstructSpecs does not visit. The walk keeps only
+// the newest version of each construct, but the generators bundle every
+// version, so a $ref that pulls a whole OpenAPI document into an older version
+// would still reach generated code. audited holds the api.yml paths the walk
+// already checked. The other rules stay limited to the newest version.
+func auditRule48OlderVersions(opts AuditOptions, audited map[string]bool,
+	baseline map[string]bool, result *AuditResult) {
+
+	pattern := filepath.Join(opts.RootDir, "schemas", "constructs", "*", "*", "api.yml")
+	apiYmlPaths, err := filepath.Glob(pattern)
+	if err != nil {
+		return
+	}
+	sort.Strings(apiYmlPaths)
+
+	for _, apiYmlPath := range apiYmlPaths {
+		if audited[apiYmlPath] {
+			continue
+		}
+		constructDir := filepath.Dir(apiYmlPath)
+		if !shouldValidateVersion(filepath.Base(filepath.Dir(constructDir))) {
+			continue
+		}
+		rawDoc, err := loadAPISpecRaw(apiYmlPath)
+		if err != nil || isDeprecatedRawDoc(rawDoc) {
+			continue
+		}
+
+		relPath := relativeToRoot(apiYmlPath, opts.RootDir)
+		for _, v := range checkRule48(relPath, apiYmlPath, rawDoc) {
+			addViolation(result, v, baseline)
+		}
+
+		for _, entityPath := range entitySchemaFiles(constructDir) {
+			entity, err := loadEntitySchema(entityPath)
+			if err != nil || entity == nil {
+				continue
+			}
+			relPath := relativeToRoot(entityPath, opts.RootDir)
+			for _, v := range checkRule48(relPath, entityPath, entity.raw) {
+				addViolation(result, v, baseline)
+			}
+		}
+	}
+}
+
+// isDeprecatedRawDoc checks if a raw api.yml has x-deprecated: true in info,
+// like isDeprecatedDoc does for a loaded one.
+func isDeprecatedRawDoc(doc map[string]any) bool {
+	info, _ := doc["info"].(map[string]any)
+	deprecated, _ := info["x-deprecated"].(bool)
+	return deprecated
 }
 
 // auditTemplateFiles validates template files in a construct directory.

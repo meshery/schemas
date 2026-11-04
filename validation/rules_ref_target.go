@@ -26,9 +26,14 @@ import (
 // `#/components/schemas/RelationshipDefinition` inside that file.
 //
 // The rule reads raw YAML so it sees every $ref exactly as written, wherever
-// it sits in the file (schemas, parameters, responses, paths). Remote (URL)
-// refs and refs to files that cannot be read are skipped: this rule only
-// judges what a local whole-file $ref points at, not whether the target exists.
+// it sits in the file (schemas, parameters, responses, paths). Refs to local
+// files that cannot be read are skipped: this rule only judges what a
+// whole-file $ref points at, not whether the target exists.
+//
+// A remote (URL) $ref with no fragment is also reported. The validator does
+// not fetch remote files, so it cannot tell whether the target is an OpenAPI
+// document, while the bundler would fetch and inline the whole file. A remote
+// $ref with a fragment is allowed.
 
 // checkRule48 reports every $ref in a raw YAML document (an api.yml or an
 // entity schema) that has no fragment and resolves to a file whose root is an
@@ -49,6 +54,21 @@ func checkRule48(relPath, absPath string, raw map[string]any) []Violation {
 
 	var out []Violation
 	walkRefs(raw, "", func(pointer, ref string) {
+		if isRemoteWholeFileRef(ref) {
+			out = append(out, Violation{
+				File: relPath,
+				Message: fmt.Sprintf(
+					"#%s - $ref %q is a remote URL with no fragment. The validator does not fetch remote files, "+
+						"so it cannot check whether the target is an OpenAPI document. "+
+						"Point the $ref at one schema with a fragment, for example %q, "+
+						"or copy the schema into this repository and use a relative $ref.",
+					pointer, ref,
+					strings.TrimSuffix(ref, "#")+"#/components/schemas/<SchemaName>"),
+				Severity:   SeverityBlocking,
+				RuleNumber: 48,
+			})
+			return
+		}
 		target, ok := wholeFileRefTarget(baseDir, ref)
 		if !ok {
 			return
@@ -120,9 +140,19 @@ func escapeJSONPointerToken(key string) string {
 	return jsonPointerEscaper.Replace(key)
 }
 
+// isRemoteWholeFileRef reports whether ref is a URL (it has a scheme, such as
+// `https://`) with no fragment or an empty one.
+func isRemoteWholeFileRef(ref string) bool {
+	if strings.HasPrefix(ref, "#") || !strings.Contains(ref, "://") {
+		return false
+	}
+	_, fragment, _ := strings.Cut(ref, "#")
+	return fragment == ""
+}
+
 // wholeFileRefTarget returns the local file a $ref names when the ref has no
 // fragment (or an empty one), so it pulls in the whole file. Local refs
-// (`#/...`) and remote refs (`https://...`) are not whole-file refs.
+// (`#/...`) and remote refs (`https://...`) are not local whole-file refs.
 func wholeFileRefTarget(baseDir, ref string) (string, bool) {
 	if ref == "" || strings.HasPrefix(ref, "#") || strings.Contains(ref, "://") {
 		return "", false
@@ -136,7 +166,8 @@ func wholeFileRefTarget(baseDir, ref string) (string, bool) {
 
 // openAPIVersionOf reports whether the YAML file at path is an OpenAPI
 // document (its root mapping has an `openapi` key) and returns that key's
-// value. A file that cannot be read or parsed is not reported as one.
+// value, or "unknown" when the key has no value. A file that cannot be read
+// or parsed is not reported as one.
 func openAPIVersionOf(path string) (string, bool) {
 	doc, err := loadYAMLDoc(path)
 	if err != nil || doc == nil {
@@ -146,8 +177,8 @@ func openAPIVersionOf(path string) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	if version == nil {
-		return "", true
+	if version == nil || strings.TrimSpace(fmt.Sprint(version)) == "" {
+		return "unknown", true
 	}
 	return fmt.Sprint(version), true
 }

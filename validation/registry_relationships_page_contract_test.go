@@ -2,6 +2,7 @@ package validation
 
 import (
 	"path/filepath"
+	"slices"
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -95,10 +96,14 @@ func TestRegistryRelationshipsPageItemsResolveToRelationshipDefinition(t *testin
 		}
 	}
 
-	// RelationshipDefinition's required fields.
+	// RelationshipDefinition's required fields: each must be defined and stay
+	// required, so generated clients do not type it as optional.
 	for _, prop := range []string{"id", "schemaVersion", "version", "model", "kind", "type", "subType"} {
 		if items.Value.Properties[prop] == nil {
 			t.Errorf("relationships.items has no %q property; want the v1alpha3 RelationshipDefinition", prop)
+		}
+		if !slices.Contains(items.Value.Required, prop) {
+			t.Errorf("relationships.items does not require %q; want the v1alpha3 RelationshipDefinition required list", prop)
 		}
 	}
 }
